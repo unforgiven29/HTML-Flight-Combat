@@ -1,4 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!-- v205: F-14 AVG-12 field now a round ~15° patch, F-4E red reticle-only sight and no on-screen RDR/WPN chip, Su-27SM Kh-31P emitter picking (Tab steps, Enter under the square, click on the HUD), Su-27SM twin R-77 racks on the centreline tunnel (5/5B front, 6/6B rear) -->
+<!-- v204: one conflict-free key layout (Shift = secondary), cockpit switch panel, F/A-18C/E TAC + SUPT DDI menus with FUEL / ENG / FCS / BIT / CHKLST / FPAS / ADI / HUD pages, F-14A/B AVG-12 HUD redrawn per NATOPS (waterline symbol, ADL, signed pitch lines, mode-dependent VSI / radar-alt / closure / range scales, E-bracket, RTGS) -->
 <!-- v203: NASA TP-1538 thrust deck for every jet (calibrated to published top speeds), published motor data for Sparrow / AMRAAM / Phoenix, OLS-27 ranges, R-73 gimbal; campaign: red supply depots, pilot career with logbook, rank, decorations, CSAR / capture -->
 <!-- v202: performance pass: instanced ground units, pooled bullets, async (PBO) sensor readback, rain composited into the HUD canvas, DOM write de-duplication, cached element lookups, no per-frame layout reads -->
 <!-- v201: cyan removed from the Su-27SM ПУМ and SAR pages; cleaner green-on-black -->
@@ -5746,7 +5748,7 @@ function buildCockpit(kind){
      // ---- glare shield with the AVG-12 HUD projector on top; the symbology is projected on the windscreen ahead ----
      add(rbox(1.0,.035,.15,.012),tD,0,-.247,-.835,tg);add(rbox(.6,.012,.02,.004),tD,0,-.262,-.755,tg);
      add(rbox(.2,.035,.15,.012),black,0,-.238,-.76,tg);add(rbox(.16,.01,.05,.004),L(0x2b3034),0,-.218,-.73,tg);
-     out._tglass=[[-.165,.075],[.165,.075],[.165,-.205],[-.165,-.205]].map(([x,y])=>new V3(x,y,-.75));
+     out._tglass=Array.from({length:40},(_,i)=>{const a=i/40*Math.PI*2;return new V3(Math.cos(a)*.1,-.055+Math.sin(a)*.1,-.75);});  // AVG-12: round field ~15° across
      // windscreen frame: two posts and the bow over the centre panel
      // windscreen frame: the two side bows run back and up from the glare shield to meet the canopy's front arch
      for(const sd of[-1,1])rod(tg,[sd*.33,-.25,-.75],[sd*.25,.17,-.47],.0065,tD,1,[0,0,1],8);
@@ -7828,6 +7830,39 @@ function bvrCall(){const tot=PLN.flights.reduce((m,f)=>m+f.n,0),b=PLN.bull;let b
   return tot+' BANDIT'+(tot>1?'S':'')+' · BULLSEYE '+String(Math.round(best.brg)).padStart(3,'0')+'/'+Math.round(best.d/NM);}
 
 /* ============ input: keyboard, mouse head-look, gamepad, touch ============ */
+/* ===== v204: one keyboard layout, no key does two things at once. Physical keys are translated here (first capture listener) into the
+   older handlers' codes, so every system keeps its own code path. Layout: number row = weapons + systems, letters = flight / sensors,
+   Shift = the secondary function of the same key. ===== */
+const CTL={re:0,hold:new Map(),
+  // physical key (Shift-prefixed with '+') -> action
+  map:{
+    'Digit4':{leg:'Digit7'},            // A/G stores
+    'Digit5':{leg:'Digit4'},            // RWS <-> TWS
+    'Digit7':{leg:'Digit5'},            // ECM
+    'Digit8':{fn:()=>{game.repeat=!game.repeat;updateRepeaters();}},
+    'KeyG':{fn:()=>uiKey('Digit7')},    // landing gear
+    'KeyO':{fn:()=>flapKey()},          // flaps
+    '+KeyO':{hold:'KeyO'},              // padlock (hold)
+    'KeyB':{hold:'KeyB'},               // speed brake / wheel brakes only
+    '+KeyB':{fn:()=>{if(typeof SNS!=='undefined'&&SNS.active())SNS.bore();}},
+    'KeyH':{leg:'KeyH'},'+KeyH':{leg:'KeyH',sh:1},
+    'KeyY':{leg:'KeyY'},
+    'Equal':{hold:'KeyY'},'Minus':{hold:'KeyH'},
+    '+Equal':{leg:'Equal'},'+Minus':{leg:'Minus'},
+    'KeyP':{fn:()=>{if(net.on){flash('NO PAUSE IN MULTIPLAYER',1200);return;}game.paused=!game.paused;sfx.mute(game.paused);flash(game.paused?'PAUSED':'',game.paused?1e9:10);}},
+    '+Slash':{fn:()=>GCI.toggleGuid()},
+    'Quote':{fn:()=>{const P=player;if(typeof SNS!=='undefined'&&P&&(SNS.active()||SNS.hasPod(P)))SNS.sensKey();else fuseToggle();}},
+    '+Quote':{fn:()=>fuseToggle()}},
+  legacy(code,e,sh){this.re=1;try{dispatchEvent(new KeyboardEvent('keydown',{code,key:'',shiftKey:!!sh,bubbles:true,cancelable:true}));}finally{this.re=0;}keys.delete(code);}};
+addEventListener('keydown',e=>{if(CTL.re||e.ctrlKey||e.metaKey||e.altKey)return;if(!game.running||!$('#menu').hidden)return;
+  const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT')return;
+  // Shift+P (MiG-23 СТРОБ), Shift+V (Su-27SM ВИД) and Shift+IJKL (pod slew) keep their own handlers
+  const a=CTL.map[(e.shiftKey?'+':'')+e.code];if(!a)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  if(a.hold){keys.add(a.hold);CTL.hold.set(e.code,a.hold);return;}
+  if(e.repeat)return;
+  if(a.leg)CTL.legacy(a.leg,e,a.sh);else if(player)a.fn();},true);
+addEventListener('keyup',e=>{const h=CTL.hold.get(e.code);if(h){keys.delete(h);CTL.hold.delete(e.code);}},true);
 addEventListener('keydown',e=>{const k=e.code;
   if(k==='Escape'){if(!$('#menu').hidden)resume();else if(game.active)openMenu();return;}
   if(!game.running||!$('#menu').hidden)return;
@@ -12086,9 +12121,9 @@ function phWpnDraw(P){const c=phScopeC.getContext('2d'),S=360,col='#8dffb4',a=AG
   c.restore();}
 function phChip(P){const c=phScopeC.getContext('2d');c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.font='700 13px "B612 Mono",monospace';c.textAlign='center';c.textBaseline='middle';
   [['RDR',122,!PHS.wpn],['WPN',182,PHS.wpn]].forEach(([t,x,on])=>{c.fillStyle=on?'#8dffb4':'rgba(0,0,0,.75)';c.fillRect(x,324,56,18);c.strokeStyle='#8dffb4';c.lineWidth=1;c.strokeRect(x+.5,324.5,55,17);c.fillStyle=on?'#000':'#8dffb4';c.fillText(t,x+28,333.5);});c.restore();}
-{const _p=drawPhScope;drawPhScope=function(P){if(P&&P.type==='F-4E'){if(PHS.wpn)phWpnDraw(P);else _p(P);phChip(P);return;}return _p(P);};}
+{const _p=drawPhScope;drawPhScope=function(P){if(P&&P.type==='F-4E'){if(PHS.wpn)phWpnDraw(P);else _p(P);return;}return _p(P);};}
 {const _m=mfdClick;mfdClick=function(id,x,y){const P=player;
-  if(id==='phscope'&&P&&P.type==='F-4E'){if(y>316&&y<346){PHS.wpn=x>=180;sfx.click();flash(PHS.wpn?'SCOPE · WEAPONS':'SCOPE · RADAR',700);return;}
+  if(id==='phscope'&&P&&P.type==='F-4E'){
     if(PHS.wpn){if(SNS.active())SNS.tms();sfx.click();return;}}
   return _m(id,x,y);};}
 addEventListener('keydown',e=>{if(e.code!=='KeyY'||!game.running||!$('#menu').hidden||e.repeat||e.ctrlKey||e.metaKey||e.altKey||!player||player.type!=='F-4E')return;
@@ -13657,6 +13692,319 @@ function acPerfRows(t){const A=AC[t],p=acPerf(t),rows=[];if(!A)return rows;
   if(A.irst&&IRSTN[t]&&A.ols)rows.push(['IRST TYPE',IRSTN[t]+' · '+Math.round(A.ols.tail/1000)+' km tail / '+Math.round(A.ols.head/1000)+' km nose']);
   if(p){rows.push(['T/W (½ FUEL)',p.tw.toFixed(2)]);rows.push(['TOP SPEED','M'+p.vHi.toFixed(2)+' at 11 km']);rows.push(['SUSTAINED','15,000 ft M0.8: '+p.sus[0].toFixed(1)+' g · '+p.sus[1].toFixed(1)+'°/s']);}
   return rows;}
+
+
+/* ===== v204: F-14A / F-14B AN/AVG-12 HUD, after the NATOPS / Heatblur F-14A-B manual (Navigation: flight modes, Weapons: A/A HUD, Guns).
+   Both the A and the B (A+) flew the same AVG-12 HUD; the digital HUD came with the F-14D. What the AVG-12 shows:
+   - fixed aircraft (waterline) symbol: two wings with inboard drop ticks and a centre dot; the ADL "+" (armament datum line) above it
+   - horizon and 5° pitch lines that run across the field of view, solid above / dashed below, signed numbers (+5 / -5) at both ends
+   - heading scale across the top in T.O., CRUISE, A/G and LDG (tens of degrees, 5° ticks, index tick); none in A/A
+   - T.O. / LDG: vertical-speed scale on the left (+1 / 0 / -1 thousand fpm, caret <), radar-altitude scale on the right (0-1,400 ft, caret >)
+   - LDG adds the velocity vector (circle with a tail fin) and the AoA E-bracket hung off the left wing (on-speed = 15 units)
+   - A/A: closure scale on the left (-200 .. +1,000 kt in hundreds, labels 10 / 0 / -2), target range scale on the right (full-scale number
+     at the top, caret > for range, dashes for Rmax / Rmin), the target designator diamond (STT, else TCS line of sight), the movable reticle
+     (TCS LOS with an STT; AIM-9 seeker LOS with Sidewinders), a steering dot, and the armament legend (PH / SP / SW / G with the count)
+   - gun RTGS: pipper (gapped cross with a centre dot) at 1,000 ft and diamond at 2,000 ft with no track; with an STT the pipper is the
+     bullet position at target range (to 4,000 ft) and the diamond the radar line of sight
+   - no airspeed, Mach, altitude digits, g or AoA numbers anywhere: those are on the tapes and the indexer
+   ACM cover open forces the A/A format except in T.O. and LDG. */
+drawTomcatHud=function(P,fs,lh){
+  const ppd=KPX*D2R,w=game.wsel,wd=MSL[w],gun=w==='GUN',acm=radar.mode==='ACM';let md=tcMode();if(acm&&md!==0&&md!==4)md=2;
+  const T=(s,a,e,al='left')=>{const p=hb(a,e);if(p)txt(s,p.x,p.y,al);return p;};
+  const dot=(a,e,r=1.6)=>{const p=hb(a,e);if(p){hx.beginPath();hx.arc(p.x,p.y,r,0,7);hx.fill();}return p;};
+  const caret=(p,dir)=>{if(!p)return;hx.beginPath();hx.moveTo(p.x+dir*9,p.y-6);hx.lineTo(p.x,p.y);hx.lineTo(p.x+dir*9,p.y+6);hx.stroke();};
+  const WL=-3.6;                                         // waterline symbol below the ADL, near the centre of the round field
+  const f=P.fwd(new V3());
+  // ---- ADL and the waterline symbol (both fixed)
+  {const a=(md===2||md===3)?hb(0,0):null;if(a){line(a.x-9,a.y,a.x+9,a.y);line(a.x,a.y-9,a.x,a.y+9);}
+   const p=hb(0,WL);if(p){const i=ppd*.9,o=ppd*3.4,d=ppd*.55;hx.beginPath();hx.moveTo(p.x-o,p.y);hx.lineTo(p.x-i,p.y);hx.lineTo(p.x-i,p.y+d);hx.moveTo(p.x+o,p.y);hx.lineTo(p.x+i,p.y);hx.lineTo(p.x+i,p.y+d);hx.stroke();
+     hx.beginPath();hx.arc(p.x,p.y,1.8,0,7);hx.fill();}}
+  // ---- horizon and pitch lines: long lines across the glass, signed numbers at both ends, dashed below the horizon
+  {const hz=new V3(f.x,0,f.z);if(hz.lengthSq()<1e-6){const u=P.up();hz.set(-u.x,0,-u.z);}hz.normalize();const hr=new V3(-hz.z,0,hz.x);
+   hx.save();hx.font=hfont(Math.round(clamp(ppd*.85,10,16)));
+   for(let p=-85;p<=85;p+=5){const pr=p*D2R,dv=hz.clone().multiplyScalar(Math.cos(pr)).setY(Math.sin(pr));if(!projDir(dv))continue;
+     const e=k=>projDir(dv.clone().addScaledVector(hr,k).normalize()),wo=p===0?.14:.07,a=e(-wo),b=e(wo);if(!a||!b)continue;
+     hx.setLineDash(p<0?[ppd*.9,ppd*.6]:[]);line(a.x,a.y,b.x,b.y);hx.setLineDash([]);
+     if(p){const dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,s=(p>0?'+':'-')+Math.abs(p);
+       txt(s,a.x-ux*16,a.y-uy*16,'center');txt(s,b.x+ux*16,b.y+uy*16,'center');}}
+   hx.restore();}
+  // ---- heading scale (not in A/A)
+  if(md!==2){const hdg=P.hdg,E=2.4;for(let dg=Math.floor((hdg-25)/5)*5;dg<=hdg+25;dg+=5){const off=(dg-hdg)*.22;if(Math.abs(off)>3.6)continue;const big=((dg%10)+10)%10===0;
+      if(big){const p=hb(off,E-.3),q=hb(off,E-.9);if(p&&q)line(p.x,p.y,q.x,q.y);T(String((((dg/10)%36)+36)%36).padStart(2,'0'),off,E+.5,'center');}else dot(off,E-.6,1.4);}
+    const p=hb(0,E-1.1),q=hb(0,E-1.6);if(p&&q)line(p.x,p.y,q.x,q.y);}
+  // ---- T.O. / LDG: VSI left, radar altitude right
+  if(md===0||md===4||md===3){
+    if(md!==3){const x=-5.9,c0=WL,K=1.3/500;               // 1.3° per 500 fpm
+      for(let v=-1500;v<=1500;v+=500)dot(x,c0+v*K);[[1000,'+1'],[0,'0'],[-1000,'-1']].forEach(([v,s])=>T(s,x-.45,c0+v*K,'right'));
+      const vs=clamp(P.vel.y*FT*60,-1600,1600);caret(hb(x+.35,c0+vs*K),1);}
+    {const x=5.9,y0=WL-4.2,y1=WL+3.8,agl=Math.max(0,(P.pos.y-groundAt(P.pos.x,P.pos.z))*FT),rad=md!==3;
+     const full=rad?1400:10000,Y=v=>y0+clamp(v/full,0,1)*(y1-y0);
+     for(let v=0;v<=full;v+=rad?200:1000)dot(x,Y(v));T('0',x+.45,y0,'left');T(rad?'1':'5',x+.45,Y(rad?1000:5000),'left');if(!rad)T('10',x+.45,y1,'left');
+     const v=rad?agl:P.pos.y*FT;if(!rad||agl<=1400)caret(hb(x-.35,Y(v)),-1);}}
+  // ---- LDG: velocity vector and the AoA E-bracket off the left wing
+  if(md===4){const fp=projDir(P.vel.clone().normalize());if(fp){circ(fp.x,fp.y,ppd*.45);line(fp.x,fp.y-ppd*.45,fp.x,fp.y-ppd*1.2);}
+    const u=tcUnits(P),off=clamp((u-15)*.35,-3,3),p=hb(-3.4,WL+off);
+    if(p){const h=ppd*1.1,t=ppd*.5;hx.beginPath();hx.moveTo(p.x+t,p.y-h);hx.lineTo(p.x,p.y-h);hx.lineTo(p.x,p.y+h);hx.lineTo(p.x+t,p.y+h);hx.moveTo(p.x,p.y);hx.lineTo(p.x+t*.8,p.y);hx.stroke();}}
+  // ---- A/A
+  const L=radar.tgt(),tcs=window.TCS&&TCS.los&&TCS.los.trk?proj(TCS.los.p):null;
+  if(md===2){
+    if(acm&&radar.on()){const bs=hb(0,0);hx.setLineDash([4,4]);if(radar.acm==='PLM'&&bs)circ(bs.x,bs.y,ppd*1.6);
+      else if(radar.acm==='VSLH'||radar.acm==='VSLL'){const e0=radar.acm==='VSLH'?15:-15;[-2,2].forEach(a=>{const p=hb(a,Math.min(e0,9)),q=hb(a,Math.min(e0+40,9));if(p&&q)line(p.x,p.y,q.x,q.y);});}
+      else{[[-4],[6]].forEach(([e])=>{const p=hb(-20,e),q=hb(20,e);if(p&&q)line(p.x,p.y,q.x,q.y);});}hx.setLineDash([]);}
+    const dist=L?L.pos.distanceTo(P.pos):0;
+    if(!gun&&wd){
+      // closure (left) and range (right) scales
+      const xl=-5.9,xr=5.9,y0=-8.4,y1=0;
+      {const Y=v=>y0+(v+200)/1200*(y1-y0);for(let v=-200;v<=1000;v+=100)dot(xl,Y(v),v%500?1.2:1.7);T('10',xl-.45,Y(1000),'right');T('0',xl-.45,Y(0),'right');T('-2',xl-.45,Y(-200),'right');
+       if(L&&!radar.noRng){const los=L.pos.clone().sub(P.pos).normalize(),vc=(P.vel.dot(los)-L.vel.dot(los))*KT;caret(hb(xl+.35,Y(clamp(vc,-200,1000))),1);}}
+      {const fsR=L?[5,10,20,50,100].find(v=>v*NM>dist*1.1)||100:10,Y=r=>y0+clamp(r/(fsR*NM),0,1)*(y1-y0);for(let i=0;i<=10;i++)dot(xr,Y(fsR*NM*i/10));T(String(fsR),xr+.45,y1,'left');
+       if(L&&!radar.noRng){const z=dlzGet(w,L);[z.rmax,z.rmin].forEach(r=>{const p=hb(xr+.3,Y(r)),q=hb(xr+1.1,Y(r));if(p&&q)line(p.x,p.y,q.x,q.y);});caret(hb(xr-.35,Y(dist)),-1);}}}
+    // target designator: STT line of sight, else the TCS line of sight
+    const sL=L?proj(L.pos):null,des=sL||(tcs&&!gun?tcs:null);if(des)diamond(des.x,des.y,ppd*.75);
+    // movable reticle: Sidewinder seeker LOS with AIM-9 selected, otherwise the TCS LOS when the radar has an STT too
+    const ret=(p,r)=>{if(!p)return;const g=r*.25;line(p.x-r,p.y,p.x-g,p.y);line(p.x+g,p.y,p.x+r,p.y);line(p.x,p.y-r,p.x,p.y-g);line(p.x,p.y+g,p.x,p.y+r);hx.beginPath();hx.arc(p.x,p.y,1.6,0,7);hx.fill();};
+    if(wd&&wd.seek==='IR'){const Tg=irTarget(w);ret(Tg?proj(Tg.pos):hb(0,0),ppd*1.5);}
+    else if(sL&&tcs&&!gun)ret(tcs,ppd*1.5);
+    // steering dot (TWS / STT radar missiles)
+    if(L&&wd&&wd.seek!=='IR'&&!radar.noRng){const sd=projDir(leadPt(dlzGet(w,L),L).sub(P.pos).normalize());if(sd){hx.beginPath();hx.arc(sd.x,sd.y,ppd*.22,0,7);hx.fill();}}
+    // RTGS
+    if(gun){const pip=(p)=>ret(p,ppd*1.3);
+      if(L&&dist<1219&&!radar.noRng){pip(proj(gunSol(P,L).aim));if(sL)diamond(sL.x,sL.y,ppd*.6);}
+      else{pip(proj(gunFun(P,305)));const d2=proj(gunFun(P,610));if(d2)diamond(d2.x,d2.y,ppd*.6);}}}
+  // ---- armament legend: code over count, bottom centre
+  {let c='',n='';if(gun){c='G';n=String(Math.floor((P.gun.ammo||0)/100));}else if(wd){c={ARH:'PH',SARH:'SP',IR:'SW'}[wd.seek]||'';n=String(P.count(w));}
+   else if(AGW[w]){c=(SN[w]||w).replace(/[^A-Z0-9]/g,'').slice(0,4);n=String(P.count(w));}
+   if(c&&(md===2||md===3)){T(c,0,-9.2,'center');T(n,0,-10.4,'center');}}
+};
+
+/* ===== v204: F/A-18C / F/A-18E DDI and MPCD formats after the NATOPS (A1-F18AC-NFM-000 / A1-F18EA-NFM-000) and the DCS F/A-18C guide:
+   TAC and SUPT menus (MENU on a TAC page brings up the TAC menu, on a SUPT page the SUPT menu; MENU on a menu swaps TAC <-> SUPT),
+   TAC: HUD repeat, SA, EW, STORES, RDR ATTK, FLIR, MAV, HARM. SUPT: CHKLST, FPAS, BIT, FUEL, ENG, FCS, HSI, ADI.
+   FUEL: tank diagram (1 / 2 / 3 / 4, L / R wing, external stations) with quantities, BINGO set on the rocker OSBs.
+   ENG: per-engine inlet temp, N1, N2, EGT, FF, nozzle, oil, thrust; FCS: the four-channel grid per surface (X = channel failed) with
+   LEF / TEF positions; BIT: equipment status; CHKLST: take-off / landing items checked against the jet; FPAS: range, endurance, home fuel;
+   ADI: attitude ball with CAS / ALT boxes, heading, VVI, AoA, Mach and g. The Super Hornet gets the F414 numbers and its tank layout. ===== */
+{
+const HTAC=[[2,'HUD','HUD'],[3,'EW','EW'],[4,'SA','SA'],[6,'SMS','STORES'],[7,'RDR','RDR\nATTK'],[8,'TGP','FLIR'],[9,'MAV','MAV'],[10,'HAD','HARM']];
+const HSUP=[[2,'CHK','CHKLST'],[3,'FPAS','FPAS'],[4,'BIT','BIT'],[6,'FUEL','FUEL'],[7,'ENG','ENG'],[8,'FCS','FCS'],[9,'HSI','HSI'],[10,'ADI','ADI']];
+const SUPS=new Set(HSUP.map(r=>r[1])),NEWP=new Set(['HUD','CHK','FPAS','BIT','FUEL','ENG','FCS','ADI']);
+HSUP.concat(HTAC).forEach(r=>{if(!HPAGES.includes(r[1]))HPAGES.push(r[1]);});
+HDDI.ms={L:'TAC',R:'TAC',C:'SUPT'};HDDI.bit=0;HDDI.chk={L:0,R:0,C:0};
+const isE=P=>P&&P.type==='F-18E',lb=v=>Math.round(v*2.2046/10)*10,lbs=v=>String(lb(v)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const box=(c,x,y,w,h,col=MF)=>{c.strokeStyle=col;c.lineWidth=1.6;c.strokeRect(x,y,w,h);};
+const ttl=(c,s,f)=>{if(f)hornT(c,s,180,48,'center',17);};
+const menuT=id=>HDDI.ms[id]==='SUPT'?HSUP:HTAC;
+
+/* ---------- fuel ---------- */
+// internal tanks as fractions of the internal load and the order they empty: wings first, then tanks 1 and 4, the feed tanks (2 / 3) last
+const TANKS={C:[['1',.17],['2',.15],['3',.15],['4',.27],['LW',.13],['RW',.13]],E:[['1',.18],['2',.14],['3',.14],['4',.24],['LW',.15],['RW',.15]]};
+function hornTanks(P){const A=P.ac,q=clamp(P.fuel/(A.fuel||1),0,1),T=TANKS[isE(P)?'E':'C'],cap=k=>T.find(t=>t[0]===k)[1]*(A.fuel||0);
+  const wingF=T[4][1]+T[5][1],mid=T[0][1]+T[3][1],feed=T[1][1]+T[2][1],out={};
+  const w=clamp((q-feed-mid)/wingF,0,1),m=clamp((q-feed)/mid,0,1),fd=clamp(q/feed,0,1);
+  out.LW=cap('LW')*w;out.RW=cap('RW')*w;out['1']=cap('1')*m;out['4']=cap('4')*m;out['2']=cap('2')*fd;out['3']=cap('3')*fd;return out;}
+function hornFuelX(c,S,P){const t=hornTanks(P),V=sys.v,e=isE(P);ttl(c,'FUEL');
+  // fuselage tanks fore to aft down the middle, feeds side by side, wings outboard
+  const tk=(k,x,y,w,h)=>{box(c,x,y,w,h);hornT(c,k,x+w/2,y+11,'center',12,MFD);hornT(c,lbs(t[k]),x+w/2,y+h-13,'center',15);};
+  tk('1',156,62,80,46);tk('2',118,114,74,46);tk('3',200,114,74,46);tk('4',156,166,80,46);tk('LW',50,114,64,46);tk('RW',278,114,64,46);
+  // external stations
+  const st=Object.entries(P.load||{}).filter(([,s])=>isTank(s)).map(([k])=>k),per=st.length?P.tankFuel/st.length:0;
+  st.slice(0,5).forEach((k,i)=>{const n=st.length,x=180+(i-(n-1)/2)*72-30;box(c,x,224,60,36,MFD);hornT(c,'EXT '+k,x+30,234,'center',11,MFD);hornT(c,lbs(per),x+30,250,'center',13);});
+  if(!st.length)hornT(c,'NO EXT TANKS',180,242,'center',13,MFD);
+  hornT(c,'INT '+lbs(P.fuel)+'   TOTAL '+lbs(P.totalFuel),180,284,'center',14);
+  const big=lb(P.totalFuel)<(V.hBingo??2000);hornT(c,'BINGO '+(V.hBingo??2000),174,306,'right',14,big&&blink?MR:MF);hornT(c,'FF '+(Math.round(vff(P)/100)*100),190,306,'left',14);
+  hornT(c,e?'F414 · 4 FUS + 2 WING':'F404 · 4 FUS + 2 WING',180,326,'center',11,MFD);}
+/* ---------- engines ---------- */
+function hornEngX(c,S,P){const run=P.totalFuel>0,e=isE(P),M=P.mach||0,alt=P.pos.y,n2=run?64+36*P.n:30*P.n,n1=run?Math.max(0,n2*1.02-6+P.ab*4):n2*.8;
+  const oat=15-6.5*alt/1000,itmp=(oat+273.15)*(1+.2*M*M)-273.15,egt=run?(e?420:400)+P.n*(e?430:390)+P.ab*150:Math.max(oat,0)+40,ff=vff(P)/2,noz=P.ab>.02?20+P.ab*80:(1-P.n)*75+4,oil=run?24+P.n*22:0,thr=run?Math.round(P.n*100):0;
+  ttl(c,'ENG');hornT(c,e?'F414-GE-400':'F404-GE-402',180,66,'center',12,MFD);hornT(c,'L',176,88,'center',16);hornT(c,'R',270,88,'center',16);
+  const R=[['INLET °C',Math.round(itmp)],['N1 RPM %',Math.round(n1)],['N2 RPM %',Math.round(n2)],['EGT °C',Math.round(egt)],['FF PPH',Math.round(ff/10)*10],['NOZ POS %',Math.round(noz)],['OIL PSI',Math.round(oil)],['THRUST %',thr]];
+  R.forEach(([a,v],i)=>{const y=112+i*26,dm=P.dm&&P.dm.eng<50&&(i===3||i===6);hornT(c,a,64,y,'left',13,MFD);hornT(c,String(v),196,y,'right',16,dm?MA:MF);hornT(c,String(v),290,y,'right',16,dm?MA:MF);});
+  const st=!run?'SHUTDOWN':P.dm&&P.dm.eng<30?'ENG DEGD':P.ab>.02?'AB':'NORM';hornT(c,'STATUS  '+st,180,330,'center',14,st==='NORM'||st==='AB'?MF:MR);}
+/* ---------- FCS ---------- */
+function hornFcsX(c,S,P){const d=P.dm||{},hy=d.hyd??100;ttl(c,'FCS');
+  const cols=['LEF','TEF','AIL','RUD','STAB'],x0=100,dx=52;cols.forEach((s,i)=>hornT(c,s,x0+i*dx,74,'center',13,MFD));
+  const fail=(side,col)=>{const w=side==='L'?(d.wl??100):(d.wr??100),t=d.tail??100,h=hy;const v=col==='RUD'||col==='STAB'?Math.min(t,h):Math.min(w,h);return v<20?4:v<40?2:v<60?1:0;};
+  ['L','R'].forEach((s,j)=>{const y=104+j*58;hornT(c,s,56,y+12,'center',15);cols.forEach((cl,i)=>{const x=x0+i*dx-24,f=fail(s,cl);box(c,x+2,y-6,44,36,MFD);
+      for(let k=0;k<4;k++){const cx=x+7+(k%2)*22,cy=y+2+Math.floor(k/2)*16;hornT(c,k<f?'X':String(k+1),cx+6,cy+4,'center',13,k<f?MR:MF);}});});
+  const fl=P.flapCmd??0,lef=clamp((P.alpha||0)*R2D*.85,0,34),tef=fl<.25?Math.round(clamp((P.alpha||0)*R2D*.6,0,8)):fl<.75?30:45;
+  hornT(c,'LEF  '+Math.round(lef)+'°',60,232,'left',15);hornT(c,'TEF  '+tef+'°',60,254,'left',15);hornT(c,'FLAP '+(fl<.25?'AUTO':fl<.75?'HALF':'FULL'),300,232,'right',15);
+  hornT(c,'AOA '+((P.alpha||0)*R2D).toFixed(1),300,254,'right',15);hornT(c,'G '+(P.nz||1).toFixed(1)+'  MAX '+(P.maxNz||1).toFixed(1),60,278,'left',15);
+  const deg=hy<40||(d.wl??100)<40||(d.wr??100)<40||(d.tail??100)<40;hornT(c,deg?'FCS DEGD · CAS':'FCS NORM · CAS',180,306,'center',15,deg?MR:MF);}
+/* ---------- BIT ---------- */
+function hornBit(c,S,P){const d=P.dm||{},t=performance.now()/1000,inT=t<HDDI.bit;ttl(c,'BIT');
+  const g=v=>v>=70?'GO':v>=35?'DEGD':'NOGO';
+  const R=[['FCS-A',g(Math.min(d.wl??100,d.wr??100))],['FCS-B',g(Math.min(d.tail??100,d.hyd??100))],['L ENG',g(d.eng??100)],['R ENG',g(d.eng??100)],
+    ['RADAR',radar.power==='OFF'?'OFF':g(d.rdr??100)],['ADC','GO'],['INS',P.hp<15?'DEGD':'GO'],['HYD',g(d.hyd??100)],['GEAR',g(d.gear??100)],
+    ['RWR','GO'],['ECM',P.ecm&&ecmFitted(P)?'GO':'NOT RDY'],['FLIR',SNS.hasPod&&SNS.hasPod(P)?'GO':'NOT RDY']];
+  if(isE(P))R.push(['IRST',P.ac.irst?'GO':'NOT RDY']);
+  R.forEach(([a,s],i)=>{const col=i%2,row=Math.floor(i/2),x=col?192:62,y=82+row*30,st=inT&&(t*3+i)%4<2?'IN TEST':s;
+    hornT(c,a,x,y,'left',14,MFD);hornT(c,st,x+118,y,'right',14,st==='GO'||st==='IN TEST'?MF:st==='OFF'||st==='NOT RDY'?MFD:MR);});
+  hornT(c,inT?'IBIT IN PROGRESS':'IBIT COMPLETE',180,330,'center',13,MFD);}
+/* ---------- checklist ---------- */
+function hornChk(c,S,P,id){const V=sys.v,ldg=HDDI.chk[id]===1||(HDDI.chk[id]===0&&V.gear&&P.pos.y-groundAt(P.pos.x,P.pos.z)>15),fl=P.flapCmd??0,hook=!!(P.hook||V.hook);
+  ttl(c,ldg?'LANDING CHECKLIST':'TAKEOFF CHECKLIST',1);
+  const ok=(b)=>b?'✓':'X';
+  const R=ldg?[['GEAR','DOWN',!!V.gear],['FLAPS','FULL',fl>.75],['HOOK',hook?'DOWN':'UP',true],['SPD BRK','IN',!(P.sb>.05)],['ANTI-SKID','ON',true],['MASTER ARM','SAFE',game.armPos!==0],['BINGO',String(V.hBingo??2000),lb(P.totalFuel)>=(V.hBingo??2000)]]
+    :[['FLAPS','HALF',fl>.25&&fl<.75],['TRIM','SET',true],['HOOK','UP',!hook],['SPD BRK','IN',!(P.sb>.05)],['CANOPY','CLOSED',true],['MASTER ARM','SAFE',game.armPos!==0],['FUEL',lbs(P.totalFuel),true]];
+  R.forEach(([a,b,v],i)=>{const y=86+i*30;hornT(c,a,64,y,'left',14,MFD);hornT(c,b,236,y,'right',14);hornT(c,ok(v),266,y,'center',17,v?MF:MR);});}
+/* ---------- FPAS ---------- */
+function hornFpas(c,S,P){const ff=vff(P),fu=P.totalFuel*2.2046,gs=Math.hypot(P.vel.x,P.vel.z)*KT,hr=ff>1?fu/ff:0,rng=hr*gs,home=Math.hypot(P.pos.x,P.pos.z)/NM,hf=gs>50?fu-ff*home/gs:fu,e=isE(P);
+  const wt=(P.ac.empty||10000)+P.totalFuel,optA=Math.round((e?43000:45000)-(wt-(e?14550:10455))*2.2)/1000,optM=e?.80:.82;ttl(c,'FPAS');
+  const R=[['CURRENT','',1],['RANGE NM',Math.round(rng)],['ENDURANCE',Math.floor(hr)+':'+String(Math.round((hr%1)*60)).padStart(2,'0')],['FF PPH',Math.round(ff/100)*100],
+    ['OPTIMUM','',1],['ALT',Math.round(clamp(optA,20,45))+'K'],['MACH',optM.toFixed(2)],['HOME','',1],['DIST NM',home.toFixed(0)],['FUEL AT HOME',Math.round(hf/10)*10]];
+  R.forEach(([a,v,h],i)=>{const y=74+i*25;if(h)hornT(c,a,64,y,'left',14,MA);else{hornT(c,a,80,y,'left',14,MFD);hornT(c,String(v),296,y,'right',16,a==='FUEL AT HOME'&&hf<(sys.v.hBingo??2000)?MR:MF);}});}
+/* ---------- ADI ---------- */
+function hornAdi(c,S,P){const cx=180,cy=176,R=104,K=3.2;c.save();c.beginPath();c.arc(cx,cy,R,0,7);c.clip();c.translate(cx,cy);c.rotate(-P.bank);const py=P.pitch*R2D*K;
+  c.fillStyle='rgba(89,255,159,.10)';c.fillRect(-300,py,600,600);c.strokeStyle=MF;c.fillStyle=MF;c.lineWidth=2;c.beginPath();c.moveTo(-300,py);c.lineTo(300,py);c.stroke();
+  c.lineWidth=1.4;c.font='700 12px "B612 Mono",monospace';c.textAlign='center';c.textBaseline='middle';
+  for(let p=-60;p<=60;p+=10){if(!p)continue;const y=py-p*K;c.setLineDash(p<0?[5,4]:[]);c.beginPath();c.moveTo(-34,y);c.lineTo(34,y);c.stroke();c.setLineDash([]);c.fillText(String(Math.abs(p)),-48,y);c.fillText(String(Math.abs(p)),48,y);}
+  c.restore();c.strokeStyle=MF;c.lineWidth=1.6;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();
+  // bank scale and pointer
+  [-60,-45,-30,-20,-10,0,10,20,30,45,60].forEach(b=>{const a=(b-90)*D2R,l=b%30?6:12;c.beginPath();c.moveTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);c.lineTo(cx+Math.cos(a)*(R-l),cy+Math.sin(a)*(R-l));c.stroke();});
+  {const a=-P.bank-Math.PI/2;c.beginPath();c.moveTo(cx+Math.cos(a)*(R-14),cy+Math.sin(a)*(R-14));c.lineTo(cx+Math.cos(a-.05)*(R-24),cy+Math.sin(a-.05)*(R-24));c.lineTo(cx+Math.cos(a+.05)*(R-24),cy+Math.sin(a+.05)*(R-24));c.closePath();c.fill();}
+  c.lineWidth=3;c.beginPath();c.moveTo(cx-48,cy);c.lineTo(cx-14,cy);c.lineTo(cx-7,cy+8);c.lineTo(cx,cy);c.lineTo(cx+7,cy+8);c.lineTo(cx+14,cy);c.lineTo(cx+48,cy);c.stroke();
+  box(c,24,96,60,30);hornT(c,String(Math.round(P.cas)),54,111,'center',16);hornT(c,'CAS',54,86,'center',11,MFD);
+  box(c,276,96,62,30);hornT(c,String(Math.round(P.pos.y*FT/10)*10),307,111,'center',15);hornT(c,'ALT',307,86,'center',11,MFD);
+  hornT(c,String(Math.round(P.hdg)%360).padStart(3,'0'),cx,58,'center',16);box(c,cx-24,47,48,22);
+  hornT(c,'M '+(P.mach||0).toFixed(2),56,300,'left',14);hornT(c,'G '+(P.nz||1).toFixed(1),56,322,'left',14);
+  hornT(c,'α '+((P.alpha||0)*R2D).toFixed(1),330,300,'right',14);hornT(c,'VVI '+U.vvi(P),330,322,'right',14);}
+/* ---------- page table, menus, OSBs ---------- */
+const DRAW={FUEL:hornFuelX,ENG:hornEngX,FCS:hornFcsX,BIT:hornBit,CHK:hornChk,FPAS:hornFpas,ADI:hornAdi};
+{const _d=hornDDIdraw;hornDDIdraw=function(id,cv){const m=HDDI.menu[id],pg=m?'MENU':HDDI[id],P=player;
+  if(!m&&pg)HDDI.ms[id]=SUPS.has(pg)?'SUPT':'TAC';
+  if(m||NEWP.has(pg)){const c=cv.getContext('2d'),S=360;c.setTransform(1,0,0,1,0,0);
+    if(!m&&pg==='HUD'){drawHudRepeater(c,S);c.setTransform(1,0,0,1,0,0);hornOsbs(c,pg,id);return;}
+    c.fillStyle=`rgb(2,${6+Math.round((1-sys.fcr.con)*16)},4)`;c.fillRect(0,0,S,S);if(!P||!P.alive)return;c.globalAlpha=.35+.65*sys.fcr.sym;
+    if(m){hornT(c,HDDI.ms[id]+' MENU',180,180,'center',22);hornT(c,isE(P)?'F/A-18E':'F/A-18C',180,206,'center',13,MFD);}
+    else DRAW[pg](c,S,P,id);
+    c.globalAlpha=1;hornOsbs(c,pg,id);return;}
+  return _d(id,cv);};}
+{const _o=hornOsbList;hornOsbList=function(pg,id){const mn={n:18,t:'MENU',act:()=>{HDDI.menu[id]=1;}};
+  if(pg==='MENU'){const L=menuT(id).map(([n,q,t])=>({n,t,on:HDDI[id]===q,act:()=>{HDDI[id]=q;HDDI.menu[id]=0;}}));
+    L.push({n:18,t:'MENU',on:true,act:()=>{HDDI.ms[id]=HDDI.ms[id]==='SUPT'?'TAC':'SUPT';}});return L;}
+  if(pg==='FUEL')return[{n:1,t:'FUEL',on:true},{n:9,t:'BINGO\n▲',act:()=>{sys.v.hBingo=Math.min(20000,(sys.v.hBingo??2000)+100);}},{n:10,t:'BINGO\n▼',act:()=>{sys.v.hBingo=Math.max(0,(sys.v.hBingo??2000)-100);}},mn];
+  if(pg==='ENG')return[{n:1,t:'ENG',on:true},mn];
+  if(pg==='FCS')return[{n:1,t:'FCS',on:true},{n:11,t:'RESET',act:()=>{if(player)player.maxNz=1;flash('FCS RESET',700);}},{n:6,t:'G-LIM\n'+(player?player.ac.gLim.toFixed(1):''),dim:true},mn];
+  if(pg==='BIT')return[{n:1,t:'BIT',on:true},{n:6,t:'ALL',act:()=>{HDDI.bit=performance.now()/1000+4;}},{n:7,t:'STOP',act:()=>{HDDI.bit=0;}},mn];
+  if(pg==='CHK')return[{n:1,t:'CHKLST',on:true},{n:6,t:'T/O',on:HDDI.chk[id]===2,act:()=>{HDDI.chk[id]=2;}},{n:7,t:'LDG',on:HDDI.chk[id]===1,act:()=>{HDDI.chk[id]=1;}},{n:8,t:'AUTO',on:HDDI.chk[id]===0,act:()=>{HDDI.chk[id]=0;}},mn];
+  if(pg==='FPAS')return[{n:1,t:'FPAS',on:true},mn];
+  if(pg==='ADI')return[{n:1,t:'ADI',on:true},mn];
+  if(pg==='HUD')return[{n:1,t:'HUD',on:true},mn];
+  return _o(pg,id);};}
+}
+
+/* ===== v204: cockpit switch panel (cockpit view): the systems you used to reach through chorded keys, as guarded / lit switches,
+   plus the rebuilt quick-reference. Every switch shows the live state. ===== */
+{
+const st=document.createElement('style');st.textContent=`
+#swp{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:6;display:grid;gap:5px;padding:7px;background:rgba(14,19,16,.88);border:1px solid #2b3530;border-radius:8px;pointer-events:auto;font:700 10.5px "B612 Mono",monospace;width:112px}
+#swp[hidden]{display:none!important}
+#swp .hd{display:flex;justify-content:space-between;align-items:center;color:#86948c;letter-spacing:.14em;font-size:10px}
+#swp .hd button{all:unset;cursor:pointer;color:#86948c;padding:0 4px}
+#swp .grp{color:#ffbf47;letter-spacing:.16em;font-size:9px;margin-top:3px}
+#swp .sw{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 7px;border:1px solid #2b3530;border-radius:4px;background:#0c120f;color:#d9e3dd;letter-spacing:.06em}
+#swp .sw:hover,#swp .sw:focus-visible{border-color:#59ff9f}
+#swp .sw i{font-style:normal;min-width:30px;text-align:center;padding:1px 3px;border-radius:2px;background:#1b221e;color:#86948c}
+#swp .sw.on i{background:#59ff9f;color:#04140b}
+#swp .sw.warn i{background:#ffbf47;color:#1d1204}
+#swp .sw.grd{border-color:#5a2420;background:repeating-linear-gradient(135deg,#1a0c0b 0 6px,#251110 6px 12px)}
+#swp .sw.grd.open{border-color:#ff5a4a}
+#swp.min .sw,#swp.min .grp{display:none}
+@media (pointer:coarse){#swp{top:auto;bottom:180px;transform:none;width:100px}}`;document.head.appendChild(st);
+const el=document.createElement('div');el.id='swp';el.hidden=true;document.body.appendChild(el);
+const P=()=>player,V=()=>sys.v,guard={};
+const SW=[
+  ['ARMAMENT'],
+  ['MASTER ARM',()=>game.armPos===0?'ARM':'SAFE',()=>game.armPos===0,()=>setArm(game.armPos===0?1:0)],
+  ['JETT TANKS',()=>'GUARD',null,()=>jettison(),1],
+  ['CMDS',()=>{const s=sys.cm;return['OFF','STBY','SEMI','MAN','AUTO'][clamp(s.mode|0,0,4)]||'—';},()=>(sys.cm.mode|0)>=2,()=>cmdsRun('both')],
+  ['ECM',()=>{const p=P();return p&&p.ecm&&ecmFitted(p)?String(ecmTxt(p)).split(' ')[0]:'N/F';},()=>{const p=P();return!!(p&&p.ecm&&ecmFitted(p)&&ecmTxt(p)!=='OFF');},()=>cycleECM()],
+  ['SENSORS'],
+  ['RADAR',()=>radar.power,()=>radar.power==='ON',()=>radar.setPower(radar.power==='ON'?'STBY':'ON')],
+  ['RWS / TWS',()=>radar.mode==='TWS'?'TWS':'RWS',()=>radar.mode==='TWS',()=>{if(!rio.cmd('tws'))radar.setTWS(radar.mode!=='TWS');}],
+  ['BACK SEAT',()=>rio.active()?'AUTO':'MAN',()=>rio.active(),()=>rio.toggle()],
+  ['FLIGHT'],
+  ['GEAR',()=>{const p=P();if(p&&p.ac.cockpit==='fulcrum')return sys.mig.gear?'DN':'UP';return V().gear?(nowS()<(V().gearT||0)?'TRAN':'DN'):'UP';},()=>{const p=P();return p&&p.ac.cockpit==='fulcrum'?!!sys.mig.gear:!!V().gear;},()=>uiKey('Digit7')],
+  ['FLAPS',()=>{const f=P()?P().flapCmd??0:0;return f<.25?'UP':f<.75?'T/O':'LDG';},()=>(P()&&(P().flapCmd??0)>.25),()=>flapKey()],
+  ['HOOK',()=>P()&&(P().hook)?'DN':'UP',()=>!!(P()&&P().hook),()=>{const p=P();if(!p||isMig())return;p.hook=!p.hook;sfx.click();}],
+  ['AR PROBE',()=>P()&&P().arOpen?'OPEN':'CLSD',()=>!!(P()&&P().arOpen),()=>{const p=P();if(!p)return;if(!TNK.kind(p)){flash('NO AIR-REFUELLING EQUIPMENT',1200);return;}p.arOpen=!p.arOpen;sfx.click();}],
+  ['DISPLAY'],
+  ['REPEATERS',()=>game.repeat?'ON':'OFF',()=>!!game.repeat,()=>{game.repeat=!game.repeat;updateRepeaters();}],
+  ['EMERG'],
+  ['EXTINGUISH',()=>P()&&P().fire>0?'FIRE':'—',()=>false,()=>{const p=P();if(p&&p.fire>0)p.extinguish();}],
+  ['EJECT',()=>'GUARD',null,()=>{const p=P();if(p&&p.alive)p.eject();},1]];
+const hd=document.createElement('div');hd.className='hd';hd.innerHTML='<span>SWITCHES</span>';const mn=document.createElement('button');mn.textContent='–';mn.title='Fold the panel';hd.appendChild(mn);el.appendChild(hd);
+mn.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();el.classList.toggle('min');mn.textContent=el.classList.contains('min')?'+':'–';});
+const rows=[];
+SW.forEach(r=>{if(r.length===1){const g=document.createElement('div');g.className='grp';g.textContent=r[0];el.appendChild(g);return;}
+  const b=document.createElement('button');b.className='sw'+(r[4]?' grd':'');b.innerHTML='<span>'+r[0]+'</span><i></i>';el.appendChild(b);rows.push([b,r]);
+  b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();if(!game.running||!player)return;
+    // guarded switches: the first press lifts the guard (3 s), the second throws the switch
+    if(r[4]){const t=performance.now();if(!(guard[r[0]]>t)){guard[r[0]]=t+3000;flash(r[0]+' · GUARD UP',900);sfx.click();return;}guard[r[0]]=0;}
+    r[3]();sfx.click();});});
+setInterval(()=>{const show=game.running&&$('#menu').hidden&&view==='cockpit'&&!!player&&player.alive;el.hidden=!show;if(!show)return;const t=performance.now();
+  rows.forEach(([b,r])=>{let s='';try{s=r[1]();}catch(e){s='—';}const on=r[2]?(()=>{try{return r[2]();}catch(e){return false;}})():false;
+    b.querySelector('i').textContent=r[4]&&guard[r[0]]>t?'OPEN':s;b.classList.toggle('on',!!on);b.classList.toggle('open',!!(r[4]&&guard[r[0]]>t));
+    b.classList.toggle('warn',r[0]==='EXTINGUISH'&&s==='FIRE');});},200);
+
+/* quick reference, rebuilt to match the v204 layout */
+const K=[
+ ['FLIGHT'],['Pitch · roll','W S A D · arrows'],['Rudder','Q E'],['Throttle up / down','R F'],['Speed brake (hold) · wheel brakes on the ground','B'],
+ ['Landing gear','G'],['Flaps: up → T.O. → land','O'],['Tail hook · AR probe / door','H · Shift+H'],['F-14 wing sweep: aft · auto',', .'],
+ ['WEAPONS'],['Gun · heat · radar missile','1 2 3'],['A/G stores (bombs, rockets, AGMs, pods)','4'],['Fire / pickle','Space'],['Master arm','M'],
+ ['Flare · chaff','X C'],['Jettison drop tanks','Backspace'],
+ ['RADAR / SENSORS'],['Cursor / pod slew (Shift: pod with A/G radar up)','I J K L'],['Antenna elevation (hold)','− ='],['Range · scan width · bars','[ ] · Z · N'],
+ ['RWS ↔ TWS','5'],['Lock / designate · step · break','Enter · Tab · U'],['ACM / boresight · pod narrow','T'],['Radar ↔ IRST','\\'],
+ ['Pod / seeker video · zoom · laser','\' · End · N'],['Pod / Maverick boresight','Shift+B'],['F/A-18E radar + IRST fuse','Shift+\''],
+ ['A/G radar mode · EXP · slave','PgUp PgDn · Del · Ins'],['F-14 IRST / TCS (RIO on MAN) · VDI video · TCS window','Shift+\\ · Alt+\\ · Alt+Shift+\\'],
+ ['F-4E back scope radar / weapons','Y'],
+ ['SYSTEMS'],['Back seat (RIO / WSO) auto ↔ manual','6'],['ECM: off · standby · auto · noise · deception','7'],['Display repeaters','8'],['Wingmen: engage ↔ form up','9'],
+ ['Fire extinguisher · eject (press twice)','0'],['AWACS / GCI picture · GCI guidance','/ · Shift+/'],['MiG-23 СТРОБ · Su-27SM SAR ВИД','Shift+P · Shift+V'],
+ ['VIEW'],['Cockpit ↔ chase · missile cam','V · ;'],['Look around · zoom','drag · wheel'],['Recenter · glance down','Home · `'],['Padlock target (hold)','Shift+O · middle mouse'],
+ ['Cockpit switches, MFD / DDI buttons','click them · switch panel'],['Pause · menu','P · Esc'],['Time of day back · forward','Shift+− · Shift+=']];
+const html=K.map(r=>r.length===1?'<div style="grid-column:1/-1;border:0;color:var(--amber,#ffb347);letter-spacing:.16em;font-size:11px;padding-top:8px">'+r[0]+'</div>':'<div>'+r[0]+'<kbd>'+r[1].replace(/</g,'&lt;')+'</kbd></div>').join('');
+document.querySelectorAll('.keys').forEach(k=>{k.innerHTML=html;});
+}
+// middle mouse = padlock (hold)
+{const gl=$('#gl');gl.addEventListener('pointerdown',e=>{if(e.button===1&&game.running){keys.add('KeyO');e.preventDefault();}});
+ addEventListener('pointerup',e=>{if(e.button===1)keys.delete('KeyO');});}
+
+
+/* ===== v205: F-4E optical sight (AN/ASG-26 lead-computing sight): a red reticle only. The pipper, the 50-mil ring with its four ticks and the
+   range bar unwinding around the ring when the radar gives range; no target boxes, no text, no cues on the combiner. ===== */
+{const _ph=drawPhantomSight;drawPhantomSight=function(P,fs,lh){if(P.ac.pit!=='phantom')return _ph(P,fs,lh);
+  const ppd=KPX*D2R,RED='#ff3a2a',L=radar.mode==='STT'?radar.lock:null,lk=L&&!radar.noRng,gun=game.wsel==='GUN',bs=hb(0,0);
+  const dist=L?L.pos.distanceTo(P.pos):0,sp=gun?proj(gunFun(P,lk?clamp(dist,150,1800):900)):bs;if(!sp)return;
+  hx.save();hx.strokeStyle=hx.fillStyle=RED;hx.shadowColor='rgba(255,40,20,.6)';hx.shadowBlur=4;hx.lineWidth=1.6;const R=ppd*2.86;
+  hx.beginPath();hx.arc(sp.x,sp.y,2.2,0,7);hx.fill();circ(sp.x,sp.y,R);
+  for(let i=0;i<4;i++){const a=i*Math.PI/2,c=Math.cos(a),s=Math.sin(a);line(sp.x+c*R,sp.y+s*R,sp.x+c*(R+7),sp.y+s*(R+7));}
+  if(lk&&dist<1800){hx.lineWidth=3;hx.beginPath();hx.arc(sp.x,sp.y,R-6,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(dist/1800,0,1));hx.stroke();}
+  hx.restore();};}
+
+/* ===== v205: Su-27SM Kh-31P: pick emitters one at a time. Enter locks the emitter under the designator square, Tab steps the square
+   left-to-right across the emitters in the seeker field (and locks the one it lands on), U drops, and a click on an emitter symbol on the HUD
+   locks that emitter. ===== */
+{const smArm=()=>player&&player.alive&&player.type==='Su-27SM'&&window.ARM&&ARM.w();
+ const pick=u=>{const P=player;ARM.sel={u,pos:u.pos.clone(),src:ARM.mode};const v=u.pos.clone().sub(P.pos).applyQuaternion(qInv(P.q));
+   if(window.SMTD&&v.z<0){SMTD.az=Math.atan(v.x/-v.z)*R2D;SMTD.el=Math.atan(v.y/-v.z)*R2D;}sfx.click();flash((SET.hudlang==='EN'?'LOCK · ':'ЗАХВАТ · ')+ARM.code(u),900);};
+ const sorted=()=>{const P=player;ARM.fixMode(P);ARM.scan(P);return ARM.list.map(e=>{const v=e.u.pos.clone().sub(P.pos).applyQuaternion(qInv(P.q));return{e,az:Math.atan2(v.x,-v.z)};}).sort((a,b)=>a.az-b.az).map(o=>o.e);};
+ addEventListener('keydown',e=>{if(!smArm()||!game.running||!$('#menu').hidden||e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
+   if(e.code==='Tab'){e.preventDefault();e.stopImmediatePropagation();const l=sorted();if(!l.length){flash(SET.hudlang==='EN'?'NO EMITTERS IN THE SEEKER FIELD':'НЕТ РИЦ',1000);return;}
+     const i=ARM.sel?l.findIndex(x=>x.u===ARM.sel.u):-1;pick(l[(i+1)%l.length].u);}
+   else if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();e.stopImmediatePropagation();if(window.smTdLock)smTdLock();}
+   else if(e.code==='KeyU'){e.preventDefault();e.stopImmediatePropagation();ARM.sel=null;sfx.click();}},true);
+ $('#gl').addEventListener('pointerdown',e=>{if(!smArm()||!game.running||e.button!==0)return;const l=sorted(),r=hud.getBoundingClientRect(),sx=1;let best=null,bd=28;
+   for(const x of l){const p=proj(x.u.pos);if(!p)continue;const d=Math.hypot(p.x-(e.clientX-r.left)*sx,p.y-(e.clientY-r.top)*sx);if(d<bd){bd=d;best=x;}}
+   if(best){e.stopImmediatePropagation();pick(best.u);}},true);}
+/* ===== v205: Su-27SM twin R-77 racks on the centreline tunnel between the intakes: the front tunnel station (5, where the KAB-1500 / MBD
+   hang) and the one behind it (6) each carry a pair of R-77s side by side; 5B / 6B are the second rail of each pair and take an R-77 only
+   when its partner carries one. A KAB-1500 or MBD on 5 clears the whole tunnel. ===== */
+try{const A=AC['Su-27SM'],st=A.st;st[5]=[-.3,-1.0,-.3];st['5B']=[.3,-1.0,-.3];st[6]=[-.3,-1.0,2.1];st['6B']=[.3,-1.0,2.1];
+  STN['Su-27SM']['5B']=['R-77'];STN['Su-27SM']['6B']=['R-77'];
+  A.rel=A.rel.concat(['5B','6B']);if(A.migRel)A.migRel.push('5B','6B');
+  {const _v=validLoad;validLoad=function(ac,era,o){const r=_v(ac,era,o);if(ac==='Su-27SM'){if(r['5B']&&r[5]!=='R-77')delete r['5B'];if(r['6B']&&r[6]!=='R-77')delete r['6B'];}return r;};}
+  if(LOAD.modern)LOAD.modern['Su-27SM']=Object.assign({},LOAD.modern['Su-27SM'],{4:'R-27ET',7:'R-27ET',5:'R-77','5B':'R-77',6:'R-77','6B':'R-77'});
+}catch(e){console.warn('v205 Su-27SM twin R-77',e);}
 
 </script>
 
