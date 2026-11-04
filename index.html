@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!-- v203: NASA TP-1538 thrust deck for every jet (calibrated to published top speeds), published motor data for Sparrow / AMRAAM / Phoenix, OLS-27 ranges, R-73 gimbal; campaign: red supply depots, pilot career with logbook, rank, decorations, CSAR / capture -->
 <!-- v202: performance pass: instanced ground units, pooled bullets, async (PBO) sensor readback, rain composited into the HUD canvas, DOM write de-duplication, cached element lookups, no per-frame layout reads -->
 <!-- v201: cyan removed from the Su-27SM ПУМ and SAR pages; cleaner green-on-black -->
 <!-- v200: L-150 colours (green search / yellow tracking in own launch zone / red most dangerous), seeker-side tick, MDT diamond, НОЦ type select on РЭП page -->
@@ -1429,11 +1430,12 @@ const AC={
     ff:[.3,2.2,9.5],gLim:9,aoaLim:26,roll:4.0,fbw:false,rcs:5,irs:1.25,ols:{tail:15000,head:7000,lrf:7000},cockpit:'fulcrum',units:'met',
     radar:{name:'N019',R0:38*NM,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.55},irst:true,
     gun:{name:'GSh-30-1',rate:25,v:860,dmg:26,ammo:150,spread:.003},rel:[1,6,2,5,3,4],migRel:['3','4','2','5','1','6'],rwr:'29',spo:5,tankName:'Drop tank'},
+  // OLS-27 (v203): ~50 km on an afterburning fighter's tail and ~15 km head-on in the published figures; 22 / 10 km here before the target's heat scale and reheat
   // Su-27S: 2x AL-31F (74.5 / 122.6 kN), 62 m² wing, normal fuel 5,270 kg, analog FBW with a limiter that can be pulled through, N001 + OEPS-27
   'Su-27':{name:'Su-27',model:makeSu27,st:SU27ST,empty:16380,fuel:5270,tank:0,S:62,CLa:4.5,cd0:.0185,k:.12,mil:149000,ab:245200,spool:2.0,
     clt:[[-20,-1],[-10,-.6],[0,.03],[5,.38],[10,.74],[15,1.07],[20,1.34],[25,1.55],[30,1.68],[35,1.74],[40,1.72],[50,1.55],[60,1.25],[90,0]],
     abM:[[0,1],[.5,1.195],[1,1.36],[1.5,1.495],[2,1.6498],[2.5,1.7345],[3,1.7693]],cdm:[[0,0],[.8,0],[.9,.005],[1,.021],[1.1,.029],[1.3,.028],[1.6,.0197],[2,.0175],[2.5,.0132],[3,.0107]],dW:23000,tkG:[9,9],dep:{a:37,rock:.5,spin:2.0},
-    ff:[.35,2.7,12.5],gLim:9,aoaLim:26,roll:4.0,fbw:true,ovrOK:true,rcs:12,irs:1.4,ols:{tail:18000,head:8400,lrf:9000},cockpit:'fulcrum',pit:'flanker',units:'met',
+    ff:[.35,2.7,12.5],gLim:9,aoaLim:26,roll:4.0,fbw:true,ovrOK:true,rcs:12,irs:1.4,ols:{tail:22000,head:10000,lrf:9000},cockpit:'fulcrum',pit:'flanker',units:'met',
     radar:{name:'N001',R0:46*NM,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.5},irst:true,
     gun:{name:'GSh-30-1',rate:25,v:860,dmg:26,ammo:150,spread:.003},rel:[1,10,2,9,3,8,4,7,5,6],migRel:['3','8','4','7','5','6','2','9','1','10'],rwr:'27',spo:5,tankName:'—'},
   // MiG-21bis 'Fishbed-N': one R-25-300 (40.2 kN dry / 69.7 kN AB), empty 5,450 kg, internal fuel ~2,880 kg, 23 m² delta wing at 57°, 8.5 g, hydraulic controls
@@ -1492,6 +1494,25 @@ const AC={
     ff:[.6,5.2,16.8],gLim:5,aoaLim:17,roll:1.9,fbw:false,rcs:20,irs:1.6,ols:{tail:13000,head:4500,lrf:0},cockpit:'fulcrum',pit:'foxbat',pki:true,units:'met',eye:[5.1,.85],
     radar:{name:'Sapfir-25',R0:66000,ranges:[25,50,100,200],unit:1000,ul:'KM',ecc:.12},irst:true,pulse:true,
     gun:{name:'NO GUN',rate:1,v:900,dmg:0,ammo:0,spread:.01},rel:[2,3,1,4,'1B','4B'],migRel:['2','3','1','4','1B','4B'],keepJ:['1','1B','2','3','4','4B'],rwr:'25',spo:4,tankName:'PTB-5300'}};
+// ===== v203: installed-thrust deck. Idle / military / maximum thrust against Mach and altitude after the F-16 simulator data in NASA TP-1538
+// (Nguyen et al., 1979; the F100 deck reproduced in Stevens & Lewis), normalised to sea-level static so each jet's own ratings scale it.
+// Supersonic: dry thrust peaks with ram near M1.3 and falls away; reheat follows each jet's own ram curve (abM), which is where the turbojets
+// (J79, R-25, R-35, R-15) pull ahead of the turbofans. Above 15 km thrust falls with density.
+const ENG_HM=[0,3048,6096,9144,12192,15240];
+const ENG_IDLE=[[1060,670,880,1140,1500,1860],[635,425,690,1010,1330,1700],[60,25,345,755,1130,1525],[-1020,-710,-300,350,910,1360],[-2700,-1900,-1300,-247,600,1100],[-3600,-1400,-595,-342,-200,700]];
+const ENG_MIL=[[12680,9150,6200,3950,2450,1400],[12680,9150,6313,4040,2470,1400],[12610,9312,6610,4290,2600,1560],[12640,9839,7090,4660,2840,1660],[12390,10176,7750,5320,3250,1930],[11680,9848,8050,6100,3800,2310]];
+const ENG_MAX=[[20000,15000,10800,7000,4000,2500],[21420,15700,11225,7323,4435,2600],[22700,16860,12250,8154,5000,2835],[24240,18910,13760,9285,5700,3215],[26070,21075,15975,11115,6860,3950],[28886,23319,18300,13484,8642,5057]];
+function engDeck(T,M,h){const mi=clamp(M/.2,0,4.999),i=Math.floor(mi),fm=mi-i,hc=clamp(h,0,15240),hi=Math.min(4,Math.floor(hc/3048)),fh=(hc-ENG_HM[hi])/3048;
+  const v=(a,b)=>T[a][b];return lerp(lerp(v(i,hi),v(i,hi+1),fh),lerp(v(i+1,hi),v(i+1,hi+1),fh),fm);}
+const _abS=(ac,M)=>ac.abM?tab(ac.abM,M):1+.42*M-.06*M*M;
+// ratios to the sea-level-static rating: [idle (of mil), mil, max]
+function engRatio(ac,M,h){const dens=h>15240?rho(h)/rho(15240):1,Ms=Math.min(M,ac.mcap||3);
+  if(Ms<=1){return[engDeck(ENG_IDLE,Ms,h)/12680*dens,engDeck(ENG_MIL,Ms,h)/12680*dens,engDeck(ENG_MAX,Ms,h)/20000*dens];}
+  const s=Ms-1,i1=engDeck(ENG_IDLE,1,h)/12680,m1=engDeck(ENG_MIL,1,h)/12680,x1=engDeck(ENG_MAX,1,h)/20000;
+  return[(i1-.25*s*m1)*dens,m1*Math.max(.25,1+.35*s-.55*s*s)*dens,x1*_abS(ac,Ms)/_abS(ac,1)*(1+(ENG_SUP[ac.name]||0)*s)*dens];}
+// supersonic reheat trim per jet, solved so the clean, half-fuel jet tops out at its published maximum Mach at 11-12 km
+const ENG_SUP={'F-16A ADF':.092,'F-16C Block 50':.091,'F-15C':.08,'F-15E Strike Eagle':0,'F/A-18C Hornet':.166,'F/A-18E Super Hornet':-.193,'F-4E Phantom II':.073,'F-14A Tomcat':.089,'F-14B Tomcat':-.099,'MiG-21bis':.149,'MiG-23ML':.065,'MiG-29':.073,'MiG-29S':.073,'Su-27':.081,'Su-27SM':.081,'Su-33':.069};
+function engThrust(ac,n,ab,M,h){const r=engRatio(ac,M,h),dry=ac.mil*(r[0]+(r[1]-r[0])*Math.pow(n,1.8));return dry+ab*(ac.ab*r[2]-ac.mil*r[1]);}
 // variable sweep: blend the three wing settings for the current sweep angle (cached per 0.5°)
 const SW_A=[-20,-10,0,5,10,15,20,25,30,35,40,50,60,90],SW_M=[0,.6,.7,.75,.8,.85,.9,.95,1,1.05,1.1,1.2,1.3,1.6,2,2.5];
 function sweepAC(ac,sw){const s=ac.swing,key=Math.round(sw*2);s.cache=s.cache||{};if(s.cache[key])return s.cache[key];
@@ -1693,7 +1714,7 @@ class Jet{
     let mlK=1;if(ac.mlim){const Tt=isaT(h)*(1+.2*M*M);this.skinT=(this.skinT??Tt)+(Tt-(this.skinT??Tt))*(1-Math.exp(-dt/70));
       if(M>ac.mlim){mlK=Math.max(0,1-(M-ac.mlim)*5);if(M>ac.mlim+.12){this.hp-=(M-ac.mlim-.12)*30*dt;if(this===player&&Math.random()<dt*2)flash('ENGINE OVERHEAT · MACH LIMIT',800);if(this.hp<=0){this.kill('ENGINE FAILURE');return;}}}
       if(this.skinT>583){this.hp-=(this.skinT-583)*.02*dt;if(this.hp<=0){this.kill('STRUCTURAL FAILURE');return;}}}
-    const T=(ac.mil*(.05+.95*Math.pow(this.n,1.8))*(1+.12*Mc-.08*Mc*Mc)+this.ab*(ac.ab*(ac.abM?tab(ac.abM,M):1+.42*Mc-.06*Mc*Mc)-ac.mil*(1+.12*Mc-.08*Mc*Mc)))*lapse*this.thrK()*mlK;
+    const T=engThrust(ac,this.n,this.ab,M,h)*this.thrK()*mlK;
     let burn=((ac.sfc?T*lerp(ac.sfc[0],ac.sfc[1],this.ab)+ac.ff[0]*.4*lapse:(lerp(ac.ff[0],ac.ff[1],this.n)+this.ab*(ac.ff[2]-ac.ff[1]))*lapse)+(this.hp<60?1.5:0))*dt;
     if(this.tankFuel>0){const t=Math.min(this.tankFuel,burn);this.tankFuel-=t;burn-=t;}this.fuel=Math.max(0,this.fuel-burn);
     // control laws: G command with AoA limiter; the MiG's limiter can be pulled through (override)
@@ -1952,6 +1973,19 @@ for(const [k,d] of Object.entries(MSL)){const sh=SHAPE[k]||{};
   const tb=mo?mo.b:d.burn,ts=mo?mo.s:0,fb=mo?mo.f:1;
   d.ph={S,dia,m0:d.mass,mp,mbo,tb,ts,Tb:fb*I/tb,Ts:ts?(1-fb)*I/ts:0,mdB:fb*mp/tb,mdS:ts?(1-fb)*mp/ts:0,
     cd0:2.38*d.cd*mbo/S,cnMax:.004*mbo/S*(d.cnK||1)};d.ph.cna=d.ph.cnMax/.38;d.burnT=tb+ts;}
+// ===== v203: motors from published data instead of the old constant-acceleration table.
+// Mk 58 (AIM-7F / M / P): 4.5 s boost at 5,750 lbf on 52 lb of propellant, then 11 s sustain at ~1,020 lbf on 83 lb (61 kg total).
+// WPU-6/B (AIM-120A / B / C): ~51 kg HTPB at ~255 s Isp, boost then sustain over ~8 s.
+// Mk 47 (AIM-54A / C): ~163 kg propellant, 27 s burn, ~252 s Isp, so ~15 kN for the whole climb; launch mass 444 kg (A) / 454 kg (C).
+// mp propellant kg, tb / ts boost / sustain s, Tb / Ts thrust N, mb boost propellant kg (or isp + f when only the total is known)
+const MREAL={'AIM-7F':{mp:61.2,tb:4.5,ts:11,Tb:25580,Ts:4530,mb:23.6},'AIM-7M':{mp:61.2,tb:4.5,ts:11,Tb:25580,Ts:4530,mb:23.6},'AIM-7P':{mp:61.2,tb:4.5,ts:11,Tb:25580,Ts:4530,mb:23.6},
+  'AIM-120A':{mp:51,tb:2.6,ts:5.4,isp:255,f:.68},'AIM-120B':{mp:51,tb:2.6,ts:5.4,isp:255,f:.68},'AIM-120C':{mp:51,tb:2.6,ts:5.4,isp:255,f:.68},
+  'AIM-54A':{mp:163,tb:27,ts:0,isp:252,f:1,mass:444},'AIM-54C':{mp:163,tb:27,ts:0,isp:252,f:1,mass:454}};
+for(const [k,r] of Object.entries(MREAL)){const d=MSL[k];if(!d||!d.ph)continue;if(r.mass)d.mass=r.mass;const p=d.ph,mbo=d.mass-r.mp,I=r.isp?r.mp*r.isp*G:0,mb=r.mb!=null?r.mb:r.f*r.mp;
+  Object.assign(p,{m0:d.mass,mp:r.mp,mbo,tb:r.tb,ts:r.ts,Tb:r.Tb||r.f*I/r.tb,Ts:r.ts?(r.Ts||(1-r.f)*I/r.ts):0,mdB:mb/r.tb,mdS:r.ts?(r.mp-mb)/r.ts:0,
+    cd0:2.38*d.cd*mbo/p.S,cnMax:.004*mbo/p.S*(d.cnK||1)});p.cna=p.cnMax/.38;d.burnT=r.tb+r.ts;d.burn=d.burnT;}
+// R-73: ±45° lock before launch with the helmet sight, the head tracks out to ~60° once it is flying (the 75° figure was the later R-73M's)
+MSL['R-73'].gimbal=60*D2R;MSL['R-73'].aiOff=45*D2R;
 // transonic drag rise, then the supersonic fall-off; motor-out base drag on top
 const cdShape=M=>M<.8?1:M<1.1?1+.9*(t=>t*t*(3-2*t))((M-.8)/.3):1.9*Math.pow(1.1/M,.7);
 const mslCd0=(ph,M,burn)=>ph.cd0*cdShape(M)*(burn?1:1+clamp(.2-.04*M,.06,.2));
@@ -7400,7 +7434,7 @@ function mkEditor(side,root){
     // info
     const fmtR=m=>A.radar.unit===NM?fmtN(m/NM)+' NM':fmtN(m/1000)+' km';
     $q('.ed-nm').textContent=A.name;
-    $q('.stats').innerHTML=[['RADAR',A.radar.name+' · '+fmtR(A.radar.R0)],['IRST',A.irst?'yes':'no'],['GUN',A.gun.name+' · '+A.gun.ammo+' rds'],['LIMIT',A.gLim+' g'],['EMPTY / FUEL',fmtN(A.empty)+' / '+fmtN(A.fuel)+' kg'],['RCS (rel.)',A.rcs+' m²'],['ECM',ecmDesc(a,game.era,l)]].map(([x,y])=>`<dt>${x}</dt><dd>${y}</dd>`).join('');
+    $q('.stats').innerHTML=[['RADAR',A.radar.name+' · '+fmtR(A.radar.R0)],['IRST',A.irst?'yes':'no'],['GUN',A.gun.name+' · '+A.gun.ammo+' rds'],['LIMIT',A.gLim+' g'],['EMPTY / FUEL',fmtN(A.empty)+' / '+fmtN(A.fuel)+' kg'],['RCS (rel.)',A.rcs+' m²'],['ECM',ecmDesc(a,game.era,l)],...(typeof acPerfRows==='function'?acPerfRows(a):[])].map(([x,y])=>`<dt>${x}</dt><dd>${y}</dd>`).join('');
     // picker
     const pp=$q('.ed-pk');
     if(!E.sel){pp.innerHTML=`<h3>${side==='own'?'SELECT A STATION':'SELECT A STATION'}</h3><p class="hint">Click a pylon on the drawing (or a card under it) to choose what hangs there. ${side==='foe'?'The bandits fly this loadout when the flight type matches.':'Mirror L/R keeps the wings balanced.'}</p>`;}
@@ -13477,6 +13511,153 @@ SMM.nocOn=0;
 }catch(e){console.warn('v200 L-150 НОЦ',e);}
 
 applyGfx();updateRepeaters();requestAnimationFrame(frame);
+
+// ===== v203: campaign — red logistics (supply depots that feed the front) and the pilot's career (logbook, rank, decorations, rescue or capture) =====
+{
+const DEP_PART=['Fuel dump','Ammunition store','Vehicle park'];
+document.head.insertAdjacentHTML('beforeend','<style>'+
+  '.cm-pl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}.cm-pl b{font:700 15px var(--f2);letter-spacing:.1em;color:var(--tx)}.cm-pl span{font-size:11px;color:var(--dm)}'+
+  '.cm-pl2{font-size:11px;color:var(--dm);margin-top:2px}.cm-pl2 b{color:var(--tx)}'+
+  '.cm-aw{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.cm-aw span{font-size:9.5px;letter-spacing:.06em;padding:2px 6px;border:1px solid var(--am);border-radius:3px;color:var(--am)}.cm-aw span i{font-style:normal;color:var(--tx);margin-left:4px}'+
+  '.cm-lb{display:grid;gap:2px;margin-top:8px;font-size:10.5px;line-height:1.35}.cm-lb div{display:grid;grid-template-columns:52px 1fr auto;gap:6px;color:var(--tx)}.cm-lb div i{font-style:normal;color:var(--dm)}.cm-lb div em{font-style:normal;color:var(--dm)}.cm-lb .r{color:#ffb4a8}.cm-lb .g{color:#9dffb8}'+
+  '.cm-pst{font-size:10.5px;color:var(--dm);margin-top:6px}.cm-pst b{color:var(--tx)}'+
+  '.cm-lbt{all:unset;cursor:pointer;font:700 10px var(--f1);letter-spacing:.1em;color:var(--cy);margin-top:6px;display:inline-block}'+
+  '</style>');
+
+// ---------- supply depots behind the red line ----------
+const _e6=CAMP.ensureV4;CAMP.ensureV4=function(){_e6.apply(this,arguments);const st=this.st;if(!st||st.v6)return;
+  let aid=st.ad.reduce((m,a)=>Math.max(m,a.id),0)+1;
+  for(const x0 of[-60000,-4000,56000]){let x=x0,z=0;for(let k=0;k<8;k++){x=x0+rnd(-7000,7000);z=this.frontZ(x)-rnd(30000,42000);if(cmpRaw(x,z)>15&&cmpBW(x,z)<=0)break;}
+    st.ad.push({id:aid++,k:'DEPOT',s:1,x,z,hd:Math.round(rnd(0,360)),al:[1,1,1],kt:[0,0,0]});}
+  st.v6=1;};
+const _mk6=CAMP.mkAD;CAMP.mkAD=function(a){if(a.k!=='DEPOT')return _mk6.call(this,a);const parts=[];
+  [[0,0],[48,22],[-42,30]].forEach(([dx,dz],i)=>{const g=GND.add('BLDG',a.s,a.x+dx,a.z+dz,a.hd);g.callsign=DEP_PART[i]+' · supply depot';parts.push(g);});
+  parts.forEach((g,i)=>{g.ad=[a.id,i];if(!a.al[i])this.wreck(g,0);});this.adPhys.set(a.id,parts);a.mv=0;};
+const _ak6=CAMP.adKilled;CAMP.adKilled=function(g,src){const st=this.st,a=st&&g.ad&&st.ad.find(q=>q.id===g.ad[0]);_ak6.call(this,g,src);
+  // air-defence and target-area kills count toward the sortie (and the logbook) as well as the war score
+  if(a&&src===player&&this.sortie&&!this.client)this.sortie.gk++;
+  if(!a||a.k!=='DEPOT'||this.client)return;a.kt=a.kt||[0,0,0];a.kt[g.ad[1]]=st.t;const left=a.al.filter(Boolean).length;
+  this.log(DEP_PART[g.ad[1]]+' destroyed at the supply depot '+Math.round((this.frontZ(a.x)-a.z)/1000)+' km behind the line'+(left?'':'; the depot is out of action')+'. Red reinforcements slowed.',a.s===1?'b':'r');};
+// fraction of a side's depot capacity still standing (1 = untouched or no depots)
+CAMP.supply=function(s){const st=this.st;if(!st)return 1;let n=0,t=0;for(const a of st.ad)if(a.k==='DEPOT'&&a.s===s){t+=a.al.length;n+=a.al.filter(Boolean).length;}return t?n/t:1;};
+// the reserves only grow as fast as the depots can feed them; wrecked parts are rebuilt after ~30 hours
+const _gs6=CAMP.groundStep;CAMP.groundStep=function(dt){_gs6.apply(this,arguments);const st=this.st;if(!st||this.client)return;
+  for(const s of[0,1]){const f=this.supply(s);if(f<1){const regen=s?6+st.diff*1.2:6+(st.diff<1?2:0);st.res[s]=Math.max(0,st.res[s]-dt/3600*regen*(1-f)*.85);}}
+  for(const a of st.ad){if(a.k!=='DEPOT'||!a.kt)continue;let fix=false;
+    // the depots fall back with the front: once it comes within 12 km they move up to 30 km behind it
+    let mv=false;if(a.s===1&&this.frontZ(a.x)-a.z<12000){a.z=this.frontZ(a.x)-30000;mv=true;}a.al.forEach((v,i)=>{if(!v&&a.kt[i]&&st.t-a.kt[i]>30){a.al[i]=1;a.kt[i]=0;fix=true;}});
+    if(fix||mv){const P=this.adPhys.get(a.id);if(P){for(const g of P){scene.remove(g.mesh);const i=GND.units.indexOf(g);if(i>=0)GND.units.splice(i,1);}this.adPhys.delete(a.id);}
+      this.log(mv?'Red has pulled a supply depot back from the advancing front.':'Engineers have rebuilt part of a '+(a.s===1?'red':'blue')+' supply depot.',mv?'b':a.s===1?'r':'b');}}};
+const _ts6=CAMP.tasks;CAMP.tasks=function(){const T=_ts6.apply(this,arguments),st=this.st;if(!st)return T;
+  // the depot feeding the hottest red attack heads the list; the others wait their turn
+  const D=st.ad.filter(a=>a.k==='DEPOT'&&a.s===1&&a.al.some(Boolean)),hotX=st.hot.filter(i=>st.hs[i]===1).map(i=>CFX[i]);
+  D.sort((a,b)=>Math.min(...hotX.map(x=>Math.abs(x-a.x)),1e9)-Math.min(...hotX.map(x=>Math.abs(x-b.x)),1e9));
+  D.forEach((a,i)=>T.push({id:'DEP'+a.id,kind:'STRIKE',label:'STRIKE · supply depot '+((this.frontZ(a.x)-a.z)/1000).toFixed(1)+' km behind the line',x:a.x+3,z:a.z+17,pri:i?1.0:1.6}));
+  T.sort((a,b)=>b.pri-a.pri);return T;};
+const _dr6=CMPUI.draw;CMPUI.draw=function(){_dr6.apply(this,arguments);const c=this.cx,st=CAMP.st;if(!c||!st||!this.vis())return;
+  c.save();c.setTransform(this.dpr,0,0,this.dpr,0,0);
+  for(const a of st.ad){if(a.k!=='DEPOT')continue;const[sx,sy]=this.w2s(a.x,a.z),n=a.al.filter(Boolean).length,up=n>0;
+    c.lineWidth=1.4;c.strokeStyle=up?'#ffb347':'#8a8a8a';c.fillStyle=up?'rgba(255,179,71,.22)':'rgba(120,120,120,.2)';c.beginPath();c.rect(sx-7,sy-6,14,12);c.fill();c.stroke();
+    c.beginPath();c.moveTo(sx-7,sy+2);c.lineTo(sx+7,sy+2);c.stroke();
+    if(!up){c.beginPath();c.moveTo(sx-7,sy-6);c.lineTo(sx+7,sy+6);c.moveTo(sx+7,sy-6);c.lineTo(sx-7,sy+6);c.stroke();}
+    c.font='700 9px "B612 Mono",monospace';c.textAlign='center';c.fillStyle=up?'#ffcf8a':'#999';c.fillText('SUPPLY '+n+'/'+a.al.length,sx,sy-10);}
+  c.restore();};
+
+// ---------- the pilot: logbook, rank, decorations ----------
+const RANKS={B:['2ND LT','1ST LT','CAPT','MAJ','LT COL','COL'],R:['LT','SR LT','CAPT','MAJ','LT COL','COL']},RPTS=[0,25,60,110,180,270];
+const NAMES={B:['A. REYES','J. MORGAN','K. NOVAK','D. HALE','S. PARK','T. BRANDT','M. OKAFOR','L. VANCE','R. QUINN','E. DALTON'],
+             R:['A. VOLKOV','D. ORLOV','S. ZAITSEV','I. GROMOV','P. LEBEDEV','N. SOKOLOV','V. KUZNETSOV','M. BELOV','O. TITOV','Y. FROLOV']};
+// decorations by side and era: [5 sorties flown, 2 air kills in one sortie, 3 in one sortie, wounded / ejected and recovered, 10 air kills, captured]
+const AWD={B:['AIR MEDAL','DISTINGUISHED FLYING CROSS','SILVER STAR','PURPLE HEART','AIR FORCE CROSS','PRISONER OF WAR MEDAL'],
+  Rc:['MEDAL "FOR BATTLE MERIT"','ORDER OF THE RED STAR','ORDER OF THE RED BANNER','ORDER OF THE RED STAR','HERO OF THE SOVIET UNION',null],
+  Rm:['MEDAL "FOR COURAGE"','ORDER OF COURAGE','ORDER "FOR MILITARY MERIT"','ORDER OF COURAGE','HERO OF THE RUSSIAN FEDERATION',null]};
+const pSide=()=>{try{return redSide(0)?'R':'B';}catch(e){return'B';}};
+const awSet=()=>{const s=pSide();return s==='B'?AWD.B:CAMP.st&&CAMP.st.era==='modern'?AWD.Rm:AWD.Rc;};
+// a rank once held is kept: losing a jet costs points, never a promotion
+const rankOf=p=>{let r=0;for(let i=0;i<RPTS.length;i++)if(p.pts>=RPTS[i])r=i;p.rk=Math.max(p.rk||0,r);return p.rk;};
+const rankName=p=>RANKS[p.sd][rankOf(p)];
+function newPilot(st,sd,n,past){const used=new Set((past||[]).map(q=>q.name));const pool=NAMES[sd].filter(x=>!used.has(x));
+  return{sd,name:cpick(pool.length?pool:NAMES[sd]),pts:0,sorties:0,done:0,hrs:0,ak:0,gk:0,aw:{},log:[],n:n||1,past:past||[],t0:st.t};}
+CAMP.pilot=function(){const st=this.st;if(!st)return null;const sd=pSide();if(!st.pilot||st.pilot.sd!==sd)st.pilot=newPilot(st,sd,1,st.pilot&&st.pilot.past);return st.pilot;};
+function award(p,i,why,out){const nm=awSet()[i];if(!nm)return;p.aw[nm]=(p.aw[nm]||0)+1;out.push(nm+(p.aw[nm]>1?' (×'+p.aw[nm]+')':''));}
+
+const _se6=CAMP.sortieEnd;CAMP.sortieEnd=function(){const st=this.st,s=this.sortie,P=player;
+  // what happened, read before the original clears the sortie
+  let rec=null;
+  if(st&&s&&!this.client){const lost=!!(P&&!P.alive),ej=!!(P&&P.ejected),res=game.result||'',x=P?P.pos.x:0,z=P?P.pos.z:0,deep=P?(this.frontZ(x)-z)/1000:0,
+      hrs=Math.max(0,(performance.now()-(s.start||performance.now()))/3.6e6),hp=P?P.hp:100,cd=this.clock();
+    rec={lost,ej,res,deep,hrs,hp,day:cd.day+1,date:cd.date,type:P?P.type:game.ac,base:s.base,ak:s.ak||0,gk:s.gk||0,air:!!s.air};}
+  _se6.apply(this,arguments);
+  if(!rec)return;const p=this.pilot();if(!p)return;const R=rankOf(p),A=[],note=[];let out='',cls='',pts=0;
+  p.sorties++;p.hrs+=rec.hrs;p.ak+=rec.ak;p.gk+=rec.gk;pts+=rec.ak*10+rec.gk*3;
+  let ends=null;
+  if(!rec.lost){if(!rec.air){out='ABORTED';cls='';}
+    else{p.done++;const landed=/^LANDED/.test(rec.res);pts+=landed?6:3;out=landed?rec.res.replace(/^LANDED AT /,'RTB · '):'ENDED AIRBORNE';cls='g';
+      if(landed&&rec.hp<50)award(p,3,'wounded',A);}}
+  else if(rec.ej){if(rec.deep<=0){out='EJECTED · RESCUED';cls='';pts+=1;award(p,3,'ejected',A);}
+    else{const csar=clamp(.62-rec.deep/45,.08,.6);
+      if(Math.random()<csar){out='EJECTED · CSAR PICK-UP '+rec.deep.toFixed(0)+' KM BEHIND THE LINE';cls='';award(p,3,'ejected',A);note.push('rescued by a combat search and rescue team');}
+      else{out='EJECTED · CAPTURED';cls='r';ends='POW';award(p,5,'captured',A);}}}
+  else{out=(rec.res||'SHOT DOWN')+' · KIA';cls='r';ends='KIA';}
+  if(rec.lost)pts-=4;
+  // decorations for what was done in the air
+  if(rec.ak>=3)award(p,2,'triple',A);else if(rec.ak>=2)award(p,1,'double',A);
+  if(p.done>0&&p.done%5===0&&!rec.lost&&rec.air)award(p,0,'sorties',A);
+  if(p.ak>=5&&p.ak-rec.ak<5){p.aw['ACE']=1;A.push('ACE');}
+  if(p.ak>=10&&p.ak-rec.ak<10)award(p,4,'hero',A);
+  p.pts=Math.max(0,p.pts+pts);const R2=rankOf(p);
+  p.log.unshift({d:rec.day,dt:rec.date,ty:AC[rec.type]?AC[rec.type].name:rec.type,b:rec.base,o:out,c:cls,ak:rec.ak,gk:rec.gk,h:+rec.hrs.toFixed(2)});if(p.log.length>40)p.log.length=40;
+  const who=RANKS[p.sd][R]+' '+p.name;
+  if(R2>R&&!ends)this.log(who+' promoted to '+RANKS[p.sd][R2]+'.','b');
+  for(const a of A)this.log(RANKS[p.sd][R2]+' '+p.name+' awarded the '+a+'.','b');
+  let tail=' · '+(pts>=0?'+':'')+pts+' PTS';if(R2>R&&!ends)tail+=' · PROMOTED '+RANKS[p.sd][R2];if(A.length)tail+=' · '+A.join(', ');
+  if(ends){this.log(who+(ends==='KIA'?' killed in action.':' captured behind enemy lines.')+' A replacement pilot reports to the squadron.','r');
+    const past=p.past.concat([{name:p.name,rank:RANKS[p.sd][R2],ak:p.ak,gk:p.gk,sorties:p.sorties,st:ends,aw:Object.keys(p.aw)}]).slice(-12);
+    st.pilot=newPilot(st,p.sd,p.n+1,past);tail+=' · '+(ends==='KIA'?'KILLED IN ACTION':'PRISONER OF WAR')+' · NEW PILOT '+RANKS[p.sd][0]+' '+st.pilot.name;}
+  else if(note.length)tail+=' · '+note.join(', ');
+  try{const el=$('#result');if(el)el.textContent+=tail;}catch(e){}
+  this.save();if(this.ui)this.ui.dirty=true;try{CMPUI.renderSide(true);}catch(e){}};
+
+const _rs6=CMPUI.renderSide;CMPUI.renderSide=function(force){_rs6.apply(this,arguments);const el=this.side;if(!el||!this.vis()||!CAMP.st||this.confirm)return;
+  if(!force&&el.matches(':hover')&&el.querySelector('.cm-pilot'))return;const hd=el.querySelector('.cm-hd');if(!hd)return;const p=CAMP.pilot();if(!p)return;
+  const r=rankOf(p),nx=r<RPTS.length-1?' · '+RANKS[p.sd][r+1]+' at '+RPTS[r+1]:'',E=s=>String(s).replace(/[<>&]/g,'');
+  const aw=Object.entries(p.aw).map(([k,n])=>'<span>'+E(k)+(n>1?'<i>×'+n+'</i>':'')+'</span>').join('');
+  const rows=(this.plogAll?p.log:p.log.slice(0,5)).map(l=>'<div class="'+l.c+'"><i>D'+l.d+' '+E(l.dt)+'</i><span>'+E(l.ty)+' · '+E(l.o)+'</span><em>'+l.ak+'/'+l.gk+'</em></div>').join('');
+  const fallen=p.past.length?'<div class="cm-pst">Before you: '+p.past.slice(-3).map(q=>'<b>'+E(q.rank+' '+q.name)+'</b> '+(q.st==='KIA'?'KIA':'POW')+' ('+q.ak+' A/A)').join(' · ')+'</div>':'';
+  const h='<div class="pl-sec cm-pilot"><h3>PILOT <span class="cm-sub">'+(p.n>1?'replacement #'+p.n:'logbook and decorations')+'</span></h3>'+
+    '<div class="cm-pl"><b>'+E(RANKS[p.sd][r]+' '+p.name)+'</b><span>'+p.pts+' PTS'+nx+'</span></div>'+
+    '<div class="cm-pl2"><b>'+p.sorties+'</b> sorties · <b>'+p.hrs.toFixed(1)+'</b> h · <b>'+p.ak+'</b> air · <b>'+p.gk+'</b> ground kills</div>'+
+    (aw?'<div class="cm-aw">'+aw+'</div>':'')+
+    (rows?'<div class="cm-lb">'+rows+'</div>'+(p.log.length>5?'<button class="cm-lbt" data-a="plog">'+(this.plogAll?'SHOW LESS':'FULL LOGBOOK ('+p.log.length+')')+'</button>':''):'<p class="hint">Eject (0, twice) to survive a lost jet: over our side you are picked up; deep over theirs, rescue gets less likely and capture ends your career.</p>')+
+    fallen+'</div>';
+  const old=el.querySelector('.cm-pilot');if(old)old.remove();hd.insertAdjacentHTML('afterend',h);
+  // supply in the forces table
+  const fc=el.querySelector('.cm-forces');if(fc&&!fc.querySelector('.cm-sup')){const f0=CAMP.supply(0),f1=CAMP.supply(1),pc=f=>Math.round(f*100)+'%';
+    fc.insertAdjacentHTML('beforeend','<div class="cm-sup"><span>Supply</span><b class="bl">'+pc(f0)+'</b><b class="rd">'+pc(f1)+'</b></div>');}};
+const _act6=CMPUI.act;CMPUI.act=function(e){const b=e.target.closest('[data-a]');if(b&&b.dataset.a==='plog'){this.plogAll=!this.plogAll;this.renderSide(true);return;}return _act6.apply(this,arguments);};
+if(CAMP.st){try{CAMP.ensureV4();CAMP.save();}catch(e){console.warn(e);}}
+}
+
+
+// ===== v203: hangar performance card: engines, ratings, and what this jet does in the sim (clean, half fuel) worked out from the same lift, drag and thrust tables the flight model flies =====
+const ENGN={'F-16':'F100-PW-200','F-16C':'F110-GE-129','F-15C':'2× F100-PW-220','F-15E':'2× F100-PW-229','F-18C':'2× F404-GE-402','F-18E':'2× F414-GE-400','F-4E':'2× J79-GE-17',
+  'F-14A':'2× TF30-P-414A','F-14B':'2× F110-GE-400','MiG-21':'R-25-300','MiG-23':'R-35-300','MiG-25':'2× R-15BD-300','MiG-29':'2× RD-33','MiG-29S':'2× RD-33','Su-27':'2× AL-31F','Su-27SM':'2× AL-31F','Su-33':'2× AL-31F (series 3)'};
+const IRSTN={'MiG-29':'KOLS (OEPS-29)','MiG-29S':'KOLS (OEPS-29)','Su-27':'OLS-27','Su-27SM':'OLS-27','Su-33':'OLS-27','MiG-23':'TP-23M','MiG-25':'TP-26Sh1','F-14A':'AN/ALR-23','F-18E':'IRST21 pod'};
+const PERF={};
+function acPerf(t){if(PERF[t])return PERF[t];const A=AC[t];if(!A||A.cargo)return null;const m=A.empty+A.fuel*.5;
+  const acAt=M=>!A.swing?A:sweepAC(A,A.swing.auto?f14Prog(M):M>1?72:45);
+  const drag=(ac,M,h,n)=>{const V=M*sos(h),q=.5*rho(h)*V*V,need=n*m*G/(q*ac.S),mk=M>.9?1-Math.min(.2,(M-.9)*.4):1,cl=need/mk,tb=ac.clt;let a=null;
+    for(let i=1;i<tb.length;i++){if(tb[i][1]<tb[i-1][1])break;if(cl<=tb[i][1]&&cl>=tb[i-1][1]){a=tb[i-1][0]+(tb[i][0]-tb[i-1][0])*(cl-tb[i-1][1])/(tb[i][1]-tb[i-1][1]);break;}}
+    if(a==null)return null;return q*ac.S*(ac.cd0+lerp(ac.k*need*need,Math.abs(need*Math.tan(Math.min(a*D2R,1.3))),clamp((a-12)/16,0,1))+tab(ac.cdm,M));};
+  const vmax=h=>{let best=0;for(let M=.3;M<3.3;M+=.01){const ac=acAt(M),D=drag(ac,M,h,1);if(D!=null&&engThrust(ac,1,1,M,h)>D)best=M;else if(M>1.05&&best)break;}return Math.min(best,A.mlim||9);};
+  const sus=(M,h)=>{const ac=acAt(M),T=engThrust(ac,1,1,M,h);let n=1;for(;n<12;n+=.05){const D=drag(ac,M,h,n);if(D==null||D>T)break;}n=Math.min(n,ac.gLim);return[n,G*Math.sqrt(Math.max(0,n*n-1))/(M*sos(h))*R2D];};
+  const s=sus(.8,4572);return PERF[t]={vHi:vmax(11000),tw:A.ab/(m*G),sus:s};}
+function acPerfRows(t){const A=AC[t],p=acPerf(t),rows=[];if(!A)return rows;
+  rows.push(['ENGINES',(ENGN[t]||'—')+' · '+Math.round(A.mil/1000)+' / '+Math.round(A.ab/1000)+' kN']);
+  if(A.irst&&IRSTN[t]&&A.ols)rows.push(['IRST TYPE',IRSTN[t]+' · '+Math.round(A.ols.tail/1000)+' km tail / '+Math.round(A.ols.head/1000)+' km nose']);
+  if(p){rows.push(['T/W (½ FUEL)',p.tw.toFixed(2)]);rows.push(['TOP SPEED','M'+p.vHi.toFixed(2)+' at 11 km']);rows.push(['SUSTAINED','15,000 ft M0.8: '+p.sus[0].toFixed(1)+' g · '+p.sus[1].toFixed(1)+'°/s']);}
+  return rows;}
+
 </script>
 
 </body></html>
