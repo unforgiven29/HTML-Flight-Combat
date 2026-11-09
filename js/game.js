@@ -14737,7 +14737,7 @@ const cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:
 const GR='#5fe07a',WH='#e8f4ec',AM='#ffd27a',CY='#56c8e8',DM='#6f8a7e',RD='#ff5a4a',YL='#ffd23a';
 const F=(c,s,x,y,sz,col,al)=>{c.fillStyle=col||GR;c.font='700 '+Math.round(sz)+'px "B612 Mono",monospace';c.textAlign=al||'left';c.textBaseline='middle';c.fillText(s,x,y);};
 const p3=v=>String(Math.round(((v%360)+360)%360)).padStart(3,'0');
-Object.assign(window.SMEN||{},{'РТР':'ESM','КИС':'SYS','ИЗЛ':'EMIT','ТВП':'TV','РЕЖ':'MODE','СЕРИЯ':'SALVO','ПОПУТНАЯ':'PASSIVE','ИЛС':'HUD','ЗРК':'SAM','САП':'AIR'});
+Object.assign(window.SMEN||{},{'РТР':'ESM','КИС':'SYS','ИЗЛ':'EMIT','ТВП':'TV','РЕЖ':'MODE','СЕРИЯ':'SALVO','ПОПУТНАЯ':'PASSIVE','ИЛС':'HUD','ЗРК':'SAM','САП':'AIR','ГСН':'SEEKER','ЧБ':'BHOT','БЧ':'WHOT','УВ+':'ZOOM+','УВ−':'ZOOM−','ЛД':'LASER','ТВВ':'TV'});
 
 // ---------------- new frames (shared with the Su-30SM) ----------------
 // ПИЛ: the МФИ standby-instrument frame — ADI dome with bank scale, Ny scale, α arc, Vy arc, IAS / Mach dial, altimeter, HSI rose, fuel / n2 boxes
@@ -14831,16 +14831,63 @@ function pILS(c,x0,y0,x1,y1){const s=Math.min(x1-x0,y1-y0);try{drawHudRepeater(_
 const KIS={};
 function pKIS(c,x0,y0,x1,y1,vk){const f={ENG:SM_PAGE.ENG,FUE:SM_PAGE.FUE,SYS:SM_PAGE.SYS}[KIS[vk]||'ENG'];f(c,x0,y0,x1,y1);}
 
+// ТВП on the Su-35S: the OLS-35 is also a camera (TV channel next to the IR head, picture on the МФИ). Frame after the in-flight photos:
+// roll-stabilised picture in an octagonal window, corner brackets with a gapped cross, zoom figure, <ПЗ ПЗ>, laser range. OLS-35 figures:
+// gimbal ±90° az, −15…+60° el, field 10 × 7.5° wide, laser range ≤20 km on air targets. Slaved to the lock (radar or IRST), else boresight.
+const OLS={N:320,M:240,zi:0,ZM:[1,2,5,10],pol:0,lase:1,src:'OLS',t:0,cam:new THREE.PerspectiveCamera(7.5,4/3,5,120000),los:null,lim:false,
+  fitted:()=>!!player&&player.type==='Su-35S',
+  aim(){const P=player,L=radar.mode==='STT'&&radar.lock&&radar.lock.alive?radar.lock:null,qi=P.q.clone().invert();
+    let dir=L?L.pos.clone().sub(P.pos).normalize():P.fwd(new V3()).applyAxisAngle(P.right?P.right(new V3()):new V3(1,0,0),-2*D2R);
+    const b=dir.clone().applyQuaternion(qi);let az=Math.atan2(b.x,-b.z),el=Math.asin(clamp(b.y,-1,1));
+    this.lim=az<-90*D2R||az>90*D2R||el<-15*D2R||el>60*D2R;az=clamp(az,-90*D2R,90*D2R);el=clamp(el,-15*D2R,60*D2R);
+    const lb=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el)).applyQuaternion(P.q);
+    this.los={dir:lb,tgt:L&&!this.lim?L:null,d:L?L.pos.distanceTo(P.pos):0,az,el};},
+  capture(){const P=player,N=this.N,M=this.M;if(!this.rt){this.rt=new THREE.WebGLRenderTarget(N,M);this.buf=new Uint8Array(N*M*4);this.sc=mk(N,M);this.img=this.sc.getContext('2d').createImageData(N,M);}
+    this.aim();const cam=this.cam;cam.fov=7.5/this.ZM[this.zi];cam.updateProjectionMatrix();
+    cam.position.copy(P.pos).addScaledVector(P.fwd(new V3()),6.2).addScaledVector(P.up(new V3()),.75);cam.up.set(0,1,0);cam.lookAt(cam.position.clone().add(this.los.dir));
+    const vis=P.mesh.visible;P.mesh.visible=false;const prev=renderer.getRenderTarget();renderer.setRenderTarget(this.rt);renderer.setClearColor(0xb8c4cc,1);renderer.clear(true,true,false);
+    renderer.render(scene,cam);readRTAsync(this.rt,N,M,this.buf);renderer.setRenderTarget(prev);P.mesh.visible=vis;
+    const b=this.buf,d=this.img.data,night=ENV.nightK||0,inv=this.pol;
+    for(let y=0;y<M;y++){const sr=(M-1-y)*N*4,dr=y*N*4;for(let x=0;x<N*4;x+=4){let g=(.3*b[sr+x]+.59*b[sr+x+1]+.11*b[sr+x+2])*(1-.85*night);g=clamp((g-60)*1.5+60+(Math.random()-.5)*14,0,255);if(inv)g=255-g;
+      d[dr+x]=g*.97;d[dr+x+1]=g*.94;d[dr+x+2]=Math.min(255,g*1.02+4);d[dr+x+3]=255;}}
+    this.sc.getContext('2d').putImageData(this.img,0,0);}};
+window.OLS=OLS;
+function pOLS(c,x0,y0,x1,y1){const P=player,W=x1-x0,H=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2,en=EN(),fs=Math.max(11,Math.min(W,H)/24);
+  const now=performance.now();if(now-OLS.t>90){OLS.t=now;try{OLS.capture();}catch(e){if(!pOLS._w){pOLS._w=1;console.warn('OLS-35 video',e);}}}
+  c.fillStyle='#000';c.fillRect(x0,y0,W,H);
+  if(OLS.sc){const s=Math.min(W/1.05,H*1.33/1.05),w=s,h=s*.75,k=Math.min(W,H)*.47;c.save();
+    // octagonal window, picture roll-stabilised (the gimbal keeps the horizon level, so the frame turns against the bank)
+    c.beginPath();for(let i=0;i<8;i++){const a=(i+.5)*Math.PI/4;c.lineTo(cx+Math.cos(a)*k*1.12,cy+Math.sin(a)*k*1.12);}c.closePath();c.clip();
+    c.translate(cx,cy);c.rotate(0);c.imageSmoothingEnabled=true;c.drawImage(OLS.sc,-w/2,-h/2,w,h);c.restore();}
+  const l=OLS.los||{},g=Math.min(W,H)*.075,DG='#0d4a1c';
+  // corner brackets and the gapped cross, dark green as on the photos
+  c.strokeStyle=DG;c.lineWidth=Math.max(2,W/180);const bx=g*1.6,by=g*1.5,bl=g*.6;
+  for(const[sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){c.beginPath();c.moveTo(cx+sx*bx,cy+sy*(by-bl));c.lineTo(cx+sx*bx,cy+sy*by);c.lineTo(cx+sx*(bx-bl),cy+sy*by);c.stroke();}
+  c.beginPath();c.moveTo(cx-g*1.4,cy);c.lineTo(cx-g*.35,cy);c.moveTo(cx+g*.35,cy);c.lineTo(cx+g*1.4,cy);c.moveTo(cx,cy-g*1.4);c.lineTo(cx,cy-g*.35);c.moveTo(cx,cy+g*.35);c.lineTo(cx,cy+g*1.4);c.stroke();
+  // legends
+  F(c,en?'TV':'ТВВ',x0+8,y0+fs*.9,fs,GR);c.strokeStyle=GR;c.lineWidth=1.5;c.strokeRect(x0+3,y0+2,fs*2.6,fs*1.6);
+  F(c,String(OLS.ZM[OLS.zi])+'.'+(OLS.zi?'0':'1'),x0+10,y1-fs*1.2,fs*1.1,GR);
+  F(c,'<'+(en?'FOV':'ПЗ')+'   '+(en?'FOV':'ПЗ')+'>',cx,y1-fs*.8,fs*.9,GR,'center');
+  F(c,l.tgt?(en?'TRACK':'СОПР'):(en?'SEARCH':'ПОИСК'),x1-6,y0+fs*.9,fs,l.tgt?YL:GR,'right');
+  if(l.tgt){const lr=OLS.lase&&l.d<=20000;F(c,(en?'R ':'Д ')+(lr?(l.d/1000).toFixed(1)+(en?' km':' км'):'---'),x1-6,y1-fs*1.2,fs*1.05,lr?GR:DM,'right');
+    if(lr&&OLS.lase)F(c,en?'LASER':'ЛД',x1-6,y1-fs*2.6,fs*.9,'#ff6a5a','right');}
+  if(OLS.lim)F(c,en?'GIMBAL LIMIT':'ОГР УГЛА',cx,y0+fs*2.4,fs,RD,'center');
+  F(c,'φ '+Math.round((l.az||0)*R2D)+'°  ε '+Math.round((l.el||0)*R2D)+'°',cx,y0+fs*.9,fs*.85,GR,'center');
+  if((ENV.nightK||0)>.6)F(c,en?'LOW LIGHT':'МАЛО СВЕТА',cx,y1-fs*2.4,fs,AM,'center');}
+const olsOn=()=>OLS.fitted()&&OLS.src==='OLS';
+
 // ---------------- page table ----------------
 const PGS=[['VSD','ПИЛ'],['NAV','ТО'],['RDR','ОПС'],['SPO','РЭП'],['RTR','РТР'],['SMS','ПУМ'],['TV','ТВП'],['KIS','КИС'],['ILS','ИЛС'],['REB','РЭБ']];
 const TOPK=[...PGS.map(p=>p[0]),'EMIT','SPLIT'],TOPL={EMIT:'ИЗЛ',SPLIT:'1/2'};for(const[k,l]of PGS)TOPL[k]=l;
-const DRAW={VSD:pPIL,RTR:pRTR,REB:pREB,ILS:pILS,KIS:pKIS};
+const DRAW={VSD:pPIL,RTR:pRTR,REB:pREB,ILS:pILS,KIS:pKIS,TV:(c,x0,y0,x1,y1)=>olsOn()?pOLS(c,x0,y0,x1,y1):SM_PAGE.TV(c,x0,y0,x1,y1)};
 // controls for the new frames (bottom row); the Su-27SM frames keep their own smBottom / SM_RSIDE / SM_SIDE controls
 const MYB={
   KIS:vk=>[['ДВИГ',()=>KIS[vk]='ENG',()=>(KIS[vk]||'ENG')==='ENG'],['ТОПЛ',()=>KIS[vk]='FUE',()=>KIS[vk]==='FUE'],['СИСТ',()=>KIS[vk]='SYS',()=>KIS[vk]==='SYS'],['ПРОВ',()=>{sys.mig.lamp=performance.now()/1000+2.5;}]],
   REB:()=>[['РЕЖ',()=>cycleECM()],['СЕРИЯ',()=>cmdsRun('both')],['',null],['',null]],
   RTR:()=>[['СПО',()=>{sys.rwr.pwr=sys.rwr.pwr?0:1;},()=>!!sys.rwr.pwr]],
-  ILS:()=>[]};
+  ILS:()=>[],
+  TV:()=>!OLS.fitted()?null:olsOn()?[['ГСН',()=>OLS.src='WPN'],[OLS.pol?'БЧ':'ЧБ',()=>OLS.pol^=1],['УВ+',()=>OLS.zi=Math.min(3,OLS.zi+1)],['УВ−',()=>OLS.zi=Math.max(0,OLS.zi-1)],['ЛД',()=>OLS.lase^=1,()=>!!OLS.lase]]:[['ОЛС',()=>OLS.src='OLS']]};
+const MYR={TV:()=>olsOn()?[['ЗАХВ',()=>{if(radar.sensor!=='IRST')radar.toggleSensor();smLock();},()=>radar.mode==='STT'],['СБР',()=>radar.drop()]]:null};
 // one display = up to two halves, each a virtual Su-27SM MFI so all of its page controls work
 const MX={};
 function vks(K){return[K+'0',K+'1'];}
@@ -14851,11 +14898,11 @@ function route(K,sd,i,D){const M=MX[K],[a,b]=vks(K);
   if(sd==='B'){if(!M.split)return[a,i];const h=D.nT/2;return i<h?[a,i]:[b,i-h];}
   if(sd==='L')return[a,i];if(sd==='R')return[M.split?b:a,i];return[null,i];}
 function ctlLabel(vk,sd,i){const pg=SMM[vk].pg;
-  if(sd==='B'){if(MYB[pg]){const r=MYB[pg](vk)[i];return r?tr(r[0]):'';}return i<7?smLabel(vk,'B',i):'';}
+  const mb=MYB[pg]&&MYB[pg](vk),mr=MYR[pg]&&MYR[pg](vk);if(sd==='B'){if(mb){const r=mb[i];return r?tr(r[0]):'';}return i<7?smLabel(vk,'B',i):'';}if(sd==='R'&&mr){const r=mr[i];return r?tr(r[0]):'';}
   if(sd==='L')return i<7?smLabel(vk,'L',i):'';if(sd==='R')return i<5?smLabel(vk,'R',i):'';return'';}
-function ctlOn(vk,sd,i){const pg=SMM[vk].pg;try{if(sd==='B'){const r=MYB[pg]?MYB[pg](vk)[i]:smBottom(pg)[i];return!!(r&&r[2]&&r[2]());}if(sd==='L'&&smLabel(vk,'L',i)===tr('VIEW'))return!!SMM[vk].grey;if(sd==='R'&&SM_RSIDE[pg]&&SM_RSIDE[pg][i]==='ЗАХВ')return radar.mode==='STT';}catch(e){}return false;}
+function ctlOn(vk,sd,i){const pg=SMM[vk].pg;try{const mb=MYB[pg]&&MYB[pg](vk),mr=MYR[pg]&&MYR[pg](vk);if(sd==='R'&&mr){const r=mr[i];return!!(r&&r[2]&&r[2]());}if(sd==='B'){const r=mb?mb[i]:smBottom(pg)[i];return!!(r&&r[2]&&r[2]());}if(sd==='L'&&smLabel(vk,'L',i)===tr('VIEW'))return!!SMM[vk].grey;if(sd==='R'&&SM_RSIDE[pg]&&SM_RSIDE[pg][i]==='ЗАХВ')return radar.mode==='STT';}catch(e){}return false;}
 function ctlPress(vk,sd,i){const pg=SMM[vk].pg;
-  if(sd==='B'&&MYB[pg]){const r=MYB[pg](vk)[i];if(r&&r[1])r[1]();return;}
+  const mb=MYB[pg]&&MYB[pg](vk),mr=MYR[pg]&&MYR[pg](vk);if(sd==='B'&&mb){const r=mb[i];if(r&&r[1])r[1]();return;}if(sd==='R'&&mr){const r=mr[i];if(r&&r[1])r[1]();return;}
   if(sd==='B'&&i>=7||sd==='R'&&i>=5||sd==='L'&&i>=7)return;smPress(vk,sd,i);}
 function label(K,sd,i,D){if(sd==='T'){const k=TOPK[i];return k?tr(TOPL[k]):'';}const[vk,j]=route(K,sd,i,D);return ctlLabel(vk,sd,j);}
 function press(K,sd,i,D){const M=MX[K];
