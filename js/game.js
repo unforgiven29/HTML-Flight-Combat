@@ -14295,6 +14295,7 @@ const GMK=new THREE.Group();GMK.visible=false;sm.add(GMK);const mkL=[];
     if(s35){for(const[m,y]of hudM)m.position.y=y+HUDUP;o.glass=o.glass0.map(p=>p.clone().add(new V3(0,HUDUP,0)));}
     else if(!s30)for(const[m,y]of hudM)m.position.y=y;
   }catch(e){console.warn('v216 board',e);}return r;};}
+window.V216={drawG,T};
 {let n=0;o.anims.push(()=>{if(!player||!sm.visible)return;if(n++&1)return;try{if(G35.visible){drawMFI35();drawPUI();}else if(GMK.visible)drawG(mkL);else return;}catch(e){}for(const t of live)t.needsUpdate=true;});}
 ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · 2× МФИ-35 + ПУИ-35';
 }catch(e){console.warn('v216 Flanker boards',e);}
@@ -14382,3 +14383,71 @@ function paint(){const P=player;if(!P)return;const V=o.smCv;
 {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='fulcrum'&&!!player&&player.type==='Su-27SM';G.visible=on;if(on)for(const m of old)m.visible=false;}catch(e){}return r;};}
 {let n=0;o.anims.push(()=>{if(!G.visible||!sm.visible)return;if(n++&1)return;try{paint();}catch(e){}});}
 }catch(e){console.warn('v217 Su-27SM board',e);}
+
+/* ===== v218: MiG-31 crew split and pilot's cockpit =====
+   The navigator (штурман-оператор) owns the Zaslon. In the front seat the radar keys become requests to him (lock, next target, drop, TWS); range,
+   cursor, sensor and mode keys are his alone and do nothing up front. The pilot flies, picks and fires weapons, and reads the navigator's picture
+   on the ИПВ tactical indicator. Pilot board after the photos in planes/Modern/MiG-31/pilot cockpit: turquoise panel, all-analogue flight group
+   (airspeed / Mach, altimeter, variometer, AoA-g in a column; attitude indicator over the ПНП course indicator), the ИПВ to the right of it with a
+   lamp block under it, engine tachometer and temperatures, fuel and clock on the right, the HUD control box with its digital strip on top. ===== */
+try{
+const M31=()=>!!player&&player.alive&&player.type==='MiG-31';
+let busy=0;const own=f=>function(){busy++;try{return f.apply(this,arguments);}finally{busy--;}};
+rio.update=own(rio.update);rio.cmd=own(rio.cmd);
+let nagT=0;const nag=()=>{const t=performance.now();if(t>nagT){nagT=t+1500;flash('НАВИГАТОР · THE NAVIGATOR RUNS THE RADAR',1300);}sfx.click();};
+for(const k of['slew','setTWS','bore','designate','next','toggleSensor','drop']){const f=radar[k];if(typeof f!=='function')continue;
+  radar[k]=function(){if(M31()&&!busy&&game.active){nag();return;}return f.apply(this,arguments);};}
+{let ri=radar.ri||0;Object.defineProperty(radar,'ri',{configurable:true,get(){return ri;},set(v){if(M31()&&!busy&&game.active&&player.alive&&radar._r31!==1){nag();return;}ri=v;}});}
+{const _r=radar.reset;if(_r)radar.reset=function(){radar._r31=1;try{return _r.apply(this,arguments);}finally{radar._r31=0;}};}
+{const _t=rio.toggle;rio.toggle=function(){if(player&&player.type==='MiG-31'){this.on=true;this.say('I keep the Zaslon. You fly, I find them.','m31t',3);sfx.click();return;}return _t.apply(this,arguments);};
+ const _p=rio.pilot;rio.pilot=function(){if(player&&player.type==='MiG-31')return;return _p.apply(this,arguments);};}
+{const _mp=makePlayer;makePlayer=function(){const r=_mp.apply(this,arguments);if(player&&player.type==='MiG-31')rio.on=true;return r;};}
+
+// ---------------- pilot board ----------------
+const o=ck.fulcrum,xg=o.fxOnly[0],{drawG,T}=window.V216;
+const g=new THREE.Group();g.position.copy(xg.position);g.rotation.copy(xg.rotation);g.visible=false;o.root.add(g);
+const Lm=(c,s=16)=>new THREE.MeshPhongMaterial({color:c,shininess:s}),cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
+const box=(w,h,d,m,x,y,z)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);g.add(b);return b;};
+const live=[],quad=(c,w,h,x,y,z,geo)=>{const t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;live.push(t);
+  const m=new THREE.Mesh(geo||new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));m.position.set(x,y,z);g.add(m);return m;};
+const turq=Lm(0x2fa39b),turq2=Lm(0x268f88),blk=Lm(0x141618),gl=[];
+box(1.0,.46,.03,turq,0,-.01,0);box(.31,.36,.012,turq2,-.31,-.01,.018);box(.3,.36,.012,turq2,.3,-.01,.018);
+const gauge=(x,y,r,draw)=>{const ring=new THREE.Mesh(new THREE.CylinderGeometry(r+.006,r+.006,.016,28),blk);ring.rotation.x=Math.PI/2;ring.position.set(x,y,.028);g.add(ring);
+  const c=cvs(160,160);quad(c,0,0,x,y,.0365,new THREE.CircleGeometry(r,32));gl.push({cv:c,draw});};
+// flight group
+gauge(-.42,.115,.038,'ias');gauge(-.42,.025,.038,'alt');gauge(-.42,-.065,.038,'vvi');gauge(-.42,-.155,.033,'aoa');
+gauge(-.29,.09,.062,'adi');gauge(-.29,-.075,.062,'hsi');gauge(-.175,.15,.026,'clk');
+// engines and fuel
+gauge(.15,.105,.048,'rpm');gauge(.27,.12,.032,'egt');gauge(.36,.12,.032,'egt');gauge(.15,-.07,.034,'aoa');
+const fuelC=cvs(160,300);box(.07,.13,.012,blk,.32,-.06,.026);quad(fuelC,.06,.11,.32,-.06,.0325);
+// ИПВ tactical indicator, its lamp block, and the HUD control box with the digital strip on top
+box(.17,.17,.02,blk,-.06,.035,.025);const ipv=cvs(320,320);quad(ipv,.145,.145,-.06,.035,.0356);
+const lampC=cvs(320,96);quad(lampC,.17,.05,-.06,-.12,.026);
+box(.22,.06,.04,Lm(0x23272a),-.04,.205,.03);const hudC=cvs(400,96);quad(hudC,.2,.048,-.04,.205,.0505);
+function drawIPV(){const P=player,c=ipv.getContext('2d'),S=320,ox=160,oy=290,R=262,col='#7dffa0';c.setTransform(1,0,0,1,0,0);c.fillStyle='#021208';c.fillRect(0,0,S,S);
+  c.strokeStyle='rgba(125,255,160,.35)';c.lineWidth=1.5;for(let k=1;k<=4;k++){c.beginPath();c.arc(ox,oy,R*k/4,-Math.PI/2-1.22,-Math.PI/2+1.22);c.stroke();}
+  for(const a of[-60,-30,0,30,60]){const r=a*D2R;c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(r)*R,oy-Math.cos(r)*R);c.stroke();}
+  c.fillStyle=col;c.beginPath();c.moveTo(ox,oy-10);c.lineTo(ox-7,oy+6);c.lineTo(ox+7,oy+6);c.closePath();c.fill();
+  const rng=radar.rngM||100000,L=radar.mode==='STT'?radar.lock:null,pr=rio.prio;
+  for(const [j] of radar.tracks){if(!j.alive)continue;const a=radar.ang(j.pos),r=clamp(a.d/rng,0,1.05)*R;if(Math.abs(a.az)>75*D2R)continue;
+    const x=ox+Math.sin(a.az)*r,y=oy-Math.cos(a.az)*r,fr=j.side===P.side;c.strokeStyle=c.fillStyle=fr?'#7fd0ff':col;c.lineWidth=2;
+    if(j===L){c.strokeRect(x-10,y-10,20,20);c.beginPath();c.arc(x,y,3,0,7);c.fill();}else if(j===pr){c.beginPath();c.moveTo(x,y-9);c.lineTo(x+9,y);c.lineTo(x,y+9);c.lineTo(x-9,y);c.closePath();c.stroke();}
+    else{c.beginPath();c.arc(x,y,fr?5:4,0,7);fr?c.stroke():c.fill();}}
+  const md=!radar.on()?'ВЫКЛ':radar.mode==='STT'?'ЗАХВАТ':radar.mode==='TWS'?'СНП':'ОБЗОР',w=game.wsel;
+  T(c,md,10,16,col,17,'left');T(c,Math.round(rng/1000)+' КМ',310,16,col,15,'right');
+  T(c,w==='GUN'?'ГШ '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' ×'+(MSL[w]?P.count(w):''),10,304,col,15,'left');
+  if(L&&L.alive){const d=L.pos.distanceTo(P.pos);let rm=0;try{rm=dlzGet(w,L).rmax;}catch(e){}T(c,(d/1000).toFixed(0)+' КМ',160,40,'#fff',16);
+    if(rm&&d<rm&&game.arm&&Math.floor(performance.now()/350)%2)T(c,'ПР',310,304,'#ffd23a',20,'right');}}
+function drawSide(){const P=player;
+  {const c=fuelC.getContext('2d'),f=clamp((P.totalFuel||0)/Math.max(1,P.ac.fuel),0,1);c.fillStyle='#0d0f10';c.fillRect(0,0,160,300);c.strokeStyle='#e6e8e2';c.lineWidth=2;c.strokeRect(50,30,60,230);
+    c.fillStyle=f<.2?'#ff5a4a':'#e6e8e2';c.fillRect(54,256-222*f,52,222*f);T(c,'ТОПЛ',80,14,'#bfc4bc',16);T(c,String(Math.round(P.totalFuel||0)),80,282,'#fff',20);}
+  {const c=lampC.getContext('2d');c.fillStyle='#1b1e20';c.fillRect(0,0,320,96);const now=performance.now(),thr=typeof rwrMslSeen==='function'&&rwrMslSeen();
+    [['ПОЖАР',P.dm&&P.dm.fire],['ОТКАЗ',P.hp<60],['ТОПЛ',(P.totalFuel||0)<P.ac.fuel*.15],['РАКЕТА',thr],['ПР',radar.mode==='STT'],['ШТУРМ',rio.active()],['ФОРС',(P.ab||0)>.05],['ЗЕМЛЯ',!!P.onGnd]].forEach(([s,on],i)=>{
+      const x=6+(i%4)*78,y=6+(i/4|0)*45;c.fillStyle=on?(i<4?'#ff4a30':i===4?'#ffd23a':'#46d66a'):'#3a3530';if(on&&i<4&&now%500>300)c.fillStyle='#5a1810';c.fillRect(x,y,72,38);T(c,s,x+36,y+20,on?'#101010':'#8a8070',15);});}
+  {const c=hudC.getContext('2d');c.fillStyle='#23272a';c.fillRect(0,0,400,96);c.fillStyle='#200805';c.fillRect(20,14,250,40);
+    const d=new Date(),p2=v=>String(v).padStart(2,'0');T(c,'К'+String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+' Н'+(P.pos.y/1000).toFixed(1),30,34,'#ff6a3a',20,'left');
+    T(c,p2(d.getHours())+':'+p2(d.getMinutes()),340,34,'#e8ece6',18);['ЯРК','ТЕСТ','ОБОГР','ВКЛ'].forEach((s,i)=>{c.strokeStyle='#e8ece6';c.lineWidth=2;c.beginPath();c.arc(40+i*95,74,9,0,7);c.stroke();T(c,s,62+i*95,74,'#cfd3cf',12,'left');});}}
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='fulcrum'&&!!player&&player.type==='MiG-31';g.visible=on;if(on)xg.visible=false;}catch(e){}return r;};}
+{let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{drawG(gl);drawIPV();drawSide();}catch(e){}for(const t of live)t.needsUpdate=true;});}
+ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA · 4× R-33 · PILOT FLIES, NAVIGATOR RUNS THE RADAR';
+}catch(e){console.warn('v218 MiG-31',e);}
