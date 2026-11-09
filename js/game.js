@@ -14341,3 +14341,44 @@ const dGlass=[[-.1,.07],[.1,.07],[.13,.03],[.13,-.17],[-.13,-.17],[-.13,.03]].ma
 {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='viper'&&isD();DG.visible=DH.visible=on;if(on)V.glass=dGlass;}catch(e){}return r;};}
 ACROLE['F-14D']='US · FLEET DEFENCE · APG-71 · AAS-42 IRST + TCS · DIGITAL HUD · 3 MFDs';
 }catch(e){console.warn('v216 F-14D',e);}
+
+/* ===== v217: Su-27SM instrument board after the real cockpit (two wide МФИ-10-5 with the narrower centre МФИ packed edge to edge across the board,
+   the КР-6 HUD control unit above the centre screen, the lamp block top right, round engine / standby gauges in a row underneath). The
+   old square screens are switched off in this jet; pages, labels and push-buttons are the same smLabel / smPress set. ===== */
+try{
+const o=ck.fulcrum,sm=o.smOnly[0];
+const old=[];sm.children.forEach(m=>{if(!m.isMesh)return;const p=m.position;if(p.x===0&&p.y===0&&p.z===0)return;
+  if((Math.abs(p.x+.385)<.115||Math.abs(p.x-.30)<.115)&&Math.abs(p.y-.055)<.115||Math.abs(p.x)<.09&&Math.abs(p.y-.045)<.1)old.push(m);});
+const G=new THREE.Group();G.visible=false;sm.add(G);
+const bz=new THREE.MeshPhongMaterial({color:0x1b1e20,shininess:6}),ob=new THREE.MeshPhongMaterial({color:0x3e4548,shininess:8});
+const cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h}),live=[];
+const scr={};
+const mfi=(k,X,Y,w,h,cw,ch,nT,nS)=>{const b=new THREE.Mesh(sbox(w+.05,h+.05,.022),bz);b.position.set(X,Y,.02);G.add(b);
+  const c=cvs(cw,ch),t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;live.push(t);scr[k]=c;
+  const q=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));q.position.set(X,Y,.0322);q.userData.screen='sm'+k;G.add(q);
+  const btn=(bx,by,s,i)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.0065,.0065,.008,12),ob);m.rotation.x=Math.PI/2;m.position.set(bx,by,.033);G.add(m);
+    const def={meshes:[m],name:'MFI '+k+' · '+s+(i+1),state:()=>{try{return smLabel(k,s,i)||'—';}catch(e){return'';}},act:()=>{try{smPress(k,s,i);}catch(e){console.warn(e);}sfx.click();}};m.userData.ctl=def;(o.ctls||[]).push(def);};
+  for(let i=0;i<nT;i++){const ox=(i-(nT-1)/2)*(w/nT);btn(X+ox,Y+h/2+.0125,'T',i);btn(X+ox,Y-h/2-.0125,'B',i);}
+  for(let i=0;i<nS;i++){const oy=((nS-1)/2-i)*(h/nS);btn(X-w/2-.0125,Y+oy,'L',i);btn(X+w/2+.0125,Y+oy,'R',i);}};
+// board 1.0 m wide: 0.255 m wide screens either side, 0.12 m centre screen, ~5 mm of bezel between them
+mfi('L',-.268,.045,.255,.19,640,480,7,5);mfi('C',0,.045,.12,.155,256,296,4,4);mfi('R',.268,.045,.255,.19,640,480,7,5);
+// lamp block top right (СМОТРИ ОТКАЗ / warning captions)
+{const c=cvs(240,150),g=c.getContext('2d');g.fillStyle='#1b1e20';g.fillRect(0,0,240,150);
+  ['ПОЖАР','ОТКАЗ','ТОПЛ','ГИДР','ГЕН','МАСЛ','ШАСС','ОБЛЕД','САУ','РЭП','ЗАКР','КИСЛ'].forEach((s,i)=>{const x=8+(i%3)*78,y=8+(i/3|0)*35;g.fillStyle=i<2?'#5a1810':'#4a4a40';g.fillRect(x,y,70,28);g.fillStyle='#e8dccc';g.font='700 14px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(s,x+35,y+15);});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.1,.0625),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),toneMapped:false}));m.position.set(.39,.2,.022);G.add(m);}
+// wide screens: the page keeps its square shape in the middle, the flanks carry the extra data the 4:3 screen has room for
+const T=(c,s,x,y,col,sz,al)=>{c.fillStyle=col||'#9fe8c0';c.font='700 '+(sz||17)+'px "B612 Mono",monospace';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y);};
+function paint(){const P=player;if(!P)return;const V=o.smCv;
+  {const c=scr.L.getContext('2d');c.fillStyle='#030a0c';c.fillRect(0,0,640,480);c.drawImage(V.L,80,0,480,480);
+    const r=(i,k,v)=>{T(c,k,8,150+i*40,'#6fbf8a',15,'left');T(c,v,8,170+i*40,'#fff',17,'left');};
+    r(0,'V КМ/Ч',String(Math.round((P.cas||0)*1.852)));r(1,'H М',String(Math.round(P.pos.y)));r(2,'M',(P.mach||0).toFixed(2));r(3,'Ny',(P.nz||1).toFixed(1));
+    const L=radar.mode==='STT'?radar.lock:null;if(L&&L.alive){const d=L.pos.distanceTo(P.pos);T(c,'Д',632,150,'#6fbf8a',15,'right');T(c,(d/1000).toFixed(1),632,170,'#fff',17,'right');T(c,'Hц',632,200,'#6fbf8a',15,'right');T(c,String(Math.round(L.pos.y)),632,220,'#fff',17,'right');}}
+  {const c=scr.R.getContext('2d');c.fillStyle='#030a0c';c.fillRect(0,0,640,480);c.drawImage(V.R,80,0,480,480);
+    const fk=Math.round(P.totalFuel||0);T(c,'ТОПЛ',8,150,'#6fbf8a',15,'left');T(c,String(fk),8,170,fk<(P.ac.fuel||1)*.2?'#ff5a4a':'#fff',17,'left');
+    T(c,'ЛТЦ',8,200,'#6fbf8a',15,'left');T(c,String(P.flares||0),8,220,'#fff',17,'left');T(c,'ДО',8,250,'#6fbf8a',15,'left');T(c,String(P.chaff||0),8,270,'#fff',17,'left');
+    T(c,'ПУШ',632,150,'#6fbf8a',15,'right');T(c,String(P.gun?P.gun.ammo:0),632,170,'#fff',17,'right');}
+  scr.C.getContext('2d').drawImage(V.C,0,0,256,296);
+  for(const t of live)t.needsUpdate=true;}
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='fulcrum'&&!!player&&player.type==='Su-27SM';G.visible=on;if(on)for(const m of old)m.visible=false;}catch(e){}return r;};}
+{let n=0;o.anims.push(()=>{if(!G.visible||!sm.visible)return;if(n++&1)return;try{paint();}catch(e){}});}
+}catch(e){console.warn('v217 Su-27SM board',e);}
