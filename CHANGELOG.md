@@ -87,3 +87,11 @@ Two wide (4:3) МФИ-10-5 and the narrower centre МФИ packed edge to edge ac
 - **F-16A ADF radar** is now the **AN/APG-66(V)1** it really carried (the ADF conversion kept the APG-66 and added AIM-7 CW illumination). It was wrongly labelled APG-68 and given the APG-68's range. Detection drops from 42 to 38 NM against a 5 m² target, with lower ECCM. The F-16C keeps its APG-68(V)5. Both now have their own gimbal entries.
 - **Su-35S thrust vectoring**: the AL-41F1S (117S) all-aspect nozzles (±15°) are now modelled. Shift+Y toggles TVC exactly as on the Su-30SM, and it now gives pitch and yaw authority. The Su-30SM's AL-31FP keeps the smaller yaw authority of its canted nozzles. TVC is driven by `ac.tvc` (pitch / yaw degrees), so any later TVC jet only needs that field.
 
+
+## v228 — Su-35S / Su-30SM HUD after the IKSh-1M
+Both jets now draw an IKSh-1M (ИКШ-1М) style HUD built from cockpit photos and the ВЗЛЕТ mnemonic frame, replacing the Su-27 sight (Su-35S) and the export-style English symbology (Su-30SM).
+- **Top:** IAS (km/h) over Mach, G circle with a max-G arc, heading scale with own-heading caret and the target-heading tick, baro altitude over radar altitude (Р), boxed target speed and altitude when a target is held.
+- **Centre:** W boresight, flight-path marker, horizon bar with sink ticks riding a fixed 30/20/10/0/10/20/30 pitch scale and rolling with bank, bank ticks below, pitch caret at the right.
+- **Combat:** vertical range bar with zone flags and the ⇦ target caret, mode column (РЛП / ТП, ППС / ЗПС, СНП, ИЗЛ, А), antenna azimuth scale ±70 with a triangle, target circle with the numbered steering diamond, TWS track marks, ПР / БЕЗ ЗАХВ, boxed missile time to impact, РКЦ range bottom left, ПЦ / ДВБ (БВБ in close combat) and the selected round (e.g. 77-1) bottom right, УВОД ОТКЛ when GCAS is off.
+- **Navigation:** bearing / distance to the waypoint (277/ 38.9КМ), waypoint name, AoA arc, waypoint diamond on the heading scale.
+- English labels follow the HUD-language setting. The Su-30MK2 and Su-27SM keep their own HUDs.
