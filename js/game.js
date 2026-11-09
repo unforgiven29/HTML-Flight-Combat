@@ -14188,3 +14188,156 @@ try{
 // ---------- crews: every two-seater flies with its back-seater (AI unless you take the sensors with [6]) ----------
 const CREW={'F-4E':'WSO','F-14A':'RIO','F-14B':'RIO','F-14D':'RIO','F-15E':'WSO','Su-30SM':'WSO','Su-30MK2':'OPERATOR','MiG-31':'NAVIGATOR'};
 for(const k of Object.keys(CREW))if(AC[k]){AC[k].rio=true;AC[k].crew=2;AC[k].crewName=CREW[k];}
+
+/* ===== v216: cockpits for the v215 jets, from the reference folder =====
+   Su-35S  — instrument board after the Su-35 cockpit diagrams (S3-A-31-11): two landscape МФИ-35 side by side filling the board, the ПУИ-35 keyboard /
+             display unit under the КАИ-35 HUD, a small standby flight display top right; no round gauges. Each МФИ-35 shows an Su-27SM-family
+             page in its main window plus a data column (flight / target on the left screen, fuel / engines / stores on the right).
+   Su-30MK2 — front board after the flight manual (РЛЭ Су-30МК2, Приложение 1, "Доска приборов 1 кабина"): two МФИ-10-5 with an analogue centre column
+             between them (airspeed, altimeter, УАП on the left; КПП attitude indicator over the ПНП course indicator), the ДОЗАПРАВКА panel under it,
+             clock / variometer bottom left, two ИТ temperature gauges and the twin-needle ИТЭ tachometer bottom right, the 23-02-01 lamp block top right.
+   F-14D   — digital HUD (airspeed / altitude boxes, heading tape, Mach, g, AoA, velocity vector) on a framed combiner, and three MFDs: MFD 1 in place
+             of the VDI, MFD 2 in place of the HSD, MFD 3 on the right; each can show VDI / HSD / SMS / ENG from its bottom push-buttons. ===== */
+try{
+const o=ck.fulcrum,sm=o.smOnly[0],root=o.root,isT=t=>!!player&&player.type===t;
+const Lm=(c,s=18)=>new THREE.MeshPhongMaterial({color:c,shininess:s}),cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
+const live=[],texOf=c=>{const t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;live.push(t);return t;};
+const quad=(par,c,w,h,x,y,z,geo)=>{const m=new THREE.Mesh(geo||new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texOf(c),toneMapped:false}));m.position.set(x,y,z);par.add(m);return m;};
+const box=(par,w,h,d,m,x,y,z)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);par.add(b);return b;};
+const mkCtl=(O,m,name,state,act)=>{const def={meshes:[m],name,state,act:()=>{try{act();}catch(e){console.warn(e);}sfx.click();}};m.userData.ctl=def;(O.ctls||[]).push(def);};
+const T=(c,s,x,y,col,sz,al)=>{c.fillStyle=col||'#d8f0e0';c.font='700 '+(sz||15)+'px "B612 Mono",monospace';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y);};
+const blk=Lm(0x15181a),bez=Lm(0x1b1e20,6),osb=Lm(0x4a5154,6),teal=Lm(0x3b8a93);
+// the Su-27SM board's own parts, sorted by where they sit, so a variant can switch them off
+const old={L:[],R:[],C:[],G:[],K:[],H:[]};
+sm.children.forEach(m=>{if(!m.isMesh)return;const p=m.position;if(p.x===0&&p.y===0&&p.z===0)return;
+  if(Math.abs(p.x+.385)<.115&&Math.abs(p.y-.055)<.115)old.L.push(m);else if(Math.abs(p.x-.30)<.115&&Math.abs(p.y-.055)<.115)old.R.push(m);
+  else if(Math.abs(p.x)<.09&&Math.abs(p.y-.045)<.1)old.C.push(m);else if(Math.abs(p.y+.135)<.02)old.G.push(m);
+  else if(Math.abs(p.x+.46)<.03&&Math.abs(p.y-.193)<.03)old.K.push(m);else if(Math.abs(p.x)<.11&&Math.abs(p.y-.2)<.03)old.H.push(m);});
+const HUDUP=.03,hudM=[];root.children.forEach(m=>{const p=m.position;if(Math.abs(p.x)<.14&&((Math.abs(p.y+.188)<.002&&p.z<-.6&&p.z>-.68)||(Math.abs(p.y+.075)<.002&&Math.abs(p.z+.6)<.002)||(Math.abs(p.y+.06)<.002&&(Math.abs(p.z+.6)<.002||Math.abs(p.z+.615)<.002))))hudM.push([m,p.y]);});
+// round instruments shared by the two boards
+const gauges=(par,list)=>(x,y,r,draw)=>{const ring=new THREE.Mesh(new THREE.CylinderGeometry(r+.005,r+.005,.014,28),blk);ring.rotation.x=Math.PI/2;ring.position.set(x,y,.024);par.add(ring);
+  const c=cvs(160,160);quad(par,c,0,0,x,y,.0315,new THREE.CircleGeometry(r,32));list.push({cv:c,draw});};
+function drawG(list){const P=player;for(const g of list){const c=g.cv.getContext('2d'),S=160,r=74;c.setTransform(1,0,0,1,0,0);c.fillStyle='#0d0f10';c.fillRect(0,0,S,S);c.translate(S/2,S/2);
+  const tick=(a0,a1,n)=>{c.strokeStyle='#e6e8e2';c.lineWidth=2;for(let i=0;i<=n;i++){const a=(a0+(a1-a0)*i/n-90)*D2R;c.beginPath();c.moveTo(Math.cos(a)*r*.82,Math.sin(a)*r*.82);c.lineTo(Math.cos(a)*r*.96,Math.sin(a)*r*.96);c.stroke();}};
+  const ndl=(deg,len,col,w)=>{const a=(deg-90)*D2R;c.strokeStyle=col||'#fff';c.lineWidth=w||4;c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(a)*r*len,Math.sin(a)*r*len);c.stroke();};
+  const d=g.draw,n=clamp((P.n||0)/1.1,0,1);
+  if(d==='adi'){c.save();c.beginPath();c.arc(0,0,r,0,7);c.clip();c.rotate(-(P.bank||0));const po=(P.pitch||0)*R2D*2;c.fillStyle='#4f86b8';c.fillRect(-90,-180+po,180,180);c.fillStyle='#6b4a2a';c.fillRect(-90,po,180,180);
+    c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.moveTo(-90,po);c.lineTo(90,po);for(let q=-30;q<=30;q+=10){if(!q)continue;c.moveTo(-18,po-q*2);c.lineTo(18,po-q*2);}c.stroke();c.restore();
+    c.strokeStyle='#ffd23a';c.lineWidth=5;c.beginPath();c.moveTo(-46,0);c.lineTo(-14,0);c.lineTo(-14,8);c.moveTo(46,0);c.lineTo(14,0);c.lineTo(14,8);c.stroke();tick(-60,60,8);}
+  else if(d==='hsi'){c.save();c.rotate(-(P.hdg||0)*D2R);c.strokeStyle='#e6e8e2';c.lineWidth=2;for(let i=0;i<36;i++){const a=i*10*D2R,l=i%3?.9:.82;c.beginPath();c.moveTo(Math.sin(a)*r*l,-Math.cos(a)*r*l);c.lineTo(Math.sin(a)*r*.98,-Math.cos(a)*r*.98);c.stroke();}
+    ['С','В','Ю','З'].forEach((s,i)=>{c.save();c.rotate(i*Math.PI/2);T(c,s,0,-r*.64,'#fff',20);c.restore();});[3,6,12,15,21,24,30,33].forEach(v=>{c.save();c.rotate(v*10*D2R);T(c,String(v),0,-r*.66,'#cfd3cf',14);c.restore();});c.restore();
+    c.fillStyle='#ffd23a';c.beginPath();c.moveTo(0,-r);c.lineTo(-7,-r+14);c.lineTo(7,-r+14);c.closePath();c.fill();c.strokeStyle='#ffd23a';c.lineWidth=3;c.beginPath();c.moveTo(0,-22);c.lineTo(0,22);c.moveTo(-16,2);c.lineTo(16,2);c.moveTo(-7,18);c.lineTo(7,18);c.stroke();}
+  else if(d==='ias'){tick(-150,150,10);ndl(-150+300*clamp((P.cas||0)*1.852/1600,0,1),.8);T(c,'КМ/Ч',0,40,'#bfc4bc',13);T(c,'М '+(P.mach||0).toFixed(2),0,-34,'#fff',14);}
+  else if(d==='alt'){tick(0,324,10);ndl(360*((P.pos.y%1000)/1000),.85);ndl(360*((P.pos.y/20000)%1),.55,'#e8c040');T(c,(P.pos.y/1000).toFixed(1),0,38,'#fff',16);}
+  else if(d==='vvi'){tick(-170,-10,8);tick(10,170,8);ndl(-90+clamp((P.vel?P.vel.y:0)/150,-1,1)*80,.8);T(c,'М/С',18,0,'#bfc4bc',12);}
+  else if(d==='aoa'){tick(-140,-20,6);tick(20,140,5);ndl(-140+120*clamp(((P.alpha||0)*R2D+5)/40,0,1),.8);ndl(140-120*clamp(((P.nz||1)+2)/11,0,1),.8,'#e8c040');T(c,'α',-30,34,'#bfc4bc',15);T(c,'Ny',30,34,'#bfc4bc',13);}
+  else if(d==='clk'){const t=new Date();tick(0,330,11);ndl(360*((t.getHours()%12)+t.getMinutes()/60)/12,.5);ndl(360*t.getMinutes()/60,.8,'#fff',3);}
+  else if(d==='egt'){tick(-135,135,9);ndl(-135+270*clamp(.25+n*.55+(P.ab||0)*.15,0,1),.8);T(c,'°C',0,38,'#bfc4bc',13);}
+  else if(d==='rpm'){tick(-135,135,11);ndl(-135+270*n,.82);ndl(-135+270*n*.985,.6,'#e8c040');T(c,'% ОБ',0,38,'#bfc4bc',12);T(c,String(Math.round(n*110)),0,-32,'#fff',14);}
+  c.setTransform(1,0,0,1,0,0);}}
+
+// ---------------- Su-35S ----------------
+const G35=new THREE.Group();G35.visible=false;sm.add(G35);const W35=new THREE.Group();W35.visible=false;root.add(W35);
+const MW=.30,MH=.225,MY=-.03,MAINW=MH,scr={L:cvs(800,600),R:cvs(800,600)};
+for(const k of['L','R']){const sd=k==='L'?-1:1,X=sd*.162,mainX=X+sd*(MW-MAINW)/2*-1;   // main (square) window outboard, data column inboard
+  box(G35,MW+.03,MH+.036,.022,bez,X,MY,.02);quad(G35,scr[k],MW,MH,X,MY,.0322);
+  const btn=(bx,by,bw,bh,s,i)=>{const m=new THREE.Mesh(sbox(bw,bh,.008),osb);m.position.set(bx,by,.033);G35.add(m);mkCtl(o,m,'МФИ-35 '+(k==='L'?'1':'2')+' · '+s+(i+1),()=>{try{return smLabel(k,s,i)||'—';}catch(e){return'';}},()=>smPress(k,s,i));};
+  for(let i=0;i<7;i++){const ox=(i-3)*(MAINW/7)*.95;btn(mainX+ox,MY+MH/2+.011,.014,.008,'T',i);btn(mainX+ox,MY-MH/2-.011,.014,.008,'B',i);}
+  for(let i=0;i<5;i++){const oy=(2-i)*(MH/5)*.95;btn(X-MW/2-.0095,MY+oy,.008,.014,'L',i);btn(X+MW/2+.0095,MY+oy,.008,.014,'R',i);}}
+// standby flight display (top right of the board) and the two warning-lamp blocks either side of the ПУИ
+{box(G35,.085,.095,.02,bez,.3,.185,.02);const m=quad(G35,o.smCv.C,.07,.081,.3,.185,.0312);m.material.map=texOf(o.smCv.C);
+  const lc=cvs(128,64),g=lc.getContext('2d');g.fillStyle='#1b1e20';g.fillRect(0,0,128,64);[['ОТКАЗ','#7a1a12'],['ПОЖАР','#7a1a12'],['ТОПЛ','#7a5a10'],['ГИДРО','#7a5a10']].forEach(([s,cl],i)=>{g.fillStyle=cl;g.fillRect(6+(i%2)*62,6+(i>>1)*28,54,22);T(g,s,33+(i%2)*62,17+(i>>1)*28,'#e8d8c8',12);});
+  quad(G35,lc,.07,.035,-.3,.195,.021);quad(G35,lc,.07,.035,.42,.195,.021);}
+// ПУИ-35 under the HUD: display on top, 6 x 5 keyboard below
+box(W35,.27,.075,.08,Lm(0x7a8c97),0,-.212,-.70);
+const pui=new THREE.Group();pui.position.set(0,-.283,-.635);pui.rotation.x=-.375;pui.scale.set(1.08,.92,1);W35.add(pui);box(pui,.2,.16,.05,blk,0,0,0);
+const puiC=cvs(320,256);quad(pui,puiC,.19,.152,0,0,.0255);
+const PKEY=['НАВ','ВВ','ВЗ','БВБ','СВЯЗЬ','ОТВ','1','2','3','ППМ','АЭР','ВВОД','4','5','6','КУРС','РСБН','СБР','7','8','9','ВЫС','ИНС','◄','—','0','.','ВРЕМЯ','ЯРК','►'];
+function drawPUI(){const P=player,g=puiC.getContext('2d');g.fillStyle='#16191b';g.fillRect(0,0,320,256);g.fillStyle='#061008';g.fillRect(12,8,296,78);g.strokeStyle='#3a4044';g.lineWidth=2;g.strokeRect(12,8,296,78);
+  const w=game.wsel,m=radar.sensor==='IRST'?'ОЛС':'РЛС',md={RWS:'ОБЗОР',TWS:'СНП',STT:'ЗАХВАТ',ACM:'БВБ'}[radar.mode]||radar.mode,L=radar.mode==='STT'?radar.lock:null,d=new Date(),p2=v=>String(v).padStart(2,'0');
+  T(g,(AGW[w]?'ВЗ':'ВВ')+'  '+m+' '+md,20,24,'#7dff8a',17,'left');T(g,p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds()),300,24,'#7dff8a',15,'right');
+  T(g,(w==='GUN'?'ПУШКА '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' × '+(MSL[w]?P.count(w):'')),20,47,'#7dff8a',17,'left');T(g,L?'Д '+(L.pos.distanceTo(P.pos)/1000).toFixed(1)+' КМ':'ЦЕЛИ НЕТ',300,47,'#7dff8a',15,'right');
+  T(g,'К '+String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+'  Н '+Math.round(P.pos.y)+'  Т '+Math.round(P.totalFuel||0),20,70,'#7dff8a',15,'left');
+  PKEY.forEach((s,i)=>{const q=i%6,r=i/6|0,x=14+q*49.5,y=96+r*31;g.fillStyle=q<3&&r>0&&r<5?'#3a4044':'#2c3236';g.fillRect(x,y,44,26);g.strokeStyle='#59605f';g.lineWidth=1;g.strokeRect(x,y,44,26);T(g,s,x+22,y+14,'#d8dcd6',s.length>3?10:13);});}
+function drawMFI35(){const P=player,cL=scr.L.getContext('2d'),cR=scr.R.getContext('2d');
+  // left: main window = the left page (radar / IRST / tactical), column = flight and target data
+  cL.fillStyle='#030a0c';cL.fillRect(0,0,800,600);cL.drawImage(o.smCv.L,0,0,600,600);cL.strokeStyle='#1f5a44';cL.lineWidth=2;cL.strokeRect(604,4,192,592);
+  const row=(c,x,i,k,v,col)=>{T(c,k,x+10,96+i*44,'#9fe8c0',15,'left');T(c,v,x+182,96+i*44,col||'#fff',19,'right');};
+  T(cL,'ПОЛЁТ',700,26,'#ffd27a',17);T(cL,String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+'°',700,58,'#fff',24);
+  row(cL,604,0,'V',Math.round((P.cas||0)*1.852)+'');row(cL,604,1,'H',Math.round(P.pos.y)+'');row(cL,604,2,'M',(P.mach||0).toFixed(2));row(cL,604,3,'Ny',(P.nz||1).toFixed(1));row(cL,604,4,'α',Math.round((P.alpha||0)*R2D)+'°');row(cL,604,5,'Vy',Math.round(P.vel.y)+'');
+  cL.strokeStyle='#1f5a44';cL.beginPath();cL.moveTo(612,346);cL.lineTo(788,346);cL.stroke();T(cL,'ЦЕЛЬ',700,368,'#ffd27a',17);
+  {const L=radar.mode==='STT'?radar.lock:(radar.mode==='TWS'&&radar.bugOK&&radar.bugOK()?radar.bug:null);
+    if(L&&L.alive){const rel=L.pos.clone().sub(P.pos),d=rel.length(),vc=-(L.vel.clone().sub(P.vel)).dot(rel)/Math.max(d,1);row(cL,604,7,'Д',(d/1000).toFixed(1));row(cL,604,8,'Vсб',Math.round(vc*3.6)+'');row(cL,604,9,'H',Math.round(L.pos.y)+'');row(cL,604,10,'ТИП',(radar.mode==='STT'?'АС':'СНП'),'#7dffa0');}
+    else T(cL,'НЕТ',700,420,'#6f8a7e',17);}
+  // right: column = fuel, engines, expendables; main window = the right page (stores / systems)
+  cR.fillStyle='#030a0c';cR.fillRect(0,0,800,600);cR.drawImage(o.smCv.R,200,0,600,600);cR.strokeStyle='#1f5a44';cR.lineWidth=2;cR.strokeRect(4,4,192,592);
+  const fk=Math.round(P.totalFuel||0),ff=clamp(fk/Math.max(1,P.ac.fuel),0,1),lo=ff<.2;T(cR,'ТОПЛИВО',100,26,'#ffd27a',17);T(cR,fk+' КГ',100,58,lo?'#ff5a4a':'#fff',24);
+  cR.fillStyle='#132018';cR.fillRect(30,80,140,18);cR.fillStyle=lo?'#ff5a4a':'#46d66a';cR.fillRect(30,80,140*ff,18);
+  T(cR,'ДВИГАТЕЛИ',100,130,'#ffd27a',17);const n1=clamp((P.n||0)*100,0,110);[[60,'Л'],[140,'П']].forEach(([x,s])=>{cR.fillStyle='#132018';cR.fillRect(x-22,150,44,150);cR.fillStyle=(P.ab||0)>.05?'#ff8a3a':'#46d66a';const h=150*n1/110;cR.fillRect(x-22,300-h,44,h);T(cR,s,x,316,'#9fe8c0',14);T(cR,Math.round(n1)+'%',x,338,'#fff',16);});
+  T(cR,(P.ab||0)>.05?'ФОРСАЖ':'',100,364,'#ff8a3a',15);
+  row(cR,0,7,'ЛТЦ',(P.flares||0)+'');row(cR,0,8,'ДО',(P.chaff||0)+'');row(cR,0,9,'ПУШКА',(P.gun?P.gun.ammo:0)+'');row(cR,0,10,'МАССА',Math.round((P.mass||0)/100)/10+' Т');}
+
+// ---------------- Su-30MK2 (front cockpit) ----------------
+const GMK=new THREE.Group();GMK.visible=false;sm.add(GMK);const mkL=[];
+{const gg=gauges(GMK,mkL),CX=-.045;box(GMK,.24,.25,.01,teal,CX,.055,.016);
+  gg(CX-.075,.135,.027,'ias');gg(CX-.075,.068,.027,'alt');gg(CX-.075,.001,.027,'aoa');gg(CX+.035,.105,.05,'adi');gg(CX+.035,-.008,.05,'hsi');
+  gg(-.43,-.14,.03,'clk');gg(-.355,-.14,.03,'vvi');gg(.215,-.14,.028,'egt');gg(.285,-.14,.028,'egt');gg(.375,-.14,.04,'rpm');
+  const st=(w,h,x,y,W,H,draw)=>{const c=cvs(W,H);draw(c.getContext('2d'));const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),toneMapped:false}));m.position.set(x,y,.0215);GMK.add(m);};
+  st(.2,.05,CX,-.14,400,100,g=>{g.fillStyle='#2a2f31';g.fillRect(0,0,400,100);T(g,'ДОЗАПРАВКА',200,16,'#e8ece6',16);[['ШТАНГА',70],['ОГНИ',200],['СЛИВ',330]].forEach(([s,x])=>{g.strokeStyle='#e8ece6';g.lineWidth=3;g.beginPath();g.arc(x,54,13,0,7);g.stroke();T(g,s,x,86,'#cfd3cf',12);});});
+  st(.13,.042,.305,.195,260,84,g=>{g.fillStyle='#1b1e20';g.fillRect(0,0,260,84);const L=['ПОЖАР','ОТКАЗ САУ','ГИДРО 1','ГИДРО 2','ТОПЛИВО','ГЕНЕР','МАСЛО','КИСЛОРОД','ШАССИ','ОБЛЕД','СДУ','РЭП'];L.forEach((s,i)=>{const x=6+(i%4)*63,y=6+(i/4|0)*26;g.fillStyle=i<2?'#5a1810':'#4a3c10';g.fillRect(x,y,58,21);T(g,s,x+29,y+11,'#d8c8b0',9);});});}
+
+// ---------------- which board: applied after every cockpit change ----------------
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{
+    const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S',mk2=t==='Su-30MK2',s30=t==='Su-30SM',vis=(l,v)=>{for(const m of l)m.visible=v;};
+    G35.visible=W35.visible=s35;GMK.visible=mk2;
+    if(!s30){vis(old.L,!s35);vis(old.R,!s35);vis(old.C,!(s35||mk2));}
+    vis(old.G,!(s35||mk2));vis(old.K,!(s35||mk2));vis(old.H,!s35);
+    if(s35){for(const[m,y]of hudM)m.position.y=y+HUDUP;o.glass=o.glass0.map(p=>p.clone().add(new V3(0,HUDUP,0)));}
+    else if(!s30)for(const[m,y]of hudM)m.position.y=y;
+  }catch(e){console.warn('v216 board',e);}return r;};}
+{let n=0;o.anims.push(()=>{if(!player||!sm.visible)return;if(n++&1)return;try{if(G35.visible){drawMFI35();drawPUI();}else if(GMK.visible)drawG(mkL);else return;}catch(e){}for(const t of live)t.needsUpdate=true;});}
+ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · 2× МФИ-35 + ПУИ-35';
+}catch(e){console.warn('v216 Flanker boards',e);}
+
+// ---------------- F-14D: digital HUD and three MFDs ----------------
+try{
+const V=ck.viper,tg=V.vars.tomcat.on[0],tp=V.tVdi.parent,isD=()=>!!player&&player.type==='F-14D';
+const cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
+const T=(c,s,x,y,col,sz,al)=>{c.fillStyle=col||'#9cffbe';c.font='700 '+(sz||15)+'px "B612 Mono",monospace';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y);};
+const D=window.F14D={fmt:['VDI','HSD','SMS']},FM=['VDI','HSD','SMS','ENG'],rawV=cvs(360,360),rawH=cvs(512,512),m3=cvs(360,360);
+const DG=new THREE.Group();DG.visible=false;tp.add(DG);const DH=new THREE.Group();DH.visible=false;tg.add(DH);
+const bz=new THREE.MeshPhongMaterial({color:0x1b1e20,shininess:6}),ob=new THREE.MeshPhongMaterial({color:0x4a5154,shininess:6});
+const frame=(x,y,s,z)=>{for(const[w,h,dx,dy]of[[s+.03,.014,0,s/2+.007],[s+.03,.022,0,-s/2-.011],[.014,s,-s/2-.007,0],[.014,s,s/2+.007,0]]){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,.012),bz);b.position.set(x+dx,y+dy,z);DG.add(b);}};
+const keys=(n,x,y,s,z)=>{FM.forEach((f,i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.016,.01,.008),ob);b.position.set(x+(i-1.5)*s/4,y-s/2-.011,z+.006);DG.add(b);
+  const def={meshes:[b],name:'MFD '+(n+1)+' · '+f,state:()=>D.fmt[n]===f?'ON':'—',act:()=>{D.fmt[n]=f;sfx.click();}};b.userData.ctl=def;(V.ctls||[]).push(def);});};
+frame(0,.03,.15,.05);keys(0,0,.03,.15,.05);frame(0,-.165,.14,.041);keys(1,0,-.165,.14,.041);
+// MFD 3, right of MFD 1
+const m3t=new THREE.CanvasTexture(m3);m3t.minFilter=THREE.LinearFilter;m3t.generateMipmaps=false;
+{const X=.2,Y=.035,S=.125;const back=new THREE.Mesh(new THREE.BoxGeometry(S+.04,S+.05,.03),bz);back.position.set(X,Y,.05);DG.add(back);
+  const q=new THREE.Mesh(new THREE.PlaneGeometry(S,S),new THREE.MeshBasicMaterial({map:m3t,toneMapped:false}));q.position.set(X,Y,.0655);DG.add(q);frame(X,Y,S,.066);keys(2,X,Y,S,.066);}
+function paint(c,S,n,P,self){const f=D.fmt[n],k=S/360,col='#9cffbe';c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;
+  if(f!==self){c.fillStyle='#020503';c.fillRect(0,0,S,S);
+    if(f==='VDI')c.drawImage(rawV,0,0,S,S);else if(f==='HSD')c.drawImage(rawH,0,0,S,S);
+    else{c.save();c.scale(k,k);
+      if(f==='SMS'){T(c,'SMS',180,22,col,18);const ks=Object.keys(P.ac.st||{}),w=game.wsel;c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(180,44);c.lineTo(60,120);c.lineTo(60,150);c.lineTo(300,150);c.lineTo(300,120);c.closePath();c.stroke();
+        ks.forEach((s,i)=>{const y=176+i*17,v=P.load[s]||'—',on=v===w;T(c,'STA '+s,40,y,'#6fbf8a',13,'left');T(c,String(typeof SN!=='undefined'&&SN[v]||v),200,y,on?'#fff':col,14,'left');if(on){c.strokeStyle='#fff';c.strokeRect(192,y-8,90,16);}});
+        T(c,'GUN '+(P.gun?P.gun.ammo:0),60,62,col,14,'left');T(c,game.arm?'ARM':'SAFE',300,62,game.arm?'#fff':col,14,'right');}
+      else{T(c,'ENG',180,22,col,18);const n=clamp((P.n||0)*100,0,110),ab=P.ab||0;[[110,'L'],[250,'R']].forEach(([x,s])=>{T(c,s,x,50,col,15);
+          [['RPM',n/110,Math.round(n)+''],['TIT',.25+n/110*.55+ab*.15,Math.round(350+n*5+ab*120)+''],['FF',clamp(.08+n/110*.3+ab*.6,0,1),Math.round((P.ff||0)*3600*2.2046/2/100)*100+'']].forEach(([l,v,t],i)=>{const bx=x-48+i*34;c.strokeStyle=col;c.lineWidth=1.5;c.strokeRect(bx,70,22,150);c.fillStyle=col;const h=150*clamp(v,0,1);c.fillRect(bx,220-h,22,h);T(c,l,bx+11,234,'#6fbf8a',11);T(c,t,bx+11,250,col,11);});
+          T(c,ab>.05?'A/B':'',x,274,'#fff',15);});
+        T(c,'FUEL '+Math.round((P.totalFuel||0)*2.2046/100)*100+' LB',180,304,col,16);}
+      c.restore();}}
+  // push-button legends along the bottom, the format on show boxed
+  c.save();c.scale(k,k);FM.forEach((s,i)=>{const x=180+(i-1.5)*90;c.fillStyle='rgba(2,5,3,.8)';c.fillRect(x-24,340,48,18);T(c,s,x,349,D.fmt[n]===s?'#fff':col,13);if(D.fmt[n]===s){c.strokeStyle='#fff';c.lineWidth=1.5;c.strokeRect(x-23,341,46,16);}});c.restore();}
+{const _v=drawTcVdi;drawTcVdi=function(P){_v.apply(this,arguments);if(!isD()||!P)return;try{rawV.getContext('2d').drawImage(tcVdiC,0,0);paint(tcVdiC.getContext('2d'),360,0,P,'VDI');}catch(e){}};}
+{const _h=drawTcHsd;drawTcHsd=function(P){_h.apply(this,arguments);if(!isD()||!P)return;try{rawH.getContext('2d').drawImage(tcHsdC,0,0);paint(tcHsdC.getContext('2d'),512,1,P,'HSD');}catch(e){}};}
+(V.anims||[]).push(()=>{if(!DG.visible||!player)return;try{paint(m3.getContext('2d'),360,2,player,'');m3t.needsUpdate=true;}catch(e){}});
+// HUD: framed combiner with a wide field, digital symbology
+const dGlass=[[-.1,.07],[.1,.07],[.13,.03],[.13,-.17],[-.13,-.17],[-.13,.03]].map(([x,y])=>new V3(x,y,-.75));
+{const fr=new THREE.MeshPhongMaterial({color:0x121416,shininess:10});for(const sd of[-1,1]){const p=new THREE.Mesh(new THREE.BoxGeometry(.012,.25,.016),fr);p.position.set(sd*.137,-.05,-.75);DH.add(p);}
+  const t=new THREE.Mesh(new THREE.BoxGeometry(.21,.01,.016),fr);t.position.set(0,.076,-.75);DH.add(t);
+  const gl=new THREE.Mesh(new THREE.PlaneGeometry(.262,.24),new THREE.MeshBasicMaterial({color:0x9fd8c0,transparent:true,opacity:.05,depthWrite:false}));gl.position.set(0,-.05,-.749);DH.add(gl);}
+{const _t=drawTomcatHud;drawTomcatHud=function(P,fs,lh){if(P&&P.type==='F-14D'){try{return drawHornetHud(P,fs,lh);}catch(e){}}return _t.apply(this,arguments);};}
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='viper'&&isD();DG.visible=DH.visible=on;if(on)V.glass=dGlass;}catch(e){}return r;};}
+ACROLE['F-14D']='US · FLEET DEFENCE · APG-71 · AAS-42 IRST + TCS · DIGITAL HUD · 3 MFDs';
+}catch(e){console.warn('v216 F-14D',e);}
