@@ -14271,21 +14271,52 @@ function drawG(list){const P=player;for(const g of list){const c=g.cv.getContext
 // ---------------- Su-35S ----------------
 const G35=new THREE.Group();G35.visible=false;sm.add(G35);const W35=new THREE.Group();W35.visible=false;root.add(W35);
 // v224: the two МФИ-35 (screens, 40 keys each) are built by the МФИ page engine further down
-// standby flight display (top right of the board) and the two warning-lamp blocks either side of the ПУИ
-{box(G35,.085,.095,.02,bez,.3,.185,.02);const m=quad(G35,o.smCv.C,.07,.081,.3,.185,.0312);m.material.map=texOf(o.smCv.C);
-  const lc=cvs(128,64),g=lc.getContext('2d');g.fillStyle='#1b1e20';g.fillRect(0,0,128,64);[['ОТКАЗ','#7a1a12'],['ПОЖАР','#7a1a12'],['ТОПЛ','#7a5a10'],['ГИДРО','#7a5a10']].forEach(([s,cl],i)=>{g.fillStyle=cl;g.fillRect(6+(i%2)*62,6+(i>>1)*28,54,22);T(g,s,33+(i%2)*62,17+(i>>1)*28,'#e8d8c8',12);});
-  quad(G35,lc,.07,.035,-.3,.195,.021);quad(G35,lc,.07,.035,.42,.195,.021);}
-// ПУИ-35 under the HUD: display on top, 6 x 5 keyboard below
+// v226: board after S3-A-31-11 Рис. 1 (Приборная доска) and the cockpit photos. Top strip: Щиток левый верхний (СМОТРИ ОТКАЗ lamp, РЛС ИЗЛ /
+// ФАРЫ ПОСАДКА toggles, guarded ГЛАВН ВКЛ, red ПК+ОГНЕТУШ ЛЕВ ДВИГ), standby display with the lamp column (Щиток правый верхний) and
+// ПК+ОГНЕТУШ ПРАВ ДВИГ on the right; bottom left the ШАССИ ВЫПУЩ lamp and the gear handle; Щиток нижний (ДОЗАПРАВКА) hangs under the screens.
+const pnl35=Lm(0x6f8f9e,10);box(G35,1.0,.44,.012,pnl35,0,0,.012);
+const cnv=(w,h,x,y,W,H,draw,dyn,par)=>{const c=cvs(W,H);const m=quad(par||G35,c,w,h,x,y,.0212);if(!dyn)m.material.map.needsUpdate=true;draw&&draw(c.getContext('2d'),W,H);return{c,m,draw};};
+const dyn35=[];
+const tog=(g,x,y,up,lbl,lbl2)=>{g.fillStyle='#c8ccc8';g.beginPath();g.arc(x,y,9,0,7);g.fill();g.fillStyle='#e8d23a';g.beginPath();g.arc(x,y+(up?-16:16),6,0,7);g.fill();g.strokeStyle='#d8dcd8';g.lineWidth=4;g.beginPath();g.moveTo(x,y);g.lineTo(x,y+(up?-14:14));g.stroke();if(lbl)T(g,lbl,x,y-34,'#f0f2ee',11);if(lbl2)T(g,lbl2,x,y+34,'#f0f2ee',10);};
+const redBtn=(g,x,y,s,l1,l2)=>{g.fillStyle='#c41e1e';g.fillRect(x-s/2,y-s/2,s,s);g.fillStyle='#8a1010';for(const a of[-1,1])for(const b of[-1,1])g.fillRect(x+a*s*.22-s*.17,y+b*s*.22-s*.17,s*.34,s*.34);g.fillStyle='#1c2226';g.fillRect(x-s*.9,y+s*.62,s*1.8,s*.62);T(g,l1,x,y+s*.78,'#f0f2ee',9);T(g,l2,x,y+s*1.05,'#f0f2ee',9);};
+// Щиток левый верхний
+dyn35.push(cnv(.2,.09,-.31,.165,400,180,(g,W,H)=>{const P=player,t=performance.now();g.fillStyle='#6f8f9e';g.fillRect(0,0,W,H);
+  const mc=P&&(P.hp<60||P.totalFuel<P.ac.fuel*.15||(sys.mig&&sys.mig.lamp>performance.now()/1000));g.fillStyle=mc&&t%600<350?'#ffb21a':'#3a3010';g.fillRect(16,60,58,40);T(g,'СМОТРИ',45,72,mc?'#201000':'#8a7a40',10);T(g,'ОТКАЗ',45,88,mc?'#201000':'#8a7a40',10);
+  tog(g,120,90,radar.power==='ON','РЛС','ИЗЛ');tog(g,180,90,true,'ФАРЫ','ПОСАДКА');
+  g.fillStyle='#202020';g.fillRect(222,20,40,60);for(let i=0;i<6;i++){g.fillStyle=i%2?'#e8c020':'#1a1a1a';g.beginPath();g.moveTo(222,26+i*10);g.lineTo(262,16+i*10);g.lineTo(262,24+i*10);g.lineTo(222,34+i*10);g.fill();}T(g,'ГЛАВН',242,8,'#f0f2ee',10);T(g,'ВКЛ',242,96,'#f0f2ee',10);
+  g.fillStyle='#1c2226';g.fillRect(278,120,110,50);T(g,'ПК+ОГНЕТУШ',333,134,'#f0f2ee',10);T(g,'ЛЕВ ДВИГ',333,154,'#f0f2ee',10);redBtn(g,340,62,60,'','');}));
+// Щиток правый верхний: standby display (МФИ репер) and the lamp column
+{box(G35,.11,.105,.02,bez,.29,.165,.02);const m=quad(G35,o.smCv.C,.092,.088,.29,.165,.0312);m.material.map=texOf(o.smCv.C);}
+dyn35.push(cnv(.05,.1,.385,.165,100,200,(g,W,H)=>{const P=player;g.fillStyle='#6f8f9e';g.fillRect(0,0,W,H);
+  [['ПОЖАР',P&&P.fire>0],['ГИДРО',P&&P.hp<35],['ОТКАЗ',P&&P.hp<50],['ВЫХОД',false],['ОПАСН ВЫСОТА',P&&P.pos.y-groundAt(P.pos.x,P.pos.z)<150&&!P.onGround]].forEach(([s,on],i)=>{g.fillStyle=on?'#ff3a2a':'#4a1410';g.fillRect(14,6+i*38,72,32);T(g,s.split(' ')[0],50,16+i*38,on?'#fff':'#c8a8a0',9);if(s.includes(' '))T(g,s.split(' ')[1],50,30+i*38,on?'#fff':'#c8a8a0',9);});}));
+dyn35.push(cnv(.07,.06,.45,.17,140,120,(g)=>{g.fillStyle='#6f8f9e';g.fillRect(0,0,140,120);redBtn(g,70,40,52,'','');g.fillStyle='#1c2226';g.fillRect(10,80,120,36);T(g,'ПК+ОГНЕТУШ',70,90,'#f0f2ee',10);T(g,'ПРАВ ДВИГ',70,106,'#f0f2ee',10);}));
+// ШАССИ ВЫПУЩ lamp and the gear handle, bottom left of the board
+dyn35.push(cnv(.07,.16,-.46,-.12,140,320,(g,W,H)=>{const P=player,dn=P&&((sys.mig&&sys.mig.gear)||P.gearPos>.5);g.fillStyle='#6f8f9e';g.fillRect(0,0,W,H);
+  T(g,'УБРАНО',70,22,'#f0f2ee',12);g.fillStyle='#2a2f31';g.fillRect(58,34,24,180);g.fillStyle='#d8d8d0';const hy=dn?180:60;g.fillRect(50,hy-30,40,60);g.fillStyle='#9aa0a0';for(let i=0;i<5;i++)g.fillRect(50,hy-26+i*12,40,4);T(g,'ВЫПУЩЕНО',70,228,'#f0f2ee',11);
+  g.fillStyle=dn?'#46ff6a':'#123a1a';g.fillRect(24,256,92,48);T(g,'ШАССИ',70,272,dn?'#062010':'#3a7a4a',13);T(g,'ВЫПУЩ',70,290,dn?'#062010':'#3a7a4a',13);}));
+// Щиток нижний (ДОЗАПРАВКА) under the screens
+const LS=new THREE.Group();LS.position.set(0,0,.05);G35.add(LS);box(LS,.23,.085,.05,pnl35,0,-.255,-.005);
+dyn35.push(cnv(.22,.075,0,-.255,440,150,(g)=>{g.fillStyle='#6f8f9e';g.fillRect(0,0,440,150);g.strokeStyle='#4a6270';g.strokeRect(2,2,436,146);g.fillStyle='#4a6270';g.fillRect(118,0,2,150);
+  T(g,'ТРИММЕР РН',58,18,'#f0f2ee',11);tog(g,58,52,true);T(g,'БЛИЖН  ДАЛЬН',58,110,'#f0f2ee',10);
+  T(g,'ДОЗАПРАВКА',280,16,'#f0f2ee',15);[['ШТАНГА',170,player&&player.arOpen],['ФАРЫ',240,false],['КРАНЫ',310,false],['ШТАНГА АВАР',385,false]].forEach(([s,x,on])=>{tog(g,x,80,!!on);T(g,s.split(' ')[0],x,42,'#f0f2ee',10);if(s.includes(' '))T(g,'АВАР',x,124,'#f0f2ee',10);});},false,LS));
+// ПУИ-35 under the КАИ-35: display, mode keys НАВ Р/С ГО В-В В-П on top, ПЗК…КОР keypad, Ф ТВ СБР СТК ИРК ОЧС along the bottom, four keys each side
 box(W35,.27,.075,.08,Lm(0x7a8c97),0,-.212,-.70);
 const pui=new THREE.Group();pui.position.set(0,-.283,-.635);pui.rotation.x=-.375;pui.scale.set(1.08,.92,1);W35.add(pui);box(pui,.2,.16,.05,blk,0,0,0);
 const puiC=cvs(320,256);quad(pui,puiC,.19,.152,0,0,.0255);
-const PKEY=['НАВ','ВВ','ВЗ','БВБ','СВЯЗЬ','ОТВ','1','2','3','ППМ','АЭР','ВВОД','4','5','6','КУРС','РСБН','СБР','7','8','9','ВЫС','ИНС','◄','—','0','.','ВРЕМЯ','ЯРК','►'];
-function drawPUI(){const P=player,g=puiC.getContext('2d');g.fillStyle='#16191b';g.fillRect(0,0,320,256);g.fillStyle='#061008';g.fillRect(12,8,296,78);g.strokeStyle='#3a4044';g.lineWidth=2;g.strokeRect(12,8,296,78);
+const PTOP=['НАВ','Р/С','ГО','В-В','В-П'],PK1=[['ПЗК','1'],['ОПЦ','2'],['БРЖ','3'],['ВСТ','4'],['РМ','5']],PK2=[['ППМ','6'],['АЭР','7'],['ПОС','8'],['ПЗ','9'],['КОР','0']],PBOT=['Ф','ТВ','СБР','СТК','ИРК','ОЧС'];
+function drawPUI(){const P=player,g=puiC.getContext('2d');g.fillStyle='#1a1d1f';g.fillRect(0,0,320,256);
+  const key=(x,y,w,h,a,b)=>{g.fillStyle='#2c3236';g.fillRect(x,y,w,h);g.strokeStyle='#59605f';g.lineWidth=1;g.strokeRect(x,y,w,h);T(g,a,x+w/2,y+(b?h*.36:h/2),'#d8dcd6',a.length>3?9:11);if(b)T(g,b,x+w/2,y+h*.74,'#d8dcd6',10);};
+  PTOP.forEach((s,i)=>key(52+i*44,4,38,20,s));
+  for(let i=0;i<4;i++){key(4,32+i*24,34,18,'');key(282,32+i*24,34,18,i===3?'ВВД':'');}
+  g.fillStyle='#061008';g.fillRect(44,30,232,96);g.strokeStyle='#3a4044';g.lineWidth=2;g.strokeRect(44,30,232,96);
   const w=game.wsel,m=radar.sensor==='IRST'?'ОЛС':'РЛС',md={RWS:'ОБЗОР',TWS:'СНП',STT:'ЗАХВАТ',ACM:'БВБ'}[radar.mode]||radar.mode,L=radar.mode==='STT'?radar.lock:null,d=new Date(),p2=v=>String(v).padStart(2,'0');
-  T(g,(AGW[w]?'ВЗ':'ВВ')+'  '+m+' '+md,20,24,'#7dff8a',17,'left');T(g,p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds()),300,24,'#7dff8a',15,'right');
-  T(g,(w==='GUN'?'ПУШКА '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' × '+(MSL[w]?P.count(w):'')),20,47,'#7dff8a',17,'left');T(g,L?'Д '+(L.pos.distanceTo(P.pos)/1000).toFixed(1)+' КМ':'ЦЕЛИ НЕТ',300,47,'#7dff8a',15,'right');
-  T(g,'К '+String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+'  Н '+Math.round(P.pos.y)+'  Т '+Math.round(P.totalFuel||0),20,70,'#7dff8a',15,'left');
-  PKEY.forEach((s,i)=>{const q=i%6,r=i/6|0,x=14+q*49.5,y=96+r*31;g.fillStyle=q<3&&r>0&&r<5?'#3a4044':'#2c3236';g.fillRect(x,y,44,26);g.strokeStyle='#59605f';g.lineWidth=1;g.strokeRect(x,y,44,26);T(g,s,x+22,y+14,'#d8dcd6',s.length>3?10:13);});}
+  T(g,(AGW[w]?'В-П':'В-В')+' '+m+' '+md,52,44,'#7dff8a',13,'left');T(g,p2(d.getHours())+':'+p2(d.getMinutes()),268,44,'#7dff8a',12,'right');
+  T(g,(w==='GUN'?'ПУШКА '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' × '+(MSL[w]?P.count(w):'')),52,66,'#7dff8a',13,'left');T(g,L?'Д '+(L.pos.distanceTo(P.pos)/1000).toFixed(1):'',268,66,'#7dff8a',12,'right');
+  T(g,'ППМ '+((typeof wpNow==='function'&&wpNow(P)&&wpNow(P).name)||'01'),52,88,'#7dff8a',12,'left');T(g,'Н '+Math.round(P.pos.y),268,88,'#7dff8a',12,'right');
+  T(g,'К '+String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+'   Gт '+((P.totalFuel||0)/1000).toFixed(1),52,110,'#7dff8a',12,'left');
+  PK1.forEach(([a,b],i)=>key(44+i*47,134,42,32,a,b));PK2.forEach(([a,b],i)=>key(44+i*47,172,42,32,a,b));
+  PBOT.forEach((s,i)=>key(20+i*48,216,42,22,s));
+  for(const c of dyn35)if(c.draw){c.draw(c.c.getContext('2d'),c.c.width,c.c.height);c.m.material.map.needsUpdate=true;}}
 // ---------------- Su-30MK2 (front cockpit) ----------------
 const GMK=new THREE.Group();GMK.visible=false;sm.add(GMK);const mkL=[];
 {const gg=gauges(GMK,mkL),CX=-.045;box(GMK,.24,.25,.01,teal,CX,.055,.016);
@@ -14895,7 +14926,7 @@ function mkState(K,p0,p1){const[a,b]=vks(K);SMM[a]={pg:p0,brt:1,grey:0,off:0};SM
 const actVK=K=>vks(K)[MX[K].split?MX[K].act:0];
 // which half and which of that half's keys a bezel key means
 function route(K,sd,i,D){const M=MX[K],[a,b]=vks(K);
-  if(sd==='B'){if(!M.split)return[a,i];const h=D.nT/2;return i<h?[a,i]:[b,i-h];}
+  if(sd==='B'){if(!M.split)return[a,i];const h=(D.nB||D.nT)/2;return i<h?[a,i]:[b,i-h];}
   if(sd==='L')return[a,i];if(sd==='R')return[M.split?b:a,i];return[null,i];}
 function ctlLabel(vk,sd,i){const pg=SMM[vk].pg;
   const mb=MYB[pg]&&MYB[pg](vk),mr=MYR[pg]&&MYR[pg](vk);if(sd==='B'){if(mb){const r=mb[i];return r?tr(r[0]):'';}return i<7?smLabel(vk,'B',i):'';}if(sd==='R'&&mr){const r=mr[i];return r?tr(r[0]):'';}
@@ -14904,9 +14935,9 @@ function ctlOn(vk,sd,i){const pg=SMM[vk].pg;try{const mb=MYB[pg]&&MYB[pg](vk),mr
 function ctlPress(vk,sd,i){const pg=SMM[vk].pg;
   const mb=MYB[pg]&&MYB[pg](vk),mr=MYR[pg]&&MYR[pg](vk);if(sd==='B'&&mb){const r=mb[i];if(r&&r[1])r[1]();return;}if(sd==='R'&&mr){const r=mr[i];if(r&&r[1])r[1]();return;}
   if(sd==='B'&&i>=7||sd==='R'&&i>=5||sd==='L'&&i>=7)return;smPress(vk,sd,i);}
-function label(K,sd,i,D){if(sd==='T'){const k=TOPK[i];return k?tr(TOPL[k]):'';}const[vk,j]=route(K,sd,i,D);return ctlLabel(vk,sd,j);}
+function label(K,sd,i,D){if(sd==='T'){const k=(D.top||TOPK)[i];return k?tr(TOPL[k]):'';}const[vk,j]=route(K,sd,i,D);return ctlLabel(vk,sd,j);}
 function press(K,sd,i,D){const M=MX[K];
-  if(sd==='T'){const k=TOPK[i];if(!k)return;
+  if(sd==='T'){const k=(D.top||TOPK)[i];if(!k)return;
     if(k==='SPLIT'){if(!M.split){M.split=1;M.act=0;}else if(M.act===0)M.act=1;else M.split=0;flash(M.split?(EN()?'SPLIT · ':'ДЕЛЕНИЕ · ')+(M.act?(EN()?'RIGHT':'ПРАВ'):(EN()?'LEFT':'ЛЕВ')):(EN()?'FULL SCREEN':'ПОЛНЫЙ КАДР'),700);return;}
     if(k==='EMIT'){radar.setPower(radar.power==='ON'?'STBY':'ON');return;}
     const vk=actVK(K);SMM[vk].pg=k;SMM[vk].off=0;if(k==='TV'||k==='RDR')SMM.agf=k;return;}
@@ -14924,7 +14955,8 @@ function build(D){const g=D.g,c=cvs(D.cw,D.ch),t=new THREE.CanvasTexture(c);t.mi
     const def={meshes:[m],name:D.name+' · '+({T:'В',B:'Н',L:'Л',R:'П'}[sd])+(i+1),state:()=>{try{return label(D.key,sd,i,D)||'—';}catch(e){return'';}},act:()=>{try{press(D.key,sd,i,D);}catch(e){console.warn(e);}sfx.click();}};
     m.userData.ctl=def;(o.ctls||[]).push(def);};
   const sx=D.w*(1-2*MG)/D.nT*.62,sy=D.h*(1-2*MG)/D.nS*.55;
-  for(let i=0;i<D.nT;i++){const x=D.X+(bU(D.nT,i)-.5)*D.w;btn(x,D.Y+D.h/2+.0105,Math.min(sx,.016),.008,'T',i);btn(x,D.Y-D.h/2-.0105,Math.min(sx,.016),.008,'B',i);}
+  for(let i=0;i<D.nT;i++){const x=D.X+(bU(D.nT,i)-.5)*D.w;btn(x,D.Y+D.h/2+.0105,Math.min(sx,.016),.008,'T',i);}
+  const nB=D.nB||D.nT;for(let i=0;i<nB;i++){const x=D.X+(bU(nB,i)-.5)*D.w;btn(x,D.Y-D.h/2-.0105,Math.min(sx,.016),.008,'B',i);}
   for(let i=0;i<D.nS;i++){const y=D.Y-(bU(D.nS,i)-.5)*D.h;btn(D.X-D.w/2-.0105,y,.008,Math.min(sy,.016),'L',i);btn(D.X+D.w/2+.0105,y,.008,Math.min(sy,.016),'R',i);}
   DISP[D.key]=D;return D;}
 
@@ -14939,11 +14971,11 @@ function paint(D){const c=D.cv.getContext('2d'),W=D.cw,H=D.ch,K=D.key,M=MX[K],[a
     c.strokeStyle='#7dffa0';c.lineWidth=2;c.strokeRect(M.act?W/2+3:mx+1,my+1,(W/2-mx)-4,H-2*my-2);}
   // legends at their keys
   const shown=[SMM[a].pg,M.split?SMM[b].pg:null],act=SMM[actVK(K)].pg;
-  for(let i=0;i<D.nT;i++){const x=bU(D.nT,i)*W,k=TOPK[i],t=k?tr(TOPL[k]):'';
+  for(let i=0;i<Math.max(D.nT,D.nB||0);i++){const x=bU(D.nT,i)*W,k=i<D.nT?(D.top||TOPK)[i]:null,t=k?tr(TOPL[k]):'';
     if(t){const on=k===act||k==='EMIT'&&radar.power==='ON'||k==='SPLIT'&&M.split,half=!on&&shown.includes(k);
       if(on){c.fillStyle='#7dffa0';c.fillRect(x-W/D.nT*.42,2,W/D.nT*.84,fz*1.5);}else if(half){c.strokeStyle='#7dffa0';c.lineWidth=1.5;c.strokeRect(x-W/D.nT*.42,2,W/D.nT*.84,fz*1.5);}
       F(c,t,x,2+fz*.75,fz,on?'#04140b':'#9fe8c0','center');}
-    const b0=label(K,'B',i,D);if(b0){const[vk,j]=route(K,'B',i,D),on=ctlOn(vk,'B',j);if(on){c.fillStyle='#7dffa0';c.fillRect(x-W/D.nT*.42,H-2-fz*1.5,W/D.nT*.84,fz*1.5);}F(c,b0,x,H-2-fz*.75,fz,on?'#04140b':'#cfe8da','center');}}
+    const nB=D.nB||D.nT;if(i>=nB)continue;const bx=bU(nB,i)*W;const b0=label(K,'B',i,D);if(b0){const[vk,j]=route(K,'B',i,D),on=ctlOn(vk,'B',j),x=bx;if(on){c.fillStyle='#7dffa0';c.fillRect(x-W/D.nT*.42,H-2-fz*1.5,W/D.nT*.84,fz*1.5);}F(c,b0,x,H-2-fz*.75,fz,on?'#04140b':'#cfe8da','center');}}
   for(let i=0;i<D.nS;i++){const y=bU(D.nS,i)*H;
     for(const sd of['L','R']){const s=label(K,sd,i,D);if(!s)continue;const[vk,j]=route(K,sd,i,D),on=ctlOn(vk,sd,j),x=sd==='L'?4:W-4;
       if(on){c.font='700 '+fz+'px "B612 Mono",monospace';const w=c.measureText(s).width+6;c.fillStyle='#7dffa0';c.fillRect(sd==='L'?x-2:x-w+2,y-fz*.75,w,fz*1.5);}
@@ -14953,7 +14985,10 @@ function paint(D){const c=D.cv.getContext('2d'),W=D.cw,H=D.ch,K=D.key,M=MX[K],[a
 
 // ---------------- Su-35S: two МФИ-35 (12 / 12 / 8 / 8 = 40 keys) ----------------
 const G35=new THREE.Group();G35.visible=false;sm.add(G35);
-for(const k of['L','R']){mkState('35'+k,k==='L'?'RDR':'VSD',k==='L'?'SPO':'SMS');build({key:'35'+k,g:G35,X:(k==='L'?-1:1)*.162,Y:-.03,w:.30,h:.225,cw:800,ch:600,nT:12,nS:8,name:'МФИ-35 '+(k==='L'?'1':'2')});}
+for(const k of['L','R']){mkState('35'+k,k==='L'?'RDR':'VSD',k==='L'?'SPO':'SMS');build({key:'35'+k,g:G35,X:(k==='L'?-1:1)*.2,Y:-.068,w:.366,h:.25,cw:878,ch:600,nT:12,nS:8,name:'МФИ-35 '+(k==='L'?'1':'2')});}
+// МФПИ-35М on the left console (portrait, 22 keys: 6 top, 4 bottom, 6 each side) — systems and set-up frames
+const GMP=new THREE.Group();GMP.position.set(-.43,-.12,.2);GMP.rotation.set(-.55,.35,0);GMP.scale.setScalar(1.15);window.V226={GMP};G35.add(GMP);mkState('MP','KIS','VSD');
+build({key:'MP',g:GMP,X:0,Y:0,w:.1,h:.13,cw:400,ch:520,nT:6,nB:4,nS:6,top:['KIS','VSD','NAV','SPO','REB','RTR'],name:'МФПИ-35М'});
 MX['35R'].split=0;SMM['35R0'].pg='VSD';
 // ---------------- Su-30MK2: two МФИ-10-5 (same 40-key frame) either side of the analogue centre column ----------------
 const GMK=new THREE.Group();GMK.visible=false;sm.add(GMK);
@@ -14962,8 +14997,12 @@ build({key:'MKL',g:GMK,X:-.335,Y:.045,w:.24,h:.18,cw:640,ch:480,nT:12,nS:8,name:
 // the old square Su-27SM screens and their keys are switched off in both jets
 const oldSq=[];sm.children.forEach(m=>{if(!m.isMesh)return;const p=m.position;if(p.x===0&&p.y===0&&p.z===0)return;if((Math.abs(p.x+.385)<.115||Math.abs(p.x-.30)<.115)&&Math.abs(p.y-.055)<.115)oldSq.push(m);});
 {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S',mk2=t==='Su-30MK2';
-    G35.visible=s35;GMK.visible=mk2;if(s35||mk2)for(const m of oldSq)m.visible=false;}catch(e){console.warn('v224 board',e);}return r;};}
-{let n=0;o.anims.push(()=>{if(!player||!sm.visible)return;if(n++&1)return;try{if(G35.visible){paint(DISP['35L']);paint(DISP['35R']);}else if(GMK.visible){paint(DISP.MKL);paint(DISP.MKR);}}catch(e){if(!paint._w){paint._w=1;console.warn('v224 paint',e);}}});}
+    G35.visible=s35;GMK.visible=mk2;if(s35||mk2)for(const m of oldSq)m.visible=false;
+    // the Su-27 standby gauge cluster under the screens is not in the Su-35 (S3-A-31-11: only Щиток нижний there)
+    if(!selectCockpit._lowC){const L=[],own=new Set();G35.traverse(m=>own.add(m));GMK.traverse(m=>own.add(m));const p=new THREE.Vector3();sm.updateMatrixWorld(true);
+      o.root.traverse(m=>{if(!m.isMesh||own.has(m))return;m.getWorldPosition(p);sm.worldToLocal(p);if(Math.abs(p.x)<.14&&p.y<-.19&&p.y>-.4&&Math.abs(p.z)<.06)L.push([m,m.visible]);});selectCockpit._lowC=L;}
+    for(const[m,v]of selectCockpit._lowC)m.visible=s35?false:v;}catch(e){console.warn('v224 board',e);}return r;};}
+{let n=0;o.anims.push(()=>{if(!player||!sm.visible)return;if(n++&1)return;try{if(G35.visible){paint(DISP['35L']);paint(DISP['35R']);paint(DISP.MP);}else if(GMK.visible){paint(DISP.MKL);paint(DISP.MKR);}}catch(e){if(!paint._w){paint._w=1;console.warn('v224 paint',e);}}});}
 
 // ---------------- Su-30SM: the new frames on its own MFDs (bottom row on every non-MFWS page) ----------------
 if(window.S30PG){const en=f=>(c,x0,y0,x1,y1)=>f(c,x0,y0,x1,y1);Object.assign(S30PG,{PFD:en(pPIL),NAV:(c,x0,y0,x1,y1)=>SM_PAGE.NAV(c,x0,y0,x1,y1),ESM:en(pRTR),ECM:en(pREB),HUD:en(pILS),SPO:(c,x0,y0,x1,y1)=>SM_PAGE.SPO(c,x0,y0,x1,y1)});}

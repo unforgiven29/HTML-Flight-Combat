@@ -73,3 +73,12 @@ Two wide (4:3) МФИ-10-5 and the narrower centre МФИ packed edge to edge ac
 - On the Su-35S the **ТВП** page now shows the OLS-35 TV channel: a live greyscale picture in an octagonal window, corner brackets with a gapped cross, ТВВ legend, zoom figure, <ПЗ ПЗ>, azimuth / elevation, СОПР (track) / ПОИСК (search), laser range Д (≤20 km, ЛД shown while lasing), ОГР УГЛА past the gimbal limits (±90° az, −15…+60° el, after the OLS-35 brochure). 10 × 7.5° wide field, zoom ×1 / 2 / 5 / 10.
 - The camera follows the locked target (radar or IRST); with nothing locked it looks along the boresight.
 - Bottom keys: ГСН (switch to the weapon seeker video), ЧБ / БЧ (black-hot / white-hot), УВ+ / УВ− (zoom), ЛД (laser). Right keys: ЗАХВ (IRST lock), СБР (drop).
+
+## v226 — Su-35S instrument board after S3-A-31-11 (Рис. 1 Приборная доска)
+- Two **МФИ-35** (40 keys each) almost edge to edge, filling the lower board as on the diagram and photos.
+- **Щиток левый верхний:** СМОТРИ ОТКАЗ lamp (lit on a fault), РЛС ИЗЛ toggle (follows radar emission), ФАРЫ ПОСАДКА toggle, the guarded striped ГЛАВН ВКЛ, red ПК+ОГНЕТУШ ЛЕВ ДВИГ.
+- **Щиток правый верхний:** standby display, lamp column (ПОЖАР, ГИДРО, ОТКАЗ, ВЫХОД, ОПАСН ВЫСОТА, each lit by the real condition), ПК+ОГНЕТУШ ПРАВ ДВИГ.
+- Bottom left: gear handle (УБРАНО / ВЫПУЩЕНО) and the green ШАССИ ВЫПУЩ lamp. **Щиток нижний** (ТРИММЕР РН, ДОЗАПРАВКА: ШТАНГА / ФАРЫ / КРАНЫ / ШТАНГА АВАР) under the screens. The Su-27 standby gauge cluster that sat under the screens is removed in this jet.
+- **ПУИ-35** keypad laid out as on the real unit: НАВ Р/С ГО В-В В-П on top, ПЗК 1 · ОПЦ 2 · БРЖ 3 · ВСТ 4 · РМ 5 / ППМ 6 · АЭР 7 · ПОС 8 · ПЗ 9 · КОР 0, Ф ТВ СБР СТК ИРК ОЧС along the bottom, four keys each side (ВВД).
+- **МФПИ-35М** (MAK-35S: portrait display, 22 keys = 6 top, 4 bottom, 6 per side) on the forward left console, on the same page engine: КИС, ПИЛ, ТО, РЭП, РЭБ, РТР.
+- Not changed: side consoles (still the shared Flanker consoles), КАИ-35 HUD.
