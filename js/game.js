@@ -1450,7 +1450,7 @@ function segDist(p0,p1,jp,jv,dt){_s1.copy(p1).sub(p0).divideScalar(dt).sub(jv);c
 const _ir=new V3(),_ir2=new V3();
 function irLockRange(d,tg,from){if(!terrLOS(from,tg.pos))return 0;const to=_ir.copy(from).sub(tg.pos).normalize(),c=-tg.fwd(_ir2).dot(to);
   return d.irR*lerp(d.front,1,(c+1)/2)*(tg.ab>.3?1.7:1)*tg.ac.irs;}
-const illuminating=(sh,tg,dl)=>sh.alive&&tg.alive&&(sh===player?radar.sensor==='RDR'&&(radar.mode==='STT'&&radar.lock===tg&&(dl||!radar.noRng)||dl&&radar.mode==='TWS'&&(radar.bug===tg&&radar.bugOK()||radar.awg&&awgFresh(tg))):!!(sh.ai&&(sh.ai.radarLock||dl&&sh.ai.hojLock)));
+const illuminating=(sh,tg,dl)=>sh.alive&&tg.alive&&(sh===player?radar.sensor==='RDR'&&(radar.mode==='STT'&&radar.lock===tg&&(dl||!radar.noRng)||dl&&radar.mode==='TWS'&&(radar.bug===tg&&radar.bugOK()||(radar.awg||radar.multi&&zasEng(tg))&&awgFresh(tg))):!!(sh.ai&&(sh.ai.radarLock||dl&&sh.ai.hojLock)));
 function fireMissile(type,sh,tg,stPos){const m=new Missile(type,sh,tg,stPos);if(sh===player&&tg&&MSL[type].seek==='ARH'&&tg===radar.bug)twsSwap();if(sh===player){game.stats.shots++;}if(sh===player)net.dirty=true;if(sh.ai&&sh.ai.friend)wingFox(sh,type);if(sh.stallIngest)sh.stallIngest();return m;}
 const _Z=new V3(0,0,-1);
 // scratch vectors for the missile step (one step runs at a time)
@@ -1789,7 +1789,7 @@ const PFA_LN=Math.log(1e-6),SNR50=PFA_LN/Math.log(.5)-1,pdOf=s=>s>0?Math.exp(PFA
 const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v);};
 const _rl=new V3(),_rp1=new V3(),_rp2=new V3(),_rpm=new V3(),_dlp=new V3(),_dlv=new V3(),_dz=new V3();
 // what a launcher's datalink tells its missile: the track-file estimate in TWS, the (accurate) single-target track in STT, the truth for the AI
-function dlEstimate(sh,tg){if(sh===player&&radar.mode==='TWS'&&(radar.bug===tg||radar.awg)){const tk=radar.tracks.get(tg);
+function dlEstimate(sh,tg){if(sh===player&&radar.mode==='TWS'&&(radar.bug===tg||radar.awg||radar.multi&&zasEng(tg))){const tk=radar.tracks.get(tg);
     if(tk&&tk.p){const dt=Math.min(performance.now()/1000-tk.t,6);return{p:_dlp.copy(tk.p).addScaledVector(tk.v,dt),v:_dlv.copy(tk.v)};}}
   return{p:_dlp.copy(tg.pos),v:_dlv.copy(tg.vel)};}
 // antenna gimbal limits in airframe axes: azimuth either side, elevation up / down (degrees), and whether the antenna is stabilised against pitch and roll.
@@ -1835,6 +1835,37 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       // plain pulse: no notch, but a target whose echo is weaker than the ground return in its range cell is buried in clutter
       const cl=flClutterAt(a.az,a.d),ts=Math.pow(this.rdet(j,a)/Math.max(a.d,1),2)*.35;return cl>ts;}
     return vr<28;},
+  // ---- electronically scanned arrays (PESA / AESA) ----
+  // No antenna sweeps. The beam is put on one position, dwells there for a burst of pulses, then jumps straight to the next one: the
+  // search volume is a raster of beam positions read bar by bar, and the frame time is (positions x dwell). Because nothing has to move,
+  // the scheduler can break off the raster at any moment to put a short track dwell on each track file at its predicted position, so in TWS
+  // every file is refreshed several times a second instead of once a frame, and in STT the set keeps searching around the lock. A PESA
+  // (one tube transmitter behind ferrite phase shifters) has fewer, longer dwells and a slower revisit than an AESA (a T/R module per element).
+  esaOn(){return !!this.esa&&this.sensor==='RDR';},
+  esaPar(){return this.esa==='A'?{dw:.0045,rv:.2,tdw:2}:{dw:.0085,rv:.4,tdw:3};},
+  esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
+      if(Math.abs(ra-az)>this.beam/2||Math.abs(re-el)>this.bmV()/2||a.off>this.gimbal()+2*D2R)continue;
+      {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
+      const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<pdOf(sn))this.hit(j,a,sn,now);}},
+  // track dwells: the beam goes to where the file says the target is now; a target that has turned hard since the last hit can be outside it
+  esaRevisit(now,skip){const q=this.esaPar();let used=0;
+    for(const [j,tk] of this.tracks){if(j===skip||!j.alive||tk.hoj||!tk.p||now-(tk.rv||0)<q.rv)continue;tk.rv=now;used+=q.dw*q.tdw;
+      const pa=this.ang(this.trkPos(j,tk,now)),a=this.ang(j.pos);if(a.off>this.gimbal()||pa.off>this.gimbal())continue;
+      const dx=(a.az-pa.az)/this.beam,dy=(a.el-pa.el)/this.bmV();if(Math.abs(dx)>.75||Math.abs(dy)>.75)continue;
+      const sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)))*1.6;if(sn>0&&Math.random()<pdOf(sn))this.hit(j,a,sn,now);}
+    return used;},
+  esaSearch(dt,lo,hi,gim,now,trk){const q=this.esaPar(),g=this.glim(),st=this.beam*.85;this._esaLo=lo;this._esaHi=hi;
+    let bud=(this.esaB||0)+dt;if(trk||this.esa==='A')bud-=this.esaRevisit(now,null);let n=0;
+    if(this.esaAz==null||this.esaAz<lo-st||this.esaAz>hi+st){this.esaAz=this.dir>0?lo:hi;}
+    while(bud>=q.dw&&n<600){bud-=q.dw;n++;this.esaAz+=this.dir*st;
+      if(this.esaAz>hi){this.esaAz=hi;this.dir=-1;this.bar=(this.bar+1)%this.nb();}else if(this.esaAz<lo){this.esaAz=lo;this.dir=1;this.bar=(this.bar+1)%this.nb();}
+      const el=clamp(this.barEl(),-g.ed*D2R,g.eu*D2R);this.antEl=el;this.esaCell(this.esaAz,el,now,lo,hi);}
+    this.esaB=Math.max(bud,-.5);this.antAz=this.esaAz;},
+  // STT on an ESA: the lock gets its own dwells (handled by the STT code) and what is left of the timeline keeps a search raster going around
+  // the cursor, so the rest of the picture is not lost the moment the lock is taken
+  esaRetain(dt,gim,now){const W=Math.min(30*D2R,gim),c=clamp(this.cur.az||0,-gim+W,gim-W),az=this.antAz,el=this.antEl;
+    const keep=this.esaAz;this.esaSearch(dt*.45,c-W,c+W,gim,now,true);this.esaAz=this.antAz;this._esaBeam=this.antAz;this._esaBeamEl=this.antEl;this.antAz=az;this.antEl=el;
+    for(const [j,tk] of this.tracks)if(j!==this.lock&&(!j.alive||now-tk.t>8))this.tracks.delete(j);},
   on(){return this.sensor==='IRST'||this.power==='ON'&&this.warm<=0;},
   // COOP (MiG-29 PU-S31 switch): the radar and the IRST work as one sensor. A target is seen if either of them sees it, the IRST fills in what the
   // Doppler notch and look-down lose, the radar gives the IRST track its range, and the tracking dwell holds on whichever return is better.
@@ -1938,7 +1969,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
         if(this.pull>=1){const lk=L;this.drop('JAM');this.jamLock={j:lk,t:now+5};return;}}else{this.pull=Math.max(0,this.pull-dt*.6);this.rngErr=this.pull*this.pull*2600;}
       if(player.ac.cockpit==='fulcrum'){let i=0;while(i<3&&this.ranges[i]*this.unit<a.d*1.05)i++;this.ri=i;}
       {const tk=this.tracks.get(L)||{p:new V3(),v:new V3()};if(!tk.p)tk.p=new V3();if(!tk.v)tk.v=new V3();tk.p.copy(L.pos);tk.v.copy(L.vel);
-        Object.assign(tk,{az:a.az,el:a.el,d:a.d,t:now,alt:L.pos.y,hdg:L.hdg,hoj:this.hoj,n:8});this.tracks.set(L,tk);}return;}
+        Object.assign(tk,{az:a.az,el:a.el,d:a.d,t:now,alt:L.pos.y,hdg:L.hdg,hoj:this.hoj,n:8});this.tracks.set(L,tk);}if(this.esaOn())this.esaRetain(dt,gim,now);return;}
     if(this.mode==='ACM'){const b=this.acmBox(),t=(this.acmT+=dt),Rm=player.ac.cockpit==='fulcrum'?10000:this.awg?(this.acm==='PAL'?15:5)*NM:10*NM;
       if(b.w<=this.beam){this.antAz=b.az;this.antEl=b.el;}
       else if(b.w>=b.h){this.antAz=b.az+b.w*Math.sin(t*this.rate/b.w);this.antEl=b.el+b.h*((t*.8%2)-1);}
@@ -1952,7 +1983,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     // AWG-9 TWS: ±20° in 4 bars or ±40° in 2 bars, about a 2 s frame
     const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,tws?25*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
     if(mg)this.elCmd=Math.atan2(MDH[sys.mig.dh]*1000,this.sensor==='IRST'?Math.max(this.rngM*.5,4000):Math.max(this.cur.r*this.rngM,2500));{const g=this.glim();if(this.sensor==='IRST'&&!this.rotor())this.elCmd=(this.spin()?6:7.5)*D2R;/* the IRST drives its own elevation pattern; nothing the pilot does changes it */this.elCmd=clamp(this.elCmd,-(g.ed-2)*D2R,(g.eu-2)*D2R);}
-    const lo=this.scanC-W,hi=this.scanC+W,prev=this.antAz;{const dE=this.dir>0?hi-this.antAz:this.antAz-lo,kk=this.aesa?1:clamp(dE/(8*D2R)+.22,.28,1);this.antAz+=this.dir*this.rate*(this.sensor==='IRST'?(this.spin()?1.1:this.rotor()?1.7:2.1):1)*kk*dt;}
+    const lo=this.scanC-W,hi=this.scanC+W,prev=this.antAz;if(this.esaOn())this.esaSearch(dt,lo,hi,gim,now,tws);else{{const dE=this.dir>0?hi-this.antAz:this.antAz-lo,kk=this.aesa?1:clamp(dE/(8*D2R)+.22,.28,1);this.antAz+=this.dir*this.rate*(this.sensor==='IRST'?(this.spin()?1.1:this.rotor()?1.7:2.1):1)*kk*dt;}
     if(player.ac.pulse){flClutterSweep(prev,clamp(this.antAz,lo,hi));ghostSweep(prev,clamp(this.antAz,lo,hi),now);}if(this.sensor==='IRST')irCSweep(prev,clamp(this.antAz,lo,hi),now);
     if(this.antAz>hi){this.antAz=hi;this.dir=-1;this.bar=(this.bar+1)%this.nb();}
     else if(this.antAz<lo){this.antAz=lo;this.dir=1;this.bar=(this.bar+1)%this.nb();}
@@ -1963,7 +1994,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       const CR=this.spin()?CONE:0;// conical scan: the detector's field circles the pointing axis, so a target is only modulated while it lies inside the cone
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
-      const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}
+      const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}}
     for(const [j,tk] of this.tracks)if(!j.alive||now-tk.t>(tws?8:10))this.tracks.delete(j);
     if(tws&&mg){// N019 / N001 TWS: a jammer on the scope throws the set back to search, ten track files at most, the most dangerous closing track is bugged until the pilot takes over
       {const TN=(player&&player.ac.trkN)||10;if(this.tracks.size>TN){const l=[...this.tracks].sort((a,b)=>a[1].d-b[1].d);for(let i=TN;i<l.length;i++)if(l[i][0]!==this.bug)this.tracks.delete(l[i][0]);}}
@@ -14104,7 +14135,7 @@ function v215Msl(k,d,mo,sh,dia,sn,name,ru){MSL[k]=d;SHAPE[k]=sh;MDIA[k]=dia;cons
 // Two D-30F6 turbofans (93.2 kN dry / 151.9 kN reheat each), empty 21,820 kg, 16,350 kg internal fuel, 61.6 m² wing, 5 g, M2.83 / 1,500 km/h at low level.
 // RP-31 N007 Zaslon: the first fighter PESA (1.1 m array, ±70° electronic scan, HPRF 200 kHz in the ППС front-hemisphere mode), ten track files and four
 // R-33s guided at once; instrumented scales 0-200 / 0-400 km (reference notes in planes/Modern/MiG-31/Zaslon). The navigator in the back seat runs the
-// set ([6] hands it to the pilot). 8TP retractable IRST under the nose. Four R-33 (AA-9 Amos) in tandem pairs under the belly, R-40TD / R-60M on the
+// set ([6] hands it to the pilot). 8TK retractable IRST under the nose. Four R-33 (AA-9 Amos) in tandem pairs under the belly, R-40TD / R-60M on the
 // wing pylons, GSh-6-23 with 260 rounds. Modern era: R-37M under the belly, R-77 / R-73 on the wings (MiG-31BM).
 try{
   const M31ST={1:[-4.78,-.84,1.7],2:[-2.9,-.64,1.5],3:[2.9,-.64,1.5],4:[4.78,-.84,1.7],5:[-.62,-.98,-1.6],6:[.62,-.98,-1.6],7:[-.62,-.98,3.0],8:[.62,-.98,3.0]};
@@ -14125,7 +14156,7 @@ try{
   LOAD.modern['MiG-31']=MSL['R-37M']?{5:'R-37M',6:'R-37M',7:'R-37M',8:'R-37M',2:'R-77',3:'R-77',1:'R-73',4:'R-73'}:Object.assign({},LOAD.cold['MiG-31']);
   if(LOAD.guns)LOAD.guns['MiG-31']={};STRIKE_LOAD['MiG-31']=Object.assign({},LOAD.cold['MiG-31']);
   for(const era of Object.keys(CMS))CMS[era]['MiG-31']=[32,32];
-  ENGN['MiG-31']='2× D-30F6';IRSTN['MiG-31']='8TP';ENG_SUP['MiG-31']=.06;CALLS['MiG-31']='FOXHOUND';NCTR_ID['MiG-31']='MIG-31';FOE['MiG-31']='F-14A';RWR_OF['MiG-31']='SPO-15LM';
+  ENGN['MiG-31']='2× D-30F6';IRSTN['MiG-31']='8TK';ENG_SUP['MiG-31']=.06;CALLS['MiG-31']='FOXHOUND';NCTR_ID['MiG-31']='MIG-31';FOE['MiG-31']='F-14A';RWR_OF['MiG-31']='SPO-15LM';
   ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA · 4× R-33 · PILOT + NAVIGATOR';DL_FIT.add('MiG-31');
   try{CTYPES.cold[1].INT.push('MiG-31');CTYPES.modern[1].INT.unshift('MiG-31');}catch(e){}
 }catch(e){console.warn('v215 MiG-31',e);}
@@ -14503,3 +14534,76 @@ function m31Hud(P,fs0){const ppd=KPX*D2R,fs=Math.max(9,Math.round(fs0*.72));hx.s
   hx.restore();}
 {const _d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&P.type==='MiG-31'){try{m31Hud(P,fs);}catch(e){console.warn(e);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
 }catch(e){console.warn('v219 MiG-31',e);}
+
+/* ===== v220: electronically scanned radars, Zaslon TWS, 8TK, pilot's tactical display =====
+   PESA / AESA sets (Zaslon, N011M, Irbis-E, APG-79 ...) no longer sweep: the beam steps through a raster of positions and the timeline is shared
+   between search dwells and track dwells (see radar.esaSearch). Zaslon: track-while-scan on up to 10 files with up to 4 engaged at once under
+   time-shared illumination, as in the Zaslon (RP-31) description: simultaneous search, tracking, launch and illumination of several targets.
+   8TK: the retractable heat direction finder under the nose works alongside the radar: the two hand a lock over to each other, the radar ranges
+   the IR track, and the 8TK's own bearings show on the tactical indicators. Pilot's board: the ИПВ is now a full tactical-situation picture. ===== */
+// the targets the Zaslon is engaging, in the order they were fired on; a new one is taken only while fewer than four are engaged
+function zasEng(tg){const l=[];for(const m of missiles)if(m.alive&&m.sh===player&&m.track&&m.track.alive&&!l.includes(m.track))l.push(m.track);
+  const n=(player&&player.ac.twsN)||4,i=l.indexOf(tg);return i>=0?i<n:l.length<n;}
+const M31IR=new Map();
+try{
+{const _r=radar.reset;radar.reset=function(ac){const o=_r.apply(this,arguments);const r=ac&&ac.radar;this.esa=r&&r.aesa?'A':r&&r.pesa?'P':null;this.multi=!!(r&&r.name==='Zaslon');
+  this.esaAz=null;this.esaB=0;M31IR.clear();return o;};}
+{const _co=radar.coop;radar.coop=function(){if(!this._cx&&player&&player.type==='MiG-31')return true;return _co.apply(this,arguments);};}
+// 8TK search runs whatever the radar is doing: passive bearings only (no range of its own)
+{const _u=radar.update;let acc=0;radar.update=function(dt){const r=_u.apply(this,arguments);try{if(!player||player.type!=='MiG-31'||!player.alive)return r;acc+=dt;if(acc<.25)return r;acc=0;
+  const now=performance.now()/1000;for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos);
+    if(Math.abs(a.baz)>IRG.az*D2R||a.bel>IRG.eu*D2R||a.bel<-IRG.ed*D2R)continue;const c=j.fwd(new V3()).dot(player.pos.clone().sub(j.pos).normalize());
+    if(a.d<this.irRange(j,a,c)&&terrLOS(player.pos,j.pos)&&Math.random()<.8)M31IR.set(j,{az:a.az,el:a.el,t:now});}
+  for(const [j,e] of M31IR)if(!j.alive||now-e.t>3)M31IR.delete(j);}catch(e){}return r;};}
+// the navigator can run TWS on the Zaslon
+{const _m=rio.mode;rio.mode=function(m){if(m==='TWS'&&radar.multi){if(radar.mode==='TWS')return;radar.lock=null;radar.bug=null;radar.fromACM=radar.fromTWS=false;radar.mode='TWS';return;}return _m.apply(this,arguments);};
+ const _c=rio.cmd;rio.cmd=function(c){if(c==='tws'&&radar.multi&&this.active()&&radar.mode!=='ACM'){this.hold=10;this.mode(radar.mode==='TWS'?'RWS':'TWS');
+   this.say(radar.mode==='TWS'?'Track-while-scan, up to four on the R-33s.':'Back to search.','tw',.5);sfx.click();return true;}return _c.apply(this,arguments);};}
+// pilot's radar keys in the MiG-31 are requests to the navigator
+{let inRio=0;for(const k of['update','cmd']){const f=rio[k];rio[k]=function(){inRio++;try{return f.apply(this,arguments);}finally{inRio--;}};}
+ const ask={setTWS:'tws',designate:'lock',next:'next',drop:'drop'};
+ for(const k of Object.keys(ask)){const f=radar[k];radar[k]=function(){if(!inRio&&game.active&&player&&player.alive&&player.type==='MiG-31'&&rio.active()){rio.cmd(ask[k]);return;}return f.apply(this,arguments);};}}
+
+// ---------- pilot's ИПВ: tactical situation indicator ----------
+{const o=ck.fulcrum,xg=o.fxOnly[0],g=new THREE.Group();g.position.copy(xg.position);g.rotation.copy(xg.rotation);g.visible=false;o.root.add(g);
+  const bx=new THREE.Mesh(new THREE.BoxGeometry(.19,.19,.026),new THREE.MeshPhongMaterial({color:0x141618,shininess:12}));bx.position.set(-.06,.035,.027);g.add(bx);
+  const cv=Object.assign(document.createElement('canvas'),{width:400,height:400}),tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;tx.generateMipmaps=false;
+  const q=new THREE.Mesh(new THREE.PlaneGeometry(.165,.165),new THREE.MeshBasicMaterial({map:tx,toneMapped:false}));q.position.set(-.06,.035,.0405);g.add(q);
+  const T=(c,s,x,y,col,sz,al)=>{c.font=`bold ${sz}px monospace`;c.textAlign=al||'center';c.textBaseline='middle';c.fillStyle=col;c.fillText(s,x,y);};
+  function draw(){const P=player,c=cv.getContext('2d'),S=400,ox=200,oy=360,R=320,col='#7dffa0',dim='rgba(125,255,160,.35)',A=70*D2R,now=performance.now()/1000;
+    c.setTransform(1,0,0,1,0,0);c.fillStyle='#021208';c.fillRect(0,0,S,S);const rng=radar.rngM||100000;
+    const XY=(az,d)=>{const r=clamp(d/rng,0,1.04)*R;return[ox+Math.sin(az)*r,oy-Math.cos(az)*r];};
+    c.strokeStyle=dim;c.lineWidth=1.5;for(let k=1;k<=4;k++){c.beginPath();c.arc(ox,oy,R*k/4,-Math.PI/2-A,-Math.PI/2+A);c.stroke();T(c,String(Math.round(rng/1000*k/4)),ox+R*k/4*Math.sin(A)+4,oy-R*k/4*Math.cos(A)-8,dim,13,'left');}
+    for(const a of[-60,-30,0,30,60]){const r=a*D2R;c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(r)*R,oy-Math.cos(r)*R);c.stroke();}
+    const on=radar.on();
+    // scan sector and the beam: it jumps from position to position, there is no sweeping bar
+    if(on&&radar.sensor==='RDR'){const lo=radar.mode==='STT'?(radar.cur.az||0)-30*D2R:radar._esaLo,hi=radar.mode==='STT'?(radar.cur.az||0)+30*D2R:radar._esaHi;
+      if(lo!=null){c.strokeStyle='rgba(125,255,160,.6)';c.setLineDash([6,6]);for(const a of[lo,hi]){c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(a)*R,oy-Math.cos(a)*R);c.stroke();}c.setLineDash([]);}
+      const ba=radar.mode==='STT'?radar._esaBeam:radar.antAz;if(ba!=null){const[x,y]=XY(ba,rng*1.02);c.fillStyle=col;c.fillRect(x-3,y-6,6,8);}}
+    // own aircraft
+    c.fillStyle=col;c.beginPath();c.moveTo(ox,oy-12);c.lineTo(ox-8,oy+7);c.lineTo(ox+8,oy+7);c.closePath();c.fill();
+    // jamming strobes
+    c.strokeStyle='rgba(255,210,60,.8)';c.setLineDash([3,7]);c.lineWidth=2;for(const [,s] of radar.strobes){c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(s.az)*R,oy-Math.cos(s.az)*R);c.stroke();}
+    // 8TK bearings: angle only
+    c.strokeStyle='rgba(255,140,90,.85)';c.setLineDash([2,4]);for(const [,e] of M31IR){if(Math.abs(e.az)>A)continue;const[x,y]=XY(e.az,rng*1.04);c.beginPath();c.moveTo(ox+Math.sin(e.az)*R*.55,oy-Math.cos(e.az)*R*.55);c.lineTo(x,y);c.stroke();}
+    c.setLineDash([]);
+    // track files
+    const L=radar.mode==='STT'?radar.lock:null,eng=[];for(const m of missiles)if(m.alive&&m.sh===P&&m.track&&m.track.alive&&!eng.includes(m.track))eng.push(m.track);
+    let nt=0;for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj)continue;const pos=radar.mode==='TWS'?radar.trkPos(j,tk,now):j.pos,a=radar.ang(pos);if(Math.abs(a.az)>A+.05)continue;nt++;
+      const[x,y]=XY(a.az,a.d),fr=j.side===P.side,cc=fr?'#7fd0ff':j===L?'#ffffff':col;c.strokeStyle=c.fillStyle=cc;c.lineWidth=2;
+      const v=tk.v||j.vel,hd=Math.atan2(v.x,-v.z)-Math.atan2(P.fwd(new V3()).x,-P.fwd(new V3()).z),vl=clamp(v.length()/30,6,22);
+      c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.sin(hd)*vl,y-Math.cos(hd)*vl);c.stroke();
+      if(j===L){c.strokeRect(x-11,y-11,22,22);}else if(j===radar.bug){c.beginPath();c.moveTo(x,y-11);c.lineTo(x+11,y);c.lineTo(x,y+11);c.lineTo(x-11,y);c.closePath();c.stroke();}
+      c.beginPath();c.arc(x,y,5,0,7);fr?c.stroke():c.fill();
+      const ei=eng.indexOf(j);if(ei>=0)T(c,String(ei+1),x-16,y-12,'#ffd23a',15);
+      T(c,(pos.y/1000).toFixed(1),x+14,y+12,cc,12,'left');}
+    const md=!on?'ВЫКЛ':radar.sensor==='IRST'?'ТП':radar.mode==='STT'?'ЗАХВАТ':radar.mode==='TWS'?'СНП':'ОБЗОР',w=game.wsel;
+    T(c,md,10,18,col,19,'left');T(c,Math.round(rng/1000)+' КМ',390,18,col,17,'right');
+    T(c,'Ц '+nt+(radar.mode==='TWS'?' · '+eng.length+'/4':''),10,42,col,15,'left');if(M31IR.size)T(c,'8ТК '+M31IR.size,390,42,'#ff9a6a',15,'right');
+    T(c,w==='GUN'?'ГШ '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' ×'+(MSL[w]?P.count(w):''),10,388,col,16,'left');
+    if(L&&L.alive){const d=L.pos.distanceTo(P.pos);let rm=0;try{rm=dlzGet(w,L).rmax;}catch(e){}T(c,(d/1000).toFixed(0)+' КМ',200,70,'#fff',18);
+      if(rm&&d<rm&&game.arm&&Math.floor(now/.35)%2)T(c,'ПР',390,388,'#ffd23a',22,'right');}}
+  {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{g.visible=kind==='fulcrum'&&!!player&&player.type==='MiG-31';}catch(e){}return r;};}
+  let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{draw();}catch(e){}tx.needsUpdate=true;});}
+ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA (TWS 10 / 4 ENGAGED) · 8TK IRST · PILOT FLIES, NAVIGATOR RUNS THE RADAR';
+}catch(e){console.warn('v220',e);}
