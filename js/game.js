@@ -14452,23 +14452,8 @@ gauge(-.29,.09,.062,'adi');gauge(-.29,-.075,.062,'hsi');gauge(-.175,.15,.026,'cl
 gauge(.15,.105,.048,'rpm');gauge(.27,.12,.032,'egt');gauge(.36,.12,.032,'egt');gauge(.15,-.07,.034,'aoa');
 const fuelC=cvs(160,300);box(.07,.13,.012,blk,.32,-.06,.026);quad(fuelC,.06,.11,.32,-.06,.0325);
 // ИПВ tactical indicator, its lamp block, and the HUD control box with the digital strip on top
-box(.17,.17,.02,blk,-.06,.035,.025);const ipv=cvs(320,320);quad(ipv,.145,.145,-.06,.035,.0356);
 const lampC=cvs(320,96);quad(lampC,.17,.05,-.06,-.12,.026);
 box(.22,.06,.04,Lm(0x23272a),-.04,.205,.03);const hudC=cvs(400,96);quad(hudC,.2,.048,-.04,.205,.0505);
-function drawIPV(){const P=player,c=ipv.getContext('2d'),S=320,ox=160,oy=290,R=262,col='#7dffa0';c.setTransform(1,0,0,1,0,0);c.fillStyle='#021208';c.fillRect(0,0,S,S);
-  c.strokeStyle='rgba(125,255,160,.35)';c.lineWidth=1.5;for(let k=1;k<=4;k++){c.beginPath();c.arc(ox,oy,R*k/4,-Math.PI/2-1.22,-Math.PI/2+1.22);c.stroke();}
-  for(const a of[-60,-30,0,30,60]){const r=a*D2R;c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(r)*R,oy-Math.cos(r)*R);c.stroke();}
-  c.fillStyle=col;c.beginPath();c.moveTo(ox,oy-10);c.lineTo(ox-7,oy+6);c.lineTo(ox+7,oy+6);c.closePath();c.fill();
-  const rng=radar.rngM||100000,L=radar.mode==='STT'?radar.lock:null,pr=rio.prio;
-  for(const [j] of radar.tracks){if(!j.alive)continue;const a=radar.ang(j.pos),r=clamp(a.d/rng,0,1.05)*R;if(Math.abs(a.az)>75*D2R)continue;
-    const x=ox+Math.sin(a.az)*r,y=oy-Math.cos(a.az)*r,fr=j.side===P.side;c.strokeStyle=c.fillStyle=fr?'#7fd0ff':col;c.lineWidth=2;
-    if(j===L){c.strokeRect(x-10,y-10,20,20);c.beginPath();c.arc(x,y,3,0,7);c.fill();}else if(j===pr){c.beginPath();c.moveTo(x,y-9);c.lineTo(x+9,y);c.lineTo(x,y+9);c.lineTo(x-9,y);c.closePath();c.stroke();}
-    else{c.beginPath();c.arc(x,y,fr?5:4,0,7);fr?c.stroke():c.fill();}}
-  const md=!radar.on()?'ВЫКЛ':radar.mode==='STT'?'ЗАХВАТ':radar.mode==='TWS'?'СНП':'ОБЗОР',w=game.wsel;
-  T(c,md,10,16,col,17,'left');T(c,Math.round(rng/1000)+' КМ',310,16,col,15,'right');
-  T(c,w==='GUN'?'ГШ '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' ×'+(MSL[w]?P.count(w):''),10,304,col,15,'left');
-  if(L&&L.alive){const d=L.pos.distanceTo(P.pos);let rm=0;try{rm=dlzGet(w,L).rmax;}catch(e){}T(c,(d/1000).toFixed(0)+' КМ',160,40,'#fff',16);
-    if(rm&&d<rm&&game.arm&&Math.floor(performance.now()/350)%2)T(c,'ПР',310,304,'#ffd23a',20,'right');}}
 function drawSide(){const P=player;
   {const c=fuelC.getContext('2d'),f=clamp((P.totalFuel||0)/Math.max(1,P.ac.fuel),0,1);c.fillStyle='#0d0f10';c.fillRect(0,0,160,300);c.strokeStyle='#e6e8e2';c.lineWidth=2;c.strokeRect(50,30,60,230);
     c.fillStyle=f<.2?'#ff5a4a':'#e6e8e2';c.fillRect(54,256-222*f,52,222*f);T(c,'ТОПЛ',80,14,'#bfc4bc',16);T(c,String(Math.round(P.totalFuel||0)),80,282,'#fff',20);}
@@ -14479,7 +14464,7 @@ function drawSide(){const P=player;
     const d=new Date(),p2=v=>String(v).padStart(2,'0');T(c,'К'+String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')+' Н'+(P.pos.y/1000).toFixed(1),30,34,'#ff6a3a',20,'left');
     T(c,p2(d.getHours())+':'+p2(d.getMinutes()),340,34,'#e8ece6',18);['ЯРК','ТЕСТ','ОБОГР','ВКЛ'].forEach((s,i)=>{c.strokeStyle='#e8ece6';c.lineWidth=2;c.beginPath();c.arc(40+i*95,74,9,0,7);c.stroke();T(c,s,62+i*95,74,'#cfd3cf',12,'left');});}}
 {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='fulcrum'&&!!player&&player.type==='MiG-31';g.visible=on;if(on)xg.visible=false;}catch(e){}return r;};}
-{let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{drawG(gl);drawIPV();drawSide();}catch(e){}for(const t of live)t.needsUpdate=true;});}
+{let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{drawG(gl);drawSide();}catch(e){}for(const t of live)t.needsUpdate=true;});}
 ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA · 4× R-33 · PILOT FLIES, NAVIGATOR RUNS THE RADAR';
 }catch(e){console.warn('v218 MiG-31',e);}
 
@@ -14564,46 +14549,5 @@ try{
  const ask={setTWS:'tws',designate:'lock',next:'next',drop:'drop'};
  for(const k of Object.keys(ask)){const f=radar[k];radar[k]=function(){if(!inRio&&game.active&&player&&player.alive&&player.type==='MiG-31'&&rio.active()){rio.cmd(ask[k]);return;}return f.apply(this,arguments);};}}
 
-// ---------- pilot's ИПВ: tactical situation indicator ----------
-{const o=ck.fulcrum,xg=o.fxOnly[0],g=new THREE.Group();g.position.copy(xg.position);g.rotation.copy(xg.rotation);g.visible=false;o.root.add(g);
-  const bx=new THREE.Mesh(new THREE.BoxGeometry(.19,.19,.026),new THREE.MeshPhongMaterial({color:0x141618,shininess:12}));bx.position.set(-.06,.035,.027);g.add(bx);
-  const cv=Object.assign(document.createElement('canvas'),{width:400,height:400}),tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;tx.generateMipmaps=false;
-  const q=new THREE.Mesh(new THREE.PlaneGeometry(.165,.165),new THREE.MeshBasicMaterial({map:tx,toneMapped:false}));q.position.set(-.06,.035,.0405);g.add(q);
-  const T=(c,s,x,y,col,sz,al)=>{c.font=`bold ${sz}px monospace`;c.textAlign=al||'center';c.textBaseline='middle';c.fillStyle=col;c.fillText(s,x,y);};
-  function draw(){const P=player,c=cv.getContext('2d'),S=400,ox=200,oy=360,R=320,col='#7dffa0',dim='rgba(125,255,160,.35)',A=70*D2R,now=performance.now()/1000;
-    c.setTransform(1,0,0,1,0,0);c.fillStyle='#021208';c.fillRect(0,0,S,S);const rng=radar.rngM||100000;
-    const XY=(az,d)=>{const r=clamp(d/rng,0,1.04)*R;return[ox+Math.sin(az)*r,oy-Math.cos(az)*r];};
-    c.strokeStyle=dim;c.lineWidth=1.5;for(let k=1;k<=4;k++){c.beginPath();c.arc(ox,oy,R*k/4,-Math.PI/2-A,-Math.PI/2+A);c.stroke();T(c,String(Math.round(rng/1000*k/4)),ox+R*k/4*Math.sin(A)+4,oy-R*k/4*Math.cos(A)-8,dim,13,'left');}
-    for(const a of[-60,-30,0,30,60]){const r=a*D2R;c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(r)*R,oy-Math.cos(r)*R);c.stroke();}
-    const on=radar.on();
-    // scan sector and the beam: it jumps from position to position, there is no sweeping bar
-    if(on&&radar.sensor==='RDR'){const lo=radar.mode==='STT'?(radar.cur.az||0)-30*D2R:radar._esaLo,hi=radar.mode==='STT'?(radar.cur.az||0)+30*D2R:radar._esaHi;
-      if(lo!=null){c.strokeStyle='rgba(125,255,160,.6)';c.setLineDash([6,6]);for(const a of[lo,hi]){c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(a)*R,oy-Math.cos(a)*R);c.stroke();}c.setLineDash([]);}
-      const ba=radar.mode==='STT'?radar._esaBeam:radar.antAz;if(ba!=null){const[x,y]=XY(ba,rng*1.02);c.fillStyle=col;c.fillRect(x-3,y-6,6,8);}}
-    // own aircraft
-    c.fillStyle=col;c.beginPath();c.moveTo(ox,oy-12);c.lineTo(ox-8,oy+7);c.lineTo(ox+8,oy+7);c.closePath();c.fill();
-    // jamming strobes
-    c.strokeStyle='rgba(255,210,60,.8)';c.setLineDash([3,7]);c.lineWidth=2;for(const [,s] of radar.strobes){c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+Math.sin(s.az)*R,oy-Math.cos(s.az)*R);c.stroke();}
-    // 8TK bearings: angle only
-    c.strokeStyle='rgba(255,140,90,.85)';c.setLineDash([2,4]);for(const [,e] of M31IR){if(Math.abs(e.az)>A)continue;const[x,y]=XY(e.az,rng*1.04);c.beginPath();c.moveTo(ox+Math.sin(e.az)*R*.55,oy-Math.cos(e.az)*R*.55);c.lineTo(x,y);c.stroke();}
-    c.setLineDash([]);
-    // track files
-    const L=radar.mode==='STT'?radar.lock:null,eng=[];for(const m of missiles)if(m.alive&&m.sh===P&&m.track&&m.track.alive&&!eng.includes(m.track))eng.push(m.track);
-    let nt=0;for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj)continue;const pos=radar.mode==='TWS'?radar.trkPos(j,tk,now):j.pos,a=radar.ang(pos);if(Math.abs(a.az)>A+.05)continue;nt++;
-      const[x,y]=XY(a.az,a.d),fr=j.side===P.side,cc=fr?'#7fd0ff':j===L?'#ffffff':col;c.strokeStyle=c.fillStyle=cc;c.lineWidth=2;
-      const v=tk.v||j.vel,hd=Math.atan2(v.x,-v.z)-Math.atan2(P.fwd(new V3()).x,-P.fwd(new V3()).z),vl=clamp(v.length()/30,6,22);
-      c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.sin(hd)*vl,y-Math.cos(hd)*vl);c.stroke();
-      if(j===L){c.strokeRect(x-11,y-11,22,22);}else if(j===radar.bug){c.beginPath();c.moveTo(x,y-11);c.lineTo(x+11,y);c.lineTo(x,y+11);c.lineTo(x-11,y);c.closePath();c.stroke();}
-      c.beginPath();c.arc(x,y,5,0,7);fr?c.stroke():c.fill();
-      const ei=eng.indexOf(j);if(ei>=0)T(c,String(ei+1),x-16,y-12,'#ffd23a',15);
-      T(c,(pos.y/1000).toFixed(1),x+14,y+12,cc,12,'left');}
-    const md=!on?'ВЫКЛ':radar.sensor==='IRST'?'ТП':radar.mode==='STT'?'ЗАХВАТ':radar.mode==='TWS'?'СНП':'ОБЗОР',w=game.wsel;
-    T(c,md,10,18,col,19,'left');T(c,Math.round(rng/1000)+' КМ',390,18,col,17,'right');
-    T(c,'Ц '+nt+(radar.mode==='TWS'?' · '+eng.length+'/4':''),10,42,col,15,'left');if(M31IR.size)T(c,'8ТК '+M31IR.size,390,42,'#ff9a6a',15,'right');
-    T(c,w==='GUN'?'ГШ '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w])||w)+' ×'+(MSL[w]?P.count(w):''),10,388,col,16,'left');
-    if(L&&L.alive){const d=L.pos.distanceTo(P.pos);let rm=0;try{rm=dlzGet(w,L).rmax;}catch(e){}T(c,(d/1000).toFixed(0)+' КМ',200,70,'#fff',18);
-      if(rm&&d<rm&&game.arm&&Math.floor(now/.35)%2)T(c,'ПР',390,388,'#ffd23a',22,'right');}}
-  {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{g.visible=kind==='fulcrum'&&!!player&&player.type==='MiG-31';}catch(e){}return r;};}
-  let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{draw();}catch(e){}tx.needsUpdate=true;});}
 ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA (TWS 10 / 4 ENGAGED) · 8TK IRST · PILOT FLIES, NAVIGATOR RUNS THE RADAR';
 }catch(e){console.warn('v220',e);}
