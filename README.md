@@ -2,6 +2,8 @@
 
 Play: https://unforgiven29.github.io/HTML-Flight-Combat/
 
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
+
 ## Layout
 ```
 index.html               page shell + UI markup
