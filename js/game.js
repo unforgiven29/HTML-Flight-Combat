@@ -1637,7 +1637,11 @@ function updateBullets(dt){
       if(segDist(prev,b.p,j.pos,j.vel,dt)<6.5){if(b.o===player||!b.o.remote)j.hitFrom=b.o.pos;applyHit(j,b.dmg,b.o,'GUN');hit=true;glow.emit(b.p,null,.25,4,9,1,.8,.4,1);smoke.emit(b.p,null,1.5,2,6,.2,.2,.2,.6);break;}}
     if(!hit&&b.o===player&&GND.units.length)hit=GND.bullet(prev,b.p,b);
     if(hit||b.t>3||b.p.y<groundAt(b.p.x,b.p.z)){bulletFree(i);continue;}
-    glow.emit(b.p,null,.017,1.7,1.7,1,.85,.45,1);}}
+    // v215: tracers you can see from your own cockpit. The old spark lived 17 ms (gone before the frame was drawn at 60 fps) and was 1.7 m wide, a
+    // sub-pixel dot a few hundred metres ahead of the nose. Now it rides with the round for a few frames, keeps a minimum angular size, and leaves a short streak.
+    {const dc=b.p.distanceTo(camera.position),sz=Math.max(1.7,dc*.009);glow.emit(b.p,b.v,.06,sz,sz*.8,1,.85,.45,1);
+      if(b.t>.03)glow.emit(_trM.copy(b.p).addScaledVector(b.v,-.012),b.v,.045,sz*.7,sz*.5,1,.7,.3,.8);}}}
+const _trM=new V3();
 
 
 /* ============ v202: GPU readback without stalls ============
@@ -1843,15 +1847,17 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
   other(f){const o=this.sensor;this.sensor=o==='IRST'?'RDR':'IRST';this._cx=1;try{return f();}finally{this.sensor=o;this._cx=0;}},
   // the radar half is only there when it is switched on and warm; the passive half always is
   radCovers(j,d){return this.coop()&&this.power==='ON'&&this.warm<=0&&(this.sensor==="RDR"||this.other(()=>this.rdet(j,this.ang(j.pos))>d));},
-  detectBase(j,a){return this.detectBase1(j,a)||(this.coop()&&this.other(()=>this.detectBase1(j,a)));},
+  // v215: with the IRST selected on the Russian jets, COOP no longer feeds radar-only contacts into the IRST search picture; it only hands a held lock over and ranges it
+  coopAcq(){if(!this.coop())return false;return !(this.sensor==='IRST'&&this.mode!=='STT'&&player&&player.ac.cockpit==='fulcrum');},
+  detectBase(j,a){return this.detectBase1(j,a)||(this.coopAcq()&&this.other(()=>this.detectBase1(j,a)));},
   detectBase1(j,a){return this.on()&&a.d<this.rdet(j,a)&&!this.notch(j,a)&&terrLOS(player.pos,j.pos);},
   // a noise jammer inside its burn-through range shows through; beyond it the radar sees only a bearing strobe
   jam(j){return this.sensor==='RDR'?jamOf(j,this):null;},
-  detect(j,a){return this.detect1(j,a)||(this.coop()&&this.other(()=>this.detect1(j,a)));},
+  detect(j,a){return this.detect1(j,a)||(this.coopAcq()&&this.other(()=>this.detect1(j,a)));},
   detect1(j,a){if(!this.detectBase1(j,a))return false;const J=this.jam(j);return !(J&&J.noise&&a.d>J.bt);},
   // Signal-to-noise against a Swerling-1 (fluctuating) target. rdet() is the range where one look detects half the time at a 1e-6 false-alarm
   // rate; SNR then goes with (R50 / R)^4, is cut by the two-way antenna pattern off the beam centre, and by the Doppler notch / clutter in look-down.
-  snr(j,a,loss=1){const s=this.snr1(j,a,loss);if(!this.coop())return s;return Math.max(s,this.other(()=>this.snr1(j,a,loss)));},
+  snr(j,a,loss=1){const s=this.snr1(j,a,loss);if(!this.coopAcq())return s;return Math.max(s,this.other(()=>this.snr1(j,a,loss)));},
   snr1(j,a,loss=1){if(!this.on()||!terrLOS(player.pos,j.pos))return 0;const R=this.rdet(j,a);if(!R)return 0;
     let s=SNR50*Math.pow(R/Math.max(a.d,1),4)*loss;
     // medium-PRF range eclipsing: returns that arrive while the transmitter is on are blanked, in zones that shift as the PRF is staggered between looks
@@ -1977,13 +1983,13 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
   get rngM(){return this.ranges[this.ri]*this.unit;},
   designate(){if(this.mode==='STT')return;if(!this.on()){flash(isMig()?'RADAR OFF':'NO RAD',900);return;}
     if(this.mode==='ACM'){if(this.acmBest&&this.acmBest.alive)this.stt(this.acmBest);else sfx.click();return;}const rng=this.rngM,tws=this.mode==='TWS',now=performance.now()/1000;let best=null,bd=1e9;
-    for(const [j,tk] of this.tracks){if(!j.alive)continue;const q=tws?this.ang(this.trkPos(j,tk,now)):tk;const dd=Math.hypot((q.az-this.cur.az)/(120*D2R),this.sensor==='IRST'?(q.el-(this.cur.el||0))/(60*D2R):q.d/rng-this.cur.r);if(dd<.09&&dd<bd){bd=dd;best=j;}}
+    for(const [j,tk] of this.tracks){if(!j.alive)continue;const q=tws?this.ang(this.trkPos(j,tk,now)):tk;const dd=Math.hypot((q.az-this.cur.az)/(120*D2R)*(isFishbed()?.12:1),this.sensor==='IRST'?(q.el-(this.cur.el||0))/(60*D2R):q.d/rng-this.cur.r);if(dd<.09&&dd<bd){bd=dd;best=j;}}
     if(!best&&this.sensor==='RDR'){let sb=null,sd=1e9;for(const [j,s] of this.strobes){if(!j.alive)continue;const dd=Math.abs(s.az-this.cur.az);if(dd<6*D2R&&dd<sd){sd=dd;sb=j;}}
       if(sb){const a=this.ang(sb.pos);if(a.off<this.gimbal()&&this.on()&&terrLOS(player.pos,sb.pos)){this.stt(sb);return;}}}   // lock the strobe: home-on-jam
     if(!best){sfx.click();return;}
     if(tws&&best!==this.bug){this.bug=best;this.bugMan=true;sfx.click();return;}// first press bugs the track, a second press on the bug goes to STT
     const a=this.ang(best.pos);if(this.detect(best,a)&&a.off<this.gimbal())this.stt(best);else flash('NO TRACK',1000);},
-  next(){if(!this.on())return;const list=[...this.tracks.entries()].filter(([j])=>j.alive).sort((a,b)=>a[1].d-b[1].d);if(!list.length){sfx.click();return;}
+  next(){if(!this.on())return;if(this.mode==='STT'){sfx.click();return;}/* v215: no target stepping out of a single-target track; break lock first */const list=[...this.tracks.entries()].filter(([j])=>j.alive).sort((a,b)=>a[1].d-b[1].d);if(!list.length){sfx.click();return;}
     if(this.mode==='TWS'){const i=list.findIndex(([j])=>j===this.bug);this.bug=list[(i+1)%list.length][0];this.bugMan=true;sfx.click();return;}
     const i=list.findIndex(([j])=>j===this.lock),j=list[(i+1)%list.length][0],a=this.ang(j.pos);
     if(this.detect(j,a)&&a.off<this.gimbal())this.stt(j);},
@@ -1995,6 +2001,8 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
   setPower(p){if(this.power==='OFF'&&p!=='OFF')this.warm=8;this.power=p;},
   toggleSensor(){if(!player.ac.irst)return;if(player.ac.cockpit==='fulcrum'){migWCS(MWCS.indexOf(['IR','CC'].includes(mw())?'RAD':'IR'));sfx.click();return;}this.sensor=this.sensor==='RDR'?'IRST':'RDR';this.drop();this.tracks.clear();sfx.click();},
   slew(dx,dy){this.curMan=performance.now()/1000+3;if(this.sensor==='IRST'){this.cur.az=clamp(this.cur.az+dx*.55,-30*D2R,30*D2R);this.cur.el=clamp((this.cur.el||0)+dy*55*D2R,-30*D2R,30*D2R);return;}// the IRST scope spans 60 x 60 deg: both axes of the TDC run at the same angular rate
+    // v215: RP-22SM (MiG-21bis): the strobe is a range gate only, it moves up and down the scope and cannot be slewed in azimuth
+    if(isFishbed()){dx=0;this.cur.az=0;}
     this.cur.az=clamp(this.cur.az+dx,-60*D2R,60*D2R);
     this.cur.r+=dy;
     if(this.cur.r>.98&&this.ri<this.ranges.length-1){this.ri++;this.cur.r=.55;}else if(this.cur.r<.02&&this.ri>0){this.ri--;this.cur.r=.45;}
@@ -2014,8 +2022,12 @@ function dlz(type,tg){const d=MSL[type],ph=d.ph,h=(player.pos.y+tg.pos.y)/2,los=
   return{rmax:Math.min(b1*.92,cap),rne:Math.min(Math.max(d.rmin*1.5,b2*.85),cap*.8),rmin:d.rmin,prof};}
 const HEAD0={pitch:-SET.look*D2R,fov:SET.fov};const head={yaw:0,pitch:HEAD0.pitch,fov:HEAD0.fov};
 // helmet sight: JHMCS on the modern Viper, Shchel-3UM on every MiG-29; blanked while looking through the HUD
-const hasHelmet=()=>player&&(player.ac.cockpit==='fulcrum'||player.era==='modern'&&player.type!=='F-14A'&&player.type!=='F-4E');
-const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&(player.ac.cockpit==='fulcrum'?mw()==='HELM':hasHelmet()&&Math.hypot(head.yaw,head.pitch)>.26);
+// v215: helmet sights only where the real jet has one. Shchel-3UM / Sura on the MiG-29 and Flanker families (never the MiG-21 / 23 / 25),
+// JHMCS on the modern-era F-16C, F-15C / E and F/A-18C / E only. No helmet sight on the F-4, F-14 (any), F-16A ADF, MiG-21, MiG-23, MiG-25, MiG-31.
+const HMS_ALWAYS=new Set(['MiG-29','MiG-29S','Su-27','Su-27SM','Su-33','Su-30SM']),HMS_MODERN=new Set(['F-16C','F-15C','F-15E','F-18C','F-18E']);
+const helmetFit=(type,era)=>HMS_ALWAYS.has(type)||era==='modern'&&HMS_MODERN.has(type);
+const hasHelmet=()=>!!player&&helmetFit(player.type,player.era);
+const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&hasHelmet()&&(player.ac.cockpit==='fulcrum'?mw()==='HELM':Math.hypot(head.yaw,head.pitch)>.26);
 function irTarget(type){// IR seeker: helmet-cued (if fitted and the missile can look that far), slaved to the radar/IRST track, else uncaged on the boresight
   const d=MSL[type];if(!d||d.seek!=='IR')return null;const f=player.fwd(new V3());
   const ok=(j,cone,dir)=>{if(j===player||!j.alive||isFr(j,player))return false;const rel=j.pos.clone().sub(player.pos),dd=rel.length();
@@ -4048,7 +4060,7 @@ const rio={on:true,hold:0,prio:null,acc:0,seen:new Map(),calls:[],last:{},said:n
       if(!best&&this.prio&&this.prio.alive)best=this.prio;
       if(!best){this.say('Nothing to lock.','nl',2);sfx.click();return true;}
       this.prio=best;this.stick=best;if(!this.tryLock(best))this.say("Can't get a lock on him.",'cl',3);return true;}
-    if(c==='next'){const l=[...radar.tracks.entries()].filter(([j,t])=>this.hostile(j)&&!t.hoj).sort((a,b)=>a[1].d-b[1].d).map(([j])=>j);if(!l.length){sfx.click();return true;}
+    if(c==='next'){if(radar.mode==='STT'){sfx.click();return true;}const l=[...radar.tracks.entries()].filter(([j,t])=>this.hostile(j)&&!t.hoj).sort((a,b)=>a[1].d-b[1].d).map(([j])=>j);if(!l.length){sfx.click();return true;}
       this.prio=l[(l.indexOf(this.prio)+1)%l.length];if(radar.mode==='STT')this.tryLock(this.prio);else if(radar.mode==='TWS')radar.bug=this.prio;
       const tk=radar.tracks.get(this.prio);this.say('Priority on the '+(tk?Math.round(tk.d/NM)+' mile':'')+' contact.','nx',.5);sfx.click();return true;}
     if(c==='drop'){radar.drop();this.stick=null;this.hold=6;this.say('Dropping lock, back to search.','dr',1);return true;}
@@ -5201,7 +5213,7 @@ function buildCockpit(kind){
      for(const sd of[-1,1])rod(tg,[sd*.33,-.25,-.75],[sd*.25,.17,-.47],.0065,tD,1,[0,0,1],8);
      {const ar=new THREE.Mesh(new THREE.TorusGeometry(.25,.0065,8,28,Math.PI),tD);ar.position.set(0,.17,-.47);ar.scale.set(1,.28,1);tg.add(ar);}
      // ---- HUD combiner: the AVG-12 throws its picture on a framed glass above the glare shield ----
-     {add(new THREE.PlaneGeometry(.33,.28),new THREE.MeshBasicMaterial({color:0x9fd8c0,transparent:true,opacity:.05,depthWrite:false}),0,-.065,-.748,tg);}
+     {add(new THREE.CircleGeometry(.104,40),new THREE.MeshBasicMaterial({color:0x9fd8c0,transparent:true,opacity:.05,depthWrite:false}),0,-.055,-.748,tg);}   // v215: the tint is only as big as the round ~15° field (was a 25° x 21° pane)
      // ---- left windshield frame: approach indexer on top, HUD caution lights beneath; right frame: ECM warning lights; standby compass on the centre bow ----
      {const fl=new THREE.Group();fl.position.set(-.3,-.06,-.715);fl.rotation.y=.2;tg.add(fl);add(rbox(.05,.17,.014,.004),black,0,-.005,-.006,fl);
       const slow=P=>V.gear&&tcUnits(P)>16.3,fast=P=>V.gear&&tcUnits(P)<13.7,ok=P=>V.gear&&!slow(P)&&!fast(P);
@@ -6619,29 +6631,54 @@ function peerRoom(){return{async join(name){
   const handle=m=>{if(!m||typeof m!=='object')return;
     if(m.t==='pres'){const had=peers.has(m.peer);peers.set(m.peer,m.data);if(m.peer===me)return;const p={peer:m.peer,presence:m.data,sameTab:false,isMe:false};fire(had?{updated:[p]}:{joined:[p]});}
     else if(m.t==='left'){if(peers.delete(m.peer))fire({left:[{peer:m.peer}]});}
-    else if(m.t==='down'){const l=[...peers.keys()].filter(k=>k!==me).map(k=>({peer:k}));l.forEach(x=>peers.delete(x.peer));fire({left:l});flash(m.why||'LOST THE HOST',2500);}
+    else if(m.t==='down'){lostHost();}
     else if(m.t==='ev')(ev[m.topic]||[]).forEach(f=>f({peer:m.peer,data:m.data,sameTab:m.peer===me,isMe:m.peer===me}));};
-  const relay=(m,except)=>{for(const c of conns)if(c!==except&&c.open)try{c.send(m);}catch(e){}};
-  const send=m=>{if(!up)return;if(role==='host')relay(m);else if(hc&&hc.open)try{hc.send(m);}catch(e){}handle(m);};
+  // v215 netcode: state packets are dropped (never queued) when a link is backed up, so one slow player no longer lags the whole room
+  const busy=c=>{try{const dc=c.dataChannel;return !!dc&&dc.bufferedAmount>48000;}catch(e){return false;}};
+  const relay=(m,except)=>{const st=m&&m.t==='pres';for(const c of conns)if(c!==except&&c.open&&!(st&&busy(c)))try{c.send(m);}catch(e){}};
+  const send=m=>{if(!up)return;if(role==='host')relay(m);else if(hc&&hc.open&&!(m.t==='pres'&&busy(hc)))try{hc.send(m);}catch(e){}handle(m);};
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const room={peers:()=>[self(),...[...peers.keys()].filter(k=>k!==me).map(k=>({peer:k,presence:peers.get(k),sameTab:false,isMe:false}))],
     onPeers(f){pcb.push(f);return()=>{const i=pcb.indexOf(f);if(i>=0)pcb.splice(i,1);};},
     on(t,f){(ev[t]=ev[t]||[]).push(f);return()=>{const a=ev[t],i=a.indexOf(f);if(i>=0)a.splice(i,1);};},
     presence:d=>(send({t:'pres',peer:me,data:d}),Promise.resolve()),emit:(topic,data)=>(send({t:'ev',peer:me,topic,data}),Promise.resolve()),connected:()=>up,
-    async leave(){if(up){send({t:'left',peer:me});}up=false;try{pr&&pr.destroy();}catch(e){}}};
-  const O=Object.assign({serialization:'json'},window.PEER_OPTS||{});
+    async leave(){if(up){send({t:'left',peer:me});}up=false;clearInterval(hbT);try{pr&&pr.destroy();}catch(e){}}};
+  // several STUN servers plus the PeerJS public TURN relay, so two players behind strict routers (school / phone hot-spots) can still be joined
+  const O=Object.assign({config:{iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']},
+    {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'}],sdpSemantics:'unified-plan'}},window.PEER_OPTS||{});
+  const keep=p=>p.on('disconnected',()=>{if(up&&pr===p)setTimeout(()=>{try{if(up&&!p.destroyed)p.reconnect();}catch(e){}},700);});   // the broker dropped us: sign back in, the data links stay up
+  let hbT=0,rejoining=false;
+  const dropAll=()=>{const l=[...peers.keys()].filter(k=>k!==me).map(k=>({peer:k}));l.forEach(x=>peers.delete(x.peer));if(l.length)fire({left:l});};
+  const beat=()=>{if(!up)return;const now=performance.now();
+    if(role==='host'){for(const c of [...conns]){if(c.open)try{c.send({t:'hb'});}catch(e){}if(now-(c.last||now)>12000){try{c.close();}catch(e){}conns.delete(c);if(c.pid){const l={t:'left',peer:c.pid};relay(l);handle(l);}}}}
+    else if(hc){if(hc.open)try{hc.send({t:'hb',peer:me});}catch(e){}if(now-(hc.last||now)>9000)lostHost();}};
+  const lostHost=async()=>{if(!up||rejoining)return;rejoining=true;const old=hc;hc=null;try{old&&old.close();}catch(e){}dropAll();flash('LOST THE HOST · RECONNECTING…',2500);
+    try{pr&&pr.destroy();}catch(e){}pr=null;role='';await wait(400+Math.random()*1600);
+    // free-for-all rooms: whoever gets there first becomes the new host and the others find him; a co-op war belongs to its host, so there we only try to get back to him
+    const coop=!!(typeof net!=='undefined'&&net.coop);let ok=false;
+    for(let i=0;i<5&&up&&!ok;i++){try{if(coop)await asClient();else await connect();ok=true;}catch(e){await wait(1200+Math.random()*1200);}}
+    rejoining=false;if(!up)return;
+    if(!ok){flash('CONNECTION LOST · LEAVE AND REJOIN THE ROOM',4000);return;}
+    room.role=role;try{net.isHost=role==='host';}catch(e){}const d=peers.get(me);if(d)send({t:'pres',peer:me,data:d});flash(role==='host'?'RECONNECTED · YOU HOST THE ROOM NOW':'RECONNECTED',2200);};
   const asHost=()=>new Promise((res,rej)=>{const p=new Peer(hid,O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'broker timeout'});},9000);
-    p.on('open',()=>{clearTimeout(t);pr=p;role='host';
-      p.on('connection',c=>{c.on('open',()=>{conns.add(c);for(const [k,v] of peers)c.send({t:'pres',peer:k,data:v});});
-        c.on('data',m=>{if(m&&m.peer&&!c.pid)c.pid=m.peer;relay(m,c);handle(m);});
+    p.on('open',()=>{clearTimeout(t);pr=p;role='host';keep(p);
+      p.on('connection',c=>{c.on('open',()=>{c.last=performance.now();conns.add(c);for(const [k,v] of peers)c.send({t:'pres',peer:k,data:v});});
+        c.on('data',m=>{c.last=performance.now();if(m&&m.peer&&!c.pid)c.pid=m.peer;if(m&&m.t==='hb')return;relay(m,c);handle(m);});
         c.on('close',()=>{conns.delete(c);if(c.pid){const l={t:'left',peer:c.pid};relay(l);handle(l);}});c.on('error',()=>{});});
       res();});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type||'error'});});});
   const asClient=()=>new Promise((res,rej)=>{const p=new Peer(O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'could not reach the host'});},10000);
-    p.on('open',()=>{const c=p.connect(hid,{reliable:true});
-      c.on('open',()=>{clearTimeout(t);pr=p;role='client';hc=c;res();});
-      c.on('data',handle);c.on('close',()=>{if(up&&role==='client')handle({t:'down'});});c.on('error',()=>{});});
+    p.on('open',()=>{const c=p.connect(hid,{reliable:true,serialization:'json'});
+      c.on('open',()=>{clearTimeout(t);pr=p;role='client';hc=c;c.last=performance.now();keep(p);res();});
+      c.on('data',m=>{c.last=performance.now();if(m&&m.t==='hb')return;handle(m);});c.on('close',()=>{if(up&&role==='client'&&hc===c)handle({t:'down'});});c.on('error',()=>{});});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type==='peer-unavailable'?'host not found':e&&e.type||'error'});});});
-  try{await asHost();}catch(e){if(e&&e.code==='unavailable-id')await asClient();else throw e;}
+  // v215: joining is retried. The room id can still be held by the broker for a while after a host closes his tab ("host not found" although the
+  // id is taken); we then wait and try both roles again instead of failing on the first attempt.
+  const connect=async()=>{let last=null;for(let i=0;i<4;i++){
+      try{await asHost();return;}catch(e){last=e;if(!(e&&e.code==='unavailable-id')){if(i<3){await wait(700+i*500);continue;}throw e;}}
+      try{await asClient();return;}catch(e){last=e;await wait(900+Math.random()*900);}}
+    throw last||{code:'error'};};
+  await connect();hbT=setInterval(beat,2000);
   flash(role==='host'?'HOSTING ROOM · tell friends the code':'JOINED ROOM',2200);
   room.role=role;return room;}};}
 
@@ -8374,8 +8411,15 @@ function agPickle(w){const P=player,a=AGW[w];if(game.pickleCd>0)return;if(!game.
   if(!fired){flash('NO '+SN[w]+' LEFT',1000);return;}game.stats.shots+=fired;game.pickleCd=.25;sfx.click();}
 function agLeft(P,w){const a=AGW[w];if(!a)return 0;if(a.k==='bomb')return P.count(w);P.rk=P.rk||{};let n=0;for(const k of Object.keys(P.load))if(P.load[k]===w)n+=P.rk[k]==null?a.cap:P.rk[k];return n;}
 
+const NO_CCIP=new Set(['F-4E','MiG-21']);
 /* ---- CCIP on every HUD: impact pipper with the bomb fall line from the flight path marker, rocket pipper with the range limit ---- */
 function agHud(P,fs){const w=game.wsel;if(!AGW[w]||!P.alive)return;const a=AGW[w],ru=P.ac.cockpit==='fulcrum'||P.ac.pit==='flanker'||P.ac.pit==='flogger'||P.ac.pit==='fishbed'||P.ac.pit==='foxbat';
+  // v215: no computed impact point on sights that never had one (F-4E AN/ASG-26 and the MiG-21bis ASP-PFD are fixed / manually depressed reticles):
+  // the pilot gets a fixed pipper at a manual depression (bombs 140 mil, rockets 35 mil) and has to fly the planned dive, speed and release height
+  if(NO_CCIP.has(P.type)&&(a.k==='bomb'||a.k==='pod')){const mil=a.k==='bomb'?140:35,sp=hb(0,-mil*.0573),k=KPX*D2R;hx.save();hx.lineWidth=1.6;
+    if(sp){hx.beginPath();hx.arc(sp.x,sp.y,2,0,7);hx.fill();circ(sp.x,sp.y,k*1.43);for(let i=0;i<4;i++){const q=i*Math.PI/2,cq=Math.cos(q),sq=Math.sin(q);line(sp.x+cq*k*1.43,sp.y+sq*k*1.43,sp.x+cq*(k*1.43+6),sp.y+sq*(k*1.43+6));}}
+    if(P.type!=='F-4E'){const p=hb(0,-11.6);if(p)txt((ru?'РУЧН ':'MAN ')+mil+(ru?' ТЫС · ':' MIL · ')+SN[w]+' '+agLeft(P,w)+(game.arm?'':(ru?' ОТКЛ':' SAFE')),p.x,p.y,'center');}
+    hx.restore();return;}
   const c=GND.ccip(P,w),k=KPX*D2R;hx.save();hx.lineWidth=1.6;
   const lbl=(ru?(a.k==='bomb'?'БОМБ ':'НАР '):(a.k==='bomb'?'CCIP ':'RKT '))+SN[w]+' '+agLeft(P,w)+(game.arm?'':(ru?' ОТКЛ':' SAFE'));
   {const p=hb(0,-11.6);if(p)txt(lbl,p.x,p.y,'center');}
@@ -10327,10 +10371,10 @@ const TCS={zi:0,vdi:true,disp:true,los:null,idT:null,t:0,cv:null,box:null,rt:nul
     const P=player,cam=this.cam;cam.fov=this.fov()*.75;cam.updateProjectionMatrix();cam.position.copy(P.pos).addScaledVector(P.fwd(new V3()),7.5).addScaledVector(P.up(new V3()),-.9);P.up(cam.up);cam.lookAt(this.los.p);
     const vis=P.mesh.visible;P.mesh.visible=false;const prev=renderer.getRenderTarget();renderer.setRenderTarget(this.rt);renderer.setClearColor(0x8a9aa6,1);renderer.clear(true,true,false);
     renderer.render(scene,cam);readRTAsync(this.rt,N,M,this.buf);renderer.setRenderTarget(prev);P.mesh.visible=vis;
-    const b=this.buf,d=this.img.data,night=ENV.nightK||0;for(let y=0;y<M;y++){const sr=(M-1-y)*N*4,dr=y*N*4;for(let x=0;x<N*4;x+=4){let g=(.3*b[sr+x]+.59*b[sr+x+1]+.11*b[sr+x+2])*(1-.9*night);g=clamp((g-40)*1.35+(Math.random()-.5)*10,0,255);d[dr+x]=d[dr+x+1]=d[dr+x+2]=g;d[dr+x+3]=255;}}
+    const b=this.buf,d=this.img.data,night=ENV.nightK||0;for(let y=0;y<M;y++){const sr=(M-1-y)*N*4,dr=y*N*4;for(let x=0;x<N*4;x+=4){let g=(.3*b[sr+x]+.59*b[sr+x+1]+.11*b[sr+x+2])*(1-.9*night);g=clamp((g-40)*1.35+(Math.random()-.5)*10,0,255);d[dr+x]=g*.1;d[dr+x+1]=g;d[dr+x+2]=g*.16;d[dr+x+3]=255;}}   /* v215: green P-31 phosphor picture, not grey */
     this.sc.getContext('2d').putImageData(this.img,0,0);},
   // the picture plus the TCS symbology: reticle, FOV, track / search, range and the ID once he can tell what it is
-  paint(c,W,H){const P=player,l=this.los;c.save();c.imageSmoothingEnabled=false;c.drawImage(this.sc,0,0,W,H);c.strokeStyle=c.fillStyle='#e8f0ea';c.lineWidth=Math.max(1,W/220);
+  paint(c,W,H){const P=player,l=this.los;c.save();c.imageSmoothingEnabled=false;c.drawImage(this.sc,0,0,W,H);c.strokeStyle=c.fillStyle='#8dff9a';c.lineWidth=Math.max(1,W/220);
     const cx=W/2,cy=H/2,g=W*.06;c.beginPath();c.moveTo(cx-g*2,cy);c.lineTo(cx-g*.6,cy);c.moveTo(cx+g*.6,cy);c.lineTo(cx+g*2,cy);c.moveTo(cx,cy-g*2);c.lineTo(cx,cy-g*.6);c.moveTo(cx,cy+g*.6);c.lineTo(cx,cy+g*2);c.stroke();
     if(l.trk)c.strokeRect(cx-g*1.1,cy-g*.8,g*2.2,g*1.6);c.font='700 '+Math.round(W/18)+'px "B612 Mono",monospace';c.textBaseline='top';c.textAlign='left';
     c.fillText('TCS '+(this.zi?'NFOV':'WFOV'),W*.03,H*.03);c.textAlign='right';c.fillText(l.trk?(radar.mode==='STT'&&l.tgt===radar.lock?'SLV TRK':'AUTO TRK'):'SRCH',W*.97,H*.03);
@@ -13196,7 +13240,7 @@ drawTomcatHud=function(P,fs,lh){
     const u=tcUnits(P),off=clamp((u-15)*.35,-3,3),p=hb(-3.4,WL+off);
     if(p){const h=ppd*1.1,t=ppd*.5;hx.beginPath();hx.moveTo(p.x+t,p.y-h);hx.lineTo(p.x,p.y-h);hx.lineTo(p.x,p.y+h);hx.lineTo(p.x+t,p.y+h);hx.moveTo(p.x,p.y);hx.lineTo(p.x+t*.8,p.y);hx.stroke();}}
   // ---- A/A
-  const L=radar.tgt(),tcs=window.TCS&&TCS.los&&TCS.los.trk?proj(TCS.los.p):null;
+  const L=radar.mode==='STT'?radar.lock:null/* v215: the AVG-12 only shows a single-target track; TWS hooks stay on the TID */,tcs=window.TCS&&TCS.los&&TCS.los.trk?proj(TCS.los.p):null;
   if(md===2){
     if(acm&&radar.on()){const bs=hb(0,0);hx.setLineDash([4,4]);if(radar.acm==='PLM'&&bs)circ(bs.x,bs.y,ppd*1.6);
       else if(radar.acm==='VSLH'||radar.acm==='VSLL'){const e0=radar.acm==='VSLH'?15:-15;[-2,2].forEach(a=>{const p=hb(a,Math.min(e0,9)),q=hb(a,Math.min(e0+40,9));if(p&&q)line(p.x,p.y,q.x,q.y);});}
@@ -14021,3 +14065,126 @@ if(o&&o.smOnly&&o.smOnly[0]){const sm=o.smOnly[0],root=o.root,G=new THREE.Group(
 }catch(e){console.warn('v207 Su-30SM',e);}
 
 
+
+/* ===== v215: bug-report pass (11/08) and five new jets built from the reference folder =====
+   Bugs (see CHANGELOG.md): Tab no longer steps targets out of an STT; IRST search no longer shows / locks radar-only contacts in COOP; helmet
+   sights only where fitted; netcode retries, heartbeats, reconnect and host hand-over; visible tracers; REDFOR campaign ships on the sea;
+   no CCIP on the F-4E / MiG-21bis; F-14 HUD tint sized to the field, green TCS, STT-only HUD target; RP-22 strobe moves in range only.
+   New: MiG-31 (Zaslon PESA, R-33, two crew), F-14D (APG-71, AAS-42 IRST + TCS), Su-35S (Irbis-E, OLS-35), Su-30MK2 (two crew), MiG-29SMT (Zhuk-ME). */
+// ---------- REDFOR campaign: the theatre is turned half a circle, so the warships have to follow the sea to the other coast ----------
+try{
+  const seaSign=()=>{let w=0,e=0;for(let z=-90000;z<=90000;z+=30000){if(cmpRaw(-138000,z)<-15)w++;if(cmpRaw(138000,z)<-15)e++;}return e>w?1:-1;};
+  const fixNav=()=>{const st=CAMP.st;if(!st||!st.nav)return;const sg=seaSign();
+    for(const n of st.nav){if(n.x&&Math.sign(n.x)!==sg){n.x=-n.x;const g=CAMP.navPhys&&CAMP.navPhys.get(n.id);if(g&&g.pos){g.pos.x=n.x;if(g.mesh)g.mesh.position.x=n.x;}}if(n.wx&&Math.sign(n.wx)!==sg)n.wx=-n.wx;}};
+  for(const fn of['genNav','navStep','ensureV4','ensureMap','buildNav']){const _f=CAMP[fn];if(typeof _f!=='function')continue;
+    CAMP[fn]=fn==='buildNav'?function(){fixNav();return _f.apply(this,arguments);}:function(){const r=_f.apply(this,arguments);try{fixNav();}catch(e){}return r;};}
+}catch(e){console.warn('v215 nav',e);}
+
+// ---------- adding a jet from an existing one: every per-type table is carried over, then the differences are written on top ----------
+function cloneType(src,dst,over){
+  AC[dst]=Object.assign({},AC[src],over||{});
+  if(AC[src].swing&&!(over&&over.swing))AC[dst].swing=Object.assign({},AC[src].swing);
+  const cp=v=>Array.isArray(v)?v.slice():v&&typeof v==='object'?Object.assign({},v):v,G_=n=>{try{return eval(n);}catch(e){return null;}};
+  for(const n of['FOE','NCTR_ID','ACROLE','CALLS','FLAPSW','RWR_OF','ECM_FIT','FV','STRIKE_LOAD','ENGN','IRSTN','STALL','APP_KT','MODERN_AC']){const T=G_(n);if(T&&T[src]!==undefined&&T[dst]===undefined)T[dst]=n==='ECM_FIT'||n==='FV'?T[src]:cp(T[src]);}
+  for(const era of Object.keys(LOAD))if(LOAD[era][src]&&!LOAD[era][dst])LOAD[era][dst]=cp(LOAD[era][src]);
+  for(const era of Object.keys(CMS))if(CMS[era][src]&&!CMS[era][dst])CMS[era][dst]=CMS[era][src].slice();
+  if(STN[src]&&!STN[dst]){STN[dst]={};for(const k of Object.keys(STN[src]))STN[dst][k]=STN[src][k].slice();}
+  for(const n of['DL_FIT','RUS','GUIDJ','CV_AC','PROBE_AC','BOOM_AC','HMS_ALWAYS','HMS_MODERN','NO_CCIP']){const S=G_(n);if(S&&S.has(src))S.add(dst);}
+  if(!ACS.includes(dst))ACS.splice(ACS.indexOf(src)+1,0,dst);
+  if(ENG_SUP[AC[src].name]!==undefined)ENG_SUP[AC[dst].name]=ENG_SUP[AC[src].name];
+  if(!ACK.includes(dst))ACK.push(dst);return AC[dst];}
+// a missile with a real motor: thrust and mass flow from propellant mass, specific impulse and the boost / sustain split
+function v215Msl(k,d,mo,sh,dia,sn,name,ru){MSL[k]=d;SHAPE[k]=sh;MDIA[k]=dia;const S=Math.PI*dia*dia/4,mbo=d.mass-mo.mp,I=mo.mp*mo.isp*G,mb=mo.f*mo.mp;
+  d.ph={S,dia,m0:d.mass,mp:mo.mp,mbo,tb:mo.tb,ts:mo.ts,gap:0,Tb:mo.f*I/mo.tb,Ts:mo.ts?(1-mo.f)*I/mo.ts:0,mdB:mb/mo.tb,mdS:mo.ts?(mo.mp-mb)/mo.ts:0,cd0:2.38*d.cd*mbo/S,cnMax:.004*mbo/S*(d.cnK||1)};
+  d.ph.cna=d.ph.cnMax/.38;d.apn=1;d.burnT=mo.tb+mo.ts;d.burn=d.burnT;
+  if(d.rcs==null)d.rcs=+Math.max(.02,Math.min(.25,.015+d.mass/3500)).toFixed(3);if(d.irsB==null)d.irsB=+Math.max(.4,Math.min(2.4,.4+d.mass/400)).toFixed(2);if(d.irsC==null)d.irsC=.03;
+  if(!MSL_KEYS.includes(k))MSL_KEYS.push(k);SN[k]=sn;WNAME[k]=name;try{RU_WPN[k]=ru;}catch(e){}try{SM_ST[k]='Р-'+ru;}catch(e){}}
+
+// ---------- MiG-31 'Foxhound' (izd. 01 / 01B; the BM fit in the modern era) ----------
+// Two D-30F6 turbofans (93.2 kN dry / 151.9 kN reheat each), empty 21,820 kg, 16,350 kg internal fuel, 61.6 m² wing, 5 g, M2.83 / 1,500 km/h at low level.
+// RP-31 N007 Zaslon: the first fighter PESA (1.1 m array, ±70° electronic scan, HPRF 200 kHz in the ППС front-hemisphere mode), ten track files and four
+// R-33s guided at once; instrumented scales 0-200 / 0-400 km (reference notes in planes/Modern/MiG-31/Zaslon). The navigator in the back seat runs the
+// set ([6] hands it to the pilot). 8TP retractable IRST under the nose. Four R-33 (AA-9 Amos) in tandem pairs under the belly, R-40TD / R-60M on the
+// wing pylons, GSh-6-23 with 260 rounds. Modern era: R-37M under the belly, R-77 / R-73 on the wings (MiG-31BM).
+try{
+  const M31ST={1:[-4.78,-.84,1.7],2:[-2.9,-.64,1.5],3:[2.9,-.64,1.5],4:[4.78,-.84,1.7],5:[-.62,-.98,-1.6],6:[.62,-.98,-1.6],7:[-.62,-.98,3.0],8:[.62,-.98,3.0]};
+  // R-33 (izd. 410): 490 kg, semi-active with inertial mid-course under Zaslon time-shared illumination. Modelled as a datalinked round whose own
+  // seeker only takes over in the last 2 km, so the radar has to hold the track file almost to impact, and four can be in the air on four targets.
+  v215Msl('R-33',Object.assign({},MSL['AIM-54A'],{ph:null,hoj:1,ecc:.45,trk:.6,ccm:.35,loft:.5,loftCap:28000,seek:'ARH',pit:2000,burn:24,acc:44,cd:5.8e-5,maxG:16,gimbal:50*D2R,
+    life:200,N:3.6,res:.55,rmin:2500,mass:490,aiR:55000,aiOff:20*D2R,smoke:.6}),{mp:175,isp:245,tb:8,ts:16,f:.55},{L:4.15,R:.19,f:[[.3,.9,.5],[2.0,1.1,1.4]]},.38,'R33','AA-9 Amos · long range, Zaslon-guided','33');
+  let mk=AC['MiG-25'].model;
+  try{mk=eval('('+AC['MiG-25'].model.toString().replace(/^function\s*\w*/,'function makeMiG31').replace(/pylons\(grp,MIG25ST,/,'pylons(grp,M31ST,')+')');}catch(e){}
+  cloneType('MiG-25','MiG-31',{name:'MiG-31',model:mk,st:M31ST,empty:21820,fuel:16350,tank:0,S:61.6,CLa:3.1,cd0:.0105,k:.19,mil:186400,ab:303800,spool:4.2,abLight:.8,
+    sfc:[2.05e-5,5.4e-5],ff:[.5,3.9,16.4],gLim:5,aoaLim:18,roll:2.0,mlim:2.83,vne:1500,mmax:3.0,mcap:2.9,rcs:20,irs:1.7,dW:39000,tkG:[5,5],gUlt:6.5,
+    ols:{tail:40000,head:12000,lrf:0},irst:true,pulse:false,rio:true,wso:true,twsN:4,trkN:10,pki:true,
+    radar:{name:'Zaslon',R0:160000,ranges:[50,100,200,400],unit:1000,ul:'KM',ecc:.5,pesa:1,beam:2.5*D2R},
+    gun:{name:'GSh-6-23',rate:130,v:715,dmg:12,ammo:260,spread:.003},rel:[5,6,7,8,2,3,1,4],migRel:['5','6','7','8','2','3','1','4'],keepJ:['1','2','3','4','5','6','7','8'],tankName:'—'});
+  delete AC['MiG-31'].ptb;RGIM['Zaslon']=[70,70,60,1];
+  STN['MiG-31']={1:['R-60M','R-73'],4:['R-60M','R-73'],2:['R-40TD','R-60M','R-73','R-77'],3:['R-40TD','R-60M','R-73','R-77'],5:['R-33','R-37M'],6:['R-33','R-37M'],7:['R-33','R-37M'],8:['R-33','R-37M']};
+  LOAD.cold['MiG-31']={5:'R-33',6:'R-33',7:'R-33',8:'R-33',2:'R-40TD',3:'R-40TD',1:'R-60M',4:'R-60M'};
+  LOAD.modern['MiG-31']=MSL['R-37M']?{5:'R-37M',6:'R-37M',7:'R-37M',8:'R-37M',2:'R-77',3:'R-77',1:'R-73',4:'R-73'}:Object.assign({},LOAD.cold['MiG-31']);
+  if(LOAD.guns)LOAD.guns['MiG-31']={};STRIKE_LOAD['MiG-31']=Object.assign({},LOAD.cold['MiG-31']);
+  for(const era of Object.keys(CMS))CMS[era]['MiG-31']=[32,32];
+  ENGN['MiG-31']='2× D-30F6';IRSTN['MiG-31']='8TP';ENG_SUP['MiG-31']=.06;CALLS['MiG-31']='FOXHOUND';NCTR_ID['MiG-31']='MIG-31';FOE['MiG-31']='F-14A';RWR_OF['MiG-31']='SPO-15LM';
+  ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA · 4× R-33 · PILOT + NAVIGATOR';DL_FIT.add('MiG-31');
+  try{CTYPES.cold[1].INT.push('MiG-31');CTYPES.modern[1].INT.unshift('MiG-31');}catch(e){}
+}catch(e){console.warn('v215 MiG-31',e);}
+
+// ---------- F-14D Super Tomcat ----------
+// F110-GE-400 like the B, empty 19,838 kg; AN/APG-71 (the AWG-9's digital successor: same antenna and transmitter, APG-70 processing, better
+// ECCM and look-down); the dual chin pod carries the AN/AAS-42 IRST beside the TCS; AIM-54C / AIM-7M / AIM-9M, LANTIRN and JDAM in the modern era.
+try{
+  const B=AC['F-14B'];
+  cloneType('F-14B','F-14D',{name:'F-14D Super Tomcat',empty:19838,irst:true,ols:{tail:60000,head:28000,lrf:0,spin:1},
+    radar:Object.assign({},B.radar,{name:'APG-71',R0:70*NM,ecc:.72})});
+  RGIM['APG-71']=RGIM['AWG-9'];IRSTN['F-14D']='AN/AAS-42';ENGN['F-14D']='2× F110-GE-400';NCTR_ID['F-14D']='F-14';CALLS['F-14D']='TOMCAT';
+  ACROLE['F-14D']='US · FLEET DEFENCE · APG-71 · AAS-42 IRST + TCS · LANTIRN / JDAM';RWR_OF['F-14D']='ALR-67(V)3';
+  for(const era of Object.keys(LOAD))if(LOAD[era]['F-14D'])for(const k of Object.keys(LOAD[era]['F-14D'])){const w=LOAD[era]['F-14D'][k];if(w==='AIM-54A')LOAD[era]['F-14D'][k]='AIM-54C';if(w==='AIM-7F')LOAD[era]['F-14D'][k]='AIM-7M';if(w==='AIM-9L'||w==='AIM-9G')LOAD[era]['F-14D'][k]='AIM-9M';}
+  {const T=window.TCS,_a=T.avail;T.avail=function(){const P=player;return !!(P&&P.alive&&P.type==='F-14D')||_a.call(this);};}
+  // the B loses its IRST in makePlayer; the D keeps the AAS-42
+  {const _mp=makePlayer;makePlayer=function(){AC['F-14D'].irst=true;return _mp.apply(this,arguments);};}
+}catch(e){console.warn('v215 F-14D',e);}
+
+// ---------- the Flanker glass-cockpit family: Su-27SM, Su-30SM and now the Su-35S and Su-30MK2 ----------
+{const _smx=SMX,FAM=new Set(['Su-35S','Su-30MK2']);SMX=function(t){return FAM.has(t)||_smx(t);};}
+// Su-35S 'Flanker-E': two AL-41F1S (izd. 117S, 86.3 kN dry / 142.2 kN reheat), empty 19,000 kg, 11,500 kg internal fuel, no canards, N035 Irbis-E PESA on a
+// two-axis drive (±60° electronic, ±120° with the mechanical turn; 350-400 km against a 3 m² target in a narrow sector search, ~200 km in a normal volume),
+// 30 track files / 8 engaged, OLS-35 (about 90 km tail-on, 35 km head-on, 20 km laser), L-150-35, 12 hardpoints.
+try{
+  const S30=AC['Su-30SM'],B=AC['Su-27SM'];
+  cloneType('Su-27SM','Su-35S',{name:'Su-35S',empty:19000,fuel:11500,dW:27500,mil:172600,ab:284400,S:62,CLa:4.6,cd0:.0188,k:.118,gLim:9,aoaLim:28,fbw:true,rcs:3,irs:1.4,
+    dep:{a:42,rock:.4,spin:1.7},ols:{tail:90000,head:35000,lrf:20000},irst:true,twsN:4,trkN:30,ff:[.35,2.9,13.4],
+    radar:Object.assign({},B.radar,{name:'Irbis-E',R0:110*NM,ranges:[10,25,50,100,200,400],unit:1000,ul:'KM',ecc:.85,pesa:1,beam:2.5*D2R}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
+  RGIM['Irbis-E']=[120,60,60,1];
+  if(S30&&STN['Su-30SM']){STN['Su-35S']={};for(const k of Object.keys(STN['Su-30SM']))STN['Su-35S'][k]=STN['Su-30SM'][k].filter(w=>w!=='T220');}
+  if(MSL['R-77-1']&&LOAD.modern)LOAD.modern['Su-35S']={1:'R-74M',10:'R-74M',2:'R-74M',9:'R-74M',3:'R-77-1',8:'R-77-1',11:'R-77M',12:'R-77M',4:'R-37M',7:'R-37M',5:'R-77-1',6:'R-77-1'};
+  for(const era of Object.keys(CMS))CMS[era]['Su-35S']=[96,96];
+  ENGN['Su-35S']='2× AL-41F1S (117S)';IRSTN['Su-35S']='OLS-35';ENG_SUP['Su-35S']=.05;CALLS['Su-35S']='FLANKER-E';NCTR_ID['Su-35S']='SU-35';FOE['Su-35S']='F-15C';RWR_OF['Su-35S']='L-150';
+  ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · R-77M / R-37M';HMS_ALWAYS.add('Su-35S');
+  try{CTYPES.modern[1].CAP.unshift('Su-35S');CTYPES.modern[1].ESC.unshift('Su-35S');}catch(e){}
+}catch(e){console.warn('v215 Su-35S',e);}
+// Su-30MK2 (KnAAZ two-seater: no canards, no thrust vectoring): two AL-31F, empty 17,700 kg, 9,400 kg internal fuel, N001VEP (two-target R-77 TWS, sea and
+// ground modes), OLS-27, L-150 (the РЭП-СПО pages in the folder are this jet's), Kh-31A / P, Kh-29, KAB-500Kr / 1500Kr. The operator in the back seat runs the radar.
+try{
+  const B=AC['Su-27SM'];cloneType('Su-27SM','Su-30MK2',{name:'Su-30MK2',empty:17700,fuel:9400,dW:25000,gLim:8.5,aoaLim:26,rcs:13,irs:1.42,rio:true,wso:true,twsN:2,
+    radar:Object.assign({},B.radar,{name:'N001VEP',R0:58*NM,ecc:.62}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
+  RGIM['N001VEP']=RGIM['N001'];ENGN['Su-30MK2']='2× AL-31F';CALLS['Su-30MK2']='FLANKER-G';NCTR_ID['Su-30MK2']='SU-30';RWR_OF['Su-30MK2']='L-150';HMS_ALWAYS.add('Su-30MK2');
+  ACROLE['Su-30MK2']='RUSSIA · TWO-SEAT MULTIROLE · N001VEP · Kh-31 / Kh-29 / KAB · OPERATOR';
+}catch(e){console.warn('v215 Su-30MK2',e);}
+
+// ---------- MiG-29SMT (izd. 9.19) ----------
+// The 9.13 airframe with the large dorsal tank (about 4,700 kg of internal fuel), RD-33 series 3, N010ME Zhuk-ME slotted-array radar (about 120 km against
+// a fighter, ±85° in azimuth, ten track files, four engaged with the R-77), OEPS-29 with the laser, R-27ER / ET, R-77, R-73.
+try{
+  cloneType('MiG-29S','MiG-29SMT',{name:'MiG-29SMT',empty:11600,fuel:4700,dW:17000,twsN:4,trkN:10,rcs:5,
+    radar:{name:'Zhuk-ME',R0:65*NM,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.72}});
+  RGIM['Zhuk-ME']=[85,60,40,1];ENGN['MiG-29SMT']='2× RD-33 ser. 3';CALLS['MiG-29SMT']='FULCRUM-F';NCTR_ID['MiG-29SMT']='MIG-29';HMS_ALWAYS.add('MiG-29SMT');
+  ACROLE['MiG-29SMT']='RUSSIA · FRONTLINE MULTIROLE · ZHUK-ME · 4-TARGET TWS · LONG LEGS';
+  if(LOAD.modern&&LOAD.modern['MiG-29SMT'])Object.assign(LOAD.modern['MiG-29SMT'],{3:'R-27ER',4:'R-27ER'});
+  {const S=STN['MiG-29SMT'];for(const k of['3','4'])if(S[k])for(const w of['R-27ER','R-27ET'])if(!S[k].includes(w))S[k].push(w);}
+  try{CTYPES.modern[1].CAP.push('MiG-29SMT');}catch(e){}
+}catch(e){console.warn('v215 MiG-29SMT',e);}
+
+// ---------- crews: every two-seater flies with its back-seater (AI unless you take the sensors with [6]) ----------
+const CREW={'F-4E':'WSO','F-14A':'RIO','F-14B':'RIO','F-14D':'RIO','F-15E':'WSO','Su-30SM':'WSO','Su-30MK2':'OPERATOR','MiG-31':'NAVIGATOR'};
+for(const k of Object.keys(CREW))if(AC[k]){AC[k].rio=true;AC[k].crew=2;AC[k].crewName=CREW[k];}
