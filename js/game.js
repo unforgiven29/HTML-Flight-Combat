@@ -846,7 +846,7 @@ const AC={
     clt:[[-20,-1],[-10,-.6],[0,.05],[5,.41],[10,.78],[15,1.1],[20,1.34],[25,1.49],[30,1.56],[35,1.58],[40,1.52],[50,1.3],[60,1.05],[90,0]],
     cdm:[[0,0],[.8,0],[.9,.004],[1,.019],[1.1,.027],[1.3,.026],[2,.021]],dW:12000,tkG:[7,7.3],dep:{a:32,rock:.9,spin:2.8},
     ff:[.15,1.6,7.3],gLim:9,aoaLim:25,roll:5.2,fbw:true,rcs:1.5,irs:1,cockpit:'viper',units:'imp',
-    radar:{name:'APG-68',R0:42*NM,ranges:[10,20,40,80],unit:NM,ul:'NM',ecc:.7},irst:false,
+    radar:{name:'APG-66(V)1',R0:38*NM,ranges:[10,20,40,80],unit:NM,ul:'NM',ecc:.6},irst:false,
     gun:{name:'M61A1',rate:100,v:1050,dmg:9,ammo:510,spread:.0022},rel:[1,9,2,8,3,7],keepJ:['1','9'],rwr:'16',spo:4,tankName:'370 gal tank'},
   // F-15C: 2x F100-PW-220 (64.9 / 105.7 kN), 56.5 m² wing, no hard AoA limiter (CAS only), APG-63
   'F-15C':{name:'F-15C',model:makeF15,st:F15ST,empty:12700,fuel:6100,tank:1850,S:56.5,CLa:3.9,cd0:.021,k:.13,mil:129800,ab:211400,spool:1.5,
@@ -1795,7 +1795,7 @@ function dlEstimate(sh,tg){if(sh===player&&radar.mode==='TWS'&&(radar.bug===tg||
 // antenna gimbal limits in airframe axes: azimuth either side, elevation up / down (degrees), and whether the antenna is stabilised against pitch and roll.
 // An unstabilised dish (the MiG-21's RP-22SM) simply points where the nose points: the scan climbs and dives with the aircraft.
 const IRG={az:30,eu:45,ed:15,stab:1},CONE=1.6*D2R,CONE_ERR=.2*D2R;// ALR-23 conical scan: ~1.6 deg nutation, bearing good to ~0.2 deg from the modulated signal
-const RGIM={'APG-68':[60,60,60,1],'APG-63':[60,60,60,1],'APG-73':[70,60,60,1],'APQ-120':[60,45,45,1],'N019':[67,56,40,1],'N001':[60,56,40,1],'RP-22SM':[30,18,12,0],'AWG-9':[65,60,60,1],'Sapfir-23ML':[56,56,40,1],'Sapfir-25':[56,40,30,1]};
+const RGIM={'APG-68':[60,60,60,1],'APG-66(V)1':[60,60,60,1],'APG-68(V)5':[60,60,60,1],'APG-63':[60,60,60,1],'APG-73':[70,60,60,1],'APQ-120':[60,45,45,1],'N019':[67,56,40,1],'N001':[60,56,40,1],'RP-22SM':[30,18,12,0],'AWG-9':[65,60,60,1],'Sapfir-23ML':[56,56,40,1],'Sapfir-25':[56,40,30,1]};
 const _qi=new Q4(),_rb=new V3();
 const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',R0:42*NM,ri:2,mode:'RWS',sensor:'RDR',azs:[60,30,10],ai:0,barsL:[4,2,1],bi:0,
   antAz:0,antEl:0,elCmd:0,dir:1,bar:0,beam:3.3*D2R,rate:65*D2R,scanC:0,
@@ -13633,10 +13633,10 @@ const is30=()=>!!player&&player.type===T30;
 const s30AG=()=>{const w=game.wsel,a=w&&AGW[w];return !!(is30()&&a&&a.k!=='tgp'&&radar.on()&&radar.sensor==='RDR');};
 // v211: front-seat ground radar. The Su-27SM A/G radar (MAP / GMT / SEA / RNG, SAR picture) now runs on any Su-30SM screen that shows the RDR page while an A/G store is selected
 {const A=window.V121&&window.V121.AGR;if(A){const _a=A.active.bind(A);A.active=function(){if(is30())return !!(player.alive&&game.active&&s30AG()&&['L','M','R'].some(k=>S3[k].pg==='RDR'));return _a();};}}
-const tvcToggle=()=>{if(!is30())return;if(!S3.tvcSw){flash('TVC MASTER OFF',900);return;}S3.tvc=!S3.tvc;flash(S3.tvc?'TVC ON · ESC OFF':'TVC OFF',1100);sfx.click();};
+const tvcToggle=()=>{if(!(player&&player.ac&&player.ac.tvc))return;if(!S3.tvcSw){flash('TVC MASTER OFF',900);return;}S3.tvc=!S3.tvc;flash(S3.tvc?'TVC ON · ESC OFF':'TVC OFF',1100);sfx.click();};
 window.s30Tvc=tvcToggle;
 // ---------------- TVC and GCES in the flight model ----------------
-{const _fx=Jet.prototype.fx0;Jet.prototype.fx0=function(base){const r=_fx.call(this,base);if(!(this.ac.s30&&this===player&&S3.tvc))return r;
+{const _fx=Jet.prototype.fx0;Jet.prototype.fx0=function(base){const r=_fx.call(this,base);if(!(this.ac.tvc&&this===player&&S3.tvc))return r;
     const o=Object.create(r);o.aoaLim=60;o.dep=Object.assign({},r.dep,{a:75,rock:.15,spin:.8});return o;};
  const _st=Jet.prototype.step;Jet.prototype.step=function(dt){
   const me=this.ac.s30&&this===player&&this.alive&&!this.remote;
@@ -13648,12 +13648,13 @@ window.s30Tvc=tvcToggle;
       if((vy>15&&Math.abs(b)<.4&&agl>200)||!arm)S3.gcesAct=0;if(Math.random()<dt*3)flash('DANGER · GCES',600);}
     else S3.gcesAct=0;}
   _st.call(this,dt);
-  if(me&&S3.tvc&&this.alive){// nozzle moments: authority from thrust, falling off with dynamic pressure; the FBW trims deflection to the G-limiter
+  const meT=this.ac.tvc&&this===player&&this.alive&&!this.remote;
+  if(meT&&S3.tvc){// nozzle moments: authority from thrust, falling off with dynamic pressure; the FBW trims deflection to the G-limiter
     const V=Math.max(this.vel.length(),20),qd=.5*rho(this.pos.y)*V*V,c=this.gloc>0?{p:0,r:0,y:0}:this.ctlE(),Tm=(this.ac.mil*(.35+.65*this.n)+this.ab*(this.ac.ab-this.ac.mil))/this.mass/G;
     const lim=clamp((this.gAllow||9)/9,.6,1),k=Tm*(1-clamp(qd/52000,0,.85))*lim;
-    const dp=c.p*1.15*k,dy=c.y*.55*k;if(isFinite(dp)&&isFinite(dy)&&Math.abs(dp)+Math.abs(dy)>1e-5){const ax=new V3(dp,-dy,0),l=ax.length(),q0=this.q.clone();this.q.multiply(new Q4().setFromAxisAngle(ax.divideScalar(l),l*dt)).normalize();if(!isFinite(this.q.x+this.q.y+this.q.z+this.q.w))this.q.copy(q0);}
+    const tv=this.ac.tvc,dp=c.p*1.15*k*(tv.pitch||15)/15,dy=c.y*.55*k*(tv.yaw||10)/10;if(isFinite(dp)&&isFinite(dy)&&Math.abs(dp)+Math.abs(dy)>1e-5){const ax=new V3(dp,-dy,0),l=ax.length(),q0=this.q.clone();this.q.multiply(new Q4().setFromAxisAngle(ax.divideScalar(l),l*dt)).normalize();if(!isFinite(this.q.x+this.q.y+this.q.z+this.q.w))this.q.copy(q0);}
     this.dep=(this.dep||0)*Math.exp(-dt*1.5);this.nozD=c.p*15*lim;}
-  else if(me)this.nozD=0;};}
+  else if(meT)this.nozD=0;};}
 
 // ---------------- radar: PESA beam agility, TWS multitrack (each Fox-3 keeps its own track file, four engaged) ----------------
 {const _r=radar.reset;radar.reset=function(ac){const o=_r.apply(this,arguments);if(ac&&ac.radar&&ac.radar.pesa){this.aesa=true;this.rate=260*D2R;}return o;};}
@@ -13912,7 +13913,7 @@ try{CTL.map['+KeyY']={fn:()=>tvcToggle()};
   CTL.map['+Digit8']={fn:()=>{const on=document.body.classList.toggle('swpoff');try{localStorage.setItem('viper.swpHide',on?'1':'0');}catch(e){}flash(on?'SWITCH PANEL HIDDEN · SHIFT+8':'SWITCH PANEL',900);}};
   document.querySelectorAll('.keys').forEach(k=>{k.insertAdjacentHTML('beforeend','<div>Su-30SM thrust vectoring<kbd>Shift+Y</kbd></div><div>Hide / show cockpit switch panel<kbd>Shift+8</kbd></div>');});}catch(e){console.warn('v206 keys',e);}
 // reset the jet's systems on each sortie
-{const _sp=Jet.prototype.spawn;Jet.prototype.spawn=function(){const r=_sp.apply(this,arguments);if(this.ac.s30&&this===player){S3.tvc=false;S3.gcesAct=0;ENG.clear();}return r;};}
+{const _sp=Jet.prototype.spawn;Jet.prototype.spawn=function(){const r=_sp.apply(this,arguments);if((this.ac.s30||this.ac.tvc)&&this===player){S3.tvc=false;S3.gcesAct=0;ENG.clear();}return r;};}
 }catch(e){console.warn('v206 Su-30SM',e);}
 
 /* ===== v207: Su-30SM stores after the published Su-30SM weapons list (12 hardpoints, 8,000 kg, 14 AAMs max), its own T220/E targeting pod page,
@@ -14184,7 +14185,7 @@ try{
 // 30 track files / 8 engaged, OLS-35 (about 90 km tail-on, 35 km head-on, 20 km laser), L-150-35, 12 hardpoints.
 try{
   const S30=AC['Su-30SM'],B=AC['Su-27SM'];
-  cloneType('Su-27SM','Su-35S',{name:'Su-35S',empty:19000,fuel:11500,dW:27500,mil:172600,ab:284400,S:62,CLa:4.6,cd0:.0188,k:.118,gLim:9,aoaLim:28,fbw:true,rcs:3,irs:1.4,
+  cloneType('Su-27SM','Su-35S',{name:'Su-35S',tvc:{pitch:15,yaw:15},empty:19000,fuel:11500,dW:27500,mil:172600,ab:284400,S:62,CLa:4.6,cd0:.0188,k:.118,gLim:9,aoaLim:28,fbw:true,rcs:3,irs:1.4,
     dep:{a:42,rock:.4,spin:1.7},ols:{tail:90000,head:35000,lrf:20000},irst:true,twsN:4,trkN:30,ff:[.35,2.9,13.4],
     radar:Object.assign({},B.radar,{name:'Irbis-E',R0:110*NM,ranges:[10,25,50,100,200,400],unit:1000,ul:'KM',ecc:.85,pesa:1,beam:2.5*D2R}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
   RGIM['Irbis-E']=[120,60,60,1];
@@ -14192,7 +14193,7 @@ try{
   if(MSL['R-77-1']&&LOAD.modern)LOAD.modern['Su-35S']={1:'R-74M',10:'R-74M',2:'R-74M',9:'R-74M',3:'R-77-1',8:'R-77-1',11:'R-77M',12:'R-77M',4:'R-37M',7:'R-37M',5:'R-77-1',6:'R-77-1'};
   for(const era of Object.keys(CMS))CMS[era]['Su-35S']=[96,96];
   ENGN['Su-35S']='2× AL-41F1S (117S)';IRSTN['Su-35S']='OLS-35';ENG_SUP['Su-35S']=.05;CALLS['Su-35S']='FLANKER-E';NCTR_ID['Su-35S']='SU-35';FOE['Su-35S']='F-15C';RWR_OF['Su-35S']='L-150';
-  ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · R-77M / R-37M';HMS_ALWAYS.add('Su-35S');
+  ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · 3D THRUST VECTORING · IRBIS-E PESA · OLS-35 · R-77M / R-37M';HMS_ALWAYS.add('Su-35S');
   try{CTYPES.modern[1].CAP.unshift('Su-35S');CTYPES.modern[1].ESC.unshift('Su-35S');}catch(e){}
 }catch(e){console.warn('v215 Su-35S',e);}
 // Su-30MK2 (KnAAZ two-seater: no canards, no thrust vectoring): two AL-31F, empty 17,700 kg, 9,400 kg internal fuel, N001VEP (two-target R-77 TWS, sea and
@@ -14337,7 +14338,7 @@ const GMK=new THREE.Group();GMK.visible=false;sm.add(GMK);const mkL=[];
   }catch(e){console.warn('v216 board',e);}return r;};}
 window.V216={drawG,T};
 {let n=0;o.anims.push(()=>{if(!player||!sm.visible)return;if(n++&1)return;try{if(G35.visible){drawPUI();}else if(GMK.visible)drawG(mkL);else return;}catch(e){}for(const t of live)t.needsUpdate=true;});}
-ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · 2× МФИ-35 + ПУИ-35';
+ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · 3D THRUST VECTORING · IRBIS-E PESA · OLS-35 · 2× МФИ-35 + ПУИ-35';
 }catch(e){console.warn('v216 Flanker boards',e);}
 
 // ---------------- F-14D: pilot cockpit after NAVAIR 01-F14AAD-1 (2004) FO-3, section 2.33 (MFDs) and figures 2-95 / 2-100 (HUD) ----------------
@@ -15006,6 +15007,6 @@ const oldSq=[];sm.children.forEach(m=>{if(!m.isMesh)return;const p=m.position;if
 
 // ---------------- Su-30SM: the new frames on its own MFDs (bottom row on every non-MFWS page) ----------------
 if(window.S30PG){const en=f=>(c,x0,y0,x1,y1)=>f(c,x0,y0,x1,y1);Object.assign(S30PG,{PFD:en(pPIL),NAV:(c,x0,y0,x1,y1)=>SM_PAGE.NAV(c,x0,y0,x1,y1),ESM:en(pRTR),ECM:en(pREB),HUD:en(pILS),SPO:(c,x0,y0,x1,y1)=>SM_PAGE.SPO(c,x0,y0,x1,y1)});}
-ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · 2× МФИ-35 (40 KEYS, SPLIT SCREEN) + ПУИ-35';
+ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · 3D THRUST VECTORING · IRBIS-E PESA · OLS-35 · 2× МФИ-35 (40 KEYS, SPLIT SCREEN) + ПУИ-35';
 window.V224={DISP,MX,label,press,paint,bU};
 }catch(e){console.warn('v224 МФИ engine',e);}
