@@ -1842,11 +1842,11 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
   // every file is refreshed several times a second instead of once a frame, and in STT the set keeps searching around the lock. A PESA
   // (one tube transmitter behind ferrite phase shifters) has fewer, longer dwells and a slower revisit than an AESA (a T/R module per element).
   esaOn(){return !!this.esa&&this.sensor==='RDR';},
-  esaPar(){return this.esa==='A'?{dw:.0045,rv:.2,tdw:2}:{dw:.0085,rv:.4,tdw:3};},
+  esaPar(){return this.esa==='A'?{dw:.003,rv:.2,tdw:2,nl:4}:{dw:.006,rv:.4,tdw:3,nl:3};},
   esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
       if(Math.abs(ra-az)>this.beam/2||Math.abs(re-el)>this.bmV()/2||a.off>this.gimbal()+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
-      const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<pdOf(sn))this.hit(j,a,sn,now);}},
+      const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<1-Math.pow(1-pdOf(sn),this.esaPar().nl))this.hit(j,a,sn,now);}},  // a dwell is a burst of pulses: several looks integrated per beam position
   // track dwells: the beam goes to where the file says the target is now; a target that has turned hard since the last hit can be outside it
   esaRevisit(now,skip){const q=this.esaPar();let used=0;
     for(const [j,tk] of this.tracks){if(j===skip||!j.alive||tk.hoj||!tk.p||now-(tk.rv||0)<q.rv)continue;tk.rv=now;used+=q.dw*q.tdw;
@@ -1854,7 +1854,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       const dx=(a.az-pa.az)/this.beam,dy=(a.el-pa.el)/this.bmV();if(Math.abs(dx)>.75||Math.abs(dy)>.75)continue;
       const sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)))*1.6;if(sn>0&&Math.random()<pdOf(sn))this.hit(j,a,sn,now);}
     return used;},
-  esaSearch(dt,lo,hi,gim,now,trk){const q=this.esaPar(),g=this.glim(),st=this.beam*.85;this._esaLo=lo;this._esaHi=hi;
+  esaSearch(dt,lo,hi,gim,now,trk){const q=this.esaPar(),g=this.glim(),st=this.beam*.6;this._esaLo=lo;this._esaHi=hi;
     let bud=(this.esaB||0)+dt;if(trk||this.esa==='A')bud-=this.esaRevisit(now,null);let n=0;
     if(this.esaAz==null||this.esaAz<lo-st||this.esaAz>hi+st){this.esaAz=this.dir>0?lo:hi;}
     while(bud>=q.dw&&n<600){bud-=q.dw;n++;this.esaAz+=this.dir*st;
