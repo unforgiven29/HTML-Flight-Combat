@@ -2995,7 +2995,7 @@ const RWR_OF={'F-16':'ALR-69','F-16C':'ALR-56M','F-15C':'ALR-56C','F-15E':'ALR-5
 const rwrState={launchT:0,known:new Set()};
 const RW={recs:new Map(),list:[],msl:[],clk:0,sy:null,nm:'',tLock:0,tLaunch:0,latch:null,mseen:new WeakSet()};
 const _rwO=new V3(),_rwQ=new V3();
-const rwrSysOf=P=>{let n=(P===player&&(isFlogger()||isFishbed()))?'SPO-10':RWR_OF[P.type]||(P.ac.cockpit==='fulcrum'?'SPO-15LM':'ALR-56C');if(n==='ALR-67(V)2'&&P.era==='modern')n='ALR-67(V)3';const s=RWRF[n];s.nm=n;return s;};
+const rwrSysOf=P=>{let n=(P===player&&(isFlogger()||isFishbed())&&P.type!=='MiG-31')?'SPO-10':RWR_OF[P.type]||(P.ac.cockpit==='fulcrum'?'SPO-15LM':'ALR-56C');if(n==='ALR-67(V)2'&&P.era==='modern')n='ALR-67(V)3';const s=RWRF[n];s.nm=n;return s;};
 // what a given emitter looks like to a warner: its own detection range, waveform, scan period and how it is named on the scope
 function rwrEmit(j){if(j._rw)return j._rw;const g=!!j.gnd,ac=j.ac||{},T=j.T||{},R0=(g?T.R0:(ac.radar&&ac.radar.R0))||40000;
   return j._rw={g,R0,pd:g?false:!ac.pulse,aesa:!!(ac.radar&&ac.radar.aesa),scan:g?(R0>60000?7:4):3.2,cone:g?Math.PI:60*D2R,sym:(g?T.rwr:ac.rwr)||'U',spo:g?(T.spo!=null?T.spo:5):(ac.spo!=null?ac.spo:5),
@@ -3091,7 +3091,7 @@ function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=pe
   const qi=P.q.clone().invert(),bl=performance.now()%400<220;rwrState.launchT-=dt;
   const brg=p=>{const r=p.clone().sub(P.pos).applyQuaternion(qi);return Math.atan2(r.x,-r.z);};
   rwrUpdate(dt);const th=RW.list,sy=RW.sy,msl=RW.msl.map(x=>x.m);
-  if(isFlogger()||isFishbed()){drawSPO10(c,S,th,brg,msl,NOW);return;}
+  if((isFlogger()||isFishbed())&&P.type!=='MiG-31'){drawSPO10(c,S,th,brg,msl,NOW);return;}
   if(mig){// SPO-15LM (manual fig. 103): numbered main-threat lamps, small green threat lamps, red track light, power ring, type letters
     c.fillStyle='#1b1a17';c.fillRect(0,0,S,S);const test=NOW<sys.rwr.testT||NOW<sys.mig.lamp,bl2=performance.now()%250<125;
     const tl=th.filter(t=>sys.rwr.srch||t.mode!=='S'),main=tl.slice().sort((a,b)=>(b.lk-a.lk)||(b.pwr-a.pwr))[0],sec=t=>{const a=t.a*R2D,A=Math.abs(a);return[a<0?0:1,A<20?0:A<40?1:A<70?2:A<110?3:4];};
@@ -14451,3 +14451,55 @@ function drawSide(){const P=player;
 {let n=0;o.anims.push(()=>{if(!g.visible||!player)return;if(n++&1)return;try{drawG(gl);drawIPV();drawSide();}catch(e){}for(const t of live)t.needsUpdate=true;});}
 ACROLE['MiG-31']='USSR · LONG-RANGE INTERCEPTOR · ZASLON PESA · 4× R-33 · PILOT FLIES, NAVIGATOR RUNS THE RADAR';
 }catch(e){console.warn('v218 MiG-31',e);}
+
+/* ===== v219: MiG-31 SPO-15LM and its own HUD =====
+   SPO-15LM: the MiG-31 has its own warner (the MiG-25 board's SPO-10 no longer applies), lamp unit on the pilot's board, top right.
+   HUD after the MiG-31 HUD picture in planes/Modern/MiG-31/HUD: mode legend top left (НАВЕД under ground / navigator guidance, ОБЗОР, ЗАХВ),
+   heading arc across the top with a pointer, speed scale on the left (km/h, labels every 20) with its index, altitude scale on the right (km with
+   one decimal), the aircraft symbol with the two horizon bars either side turning with bank, pitch marks running down the centre (labelled every
+   20°), and the 0-100 launch-range scale along the bottom with a caret for the locked target (percent of maximum launch range). ===== */
+try{
+// SPO-15LM lamp unit on the pilot's board
+{const o=ck.fulcrum,xg=o.fxOnly[0],g=new THREE.Group();g.position.copy(xg.position);g.rotation.copy(xg.rotation);g.visible=false;o.root.add(g);
+  const b=new THREE.Mesh(new THREE.BoxGeometry(.088,.088,.02),new THREE.MeshPhongMaterial({color:0x141618,shininess:10}));b.position.set(.415,-.05,.026);g.add(b);
+  const t=new THREE.CanvasTexture(rwrC);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;
+  const q=new THREE.Mesh(new THREE.PlaneGeometry(.078,.078),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));q.position.set(.415,-.05,.0365);g.add(q);
+  const spo10=o._spo10x;
+  {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='fulcrum'&&!!player&&player.type==='MiG-31';g.visible=on;if(on&&spo10)spo10.visible=false;}catch(e){}return r;};}
+  o.anims.push(()=>{if(g.visible)t.needsUpdate=true;});}
+
+function m31Hud(P,fs0){const ppd=KPX*D2R,fs=Math.max(9,Math.round(fs0*.72));hx.save();hx.font=hfont(fs);hx.lineWidth=1.7;hx.setLineDash([]);
+  const at=(a,e)=>hb(a,e),T=(s,a,e,al)=>{const p=at(a,e);if(p)txt(s,p.x,p.y+fs*.35,al||'center');return p;},seg=(a0,e0,a1,e1)=>{const p=at(a0,e0),q=at(a1,e1);if(p&&q)line(p.x,p.y,q.x,q.y);};
+  // mode legend
+  const L=radar.mode==='STT'?radar.lock:null,gci=(()=>{try{return GCI.hudOn();}catch(e){return false;}})();
+  T(L?'ЗАХВ':gci||rio.prio?'НАВЕД':'ОБЗОР',-6.4,3.5,'left');
+  // heading arc: 5° ticks, numbers every 10° (tens of degrees), a fixed pointer under the centre
+  {const hdg=((P.hdg%360)+360)%360,K=.2,arc=o=>3.0+(.012*o*o);
+    for(let dg=Math.floor((hdg-25)/5)*5;dg<=hdg+25;dg+=5){const o=(dg-hdg)*K;if(Math.abs(o)>3.1)continue;const e=arc(o),big=((dg%10)+10)%10===0;seg(o,e,o,e+(big?.4:.22));
+      if(big)T(String((((dg/10)%36)+36)%36),o,e+.75);}
+    const p=at(0,2.9);if(p){hx.beginPath();hx.moveTo(p.x,p.y);hx.lineTo(p.x-5,p.y+8);hx.lineTo(p.x+5,p.y+8);hx.closePath();hx.stroke();}}
+  // aircraft symbol at the boresight
+  {const c=at(0,0);if(c){const r=ppd*.38;circ(c.x,c.y,r);line(c.x-ppd*1.3,c.y,c.x-r,c.y);line(c.x+r,c.y,c.x+ppd*1.3,c.y);line(c.x,c.y-r,c.x,c.y-ppd*.7);}}
+  // horizon bars and the pitch marks, rotated with bank about the horizon point
+  {const pd=(P.pitch||0)*R2D,c=at(0,0);if(c){hx.save();hx.translate(c.x,c.y);hx.rotate(-(P.bank||0));const y0=pd*ppd,clip=2.7*ppd;
+      if(Math.abs(y0)<clip){line(-ppd*4.6,y0,-ppd*2.2,y0);line(ppd*2.2,y0,ppd*4.6,y0);line(-ppd*2.2,y0,-ppd*2.2,y0+ppd*.35);line(ppd*2.2,y0,ppd*2.2,y0+ppd*.35);}
+      for(let p=-80;p<=80;p+=5){if(!p)continue;const y=y0-p*ppd;if(Math.abs(y)>clip||Math.abs(y)<ppd*.9)continue;const w=p%10?ppd*.25:ppd*.5;line(-w,y,w,y);
+        if(p%20===0){hx.textAlign='left';hx.fillText(String(Math.abs(p)),ppd*.8,y+fs*.35);}}
+      hx.restore();}}
+  // speed scale (left) and altitude scale (right)
+  {const v=(P.cas||0)*1.852,K=.045,x=-5.5;for(let s=Math.floor((v-70)/10)*10;s<=v+70;s+=10){const e=(s-v)*K;if(Math.abs(e)>2.6||s<0)continue;seg(x,e,x+(s%20?.2:.38),e);if(s%20===0)T(String(s),x-.25,e,'right');}
+    const p=at(x+.6,0);if(p){hx.beginPath();hx.moveTo(p.x,p.y);hx.lineTo(p.x+9,p.y-5);hx.lineTo(p.x+9,p.y+5);hx.closePath();hx.fill();}}
+  {const h=P.pos.y/1000,K=9,x=5.5;for(let s=Math.floor((h-.6)*20)/20;s<=h+.6;s+=.05){const e=(s-h)*K,big=Math.round(s*20)%2===0;if(Math.abs(e)>2.6||s<0)continue;seg(x,e,x-(big?.38:.2),e);if(big)T(s.toFixed(1),x+.3,e,'left');}
+    const p=at(x-.6,0);if(p){hx.beginPath();hx.moveTo(p.x,p.y);hx.lineTo(p.x-9,p.y-5);hx.lineTo(p.x-9,p.y+5);hx.closePath();hx.fill();}}
+  // launch-range scale along the bottom: 0-100 % of the selected missile's maximum range against the locked target
+  {const e=-3.25,a0=-3.6,a1=3.6;for(let k=0;k<=100;k+=20){const a=a0+(a1-a0)*k/100;seg(a,e,a,e+.28);T(String(k),a,e-.6);}
+    if(L&&L.alive){const w=game.wsel,d=L.pos.distanceTo(P.pos);let rm=0;try{rm=MSL[w]?dlzGet(w,L).rmax:0;}catch(err){}
+      if(rm){const k=clamp(d/rm,0,1.1),a=a0+(a1-a0)*Math.min(k,1),p=at(a,e+.42);if(p){hx.beginPath();hx.moveTo(p.x,p.y);hx.lineTo(p.x-5,p.y-8);hx.lineTo(p.x+5,p.y-8);hx.closePath();hx.fill();}
+        if(k<=1&&game.arm&&Math.floor(performance.now()/300)%2)T('ПР',0,-2.5);}}}
+  // locked target: square on the target, a dashed line to it when it is off the glass
+  if(L&&L.alive){const s=proj(L.pos);if(s){hx.strokeRect(s.x-ppd*.7,s.y-ppd*.7,ppd*1.4,ppd*1.4);}}
+  // weapon legend
+  {const w=game.wsel;T(w==='GUN'?'ГШ '+(P.gun?P.gun.ammo:0):((typeof SM_ST!=='undefined'&&SM_ST[w]?SM_ST[w].replace('Р-',''):SN[w]||w)+' '+(MSL[w]?P.count(w):'')),-6.4,-3.85,'left');}
+  hx.restore();}
+{const _d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&P.type==='MiG-31'){try{m31Hud(P,fs);}catch(e){console.warn(e);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
+}catch(e){console.warn('v219 MiG-31',e);}
