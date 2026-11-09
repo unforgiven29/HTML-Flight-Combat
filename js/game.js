@@ -14331,48 +14331,239 @@ window.V216={drawG,T};
 ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · IRBIS-E PESA · OLS-35 · 2× МФИ-35 + ПУИ-35';
 }catch(e){console.warn('v216 Flanker boards',e);}
 
-// ---------------- F-14D: digital HUD and three MFDs ----------------
+// ---------------- F-14D: pilot cockpit after NAVAIR 01-F14AAD-1 (2004) FO-3, section 2.33 (MFDs) and figures 2-95 / 2-100 (HUD) ----------------
+// v223. The D is not an A with screens bolted on. What FO-3 shows, and what this builds:
+//   main instrument panel: MFD 1 (left) and MFD 2 (right) side by side under the glare shield, each with 20 bezel push-buttons (PB1 lower left,
+//     counted clockwise), a NIGHT / OFF / AUTO / DAY power knob on top and BRT / CONT knobs in the bottom corners. No VDI or HSD CRTs, no third display.
+//   left of MFD 1: LANDING checklist plate, VVI and airspeed over the barometric and radar altimeters, standby attitude over the BDHI; AOA indicator outboard.
+//   right of MFD 2: radio frequency indicator (VHF/UHF-1, VHF/UHF-2, JTIDS-2), wing-sweep indicator outboard.
+//   centre panel: multistatus indicator (stations 1A 1B 3 4 5 6 8B 8A), clock, HDG / CRS knobs, brake pressure. Knee panels as before.
+// MFD formats (2.33.4): MENU1 legends DATA NAV - TSD VDI / - CTVS OBC CHKLST - / HUD PTID DD TCS IRST / HSD ECM MENU SMS -. Every non-repeat format
+//   keeps SMS - MENU - ECM along the bottom. A repeat (PTID) has no legends; any push returns MENU1. HSD, PTID and ECM come from one display
+//   processor channel here, so (like the TSD rule in the manual) one of them can be up on only one MFD at a time. A request the mission computer
+//   does not answer (formats not modelled) gets the dashed box, which then drops away, as the manual describes.
+// HUD (fig 2-95 / 2-100): heading scale on top (numbered every 10° in TLN, every 20° in A/A) under a fixed pointer, analog dot dials for airspeed
+//   (left, a dot per 10 kt) and altitude (right, a dot per 100 ft) round the digital readouts, VVI under the altitude dial, radar altitude above it
+//   below 5000 ft / 45° bank, α / M / G / peak G block lower left, flight-path ladder with the bars bent toward the horizon by half the flight-path
+//   angle, FPM with AOA bracket and potential flight path marker, bank scale (0, 10, 20, 30, 45) at the bottom, warnings in the middle, nav source /
+//   ZTOD lower right. A/A adds the weapon legend (PH# SP# SW# G#), target designator, RNG / closure / target altitude, SHOOT cue, seeker circle,
+//   gun reticle. A/G hands over to the strike symbology the jet already had.
 try{
-const V=ck.viper,tg=V.vars.tomcat.on[0],tp=V.tVdi.parent,isD=()=>!!player&&player.type==='F-14D';
+const V=ck.viper,tg=V.vars.tomcat.on[0],tp=V.tVdi.parent,SV=sys.v,isD=()=>!!player&&player.type==='F-14D';
 const cvs=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
 const T=(c,s,x,y,col,sz,al)=>{c.fillStyle=col||'#9cffbe';c.font='700 '+(sz||15)+'px "B612 Mono",monospace';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y);};
-const D=window.F14D={fmt:['VDI','HSD','SMS']},FM=['VDI','HSD','SMS','ENG'],rawV=cvs(360,360),rawH=cvs(512,512),m3=cvs(360,360);
+const Ph=(c,s=12)=>new THREE.MeshPhongMaterial({color:c,shininess:s});
+const pnl=Ph(0x7c8286,8),dk=Ph(0x1b1e20,6),blk=Ph(0x0e1011,6),ob=Ph(0x3e4447,6),knb=Ph(0x2a2d2f,20),red=Ph(0xa0261a),yel=Ph(0xd8b020);
+const box=(par,w,h,d,m,x,y,z)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);par.add(b);return b;};
+const cyl=(par,r,d,m,x,y,z)=>{const b=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d,24),m);b.rotation.x=Math.PI/2;b.position.set(x,y,z);par.add(b);return b;};
+const ctl=(m,name,state,act)=>{const def={meshes:[m],name,state,act:()=>{try{act();}catch(e){console.warn(e);}sfx.click();}};m.userData.ctl=def;(V.ctls||[]).push(def);return def;};
+// canvases shared with the A/B pit: upload only when their version moves
+const feeds=[];const feed=(par,cv,w,h,x,y,z,round)=>{const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;
+  const m=new THREE.Mesh(round?new THREE.CircleGeometry(w/2,36):new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));m.position.set(x,y,z);par.add(m);feeds.push({cv,t,v:-1});return m;};
+const gauge=(par,cv,r,x,y)=>{box(par,r*2+.014,r*2+.014,.012,blk,x,y,.006);cyl(par,r+.002,.006,dk,x,y,.012);feed(par,cv,r*2,0,x,y,.0155,true);};
+
+// ---- which A/B parts the D drops: the centre VDI / HSD column and the left / right instrument panels; the AVG-12's round glass tint ----
+const hideA=[];
+tp.children.forEach(o=>{const p=o.position;
+  if(o.isGroup&&Math.abs(Math.abs(p.x)-.3)<.01&&Math.abs(p.y-.02)<.01)hideA.push(o);                       // left / right instrument panels
+  else if(Math.abs(p.x)<.14&&p.y<.14&&p.y>-.33&&p.z>.004)hideA.push(o);});                                  // VDI, HSD, their knobs and lower column
+tg.children.forEach(o=>{if(o.isMesh&&o.geometry&&o.geometry.type==='CircleGeometry'&&Math.abs(o.position.z+.748)<.002)hideA.push(o);});
+
 const DG=new THREE.Group();DG.visible=false;tp.add(DG);const DH=new THREE.Group();DH.visible=false;tg.add(DH);
-const bz=new THREE.MeshPhongMaterial({color:0x1b1e20,shininess:6}),ob=new THREE.MeshPhongMaterial({color:0x4a5154,shininess:6});
-const frame=(x,y,s,z)=>{for(const[w,h,dx,dy]of[[s+.03,.014,0,s/2+.007],[s+.03,.022,0,-s/2-.011],[.014,s,-s/2-.007,0],[.014,s,s/2+.007,0]]){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,.012),bz);b.position.set(x+dx,y+dy,z);DG.add(b);}};
-const keys=(n,x,y,s,z)=>{FM.forEach((f,i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.016,.01,.008),ob);b.position.set(x+(i-1.5)*s/4,y-s/2-.011,z+.006);DG.add(b);
-  const def={meshes:[b],name:'MFD '+(n+1)+' · '+f,state:()=>D.fmt[n]===f?'ON':'—',act:()=>{D.fmt[n]=f;sfx.click();}};b.userData.ctl=def;(V.ctls||[]).push(def);});};
-frame(0,.03,.15,.05);keys(0,0,.03,.15,.05);frame(0,-.165,.14,.041);keys(1,0,-.165,.14,.041);
-// MFD 3, right of MFD 1
-const m3t=new THREE.CanvasTexture(m3);m3t.minFilter=THREE.LinearFilter;m3t.generateMipmaps=false;
-{const X=.2,Y=.035,S=.125;const back=new THREE.Mesh(new THREE.BoxGeometry(S+.04,S+.05,.03),bz);back.position.set(X,Y,.05);DG.add(back);
-  const q=new THREE.Mesh(new THREE.PlaneGeometry(S,S),new THREE.MeshBasicMaterial({map:m3t,toneMapped:false}));q.position.set(X,Y,.0655);DG.add(q);frame(X,Y,S,.066);keys(2,X,Y,S,.066);}
-function paint(c,S,n,P,self){const f=D.fmt[n],k=S/360,col='#9cffbe';c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;
-  if(f!==self){c.fillStyle='#020503';c.fillRect(0,0,S,S);
-    if(f==='VDI')c.drawImage(rawV,0,0,S,S);else if(f==='HSD')c.drawImage(rawH,0,0,S,S);
-    else{c.save();c.scale(k,k);
-      if(f==='SMS'){T(c,'SMS',180,22,col,18);const ks=Object.keys(P.ac.st||{}),w=game.wsel;c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(180,44);c.lineTo(60,120);c.lineTo(60,150);c.lineTo(300,150);c.lineTo(300,120);c.closePath();c.stroke();
-        ks.forEach((s,i)=>{const y=176+i*17,v=P.load[s]||'—',on=v===w;T(c,'STA '+s,40,y,'#6fbf8a',13,'left');T(c,String(typeof SN!=='undefined'&&SN[v]||v),200,y,on?'#fff':col,14,'left');if(on){c.strokeStyle='#fff';c.strokeRect(192,y-8,90,16);}});
-        T(c,'GUN '+(P.gun?P.gun.ammo:0),60,62,col,14,'left');T(c,game.arm?'ARM':'SAFE',300,62,game.arm?'#fff':col,14,'right');}
-      else{T(c,'ENG',180,22,col,18);const n=clamp((P.n||0)*100,0,110),ab=P.ab||0;[[110,'L'],[250,'R']].forEach(([x,s])=>{T(c,s,x,50,col,15);
-          [['RPM',n/110,Math.round(n)+''],['TIT',.25+n/110*.55+ab*.15,Math.round(350+n*5+ab*120)+''],['FF',clamp(.08+n/110*.3+ab*.6,0,1),Math.round((P.ff||0)*3600*2.2046/2/100)*100+'']].forEach(([l,v,t],i)=>{const bx=x-48+i*34;c.strokeStyle=col;c.lineWidth=1.5;c.strokeRect(bx,70,22,150);c.fillStyle=col;const h=150*clamp(v,0,1);c.fillRect(bx,220-h,22,h);T(c,l,bx+11,234,'#6fbf8a',11);T(c,t,bx+11,250,col,11);});
-          T(c,ab>.05?'A/B':'',x,274,'#fff',15);});
-        T(c,'FUEL '+Math.round((P.totalFuel||0)*2.2046/100)*100+' LB',180,304,col,16);}
-      c.restore();}}
-  // push-button legends along the bottom, the format on show boxed
-  c.save();c.scale(k,k);FM.forEach((s,i)=>{const x=180+(i-1.5)*90;c.fillStyle='rgba(2,5,3,.8)';c.fillRect(x-24,340,48,18);T(c,s,x,349,D.fmt[n]===s?'#fff':col,13);if(D.fmt[n]===s){c.strokeStyle='#fff';c.lineWidth=1.5;c.strokeRect(x-23,341,46,16);}});c.restore();}
-{const _v=drawTcVdi;drawTcVdi=function(P){_v.apply(this,arguments);if(!isD()||!P)return;try{rawV.getContext('2d').drawImage(tcVdiC,0,0);paint(tcVdiC.getContext('2d'),360,0,P,'VDI');}catch(e){}};}
-{const _h=drawTcHsd;drawTcHsd=function(P){_h.apply(this,arguments);if(!isD()||!P)return;try{rawH.getContext('2d').drawImage(tcHsdC,0,0);paint(tcHsdC.getContext('2d'),512,1,P,'HSD');}catch(e){}};}
-(V.anims||[]).push(()=>{if(!DG.visible||!player)return;try{paint(m3.getContext('2d'),360,2,player,'');m3t.needsUpdate=true;}catch(e){}});
-// HUD: framed combiner with a wide field, digital symbology
+// main instrument panel: flat centre section carrying both MFDs, the two outboard sections angled in toward the pilot like the A's
+const CW=.205;box(DG,CW*2,.25,.02,pnl,0,.015,.006);box(DG,CW*2,.25,.05,dk,0,.015,-.03);
+const wing=sd=>{const g=new THREE.Group();g.position.set(sd*CW,0,.006);g.rotation.y=-sd*.32;DG.add(g);box(g,.235,.25,.02,pnl,sd*.1175,.015,0);box(g,.235,.25,.05,dk,sd*.1175,.015,-.036);return g;};
+const LW=wing(-1),RW_=wing(1);
+
+// ---- MFDs ----
+const F=window.F14D={fmt:['VDI','HSD'],pend:[null,null],pwr:[2,2],msg:['','']};
+const PWR=['OFF','NIGHT','AUTO','DAY'];
+const MENU1=[null,'DATA','NAV',null,'TSD','VDI',null,'CTVS','OBC','CHKLST',null,'HUD','PTID','DD','TCS','IRST','HSD','ECM','MENU','SMS',null];
+const BOT={17:'ECM',18:'MENU',19:'SMS'};
+const LIVE=new Set(['DATA','VDI','HSD','PTID','ECM','SMS','TCS']),FAM={HSD:0,PTID:1,ECM:2};
+const legend=(n,pb)=>{const f=F.fmt[n];if(f==='PTID')return null;if(f==='MENU')return MENU1[pb];return BOT[pb]||null;};
+function pick(n,pb){const f=F.fmt[n];
+  if(f==='PTID'){F.fmt[n]='MENU';return;}                               // repeat: any push returns MENU1
+  const s=legend(n,pb);if(!s)return;
+  if(s==='MENU'){F.fmt[n]='MENU';return;}
+  if(!LIVE.has(s)){F.pend[n]={pb,t:performance.now()+700};return;}      // not answered by the MC: dashed box, then nothing
+  if(s in FAM){const o=1-n;if(F.fmt[o] in FAM)F.fmt[o]='MENU';SV.tHm=FAM[s];}
+  F.fmt[n]=s;}
+// button positions on a .19 bezel: PB1-5 left side bottom to top, 6-10 top left to right, 11-15 right top to bottom, 16-20 bottom right to left
+const S=.142,BZ=.198,PBo=(pb)=>{const st=S*.82/4,i=(pb-1)%5;if(pb<=5)return[-BZ/2+.011,-S*.41+i*st];if(pb<=10)return[-S*.41+i*st,BZ/2-.011];if(pb<=15)return[BZ/2-.011,S*.41-i*st];return[S*.41-i*st,-BZ/2+.011];};
+const mfdCv=[cvs(420,420),cvs(420,420)],mfdTx=[];
+[-1,1].forEach((sd,n)=>{const X=sd*.1,Y=.015,g=new THREE.Group();g.position.set(X,Y,.016);DG.add(g);
+  // bezel: chamfered top corners as in figure 2-91, the screen sunk into it
+  const sh=new THREE.Shape(),h=BZ/2,c=.03;sh.moveTo(-h,-h);sh.lineTo(h,-h);sh.lineTo(h,h-c);sh.lineTo(h-c,h);sh.lineTo(-h+c,h);sh.lineTo(-h,h-c);sh.closePath();
+  const bg=new THREE.ExtrudeGeometry(sh,{depth:.014,bevelEnabled:false});const bm=new THREE.Mesh(bg,dk);bm.position.z=-.004;g.add(bm);
+  const t=new THREE.CanvasTexture(mfdCv[n]);t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;mfdTx.push(t);
+  const scr=new THREE.Mesh(new THREE.PlaneGeometry(S,S),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));scr.position.z=.0105;g.add(scr);
+  for(let pb=1;pb<=20;pb++){const[x,y]=PBo(pb),v=pb<=5||(pb>10&&pb<=15),b=box(g,v?.009:.016,v?.016:.009,.009,ob,x,y,.014);
+    ctl(b,'MFD '+(n+1)+' · PB'+pb,()=>legend(n,pb)||(F.fmt[n]==='PTID'?'→ MENU':'—'),()=>pick(n,pb));}
+  const pk=cyl(g,.0085,.012,knb,0,h+.004,.012);ctl(pk,'MFD '+(n+1)+' · power NIGHT / OFF / AUTO / DAY',()=>PWR[F.pwr[n]],()=>{F.pwr[n]=(F.pwr[n]+1)%4;});
+  const bk=cyl(g,.0075,.012,knb,-h+.012,-h+.012,.014);ctl(bk,'MFD '+(n+1)+' · BRT',()=>Math.round(sys.fcr.int*100)+'%',()=>{sys.fcr.int=sys.fcr.int>=.95?.3:Math.min(1,sys.fcr.int+.175);});
+  const ck2=cyl(g,.0075,.012,knb,h-.012,-h+.012,.014);ctl(ck2,'MFD '+(n+1)+' · CONT',()=>Math.round(sys.fcr.con*100)+'%',()=>{sys.fcr.con=sys.fcr.con>=.95?.3:Math.min(1,sys.fcr.con+.175);});});
+
+const smsAbbr=w=>{const d=MSL[w];if(!w||w==='TK')return w==='TK'?'TK':'--';if(d&&d.seek)return{ARH:'PH',SARH:'SP',IR:'SW'}[d.seek]||'MS';if(w==='LANTIRN')return'LTN';return(typeof SN!=='undefined'&&SN[w])||w;};
+function paintMFD(n,P){const c=mfdCv[n].getContext('2d'),W=420,col='#9cffbe',dim='rgba(156,255,190,.45)',f=F.fmt[n],now=performance.now();
+  c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.fillStyle='#020503';c.fillRect(0,0,W,W);if(!F.pwr[n]||!P)return;
+  const A=34,B=W-A,IN=B-A;   // legend margin, picture area A..B
+  const pic=(src)=>{c.drawImage(src,A,A,IN,IN);};
+  if(f==='VDI')pic(tcVdiC);
+  else if(f in FAM){if((SV.tHm??0)!==FAM[f])SV.tHm=FAM[f];pic(tcHsdC);}
+  else if(f==='TCS'){if(window.TCS&&TCS.los&&TCS.sc){c.save();c.translate(A,A);c.scale(IN/360,IN/360);try{TCS.paint(c,360,360);}catch(e){}c.restore();}else{T(c,'TCS',210,180,col,22);T(c,'NO VIDEO',210,214,dim,16);}}
+  else if(f==='SMS'){T(c,'SMS',210,52,col,18);const w=game.wsel;c.strokeStyle=col;c.lineWidth=2;
+    // planform, stations placed like the jet's (glove 1A/1B, nacelles 2/7, tunnel 3-6, glove 8B/8A)
+    c.beginPath();c.moveTo(210,80);c.lineTo(190,130);c.lineTo(80,200);c.lineTo(80,222);c.lineTo(190,200);c.lineTo(185,300);c.lineTo(235,300);c.lineTo(230,200);c.lineTo(340,222);c.lineTo(340,200);c.lineTo(230,130);c.closePath();c.stroke();
+    const SP={'1A':[118,236],'1B':[118,262],'2':[160,288],'3':[190,236],'4':[190,262],'5':[230,262],'6':[230,236],'7':[260,288],'8B':[302,262],'8A':[302,236]};
+    for(const[k,[x,y]]of Object.entries(SP)){const v=P.load[k];if(!(k in(P.ac.st||{})))continue;const on=v&&v===w;T(c,smsAbbr(v),x,y,on?'#fff':v?col:dim,14);if(on){c.strokeStyle='#fff';c.lineWidth=1.5;c.strokeRect(x-20,y-10,40,20);}}
+    T(c,(w==='GUN'?'GUN':smsAbbr(w))+' '+(w==='GUN'?(P.gun?P.gun.ammo:0):P.count?P.count(w):''),70,330,col,16,'left');T(c,game.armPos===0?'ARM':'SAFE',350,330,game.armPos===0?'#fff':col,16,'right');
+    T(c,'RNDS '+(P.gun?P.gun.ammo:0),70,354,dim,14,'left');T(c,'CHF '+(P.chaff||0)+'  FLR '+(P.flares||0),350,354,dim,14,'right');}
+  else if(f==='DATA'){T(c,'OWN A/C',210,52,col,18);const ft=P.pos.y*FT,rows=[['HDG',String(Math.round(((P.hdg%360)+360)%360)).padStart(3,'0')],['CAS',Math.round(P.cas)+' KT'],['MACH',P.mach.toFixed(2)],['ALT',fmtN(Math.round(ft/10)*10)+' FT'],
+      ['FUEL',fmtN(Math.round(P.totalFuel*2.2046/10)*10)+' LB'],['GW',fmtN(Math.round((P.mass||0)*2.2046/10)*10)+' LB'],['WING',Math.round(P.sweep||20)+'°'],['G MAX',P.maxNz.toFixed(1)]];
+    rows.forEach(([k,v],i)=>{T(c,k,80,100+i*30,dim,16,'left');T(c,v,340,100+i*30,'#fff',17,'right');});}
+  else if(f==='MENU'){T(c,'MENU1',210,210,col,20);}
+  // legends round the edge, in the picture border
+  if(f!=='PTID')for(let pb=1;pb<=20;pb++){const s=legend(n,pb);if(!s)continue;const st=IN*.82/4,i=(pb-1)%5;let x,y,al='center';
+    if(pb<=5){x=6;y=W/2+IN*.41-i*st;al='left';}else if(pb<=10){x=W/2-IN*.41+i*st;y=16;}else if(pb<=15){x=W-6;y=W/2-IN*.41+i*st;al='right';}else{x=W/2+IN*.41-i*st;y=W-16;}
+    c.fillStyle='rgba(2,5,3,.85)';const tw=s.length*11+8,bx0=al==='left'?x-2:al==='right'?x-tw+2:x-tw/2;c.fillRect(bx0,y-10,tw,20);
+    T(c,s,x,y,LIVE.has(s)||s==='MENU'?col:dim,17,al);
+    const pd=F.pend[n];if(pd&&pd.pb===pb&&now<pd.t){c.setLineDash([4,3]);c.strokeStyle=col;c.lineWidth=1.5;c.strokeRect(bx0,y-11,tw,22);c.setLineDash([]);}
+    if(s===f||(f==='MENU'&&s===F.fmt[n])){c.strokeStyle='#fff';c.lineWidth=1.5;c.strokeRect(bx0,y-11,tw,22);}}
+  if(F.pend[n]&&now>F.pend[n].t)F.pend[n]=null;
+  // brightness / night limit
+  const k=(.3+.7*sys.fcr.int)*(F.pwr[n]===1?.45:1);if(k<.999){c.globalAlpha=1-k;c.fillStyle='#000';c.fillRect(0,0,W,W);c.globalAlpha=1;}}
+
+// ---- left section: AOA indicator outboard, LANDING plate, VVI / airspeed over baro / radar altimeters, standby attitude over the BDHI ----
+{const g=LW;
+  const pl=cvs(256,96),x=pl.getContext('2d');x.fillStyle='#1d2023';x.fillRect(0,0,256,96);T(x,'LANDING',128,14,'#e8e8e2',15);
+  [['WINGS','HOOK'],['WHEELS','HARNESS'],['SAS','SPEED BRAKES'],['FLAPS','BRAKES'],['DLC','FUEL']].forEach(([a,b],i)=>{T(x,a,40,32+i*13,'#e8e8e2',11,'left');T(x,b,140,32+i*13,'#e8e8e2',11,'left');});
+  {const t=new THREE.CanvasTexture(pl);const m=new THREE.Mesh(new THREE.PlaneGeometry(.1,.0375),new THREE.MeshBasicMaterial({map:t}));m.position.set(-.155,.112,.011);g.add(m);}
+  gauge(g,TC.vvi,.03,-.19,.05);gauge(g,TC.as,.03,-.12,.05);gauge(g,TC.alt,.03,-.19,-.025);gauge(g,TC.ralt,.03,-.12,-.025);
+  gauge(g,TC.sai,.032,-.045,.07);gauge(g,TC.bdhi,.038,-.045,-.022);
+  box(g,.03,.112,.012,blk,-.222,-.02,.008);feed(g,tcAoaC,.022,.088,-.222,-.02,.0145);
+  // left fuel shutoff / fire extinguisher handle over the panel's top edge
+  box(g,.05,.018,.02,red,-.07,.128,.016);box(g,.012,.02,.01,yel,-.07,.128,.028);}
+// ---- right section: radio frequency indicator, wing-sweep indicator outboard, right fuel shutoff ----
+const rfC=cvs(256,240);
+{const g=RW_;box(g,.088,.083,.012,blk,.07,-.005,.008);const t=feed(g,rfC,.08,.075,.07,-.005,.0145);
+  box(g,.036,.12,.012,blk,.2,.01,.008);feed(g,tcSwpC,.028,.093,.2,.01,.0145);
+  box(g,.05,.018,.02,red,.07,.128,.016);box(g,.012,.02,.01,yel,.07,.128,.028);}
+function paintRF(){const x=rfC.getContext('2d');x.fillStyle='#d4d6d2';x.fillRect(0,0,256,240);x.fillStyle='#0b0c0c';x.fillRect(10,10,236,220);
+  const row=(lbl,val,y)=>{T(x,lbl,128,y,'#e8e8e2',15);x.fillStyle='#1b1f1c';x.fillRect(26,y+12,204,32);T(x,val,128,y+29,'#ffb547',22);};
+  row('VHF / UHF - 1','C225.000T',26);row('VHF / UHF - 2','PA30.300R',96);row('I - JTIDS - 2','000T  127R',166);}
+paintRF();
+
+// ---- centre panel under the MFDs: multistatus indicator, clock, HDG / CRS knobs, brake pressure ----
+const msC=cvs(512,96);
+{const g=new THREE.Group();g.position.set(0,-.2,.006);DG.add(g);box(g,.25,.17,.02,pnl,0,0,0);box(g,.25,.17,.05,dk,0,0,-.035);
+  box(g,.236,.048,.012,blk,0,.055,.012);feed(g,msC,.228,.043,0,.055,.0185);
+  gauge(g,TC.clk,.03,.06,-.005);gauge(g,TC.brk,.026,.07,-.065);
+  const hp=new THREE.Group();hp.position.set(-.055,-.05,.012);g.add(hp);box(hp,.1,.05,.006,Ph(0x2a2e31),0,0,0);
+  const kH=cyl(hp,.011,.014,knb,-.024,-.004,.008),kC=cyl(hp,.011,.014,knb,.024,-.004,.008);
+  ctl(kH,'HDG · command heading on the HSD',()=>String(Math.round(SV.hdgSel??0)).padStart(3,'0'),()=>{SV.hdgSel=(((SV.hdgSel??0)+10)%360);});
+  ctl(kC,'CRS · selected course on the HSD',()=>String(Math.round(SV.crsSel??0)).padStart(3,'0'),()=>{SV.crsSel=(((SV.crsSel??0)+10)%360);});
+  const lb=cvs(256,128),q=lb.getContext('2d');q.fillStyle='#2a2e31';q.fillRect(0,0,256,128);T(q,'HDG',64,18,'#e8e8e2',18);T(q,'CRS',192,18,'#e8e8e2',18);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.1,.05),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(lb)}));m.position.z=.0035;hp.add(m);}
+const MST=['1A','1B','3','4','5','6','8B','8A'];
+function paintMS(P){const x=msC.getContext('2d');x.fillStyle='#0b0c0c';x.fillRect(0,0,512,96);const w=game.wsel;
+  MST.forEach((k,i)=>{const cx=32+i*64,v=P.load[k],ab=v&&v!=='TK'?smsAbbr(v):'--',sel=v&&v===w;
+    x.fillStyle='#151816';x.fillRect(cx-28,6,56,56);T(x,ab==='--'?'':ab,cx,22,'#e8e8e2',16);
+    // status flag: ◄► ready on the selected type with MASTER ARM on, [] selected, II loaded, -- empty
+    T(x,!v||v==='TK'?'--':sel?(game.armPos===0?'◄►':'[ ]'):'I I',cx,46,sel&&game.armPos===0?'#7dff8a':'#e8e8e2',15);
+    x.fillStyle='#d4d6d2';x.fillRect(cx-28,70,56,20);T(x,k,cx,80,'#111',14);});}
+
+// ---- HUD combiner: the D's HUD is a framed combiner with the cockpit TV sensor (CCTVS) on top; ~20° wide field ----
 const dGlass=[[-.1,.07],[.1,.07],[.13,.03],[.13,-.17],[-.13,-.17],[-.13,.03]].map(([x,y])=>new V3(x,y,-.75));
-{const fr=new THREE.MeshPhongMaterial({color:0x121416,shininess:10});for(const sd of[-1,1]){const p=new THREE.Mesh(new THREE.BoxGeometry(.012,.25,.016),fr);p.position.set(sd*.137,-.05,-.75);DH.add(p);}
-  const t=new THREE.Mesh(new THREE.BoxGeometry(.21,.01,.016),fr);t.position.set(0,.076,-.75);DH.add(t);
+{const fr=Ph(0x121416,10);for(const sd of[-1,1])box(DH,.012,.25,.016,fr,sd*.137,-.05,-.75);box(DH,.21,.01,.016,fr,0,.076,-.75);
+  box(DH,.05,.03,.04,fr,0,.098,-.75);cyl(DH,.009,.01,Ph(0x050607,60),0,.098,-.728);
   const gl=new THREE.Mesh(new THREE.PlaneGeometry(.262,.24),new THREE.MeshBasicMaterial({color:0x9fd8c0,transparent:true,opacity:.05,depthWrite:false}));gl.position.set(0,-.05,-.749);DH.add(gl);}
-{const _t=drawTomcatHud;drawTomcatHud=function(P,fs,lh){if(P&&P.type==='F-14D'){try{return drawHornetHud(P,fs,lh);}catch(e){}}return _t.apply(this,arguments);};}
-{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='viper'&&isD();DG.visible=DH.visible=on;if(on)V.glass=dGlass;}catch(e){}return r;};}
-ACROLE['F-14D']='US · FLEET DEFENCE · APG-71 · AAS-42 IRST + TCS · DIGITAL HUD · 3 MFDs';
-}catch(e){console.warn('v216 F-14D',e);}
+
+// ---- HUD symbology ----
+const pk={g:1};
+function drawF14DHud(P,fs,lh){
+  const w=game.wsel,wd=MSL[w],gun=w==='GUN',ag=!!(typeof AGW!=='undefined'&&AGW[w]),arm=game.armPos===0,L=radar.tgt?radar.tgt():null;
+  if(ag&&arm)return drawHornetHud(P,fs,lh);
+  const AA=arm||!!L,ppd=KPX*D2R,bs=hb(0,0),f=P.fwd(new V3()),rt=P.right(new V3()),gear=!!SV.gear;
+  const Tt=(s,a,e,al='left')=>{const p=hb(a,e);if(p)txt(s,p.x,p.y,al);return p;};
+  const seg=(a1,e1,a2,e2)=>{const p=hb(a1,e1),q=hb(a2,e2);if(p&&q)line(p.x,p.y,q.x,q.y);};
+  const fpm=projDir(P.vel.clone().normalize()),fpa=Math.asin(clamp(P.vel.y/Math.max(1,P.vel.length()),-1,1))*R2D;
+  // waterline when the FPM is pegged or the gear is down
+  if(bs&&(gear||!fpm)){line(bs.x-22,bs.y,bs.x-11,bs.y);line(bs.x-11,bs.y,bs.x-5,bs.y+6);line(bs.x-5,bs.y+6,bs.x,bs.y);line(bs.x,bs.y,bs.x+5,bs.y+6);line(bs.x+5,bs.y+6,bs.x+11,bs.y);line(bs.x+11,bs.y,bs.x+22,bs.y);}
+  // flight path marker, AOA bracket on its left wing (gear down), potential flight path marker (">" off the right wing, acceleration along the path)
+  if(fpm){circ(fpm.x,fpm.y,5);line(fpm.x-15,fpm.y,fpm.x-5,fpm.y);line(fpm.x+5,fpm.y,fpm.x+15,fpm.y);line(fpm.x,fpm.y-5,fpm.x,fpm.y-11);
+    const acc=(P._dD14!==undefined?(P.vel.length()-P._dD14):0);P._dD14=P.vel.length();const pf=clamp(acc/(1/60)/9.81*R2D*.6,-8,8),py=fpm.y-pf*ppd;
+    line(fpm.x+22,py-5,fpm.x+28,py);line(fpm.x+28,py,fpm.x+22,py+5);
+    if(gear){const u=tcUnits(P),by=fpm.y+(u-15)*ppd*.45,bx=fpm.x-24;line(bx+6,by-11,bx,by-11);line(bx,by-11,bx,by+11);line(bx,by+11,bx+6,by+11);}}
+  // flight path ladder: every 5°, solid above / dashed below, bars bent toward the horizon by half the flight-path angle
+  {const hz=new V3(f.x,0,f.z);if(hz.lengthSq()<1e-6){const u=P.up();hz.set(-u.x,0,-u.z);}hz.normalize();const hr=new V3(-hz.z,0,hz.x);
+   for(let p=-85;p<=85;p+=5){const pr=p*D2R,d=hz.clone().multiplyScalar(Math.cos(pr)).setY(Math.sin(pr));if(!projDir(d))continue;const e=k=>projDir(d.clone().addScaledVector(hr,k).normalize());
+     const wo=p===0?.34:.12,wi=p===0?.06:.04,a1=e(-wo),a2=e(-wi),b1=e(wi),b2=e(wo);if(!a1||!a2||!b1||!b2)continue;
+     if(p===0){line(a1.x,a1.y,a2.x,a2.y);line(b1.x,b1.y,b2.x,b2.y);continue;}
+     const bend=-Math.sign(p)*Math.abs(p)/2*D2R,rot=(o,q,s)=>{const dx=q.x-o.x,dy=q.y-o.y,cs=Math.cos(s*bend),sn=Math.sin(s*bend);return{x:o.x+dx*cs-dy*sn,y:o.y+dx*sn+dy*cs};};
+     const A2=rot(a2,a1,1),B2=rot(b1,b2,-1);hx.setLineDash(p<0?[6,5]:[]);line(A2.x,A2.y,a2.x,a2.y);line(b1.x,b1.y,B2.x,B2.y);hx.setLineDash([]);
+     const tk=p>0?7:-7;line(a2.x,a2.y,a2.x,a2.y+tk);line(b1.x,b1.y,b1.x,b1.y+tk);
+     if(p%10===0||Math.abs(p)===5){const s=p===90?'UP':p===-90?'DOWN':String(Math.abs(p));txt(s,A2.x-12,A2.y,'right');txt(s,B2.x+12,B2.y,'left');}}
+   // -3° marks
+   {const d=hz.clone().multiplyScalar(Math.cos(-3*D2R)).setY(Math.sin(-3*D2R)),e=k=>projDir(d.clone().addScaledVector(hr,k).normalize()),a=e(-.09),b=e(.09);if(a&&b){line(a.x-4,a.y,a.x+4,a.y);line(b.x-4,b.y,b.x+4,b.y);}}}
+  // heading scale on top, fixed pointer above it
+  {const hdg=((P.hdg%360)+360)%360,E=4.1,K=.5,step=AA?20:10;
+   for(let d=Math.ceil((hdg-16)/5)*5;d<=hdg+16;d+=5){const off=(d-hdg)*K;if(Math.abs(off)>7.5)continue;const big=((d%step)+step)%step===0;seg(off,E,off,E-(big?.7:.35));
+     if(big)Tt(String((((d%360)+360)%360)/10).padStart(2,'0'),off,E-1.4,'center');}
+   const pp=hb(0,E+.35);if(pp){hx.beginPath();hx.moveTo(pp.x,pp.y);hx.lineTo(pp.x-6,pp.y-10);hx.lineTo(pp.x+6,pp.y-10);hx.closePath();hx.stroke();}}
+  // analog dials: ten dots, pointer, digital readout in the middle
+  const dial=(az,el,val,unit,s)=>{const c=hb(az,el);if(!c)return;const R=ppd*1.7;hx.save();
+    for(let i=0;i<10;i++){const a=i/10*Math.PI*2-Math.PI/2;hx.beginPath();hx.arc(c.x+Math.cos(a)*R,c.y+Math.sin(a)*R,1.8,0,7);hx.fill();}
+    const a=((val%unit)/unit)*Math.PI*2-Math.PI/2;line(c.x+Math.cos(a)*R*.62,c.y+Math.sin(a)*R*.62,c.x+Math.cos(a)*R*.92,c.y+Math.sin(a)*R*.92);
+    hx.textBaseline='middle';txt(s,c.x,c.y,'center');hx.textBaseline='alphabetic';hx.restore();};
+  const ft=P.pos.y*FT,agl=Math.max(0,(P.pos.y-groundAt(P.pos.x,P.pos.z))*FT),raOK=agl<5000&&Math.abs(P.bank*R2D)<45,rdr=SV.tHudAlt===1;
+  dial(-7.4,-.8,P.cas,100,String(Math.round(P.cas)));
+  const altS=(rdr&&raOK?fmtN(Math.round(agl/10)*10):fmtN(Math.round(ft/10)*10));dial(7.4,-.8,rdr&&raOK?agl:ft,1000,altS);
+  if(rdr&&raOK)Tt('R',9.4,-.8,'left');else if(rdr&&!raOK&&blink)Tt('B',9.4,-.8,'left');
+  if(!rdr&&raOK)Tt(fmtN(Math.round(agl/10)*10)+'R',7.4,1.6,'center');
+  {const vs=Math.round(P.vel.y*196.85/10)*10;Tt(vs>32999?'XXXX':vs<-9999?'-XXXX':String(vs),7.4,-3.3,'center');}
+  // α (units), Mach, g, peak g
+  if(!(gear&&tcUnits(P)>14&&tcUnits(P)<16))Tt('α '+tcUnits(P).toFixed(1),-9.3,-3.6);
+  if(!gear)Tt('M '+P.mach.toFixed(2),-9.3,-4.6);
+  const n=P.nz,show=gear?(n<.5||n>1.5):(n<-2||n>4.5);if(show)Tt('G '+n.toFixed(1),-9.3,gear?-4.6:-5.6);
+  if(gear?(P.maxNz>2):(P.maxNz>4.5))Tt('  '+P.maxNz.toFixed(1),-9.3,gear?-5.6:-6.6);
+  // bank scale and pointer at the bottom
+  {const C=hb(0,-3.4),R=ppd*6.4;if(C){[0,10,20,30,45].forEach(b=>[1,-1].forEach(s=>{if(!b&&s<0)return;const a=Math.PI/2+s*b*D2R,l=b===30?11:b===0?0:7,x=C.x+Math.cos(a)*R,y=C.y+Math.sin(a)*R;
+      if(b)line(x,y,x+Math.cos(a)*l,y+Math.sin(a)*l);else{line(x,y+2,x,y+12);}}));
+    const bk=clamp(P.bank*R2D,-50,50),pegged=Math.abs(P.bank*R2D)>45;if(!pegged||blink){const a=Math.PI/2-bk*D2R,x=C.x+Math.cos(a)*(R-4),y=C.y+Math.sin(a)*(R-4),ux=Math.cos(a),uy=Math.sin(a),px=-uy,py=ux;
+      hx.beginPath();hx.moveTo(x,y);hx.lineTo(x-ux*10+px*5,y-uy*10+py*5);hx.lineTo(x-ux*10-px*5,y-uy*10-py*5);hx.closePath();hx.stroke();}}}
+  // warnings (two at a time, scrolling)
+  {const W=[];if(P.hp<25)W.push('L FIRE');if(P.hp<22)W.push('R FIRE');if(tcUnits(P)>24&&P.cas<180)W.push('L STALL','R STALL');if(gear&&P.cas>280)W.push('RDC SPEED');
+   if(W.length){const k=W.length>2?Math.floor(performance.now()/1000)%W.length:0;for(let i=0;i<Math.min(2,W.length);i++)Tt(W[(k+i)%W.length],0,-5.6-i*1.05,'center');}}
+  // nav source and ZTOD clock, lower right
+  {const d=new Date(),p2=v=>String(v).padStart(2,'0');Tt('ZTOD '+p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())+':'+p2(d.getUTCSeconds()),2.4,-9.9);
+   const wp=typeof NAV!=='undefined'&&NAV.wp?NAV.wp():null;if(wp)Tt('WPT '+(wp.n||1)+'  '+(wp.d/NM).toFixed(1),2.4,-8.9);}
+  if(window.TCS&&TCS.los&&TCS.los.trk){const s=proj(TCS.los.p);if(s){hx.setLineDash([3,3]);circ(s.x,s.y,9);hx.setLineDash([]);}}
+  if(!AA)return;
+  // ---- A/A ----
+  const leg=gun?'G'+(P.gun?P.gun.ammo:0):wd?({ARH:'PH',SARH:'SP',IR:'SW'}[wd.seek]||'')+P.count(w):'A/A';Tt(leg,-9.3,-8.9);if(!arm){const p=hb(-9.3,-8.9);if(p){line(p.x-4,p.y-14,p.x+40,p.y+6);line(p.x-4,p.y+6,p.x+40,p.y-14);}}
+  if(L){const dist=L.pos.distanceTo(P.pos),los=L.pos.clone().sub(P.pos).normalize(),vc=P.vel.dot(los)-L.vel.dot(los),s=proj(L.pos);
+    if(s)hx.strokeRect(s.x-9,s.y-9,18,18);else if(bs){const cm=pcam||camera,rel=L.pos.clone().sub(cm.position).applyQuaternion(qInv(cm.quaternion)),an=Math.atan2(-rel.y,rel.x);line(bs.x,bs.y,bs.x+Math.cos(an)*60,bs.y+Math.sin(an)*60);}
+    if(!radar.noRng){Tt('RNG '+(dist/NM).toFixed(1),7.4,-5.0,'center');Tt(String(Math.round(vc*KT))+'Vc',7.4,-6.0,'center');}
+    Tt(Math.round(L.pos.y*FT/1000)+'K',7.4,-7.0,'center');{const id=L.type&&typeof NCTR_ID!=='undefined'?NCTR_ID[L.type]:'';if(id&&radar.mode==='STT')Tt(id,7.4,-8.0,'center');}
+    if(wd&&wd.seek!=='IR'&&bs&&!radar.noRng){const z=dlzGet(w,L),r=dist+radar.rngErr;if(r<z.rmin)cue('BREAK X');else if(r<=z.rmax&&arm)cue('SHOOT');}
+    if(radar.hoj)Tt('HOJ',0,-7.8,'center');}
+  if(wd&&wd.seek==='IR'){const Tg=irTarget(w),s=Tg?proj(Tg.pos):bs;if(s){circ(s.x,s.y,ppd*1.4);}if(Tg&&arm&&L&&L.pos.distanceTo(P.pos)<dlzGet(w,L).rmax)cue('SHOOT');}
+  if(gun){const dist=L?L.pos.distanceTo(P.pos):0;
+    if(L&&dist<3000&&!radar.noRng){const s=proj(gunSol(P,L).aim);if(s){circ(s.x,s.y,22);hx.beginPath();hx.arc(s.x,s.y,2,0,7);hx.fill();hx.lineWidth=3;hx.beginPath();hx.arc(s.x,s.y,18,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(dist/3658,0,1));hx.stroke();hx.lineWidth=1.4;}if(dist<1200)cue('SHOOT');}
+    else{const hw=WSPAN[sys.hud.ws]*.1524,lp=[],rp=[];for(let rr=200;rr<=1300;rr+=110){const pt=gunFun(P,rr);const a=proj(pt.clone().addScaledVector(rt,-hw)),b=proj(pt.clone().addScaledVector(rt,hw));if(a&&b){lp.push(a);rp.push(b);}}
+      [lp,rp].forEach(arr=>{if(arr.length<2)return;hx.beginPath();arr.forEach((p,i)=>i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y));hx.stroke();});}}
+}
+{const _t=drawTomcatHud;drawTomcatHud=function(P,fs,lh){if(P&&P.type==='F-14D'){try{return drawF14DHud(P,fs,lh);}catch(e){console.warn('F-14D HUD',e);}}return _t.apply(this,arguments);};}
+window.drawF14DHud=drawF14DHud;
+
+// ---- per-frame work and the cockpit switch ----
+(V.anims||[]).push(()=>{if(!DG.visible||!player)return;try{const P=player;paintMFD(0,P);paintMFD(1,P);mfdTx[0].needsUpdate=mfdTx[1].needsUpdate=true;paintMS(P);
+  for(const q of feeds){const v=q.cv._ver;if(v===undefined||v!==q.v){q.v=v;q.t.needsUpdate=true;}}}catch(e){}});
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const on=kind==='viper'&&isD();DG.visible=DH.visible=on;for(const o of hideA)o.visible=!on&&o.userData._v!==false;
+  if(on){V.glass=dGlass;if(!(F.fmt[0]in FAM)&&!(F.fmt[1]in FAM)){}SV.tHm=FAM[F.fmt[1]]??FAM[F.fmt[0]]??0;}}catch(e){}return r;};}
+ACROLE['F-14D']='US · FLEET DEFENCE · APG-71 · AAS-42 IRST + TCS · DIGITAL HUD · 2 MFDs';
+}catch(e){console.warn('v223 F-14D',e);}
 
 /* ===== v217: Su-27SM instrument board after the real cockpit (two wide МФИ-10-5 with the narrower centre МФИ packed edge to edge across the board,
    the КР-6 HUD control unit above the centre screen, the lamp block top right, round engine / standby gauges in a row underneath). The
