@@ -1556,6 +1556,8 @@ class Missile{
     if(this.t>.6)for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh)||prev.distanceToSquared(j.pos)>1e6)continue;
       const dd=segDist(prev,this.pos,j.pos,j.vel,dt);
       // warhead: blast-fragmentation, lethality falls with miss distance
+      // contact-fuzed rounds (AIM-4 Falcon) must strike the airframe: the hit radius is the target's own body size, not a proximity shell
+      if(d.contact){const hr=Math.max(1.4,.4*Math.sqrt((j.ac&&j.ac.S)||28));if(dd<hr){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,360*rnd(.95,1.1),this.sh,this.type);return;}continue;}
       if(dd<d.fuse){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,340*(1-.55*dd/d.fuse)*rnd(.9,1.1),this.sh,this.type);return;}}
     if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||(this.t>d.ign+d.burnT&&V<d.stop-60)){this.remove(true);return;}
     this.fxT=(this.fxT||0)+dt;}
@@ -8189,6 +8191,22 @@ function updateCamera(dt,tm){
   camera.updateMatrixWorld();ckCam.updateMatrixWorld();SKY.position.copy(camera.position);return inCk;}
 let last=performance.now(),pubT=0;
 // cockpit canvases actually on show (the hidden cockpit variants are skipped); re-scanned every 30 panel refreshes
+// v230: aircraft collide with each other. Body radius from wing area; a hit at closing speed above ~35 m/s destroys both airframes,
+// a slower bump does damage scaled by closure and pushes them apart. Each client resolves its own (non-remote) aircraft only.
+const _cA=new V3(),_cB=new V3();
+function airCollide(dt){const n=jets.length;for(let a=0;a<n;a++){const A=jets[a];if(!A.alive||A.gone)continue;const rA=Math.max(2.2,.62*Math.sqrt((A.ac&&A.ac.S)||28));
+  for(let b=a+1;b<n;b++){const B=jets[b];if(!B.alive||B.gone||(A.remote&&B.remote))continue;const rB=Math.max(2.2,.62*Math.sqrt((B.ac&&B.ac.S)||28)),R=rA+rB;
+    // swept test over the step so fast passes cannot tunnel through each other
+    const rel=_cB.copy(A.vel).sub(B.vel),d0=_cA.copy(A.pos).sub(B.pos),vv=rel.lengthSq();let t=0;if(vv>1e-6)t=clamp(-d0.dot(rel)/vv,-dt,0);
+    const dx=d0.x+rel.x*t,dy=d0.y+rel.y*t,dz=d0.z+rel.z*t,dd=Math.sqrt(dx*dx+dy*dy+dz*dz);if(dd>=R)continue;
+    if(A.vel.length()<40&&B.vel.length()<40)continue;// parked / taxiing / deck handling
+    const cl=Math.sqrt(vv);
+    const hit=(J,O)=>{if(J.remote||!J.alive)return;J.hitFrom=O.pos.clone();if(cl>35)J.kill('MID-AIR COLLISION');else J.damage(cl*6+20);};
+    hit(A,B);hit(B,A);
+    if(cl<=35){const nrm=_cA.set(dx,dy,dz);if(nrm.lengthSq()<1e-6)nrm.set(0,1,0);nrm.normalize();const vn=rel.dot(nrm);
+      if(vn<0){const k=-vn*.6;if(!A.remote)A.vel.addScaledVector(nrm,k);if(!B.remote)B.vel.addScaledVector(nrm,-k);}
+      const push=(R-dd)*.5;if(!A.remote)A.pos.addScaledVector(nrm,push);if(!B.remote)B.pos.addScaledVector(nrm,-push);}
+    if(A===player||B===player){try{flash(cl>35?'MID-AIR COLLISION':'COLLISION',1600);}catch(e){}}}}}
 function ckLive(c){if(c._lt&&c._ltN-->0)return c._lt;const set=new Set(c.tex),out=new Set();
   c.root.traverseVisible(o=>{const m=o.material;if(m&&m.map&&set.has(m.map))out.add(m.map);});c._lt=[...out];c._ltN=30;return c._lt;}
 const fpsS={n:0,t:0,w:0};
@@ -9795,6 +9813,7 @@ function frame(tm){requestAnimationFrame(frame);gfxTune(tm-last);
     for(const j of jets)ecmUpdate(j,dt);
     const n=4,h=dt/n;for(let i=0;i<n;i++)for(const j of jets)j.step(h);
     for(const j of jets){updateGun(j,dt);trkAcc(j,dt);}
+    airCollide(dt);
     {const ns=Math.max(1,Math.ceil(dt*120-1e-6)),h=dt/ns;for(let s=0;s<ns;s++)for(const m of missiles)if(m.alive)m.update(h);
       for(const m of missiles)if(m.alive&&m.draw)m.draw();}
     for(let i=missiles.length-1;i>=0;i--)if(!missiles[i].alive)missiles.splice(i,1);
