@@ -367,6 +367,33 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
       const hb=new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.03),hm);hb.position.set(cx+(sx/256-.5)*.19,-.6,-.16+(sy/1024-.5)*.94);hb.userData.cwFx=1;
       const def={meshes:[hb],name:ti+' · '+w,state:()=>CW_SW.label(id,w,ti),act:()=>{CW_SW.flip(id,w,ti);try{sfx.click();}catch(e){}}};hb.userData.ctl=def;g.add(hb);
       const lv=box(g,.006,.022,.006,LM(0xcccccc,40),cx+(sx/256-.5)*.19,-.6,-.16+(sy/1024-.5)*.94,-.4);lv.userData.cwFx=1;});});});
+  // v239: START / ELECTRICAL panel at the front of the right console (every jet), main-panel plate switches and caution-lamp test are clickable
+  {const SL={en:['BATT','EXT PWR','FUEL MSTR','SRC','ENG SEL','START','GEN','START / ELEC'],ru:['АККУМ','АЭР ПИТ','ПЦН','ВСУ','ВЫБОР ДВ','ЗАПУСК','ГЕН','ЗАПУСК / ЭЛЕКТРО'],
+      fr:['BATT','PARC','BP','GROUPE','MOTEUR','DEMAR','ALT','DEMARRAGE'],sv:['BATT','YTTRE','LT-KRAN','AGG','MOTOR','START','GEN','START / EL'],zh:['电瓶','地面电源','燃油','起动源','选发','起动','发电','起动 / 电源']}[S.l]||null;
+    const lab=SL||['BATT','EXT PWR','FUEL MSTR','SRC','ENG SEL','START','GEN','START / ELEC'],acts=['batt','ext','fm','src','sel','starter','gen'];
+    const cv2=document.createElement('canvas');cv2.width=512;cv2.height=200;const x2=cv2.getContext('2d'),t2=new THREE.CanvasTexture(cv2);
+    const st=k=>{const P=typeof player!=='undefined'?player:null;const E=P&&P.type===id&&P.eng;if(!E)return k==='src'?false:k==='sel'?false:k==='starter'?false:true;
+      const e=E.e[E.sel];return k==='batt'?E.batt:k==='ext'?E.ext:k==='fm'?E.fm:k==='src'?(E.sp.src==='AIR'?E.air:E.aux>0):k==='sel'?E.sel===1:k==='starter'?e.st:E.gen;};
+    const draw2=()=>{x2.fillStyle='#'+(S.cc||S.pc).toString(16).padStart(6,'0');x2.fillRect(0,0,512,200);x2.strokeStyle='rgba(255,255,255,.3)';x2.lineWidth=3;x2.strokeRect(6,6,500,188);
+      x2.font='bold 20px Arial';x2.textAlign='center';x2.fillStyle='#eee';x2.fillText(lab[7],256,30);
+      acts.forEach((a,i)=>{const sx=40+i*72,sy=110,on=st(a);
+        if(a==='starter'){x2.fillStyle=on?'#ff8040':'#7a1a12';x2.beginPath();x2.arc(sx,sy,18,0,7);x2.fill();x2.strokeStyle='#222';x2.stroke();}
+        else{x2.fillStyle='#3a3a3a';x2.beginPath();x2.arc(sx,sy,13,0,7);x2.fill();x2.fillStyle=on?'#f2f2ea':'#999';x2.fillRect(sx-4,on?sy-34:sy+4,8,30);}
+        x2.fillStyle=on?'#56ff7a':'#2a2a22';x2.beginPath();x2.arc(sx,sy-48,6,0,7);x2.fill();
+        x2.font='bold 13px Arial';x2.fillStyle='#ddd';x2.fillText(a==='sel'?(on?lab[4]+' R':lab[4]+' L'):lab[i],sx,sy+62);});t2.needsUpdate=true;};
+    draw2();CW_SW.redraw.push(draw2);
+    const sp=new THREE.Group();sp.position.set(S.sbs?1.29:.52,-.46,-.42);sp.rotation.set(0,-Math.PI/2,0);sp.rotation.order='YXZ';sp.rotation.x=-.25;sp.scale.setScalar(1.55);g.add(sp);
+    box(sp,.21,.09,.02,cm,0,0,-.012);const m2=new THREE.MeshBasicMaterial({map:t2,toneMapped:false});o.faces.push(m2);const pl2=new THREE.Mesh(new THREE.PlaneGeometry(.2,.078),m2);pl2.userData.cwFx=1;sp.add(pl2);
+    const hm=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+    acts.forEach((a,i)=>{const hb=new THREE.Mesh(new THREE.BoxGeometry(.024,.04,.02),hm);hb.position.set((40+i*72)/512*.2-.1,.003,.004);hb.userData.cwFx=1;
+      hb.userData.ctl={meshes:[hb],name:lab[7]+' · '+lab[i],state:()=>{const P=typeof player!=='undefined'?player:null;if(!P||!P.eng)return'ENGINES RUNNING';return a==='sel'?(st(a)?'RIGHT':'LEFT'):st(a)?'ON':'OFF';},
+        act:()=>{try{if(window.START){START[a]();}sfx.click();}catch(e){}draw2();}};sp.add(hb);});}
+  {const L0=layout(S),hm=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+    for(const pl of L0.plates||[]){const[px,py,pw,ph,ti,sw]=pl;(sw||[]).forEach((w,i)=>{const sx=px+pw*(i+.5)/sw.length,sy=py+ph*.58;
+      const hb=new THREE.Mesh(new THREE.BoxGeometry(18*PX,24*PX,.02),hm);hb.position.set(lx(sx),ly(sy)-.03,.012);hb.userData.cwFx=1;
+      hb.userData.ctl={meshes:[hb],name:ti+' · '+w,state:()=>CW_SW.label(id,w,ti),act:()=>{CW_SW.flip(id,w,ti);try{sfx.click();}catch(e){}}};pp.add(hb);});}
+    if(L0.cau){const[cx0,cy0,cols,rows,cw,ch]=L0.cau;const hb=new THREE.Mesh(new THREE.BoxGeometry(cols*cw*PX,rows*ch*PX,.02),hm);hb.position.set(lx(cx0+cols*cw/2),ly(cy0+rows*ch/2)-.03,.012);hb.userData.cwFx=1;
+      hb.userData.ctl={meshes:[hb],name:'WARNING LIGHTS · PRESS TO TEST',state:()=>'TEST',act:()=>{window._cwLT=performance.now()+2500;try{sfx.click();}catch(e){}}};pp.add(hb);}}
   // side-by-side: the navigator / WSO station to the right — panel continuation, hooded Orion-A / PNS-24 radar display turned to his seat,
   // the pedestal with the PNS-24M keyboard between the seats, his stick, his seat with him in it, and the centre canopy frame
   if(S.sbs){const W=new THREE.Group();W.position.set(.78,0,0);g.add(W);
@@ -438,7 +465,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   const nums=(r,a0,a1,vals)=>vals.forEach((v,i)=>{const a=(a0+(a1-a0)*i/(vals.length-1)-90)*D2R;T(String(v),Math.cos(a)*r*.6,Math.sin(a)*r*.6,Math.max(10,r*.2));});
   const ndl=(r,deg,len=.82,cl=ink,w=4)=>{c.save();c.rotate(deg*D2R);c.shadowColor='rgba(0,0,0,.7)';c.shadowBlur=4;c.shadowOffsetX=2;c.shadowOffsetY=3;c.fillStyle=cl;c.beginPath();c.moveTo(-w*.6,r*.14);c.lineTo(-w*.45,-r*len*.8);c.lineTo(0,-r*len);c.lineTo(w*.45,-r*len*.8);c.lineTo(w*.6,r*.14);c.closePath();c.fill();c.shadowColor='transparent';c.fillStyle='#2a2a2a';c.beginPath();c.arc(0,0,r*.08,0,7);c.fill();c.fillStyle='#777';c.beginPath();c.arc(0,0,r*.03,0,7);c.fill();c.restore();};
   if(!P)return;
-  const run=P.totalFuel>0,n=clamp(P.n||0,0,1.1),ab=P.ab||0;
+  const run=P.totalFuel>0&&!(P.eng&&!P.eng.done&&!P.eng.e.some(e=>e.lit)),n=clamp(P.n||0,0,1.1),ab=P.ab||0;
   // airspeed
   dial('ias',r=>{const v=imp?(P.cas||0):(P.cas||0)*1.852,mx=imp?800:1400,a=-150+300*clamp(v/mx,0,1);
     ticks(r,-150,150,16,2);nums(r,-150,150,imp?[0,200,400,600,800]:[0,350,700,1050,1400]);ndl(r,a);T(lb.ias,0,r*.3,10,dimInk);T('M '+(P.mach||0).toFixed(2),0,-r*.28,12);});
@@ -449,10 +476,10 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   dial('aoa',r=>{ticks(r,-140,-20,6);ticks(r,20,140,6);ndl(r,-140+120*clamp(((P.alpha||0)*R2D+5)/35,0,1),.8);ndl(r,140-120*clamp(((P.nz||1)+2)/11,0,1),.8,'#e8c040',3);T(lb.aoa,-r*.32,r*.45,10,dimInk);T(lb.g,r*.32,r*.45,10,'#e8c040');});
   dial('g',r=>{ticks(r,-150,150,15,5);ndl(r,-150+300*clamp(((P.nz||1)+5)/15,0,1));ndl(r,-150+300*clamp(((P.maxNz||1)+5)/15,0,1),.7,'#e05040',2);T(lb.g,0,r*.4,11,dimInk);});
   dial('clk',r=>{const d=new Date();ticks(r,0,330,11,3);ndl(r,360*((d.getHours()%12)+d.getMinutes()/60)/12,.5);ndl(r,360*d.getMinutes()/60,.8,ink,3);ndl(r,6*d.getSeconds(),.85,'#e05040',1.5);});
-  const rpm=k=>dial(k,r=>{const v=run?(k==='rpm2'?n*.995:n):0;ticks(r,-135,135,11,2);nums(r,-135,135,[0,20,40,60,80,100]);ndl(r,-135+270*clamp(v/1.1,0,1));T(lb.rpm,0,r*.42,9,dimInk);T(String(Math.round(v*100)),0,-r*.3,11);if(ab>.02){T(lb.ab,0,r*.66,9,'#ffb030');}});
+  const rpm=k=>dial(k,r=>{const E=P.eng,ei=k==='rpm2'?1:0,v=E&&!E.done&&E.e[Math.min(ei,E.e.length-1)]?E.e[Math.min(ei,E.e.length-1)].rpm/100:run?(.62+.38*(k==='rpm2'?n*.995:n)):0;ticks(r,-135,135,11,2);nums(r,-135,135,[0,20,40,60,80,100]);ndl(r,-135+270*clamp(v/1.1,0,1));T(lb.rpm,0,r*.42,9,dimInk);T(String(Math.round(v*100)),0,-r*.3,11);if(ab>.02){T(lb.ab,0,r*.66,9,'#ffb030');}});
   rpm('rpm');rpm('rpm2');
   dial('ff',r=>{ticks(r,-135,135,10,2);ndl(r,-135+270*clamp(run?(.12+n*.55+ab*.33):0,0,1));T(lb.ff,0,r*.42,8,dimInk);});
-  dial('egt',r=>{ticks(r,-135,135,9,3);const e=k=>clamp(run?.25+n*.55+ab*.15+k:0,0,1);ndl(r,-135+270*e(0));if(S.e===2)ndl(r,-135+270*e(-.012),.62,'#e8c040',3);T(lb.egt+(S.l==='en'?' °C':''),0,r*.42,9,dimInk);});
+  dial('egt',r=>{ticks(r,-135,135,9,3);const E=P.eng,e=k=>E&&!E.done?clamp(E.e[0].egt+k,0,1):clamp(run?.25+n*.55+ab*.15+k:0,0,1);ndl(r,-135+270*e(0));if(S.e===2)ndl(r,-135+270*e(-.012),.62,'#e8c040',3);T(lb.egt+(S.l==='en'?' °C':''),0,r*.42,9,dimInk);});
   dial('fuel',r=>{const f=P.totalFuel||0,mx=Math.max(1,(P.ac.fuel||3000)+(P.ac.tank||0)*2),v=imp?f*2.2046:f;ticks(r,-135,135,10,2);ndl(r,-135+270*clamp(f/mx,0,1));
     c.fillStyle='#000';c.fillRect(-r*.48,r*.18,r*.96,r*.32);T(String(Math.round(v/10)*10),0,r*.34,12,'#fff');T(lb.fuel+(imp?' LB':' KG'),0,-r*.35,9,dimInk);});
   // ADI
@@ -486,7 +513,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
 
 
 // ---------- extra instruments, sub-panels, annunciators, gear handle (per-jet layouts) ----------
-function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb,ru=S.l==='ru',run=P.totalFuel>0,n=clamp(P.n||0,0,1.1),ab=P.ab||0;
+function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb,ru=S.l==='ru',run=P.totalFuel>0&&!(P.eng&&!P.eng.done&&!P.eng.e.some(e=>e.lit)),n=clamp(P.n||0,0,1.1),ab=P.ab||0;
   const lab=(r,s,y=.42)=>T(s,0,r*y,Math.max(8,Math.round(r*.15)),dimInk);
   const gauge=(k,v,txt,a0=-135,a1=135,nn=10)=>dial(k,r=>{ticks(r,a0,a1,nn,2);ndl(r,a0+(a1-a0)*clamp(v,0,1));lab(r,txt);});
   for(const k of Object.keys(L.dial)){const t=k.replace(/_.*$/,'');
@@ -534,13 +561,13 @@ function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb
     else if(t==='gi'){const[x,y,r]=L.dial[k];let gd=false;try{gd=!!sys.v.gear;}catch(e){}const tr=(P.gearPos!=null)&&P.gearPos>.05&&P.gearPos<.95;c.fillStyle='#050606';c.beginPath();c.arc(x,y,r+3,0,7);c.fill();
       c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();if(tr){for(let i=-4;i<5;i++){c.fillStyle=i%2?'#eee':'#222';c.save();c.translate(x,y);c.rotate(.8);c.fillRect(i*r*.3,-r*2,r*.3,4*r);c.restore();}}
       else if(gd){c.fillStyle='#ddd';c.fillRect(x-r,y-r,2*r,2*r);c.fillStyle='#222';c.beginPath();c.arc(x,y,r*.55,0,7);c.fill();}else{c.fillStyle='#222';c.fillRect(x-r,y-r,2*r,2*r);T('UP',x,y,Math.round(r*.8),'#fff');}c.restore();}
-    else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):k.includes('fuel')?P.totalFuel<(P.ac.fuel||3000)*.15:k.includes('hydw')?P.hp<45:false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
+    else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=(window._cwLT>performance.now())||k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):k.includes('fuel')?P.totalFuel<(P.ac.fuel||3000)*.15:k.includes('hydw')?P.hp<45:false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
   // sub-panels with switches: [x,y,w,h,title,[switch labels]]
   for(const pl of L.plates||[]){const[x,y,w,h,ti,sw]=pl;c.fillStyle='rgba(0,0,0,.28)';c.fillRect(x,y,w,h);c.strokeStyle='rgba(255,255,255,.22)';c.lineWidth=2;c.strokeRect(x,y,w,h);
-    T(ti,x+w/2,y+11,10,ink);(sw||[]).forEach((s,i)=>{const n2=sw.length,sx=x+w*(i+.5)/n2,sy=y+h*.58;c.fillStyle='#555';c.beginPath();c.arc(sx,sy,7,0,7);c.fill();c.fillStyle='#ddd';c.fillRect(sx-2,sy-15,4,14);T(s,sx,y+h-9,8,dimInk);});}
+    T(ti,x+w/2,y+11,10,ink);(sw||[]).forEach((s,i)=>{const n2=sw.length,sx=x+w*(i+.5)/n2,sy=y+h*.58,on=CW_SW.get(P.type,s,ti);c.fillStyle='#555';c.beginPath();c.arc(sx,sy,7,0,7);c.fill();c.fillStyle=on?'#f2f2ea':'#999';c.fillRect(sx-2,on?sy-15:sy+1,4,14);T(s,sx,y+h-9,8,dimInk);});}
   // annunciator / caution grid: [x,y,cols,rows,cw,ch,[labels]]
   if(L.cau){const[x,y,cols,rows,cw,ch,items]=L.cau,lowF=P.totalFuel<(P.ac.fuel||3000)*.15;
-    const lit=s=>/SHAKER/.test(s)?!!P._shk:/KICKER/.test(s)?!!P._kick:/APC OFF/.test(s)?(window.CW_SW&&CW_SW.get(P.type,'APC')===false):/MSTR CAUT/.test(s)?(P.hp<45||P.totalFuel<(P.ac.fuel||3000)*.15||!!P._kick):/FIRE|ПОЖАР/.test(s)?P.fire>0||P.hp<25:/HYD|ГИДР/.test(s)?P.hp<45:/FUEL|ТОПЛ|ОСТАТ|BINGO/.test(s)?lowF:/GEN|ГЕН/.test(s)?!run:/OIL|МАСЛ/.test(s)?!run:false;
+    const lit=s=>(window._cwLT>performance.now())||/SHAKER/.test(s)?!!P._shk:/KICKER/.test(s)?!!P._kick:/APC OFF/.test(s)?(window.CW_SW&&CW_SW.get(P.type,'APC')===false):/MSTR CAUT/.test(s)?(P.hp<45||P.totalFuel<(P.ac.fuel||3000)*.15||!!P._kick):/FIRE|ПОЖАР/.test(s)?P.fire>0||P.hp<25:/HYD|ГИДР/.test(s)?P.hp<45:/FUEL|ТОПЛ|ОСТАТ|BINGO/.test(s)?lowF:/GEN|ГЕН/.test(s)?!run:/OIL|МАСЛ/.test(s)?!run:false;
     items.forEach((s,i)=>{const cx=x+(i%cols)*cw,cy=y+Math.floor(i/cols)*ch,on=lit(s),red=/FIRE|ПОЖАР/.test(s);c.fillStyle=on?(red?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(cx+2,cy+2,cw-4,ch-4);T(s,cx+cw/2,cy+ch/2,s.length>8?7:9,on?'#200':'#7a6a40');});}
   // landing-gear handle with three lights: [x,y]
   if(L.gearH){const[x,y]=L.gearH;let gd=false;try{gd=P.ac.cockpit==='fulcrum'?!!sys.mig.gear:!!sys.v.gear;}catch(e){}

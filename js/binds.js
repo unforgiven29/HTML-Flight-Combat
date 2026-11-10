@@ -45,6 +45,11 @@ const ACT=[
  ['crew','Back-seater takes the sensors','CREW','p','Digit6','6'],
  ['wInc','F-8E · wing incidence handle','AIRCRAFT','f',()=>window.CW_SYS&&CW_SYS.wingInc(),'—'],
  ['apc','F-104S · APC on / off','AIRCRAFT','f',()=>window.CW_SYS&&CW_SYS.apcToggle(),'—'],
+ ['stList','Start checklist','START-UP','f',()=>window.START&&START.list(),'Shift+C'],
+ ['stBatt','Battery','START-UP','f',()=>window.START&&START.batt(),'—'],['stExt','External power','START-UP','f',()=>window.START&&START.ext(),'—'],
+ ['stFm','Fuel / engine master','START-UP','f',()=>window.START&&START.fm(),'—'],['stSrc','Start source (air cart / JFS / APU)','START-UP','f',()=>window.START&&START.src(),'—'],
+ ['stSel','Engine select L / R','START-UP','f',()=>window.START&&START.sel(),'—'],['stStr','Starter / crank / START','START-UP','f',()=>window.START&&START.starter(),'—'],
+ ['stThr','Throttle cutoff ⇄ IDLE','START-UP','f',()=>window.START&&START.thr(),'—'],['stGen','Generators','START-UP','f',()=>window.START&&START.gen(),'—'],
  ['pause','Pause','GAME','f',()=>BASE.KeyP&&BASE.KeyP.fn(),'P']];
 const A=Object.fromEntries(ACT.map(a=>[a[0],a]));
 
