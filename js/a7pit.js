@@ -225,6 +225,15 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   try{if(typeof rwrC!=='undefined'){const m=new THREE.MeshBasicMaterial({map:liveTex(ctx.kind,rwrC),toneMapped:false});ctx.o.faces.push(m);const rw=new THREE.Mesh(new THREE.CircleGeometry(40*K,40),m);rw.position.set(bx(452),by(138),.0285);board.add(rw);}}catch(e){}
   // HUD well floor: AVQ-7 control box between the lobes
   box(board,(702-532)*K,.012,.08,LM(0x161718,10),bx(617),by(183)-.006,.04);
+  // HUD control panel (figure 1-107) on the well floor: SCALES, TF clearance, brightness
+  {const hp=new THREE.Group();hp.position.set(bx(617),by(183)+.0,.075);hp.rotation.x=-1.25;board.add(hp);box(hp,(702-536)*K,.05,.006,dk,0,0,-.004);
+    const cv=document.createElement('canvas');cv.width=320;cv.height=96;const c=cv.getContext('2d');c.fillStyle='#1b1c1e';c.fillRect(0,0,320,96);c.font='bold 13px Arial';c.fillStyle='#e8e8e0';c.textAlign='center';
+    [['SCALES',50,14],['TF CLR',130,14],['BRT',210,14],['AVQ-7 HUD',270,84]].forEach(([t,x,y])=>c.fillText(t,x,y));['OFF','ON'].forEach((t,i)=>c.fillText(t,30+i*40,86));['300','500','1000'].forEach((t,i)=>c.fillText(t,100+i*30,86));
+    const t=new THREE.CanvasTexture(cv);ctx.o.tex.push(t);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry((702-536)*K,.05),m);pl.userData.cwFx=1;hp.add(pl);
+    const W=(166*K),Hh=.05,P2=(u,v)=>[-W/2+u*W,Hh/2-v*Hh,.003];
+    toggle(hp,...P2(.16,.5),'HUD SCALES SWITCH',['OFF','SCALES'],()=>sv('scales',1),v=>{ST.scales=v;});
+    knob(hp,...P2(.41,.5),.007,'TF CLEARANCE SET',['300','500','1000'],'tfclr',()=>sv('tfclr',2));
+    knob(hp,...P2(.66,.5),.007,'HUD BRIGHTNESS',['DIM','MED','BRT'],'hbrt',()=>{try{return sys.hud.brt>.8?2:sys.hud.brt>.45?1:0;}catch(e){return 2;}},v=>{try{sys.hud.brt=[.35,.65,1][v];}catch(e){}});}
   const glsM=new THREE.MeshPhongMaterial({color:0xffffff,transparent:true,opacity:.08,shininess:140,specular:0x8a8a8a,depthWrite:false});
   function inst(k,x,y,hs,draw,round=true){const S=k==='adi'||k==='hsi'?320:hs<16?96:256,cv=document.createElement('canvas');cv.width=cv.height=S;const t=new THREE.CanvasTexture(cv);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;ctx.o.tex.push(t);
     const c=cv.getContext('2d'),r=hs*K;box(board,2*r*1.04,2*r*1.04,.03,bz,bx(x),by(y),.008);
@@ -390,7 +399,8 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   {const p=cpanel(-1,.5,1,zL(380),zL(425),'RADAR · APQ-126');
     const pwr=()=>({OFF:0,STBY:1,ON:2})[radar.power]??2;
     kn(p,.18,.5,.012,'RADAR POWER (11)',['OFF','STBY','OPR'],'rpwr',pwr,v=>{radar.power=['OFF','STBY','ON'][v];if(v===2)radar.warm=Math.max(radar.warm||0,3);});
-    kn(p,.42,.5,.012,'RADAR MODE (11)',['GND MAP','TF','TA','CTA','AGR','BCN'],'rmode');
+    const RM=['GMP','GMS','TA','TF','AGR','BCN'];kn(p,.42,.5,.012,'RADAR MODE (11)',['GND MAP PENCIL','GND MAP SPOILED','TERRAIN AVOIDANCE','TERRAIN FOLLOWING','AIR-GND RANGING','BEACON'],'rmode',
+      ()=>Math.max(0,RM.indexOf(window.AGR?AGR.mode:'GMP')),v=>{if(window.AGR){AGR.mode=RM[v];AGR.sig='';}});
     kn(p,.66,.5,.012,'RANGE (11)',radar.ranges.map(String),'rrng',()=>radar.ri,v=>{radar.ri=clamp(v,0,radar.ranges.length-1);});
     kn(p,.88,.5,.009,'TILT (11)',['-5','0','+5','+10'],'rtilt');p.lab('PWR',.18,.92,10);p.lab('MODE',.42,.92,10);p.lab('RANGE',.66,.92,10);p.lab('TILT',.88,.92,10);}
   // 6 IFF | 12 UHF
@@ -457,5 +467,6 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     P._trimP=(P._trimP||0)*.97+(P.ctl?P.ctl.p:0)*.03;}};}
 
 PIT[ID].custom=build;
+window.A7PIT={amode:()=>sv('amode',0),scales:()=>sv('scales',1),ldg:()=>sv('ldg',1),tf:()=>sv('tf',0),clr:()=>[300,500,1000][sv('tfclr',2)]};
 console.info('[a7pit] A-7D T.O. 1A-7D-1 cockpit active');
 })();

@@ -227,3 +227,20 @@ Built from the USAF flight manual T.O. 1A-7D-1 (20 Sep 1972, change 1): figure 1
 - **Left console:** emergency power handle (RAT), gear handle with a transit light, emergency gear release, pitch / roll trim and wheels-flaps indicators; generator, battery and external power (these drive the cold start), emergency generator; boost pump, guarded fuel dump, emergency brake; throttle (follows the power lever, OFF ⇄ IDLE on a cold start), speed brake switch, guarded fuel master, engine start, AR door, rudder trim; flap lever; AFCS pitch / roll / yaw, autopilot, altitude hold, heading select; APQ-126 power / mode / range / tilt (power and range work the radar); IFF, UHF (the preset channel drives the UHF remote), RHAW, interphone, suit temperature, ADF / aux UHF, pilot services; alternate fuel feed and canopy jettison handle on the longeron.
 - **Right console:** interior lights with a lamp test, Doppler, oxygen regulator, NAV WD panel, TACAN, ILS, VHF FM, speech security, radar beacon; caution panel (12 lights the sim can drive), exterior lights, ECM pod, IMS, air conditioning; wingfold (on the ground only) and arresting hook, map case.
 - **Not exact:** positions were traced by eye from the scanned figures, not measured. Console sub-panel controls follow each panel's title in the figure, and the switch layout inside each panel is approximate. The caution panel carries the lights the sim can drive, not the manual's full legend list. The HUD is still the shared Cold War HUD, not AVQ-7 symbology.
+
+## v242 — A-7D AVQ-7 HUD and A/G-only APQ-126 (`js/a7avionics.js`)
+From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sheets 1-4 (HUD symbology) and 1-107 (HUD controls).
+- **AN/AVQ-7 HUD:**
+  - **All modes:** flightpath marker (circle, wings, tail). Horizon and flightpath-angle lines every 5°: positive solid, negative dashed, numbered at the outer ends with ticks toward the horizon, centred on the marker and rolled with the jet. Heading scale (two-digit tens, dots, centre index). Airspeed scale on the left (digit = hundreds of knots) and altitude scale on the right (digit = thousands of feet), with the vertical-velocity caret and the radar-altitude index mark. Pullup warning (hatched lines and PULL UP) when the flightpath meets the ground within 6 s.
+  - **NAV:** flight director steering to the field, with a vertical command when TF is on.
+  - **LDG:** AOA bracket (17.5 units centred on the marker), landing director on a 3° glide path, runway perspective lines.
+  - **Bombing (ATTK / A-G WPN):** aiming symbol (diamond with a centre dot), bombfall line, upper and lower solution cues, pullup anticipation cue.
+  - **Guns and rockets:** aiming symbol with the in-range cue.
+  - The symbology follows the attack master function switches and the gear / LDG switch.
+  - A larger combiner. A HUD control panel on the well floor: SCALES switch, TF clearance (300 / 500 / 1000 ft), brightness.
+- **AN/APQ-126 is air-to-ground only:**
+  - It never detects, tracks or locks aircraft (Sidewinders still work on their own seeker).
+  - Modes on the RADAR panel MODE knob or PgUp / PgDn: GND MAP PENCIL, GND MAP SPOILED, TERRAIN AVOIDANCE (only terrain reaching the clearance plane), TERRAIN FOLLOWING (terrain profile ahead against the clearance line, with a climb / dive cue), AIR-GND RANGING (slant range to the HUD aiming point), BEACON (coded return at the field).
+  - Sector PPI picture with range arcs, antenna sweep, cursor and SPI. Enter designates the cursor point.
+- **Approximate:** the solution-cue and pullup-cue movement and the airspeed / altitude scale behaviour are read from the figures and text, not from the NWDS equations. TF is a display and HUD cue only (no automatic terrain following). The radar returns come from the shared ground-map model.
+- `cwpit`: a jet can set its own combiner size (`gw`, `gh`, `gy`). `game.js`: `AGR` is exposed as `window.AGR`, and the A-7D is added to the A/G radar list.
