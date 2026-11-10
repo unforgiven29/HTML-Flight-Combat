@@ -3779,7 +3779,7 @@ function drawTomcatG(P){const g=k=>TC[k].getContext('2d'),run=P.totalFuel>0,ft=P
 /* ============ 3D cockpits: own scene in aircraft axes, eye at the origin ============ */
 const ckScene=new THREE.Scene(),ckCam=new THREE.PerspectiveCamera(64,1,.02,30);
 const ckSun=new THREE.DirectionalLight(0xfff0d8,.95),ckHemi=new THREE.HemisphereLight(0xd6e6ff,0x24282a,.6);
-ckSun.castShadow=true;ckSun.shadow.mapSize.set(2048,2048);
+ckSun.castShadow=true;ckSun.shadow.mapSize.set(1024,1024);// v259: matches gfx.shadow (AUTO); HIGH raises it to 2048 in applyGfx
 {const s=ckSun.shadow.camera;s.left=s.bottom=-1.05;s.right=s.top=1.05;s.near=.5;s.far=6;}
 ckSun.shadow.bias=-.0004;ckSun.shadow.normalBias=.0015;ckSun.shadow.radius=2.5;
 ckScene.add(ckSun,ckSun.target,ckHemi);
@@ -5865,7 +5865,7 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
   root.traverse(o=>{if(!o.isMesh)return;const m=o.material,tr=m.transparent||m.opacity<1;o.castShadow=!tr&&!m.isMeshBasicMaterial;o.receiveShadow=!m.isMeshBasicMaterial;});
   root.visible=false;return out;}
 ck.viper=buildCockpit('viper');ck.fulcrum=buildCockpit('fulcrum');ck.cur=ck.viper;
-function selectCockpit(kind,pit){ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
+function selectCockpit(kind,pit){if(_ckSh)_ckSh.force=true;ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
   (v.off||[]).forEach(o=>o.visible=false);(v.on||[]).forEach(o=>o.visible=true);if(v.stk){c.stk=v.stk;c.thr=v.thr;}c.sg=v.sg||c.sg;c.ped=v.ped||null;
   c.panelMats.forEach((m,i)=>m.color.setHex(v.panel?v.panel[i]:c.panel0[i]));c.glass=v.glass||c.glass0;}
 PLANES.run('f15','L6543');
@@ -8952,7 +8952,7 @@ const CMPUI={cv:null,cx:null,W:0,H:0,dpr:1,cxw:0,czw:0,mpp:600,img:null,imgKey:'
 
 segSet();setTimeout(()=>{CMPUI.init();$('#menu').dataset.mp=game.mpMode;if(CMPUI.vis())CMPUI.open();},80);
 
-function frame(tm){requestAnimationFrame(frame);gfxTune(tm-last);
+function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
   if(SET.fps==='ON'){fpsS.n++;fpsS.t+=tm-last;fpsS.w=Math.max(fpsS.w,tm-last);if(fpsS.t>=500){const el=$('#fpsc');if(el)el.textContent=Math.round(fpsS.n*1000/fpsS.t)+' FPS · worst '+Math.round(fpsS.w)+' ms · res '+Math.round(gfx.scale*100)+'%';fpsS.n=fpsS.t=fpsS.w=0;}}const dt=clamp((tm-last)/1000,0,.05)||.016;last=tm;FR++;
   const live=game.active&&game.running&&!game.paused&&player;const menuEl=$('#menu'),mUp=!menuEl.hidden;
   if(live){const P=player;
@@ -8984,13 +8984,28 @@ function frame(tm){requestAnimationFrame(frame);gfxTune(tm-last);
   for(const j of jets){const far=camera.position.distanceToSquared(j.pos)>1.2e7;if(j._far!==far){j._far=far;for(const k in j.stMesh)j.stMesh[k].visible=!far;}}
   if(!mUp){renderer.clear();renderer.render(scene,camera);}
   if(inCk&&!mUp){if(pan){if(isMig())drawMig();else drawViper();drawADI();for(const t of ckLive(ck.cur)){if(t._dirty===false)continue;if(t._dirty)t._dirty=false;const im=t.image;if(im&&im._ver!==undefined){if(t._v===im._ver)continue;t._v=im._ver;}t.needsUpdate=true;}}
-    renderer.clearDepth();renderer.render(ckScene,ckCam);}
+    renderer.clearDepth();ckShadowGate(dt);renderer.render(ckScene,ckCam);}
   if(!mUp)SNS.render();
   if(!mUp){updateHover();drawHUD();rainComposite();CAMP.cue();}}
 function applyGfx(){const m=gfx.mode;gfx.cap=m==='LOW'?1:m==='HIGH'?2:1.5;gfx.scale=m==='LOW'?.85:1;gfx.panelHz=m==='HIGH'?60:m==='LOW'?20:30;
   const sh=SET.shadow==='OFF'?0:m==='HIGH'?2048:m==='LOW'?0:1024;ckSun.castShadow=sh>0;if(sh&&gfx.shadow!==sh){ckSun.shadow.mapSize.set(sh,sh);if(ckSun.shadow.map){ckSun.shadow.map.dispose();ckSun.shadow.map=null;}}gfx.shadow=sh||gfx.shadow;
   smoke.budget=glow.budget=m==='LOW'||SET.fx==='REDUCED'?.55:1;gfx.acc=gfx.n=gfx.good=0;resize();}
 // every ~1.5 s: below ~50 fps drop the render scale a notch, after a few smooth windows creep back up (AUTO and LOW only)
+/* v259 perf: the cockpit shadow pass redrew every cockpit mesh a second time each frame (it more than doubled the cockpit's draw calls).
+   Outside HIGH it now re-renders only when the sun moves relative to the cockpit (aircraft attitude) or 15 times a second for moving
+   parts (stick, throttle, needles). */
+var _ckSh={d:new THREE.Vector3(),t:1,force:true};renderer.shadowMap.autoUpdate=false;
+function ckShadowGate(dt){const sm=renderer.shadowMap;if(gfx.mode==='HIGH'||!ckSun.castShadow){sm.needsUpdate=true;return;}
+  const d=_ckSh.d,p=ckSun.position,l=p.length()||1;_ckSh.t+=dt;
+  if(_ckSh.force||_ckSh.t>=1/15||(d.x*p.x+d.y*p.y+d.z*p.z)/l<.99998){sm.needsUpdate=true;_ckSh.t=0;_ckSh.force=false;d.copy(p).divideScalar(l);}}
+/* v259 perf: LOW graphics draws the terrain from every second grid vertex (a quarter of the ~390k triangles). The height field used for
+   collision and the radar is untouched. */
+function terrLOD(){const T=window.TERRAIN;if(!T)return;const g=T.geometry,want=gfx.mode==='LOW'?2:1;if(g._lod===want)return;
+  if(!g._idx1)g._idx1=g.index;
+  if(want===2&&!g._idx2){const n=Math.round(Math.sqrt(g.attributes.position.count)),S=n-1,A=[];
+    for(let iy=0;iy+2<=S;iy+=2)for(let ix=0;ix+2<=S;ix+=2){const a=ix+n*iy,b=ix+n*(iy+2),c=ix+2+n*(iy+2),e=ix+2+n*iy;A.push(a,b,e,b,c,e);}
+    g._idx2=new THREE.BufferAttribute(new Uint32Array(A),1);}
+  g.setIndex(want===2?g._idx2:g._idx1);g._lod=want;}
 function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(gfx.acc<1500)return;const avg=gfx.acc/gfx.n;gfx.acc=gfx.n=0;
   const lo=gfx.mode==='LOW'?.5:.6,hi=gfx.mode==='LOW'?.85:1;
   if(avg>20.5&&gfx.scale>lo){gfx.scale=Math.max(lo,gfx.scale-.1);gfx.good=0;resize();}
