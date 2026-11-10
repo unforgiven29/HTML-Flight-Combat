@@ -270,3 +270,8 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 ## v248
 - F-8E: AN/APQ-94 indicator IP-626 drawn after the NATOPS figure (search, acquisition, track, attack, breakaway; AH bar, tilt mark, range strobe, R max, aiming circle/dot; extended-range, T, in-envelope, J and IR lamps). Ranges 20/40/60 NM.
 - F-8E: ALR-23 IRST added (sensor switch on the radar set panel, or the usual sensor key); the IR picture appears on the same indicator with the IR lamp lit.
+
+## v249
+- Su-25, Su-22M4 and MiG-27K: no radar. The HUD no longer shows radar status or a scope; the panel switch reads СОИ / ЛД (laser ranger) and the sensor is named as a laser ranger.
+- Su-24M: radar picture no longer drawn on the HUD (it stays on the hooded display).
+- MiG-27K: Kaira-23 TV on a big hooded display, yellow-filtered live picture from the nose head (gimbal +/-12 deg, three fields of view, laser range, lock mark).

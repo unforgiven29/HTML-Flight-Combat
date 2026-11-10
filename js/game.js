@@ -2182,7 +2182,7 @@ function drawHudSym(P,fs,lh){if(P.ac.cockpit==='fulcrum'){drawMigHud(P,fs,lh);gc
   // AOA bracket with the gear down: the FPM sits in the bracket at the 13° on-speed angle; slow (higher AOA) the FPM is below it
   if(fpm&&!mig&&sys.v.gear&&sys.hud.fpm<2){const by=fpm.y-(P.alpha*R2D-13)*KPX*D2R,bx=fpm.x-30;line(bx+9,by-15,bx,by-15);line(bx,by-15,bx,by+15);line(bx,by+15,bx+9,by+15);}
   const hz=new V3(f.x,0,f.z);if(hz.lengthSq()<1e-6){const u=P.up();hz.set(-u.x,0,-u.z);}hz.normalize();const hr=new V3(-hz.z,0,hz.x);
-  const nav=mig&&sys.mig.hud==='NAV',fi0=mig&&sys.mig.hud==='FI0',migSrch=mig&&(radar.mode==='RWS'||radar.mode==='TWS')&&sys.mig.hud==='LRC'&&radar.on(),noLad=!mig&&sys.hud.fpm>0;
+  const nav=mig&&sys.mig.hud==='NAV',fi0=mig&&sys.mig.hud==='FI0',migSrch=mig&&!P.ac.noRdr&&!P.ac.noHudRdr&&(radar.mode==='RWS'||radar.mode==='TWS')&&sys.mig.hud==='LRC'&&radar.on(),noLad=!mig&&sys.hud.fpm>0;
   if(!noLad)for(let p=-85;p<=85;p+=(mig?10:5)){if(migSrch&&p)continue;const pr=p*D2R,d=hz.clone().multiplyScalar(Math.cos(pr)).setY(Math.sin(pr));
     if(!projDir(d))continue;const e=k=>projDir(d.clone().addScaledVector(hr,k).normalize());
     const wo=p===0?.2:.075,a1=e(-wo),a2=e(-.03),b1=e(.03),b2=e(wo);if(!a1||!a2||!b1||!b2)continue;
@@ -2207,7 +2207,7 @@ function drawHudSym(P,fs,lh){if(P.ac.cockpit==='fulcrum'){drawMigHud(P,fs,lh);gc
   if(!nav){T(mig?(game.arm?'ARM':'OFF'):['ARM','OFF','SIM'][game.armPos],LX,-10.4);T(w==='GUN'?'GUN '+P.gun.ammo:SN[w]+' '+P.count(w),LX,-11.6);}
   const own=missiles.filter(m=>m.alive&&m.sh===P&&m.def.seek!=='IR');if(own.length)T('T '+Math.round(own[0].tti),LX,-12.8);
   const AN={'30x20':'30x20',VERT:'10x60',BORE:'BORE',HMD:'HMD'},AR={VERT:'VERT',BORE:'OPT',HMD:'HELMET','30x20':'SRCH'};
-  T(!radar.on()?(mig?(radar.power==='OFF'?'RADAR OFF':'RADAR WARM'):(radar.power==='OFF'?'NO RAD':radar.power==='STBY'?'RDR STBY':'RDR WARM')):
+  if(!(P.ac.noRdr||P.ac.noHudRdr))T(!radar.on()?(mig?(radar.power==='OFF'?'RADAR OFF':'RADAR WARM'):(radar.power==='OFF'?'NO RAD':radar.power==='STBY'?'RDR STBY':'RDR WARM')):
     mig?(radar.coop()?'COOP ':'')+(radar.sensor==='IRST'?'IR ':'RDR ')+(radar.mode==='ACM'?'CC '+AR[radar.acm]:{RWS:'SRCH',TWS:'TWS',STT:'LOCK'}[radar.mode]):(radar.coop()?'FUSE ':'')+(radar.sensor==='IRST'?'IRST ':'')+(radar.mode==='ACM'?'ACM '+AN[radar.acm]:radar.mode),RX,4.6);
   if(mig)T(sys.mig.hud,RX,5.8);
   if(migSrch&&!nav)drawMigScope(P);

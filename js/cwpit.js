@@ -39,7 +39,7 @@ const PIT={
  'Su-25':{pc:TQ,u:'met',l:'ru',e:2,s:'gun',sc:0},
  'Su-24M':{pc:TQ,u:'met',l:'ru',e:2,s:'hud',sc:'fcr',wide:1},
  'Su-22M4':{pc:TQ,u:'met',l:'ru',e:1,s:'gun',sc:0},
- 'MiG-27K':{pc:TQ,u:'met',l:'ru',e:1,s:'hud',sc:0},
+ 'MiG-27K':{pc:TQ,u:'met',l:'ru',e:1,s:'hud',sc:'tv'},
  'MiG-15':{pc:0x262826,u:'met',l:'ru',e:1,s:'gun',sc:0},
  'MiG-19':{pc:0x262826,u:'met',l:'ru',e:2,s:'gun',sc:'ph'},
  'Yak-38':{pc:TQ,u:'met',l:'ru',e:1,s:'gun',sc:0},
@@ -205,7 +205,7 @@ SET('AJS-37',{gs:'hud',stk:'b8',thr:1,lay:{rwr:[90,92,48],scope:[512,130,112],
   gearH:[860,400],arm:[100,440,200],cau:[300,460,4,1,70,26,['BRAND','HYDR','BRÄNSLE','REV']],txt:[['CI',512,256,10]]},
   con:CON('sv',[['MOTOR RM8B',['START','EBK','REVERS']],'RADIO FR 22','BEVÄPNING / RB',['TRIM',['TIPP','ROLL']]],[['RADAR PS-37',['MOD','AVST','HÖJD']],'ELSYSTEM','CK37 NAVIGATION','BELYSNING / SYRE'])});
 // --- Soviet ---
-const RUC=(e)=>CON('ru',[['РУД / ДВИГАТЕЛЬ',e===2?['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']:['ЗАПУСК','ФОРСАЖ']],'Р-862 / РСБН',['ЗАКРЫЛКИ',['ВЗЛЕТ','ПОСАДКА']],['ВООРУЖЕНИЕ',['ГЛАВН','ВЫБОР','СБРОС']]],[['ЩИТОК АЗС',['ГЕН','АККУМ','ПТ']],'СОИ / РЛС','КИСЛОРОД','ОСВЕЩЕНИЕ']);
+const RUC=(e)=>CON('ru',[['РУД / ДВИГАТЕЛЬ',e===2?['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']:['ЗАПУСК','ФОРСАЖ']],'Р-862 / РСБН',['ЗАКРЫЛКИ',['ВЗЛЕТ','ПОСАДКА']],['ВООРУЖЕНИЕ',['ГЛАВН','ВЫБОР','СБРОС']]],[['ЩИТОК АЗС',['ГЕН','АККУМ','ПТ']],'СОИ / ЛД','КИСЛОРОД','ОСВЕЩЕНИЕ']);
 SET('Su-25',{gs:'asp',stk:'ru',thr:2,lay:{rwr:[90,92,48],
   dial:{ias:[240,110,58],adi:[420,115,72],alt:[600,110,58],aoa:[100,240,42],acc:[240,255,44],hsi:[420,315,72],vvi:[600,255,48],
     rpm:[760,95,44],rpm2:[870,95,44],egt:[760,205,40],egt2:[870,205,40],fuel:[815,330,52],oil:[600,375,34],clk:[960,95,30]},
@@ -221,7 +221,7 @@ SET('Su-22M4',{gs:'hud',stk:'ru',thr:1,lay:{rwr:[90,92,48],
   dial:{ias:[260,110,58],adi:[440,115,74],alt:[620,110,58],aoa:[110,240,42],acc:[260,255,44],hsi:[440,320,72],vvi:[620,255,48],
     rpm:[790,95,48],egt:[910,95,42],noz:[790,210,38],fuel:[870,320,52],oil:[910,205,34],clk:[960,440,26]},
   gearH:[100,390],arm:[200,440,240],cau:[680,430,4,2,70,26,['ПОЖАР','ГИДРО','ОСТАТОК','ГЕН','МАСЛО','КРЫЛО','ШАССИ','ФОНАРЬ']],txt:[['КЛЕН-ПС',440,30,9]]},con:RUC(1)});
-SET('MiG-27K',{gs:'hud',stk:'ru',thr:1,lay:{rwr:[90,92,48],scope:[870,150,96],
+SET('MiG-27K',{gs:'hud',stk:'ru',thr:1,lay:{rwr:[90,92,48],scope:[850,160,112],
   dial:{ias:[250,110,56],adi:[420,115,72],alt:[590,110,56],aoa:[100,240,42],acc:[250,255,44],hsi:[420,320,70],vvi:[590,255,48],
     rpm:[720,330,44],egt:[820,410,38],fuel:[920,360,48],noz:[720,430,34],clk:[960,470,24]},
   gearH:[100,390],arm:[200,440,240],cau:[480,440,2,1,72,26,['ПОЖАР','ГИДРО']],txt:[['КАЙРА ТВ',870,262,9]]},con:RUC(1)});
@@ -294,8 +294,8 @@ const box=(par,w,h,d,m,x,y,z,rx=0)=>{const o=new THREE.Mesh(new THREE.BoxGeometr
 const PW=.88,PH=.44,CW=1024,CH=Math.round(CW*PH/PW),PX=PW/CW;// panel metres, canvas px
 const lx=x=>(x-CW/2)*PX,ly=y=>(CH/2-y)*PX;
 function liveTex(kind,canvas){const o=ck[kind];if(!o._cwT)o._cwT=new Map();if(o._cwT.has(canvas))return o._cwT.get(canvas);
-  const t=new THREE.CanvasTexture(canvas);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;o.tex.push(t);o._cwT.set(canvas,t);return t;}
-const scopeOf=s=>s==='ph'?(typeof phScopeC!=='undefined'?phScopeC:null):s==='fcr'?fcrC:s==='sms'?smsC:null;
+  const t=new THREE.CanvasTexture(canvas);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;if(canvas._cwOwn){t._dirty=false;canvas._cwTex=t;}o.tex.push(t);o._cwT.set(canvas,t);return t;}
+const scopeOf=s=>s==='tv'?(window.KAIRA?window.KAIRA.canvas:null):s==='ph'?(typeof phScopeC!=='undefined'?phScopeC:null):s==='fcr'?fcrC:s==='sms'?smsC:null;
 
 function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group();g.visible=false;root.add(g);
   const pm=LM(S.pc),dk=LM(0x16191b,6),cm=LM(S.cc||S.pc,8),blk=LM(0x0d0f10,4);
@@ -342,6 +342,9 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     const geo=shape==='round'?new THREE.CircleGeometry(r*PX,48):new THREE.PlaneGeometry(2*r*PX,2*r*PX);
     const m=new THREE.MeshBasicMaterial({map:liveTex(kind,canvas),toneMapped:false});const ms=new THREE.Mesh(geo,m);ms.position.set(cxm,cym,.0285);ms.userData.cwFx=0;if(id)ms.userData.screen=id;pp.add(ms);o.faces.push(m);};
   if(L.scope)scr(scopeOf(S.sc),S.sc==='ph'?'round':'sq',L.scope[0],L.scope[1],L.scope[2],S.sc==='ph'?'phscope':'fcr');
+  if(L.scope&&S.sc==='tv'){// the big hooded TV tube: a black rubber visor around the screen, open at the bottom toward the pilot
+    const[x,y,r]=L.scope,cxm=lx(x),cym=ly(y)-.03,hw=r*PX+.03,rub=LM(0x0c0c0d,4);rub.side=THREE.DoubleSide;
+    box(pp,2*hw+.02,.014,.1,rub,cxm,cym+hw,.07);box(pp,.014,2*hw,.1,rub,cxm-hw,cym,.07);box(pp,.014,2*hw,.1,rub,cxm+hw,cym,.07);}
   if(L.m2)scr(scopeOf(S.m2),'sq',L.m2[0],L.m2[1],L.m2[2],S.m2);
   if(L.rwr)scr(rwrC,'round',L.rwr[0],L.rwr[1],L.rwr[2],null);
   // side consoles and sills
@@ -508,7 +511,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   const lowF=P.totalFuel<(P.ac.fuel||3000)*.15,cau=[[lb.fire,P.fire>0||P.hp<25],[lb.hyd,P.hp<45],[lb.low,lowF],[lb.eng,!run]];
   cau.forEach(([s,on],i)=>{const x=bx+214+(i%2)*46,y=by+78+Math.floor(i/2)*34;c.fillStyle=on?(i===0?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(x-21,y-13,42,26);T(s,x,y,s.length>6?7:9,on?'#200':'#7a6a40');});
   // scope / display labels under the screens
-  if(B.L.scope){const[x,y,r]=B.L.scope;T(S.sc==='ph'?(S.l==='ru'?'РЛС':S.l==='zh'?'雷达':'RADAR'):'',x,y+r+18,11,dimInk);}
+  if(B.L.scope){const[x,y,r]=B.L.scope;T(S.sc==='tv'?'КАЙРА-23 ТВ':S.sc==='ph'?(S.l==='ru'?'РЛС':S.l==='zh'?'雷达':'RADAR'):'',x,y+r+18,11,dimInk);}
   if(B.L.rwr)T(B.S.l==='ru'?'СПО':S.l==='zh'?'告警':'RWR',B.L.rwr[0],B.L.rwr[1]+B.L.rwr[2]+15,10,dimInk);
   extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk);}
 
