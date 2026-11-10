@@ -288,3 +288,7 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 ## v253
 - Su-25 front panel rebuilt after the instrument-panel figure (items 1-20): weapon status panel, ПУ СУО, РСБН, ППС, radar altimeter, machmeter, clock, distance counter, 16 warning lamps; real left/right console panels.
 - Main-panel switch plates no longer hidden behind their backing plate (all jets).
+
+## v254
+- Su-25: Klen-PS nose laser designator with no screen — "+" spot and slant range on the HUD, ЛАЗЕР switch / N key, laser bombs and Kh-25ML / Kh-29L ride the spot.
+- Su-25 console: КЛЕН-ПС ЛАЗЕР and СПО-15 «БЕРЁЗА» panels (power / search wired to the warner).
