@@ -97,9 +97,9 @@ function aam(k,base,over,shape,dia,sn,name,ru){if(MSL[k])return;const d=Object.a
   if(d.seek==='IR')IRN.add(k);}
 function addAAMs(){
   // AIM-4 Falcon family (F-106A, and the Swedish Rb 27 / Rb 28 licence rounds on the J 35F): small, no proximity fuze (contact only), poor manoeuvre
-  aam('AIM-4F','AIM-7E',{seek:'SARH',ecc:.08,trk:.4,burn:4,acc:150,mass:68,cd:6.8e-5,maxG:12,gimbal:40*D,fuse:0,contact:1,life:30,N:3,res:.42,rmin:1200,aiR:9000,aiOff:15*D},
+  aam('AIM-4F','AIM-7E',{seek:'SARH',ecc:.08,trk:.22,burn:4,acc:150,mass:68,cd:6.8e-5,maxG:7,gimbal:28*D,fuse:0,contact:1,life:30,N:1.6,res:.14,wob:1,rmin:1200,aiR:9000,aiOff:15*D},
     {L:2.18,R:.084,f:[[.2,.5,.6]]},.168,'4F','Super Falcon · SARH');
-  aam('AIM-4G','AIM-9E',{seek:'IR',trk:.3,ccm:0,burn:4,acc:150,mass:66,cd:7e-5,maxG:12,gimbal:30*D,fuse:0,contact:1,life:30,N:3,res:.38,rmin:1000,irR:8000,front:.05,aiR:7000,aiOff:12*D},
+  aam('AIM-4G','AIM-9E',{seek:'IR',trk:.2,ccm:0,burn:4,acc:150,mass:66,cd:7e-5,maxG:7,gimbal:22*D,fuse:0,contact:1,life:30,N:1.6,res:.12,wob:1,rmin:1000,irR:8000,front:.05,aiR:7000,aiOff:12*D},
     {L:2.06,R:.084,f:[[.2,.5,.6]]},.168,'4G','Super Falcon · IR');
   aam('Rb 27','AIM-4F',{contact:0,fuse:9,mass:119,acc:140,burn:5,life:38,aiR:11000},{L:2.13,R:.084,f:[[.2,.5,.6]]},.168,'R27','HM-55S Falcon · SARH');
   aam('Rb 28','AIM-4G',{contact:0,fuse:7,mass:64,irR:8500},{L:1.98,R:.084,f:[[.2,.5,.6]]},.168,'R28','HM-58 Falcon · IR');

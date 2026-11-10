@@ -1058,6 +1058,8 @@ class Missile{
     if(P&&d.seek!=='IR'&&(this.active||d.seek==='SARH')){const agl=P.y-groundAt(P.x,P.z),rng=this.pos.distanceTo(P),graze=Math.abs(Math.asin(clamp((this.pos.y-P.y)/Math.max(rng,1),-1,1)));
       const mp=clamp(1-agl/220,0,1)*clamp(1-graze/(14*D2R),0,1);
       if(mp>0){this.mpPh=(this.mpPh||rnd(0,6))+dt*rnd(3,7);P.y-=agl*mp*(.55+.6*Math.sin(this.mpPh));P.x+=Math.sin(this.mpPh*1.7)*14*mp;P.z+=Math.cos(this.mpPh*1.3)*14*mp;}}
+    // poor seekers (AIM-4 Falcon): the aim point wanders around the target, scaled with range, so the round often misses
+    if(P&&d.wob){this.wbPh=(this.wbPh||rnd(0,6))+dt*rnd(2,5);const rr=this.pos.distanceTo(P),w=Math.min(60,6+rr*.012);P.x+=Math.sin(this.wbPh*1.3)*w;P.y+=Math.cos(this.wbPh*.9)*w*.7;P.z+=Math.sin(this.wbPh*1.9+1)*w;}
     // seeker gimbal-rate limit: a line-of-sight rate above the head's tracking rate for a quarter second breaks the track
     if(P&&(this.track||d.seek==='SARH')&&(this.active||d.seek==='SARH')){const r=_mr.copy(P).sub(this.pos),vr=_mvr.copy(Vt).sub(this.vel),lr=_mtmp.copy(r).cross(vr).length()/Math.max(r.lengthSq(),1);
       this.slip=lr>d.trk?(this.slip||0)+dt:Math.max(0,(this.slip||0)-dt*2);
@@ -8957,22 +8959,24 @@ const CMPUI={cv:null,cx:null,W:0,H:0,dpr:1,cxw:0,czw:0,mpp:600,img:null,imgKey:'
 
 segSet();setTimeout(()=>{CMPUI.init();$('#menu').dataset.mp=game.mpMode;if(CMPUI.vis())CMPUI.open();},80);
 
+// one failing jet / missile / system must not freeze the whole sim: log it once, kill a faulty missile, and carry on
+const _safeSeen={};function SAFE(fn,o,tag){try{fn();}catch(e){const k=(tag||'sys')+':'+(e&&e.message);if(!_safeSeen[k]){_safeSeen[k]=1;console.error('[safe] '+k,e&&e.stack);}if(o&&tag==='msl'){o.alive=false;try{if(o.mesh)o.mesh.visible=false;}catch(_){}}}}
 function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
   if(SET.fps==='ON'){fpsS.n++;fpsS.t+=tm-last;fpsS.w=Math.max(fpsS.w,tm-last);if(fpsS.t>=500){const el=$('#fpsc');if(el)el.textContent=Math.round(fpsS.n*1000/fpsS.t)+' FPS · worst '+Math.round(fpsS.w)+' ms · res '+Math.round(gfx.scale*100)+'%';fpsS.n=fpsS.t=fpsS.w=0;}}const dt=clamp((tm-last)/1000,0,.05)||.016;last=tm;FR++;
   const live=game.active&&game.running&&!game.paused&&player;const menuEl=$('#menu'),mUp=!menuEl.hidden;
   if(live){const P=player;
     if(P.alive)readControls(dt);else P.trigger=false;
     GCI.tick(dt);
-    for(const j of jets)if(j.ai)j.ai.update(dt);
-    for(const j of jets)ecmUpdate(j,dt);
-    const n=4,h=dt/n;for(let i=0;i<n;i++)for(const j of jets)j.step(h);
-    for(const j of jets){updateGun(j,dt);trkAcc(j,dt);}
-    airCollide(dt);
-    {const ns=Math.max(1,Math.ceil(dt*120-1e-6)),h=dt/ns;for(let s=0;s<ns;s++)for(const m of missiles)if(m.alive)m.update(h);
-      for(const m of missiles)if(m.alive&&m.draw)m.draw();}
+    for(const j of jets)if(j.ai)SAFE(()=>j.ai.update(dt),j,'ai');
+    for(const j of jets)SAFE(()=>ecmUpdate(j,dt),j,'ecm');
+    const n=4,h=dt/n;for(let i=0;i<n;i++)for(const j of jets)SAFE(()=>j.step(h),j,'step');
+    for(const j of jets){SAFE(()=>updateGun(j,dt),j,'gun');SAFE(()=>trkAcc(j,dt),j,'trk');}
+    SAFE(()=>airCollide(dt));
+    {const ns=Math.max(1,Math.ceil(dt*120-1e-6)),h=dt/ns;for(let s=0;s<ns;s++)for(const m of missiles)if(m.alive)SAFE(()=>m.update(h),m,'msl');
+      for(const m of missiles)if(m.alive&&m.draw)SAFE(()=>m.draw(),m,'mdraw');}
     for(let i=missiles.length-1;i>=0;i--)if(!missiles[i].alive)missiles.splice(i,1);
     for(const d of decoys)d.update(dt);for(let i=decoys.length-1;i>=0;i--)if(!decoys[i].alive)decoys.splice(i,1);
-    updateBullets(dt);GND.tick(dt);if(game.scen==='CAMP')CAMP.tick(dt);radar.update(dt);try{IFF.update(dt);}catch(e){}rio.update(dt);DL.tick(dt);nctrTick(dt);cmdsTick(dt);game.pickleCd-=dt;
+    SAFE(()=>updateBullets(dt));SAFE(()=>GND.tick(dt));if(game.scen==='CAMP')SAFE(()=>CAMP.tick(dt));SAFE(()=>radar.update(dt));try{IFF.update(dt);}catch(e){}SAFE(()=>rio.update(dt));SAFE(()=>DL.tick(dt));SAFE(()=>nctrTick(dt));SAFE(()=>cmdsTick(dt));game.pickleCd-=dt;
     const f=P.fwd(_fF);P.fdot.lerp(_fD.copy(f).sub(P.prevF).divideScalar(dt),.25);P.prevF.copy(f);
     smoke.update(dt);glow.update(dt);sfx.engine(P.n*(P.dm.eng>0?(P.cs.st?.35+.65*P.cs.thr:1):.3),P.ab,P.alive&&P.totalFuel>0&&P.dm.eng>0);
     if(net.on){pubT-=dt;if(pubT<=0){net.publish();pubT=1/20;}
