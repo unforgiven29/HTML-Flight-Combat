@@ -9863,7 +9863,7 @@ function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(
 const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&u.nv!=null)return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
 const wrapA=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const hash2=(x,z)=>{const s=Math.sin(x*12.9898+z*78.233)*43758.5453;return s-Math.floor(s);};
-const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D'];
+const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D','Tornado GR.4','F-111F','Su-24M','AJS-37','JH-7','Super Etendard','A-4E'];
 const LCODES=['1688','1511','1111','1234','2222'];
 
 /* ---------------- stores: pods and the Maverick family ---------------- */
