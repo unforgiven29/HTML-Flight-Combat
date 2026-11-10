@@ -1044,7 +1044,7 @@ const ECM_MODES=['OFF','STBY','AUTO','NOISE','DECM'];
 const BT0=18000,BT_REF=42*NM,BTM0=3200;
 const ecmFit=(type,era)=>{const t=ECM_FIT[type];return t?t[era]||t.cold:null;};
 // the wingtip pods only fit with both wingtip rails empty
-const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.tips||(!j.load['1']&&!j.load['10']));
+const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.tips||(!j.load['1']&&!j.load['10']))&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s]&&AGW[s].k==='ecm'));// v233: pod jammers need their pod on a station
 // Burn-through. A jammer's power at the radar falls with R^2 (one way) while the radar's own skin echo falls with R^4 (there and back), so inside
 // R_bt = k * sqrt(P_radar * RCS / ERP_jammer) the target shows through the noise. For a given receiver P_radar scales with R0^4, so R_bt scales with R0^2.
 // Deception needs far less J/S than noise, but the true skin echo beats it inside roughly half the noise burn-through range.

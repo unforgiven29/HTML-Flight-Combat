@@ -194,11 +194,13 @@ SET('Su-25',{gs:'asp',stk:'ru',thr:2,lay:{rwr:[90,92,48],
   dial:{ias:[240,110,58],adi:[420,115,72],alt:[600,110,58],aoa:[100,240,42],acc:[240,255,44],hsi:[420,315,72],vvi:[600,255,48],
     rpm:[760,95,44],rpm2:[870,95,44],egt:[760,205,40],egt2:[870,205,40],fuel:[815,330,52],oil:[600,375,34],clk:[960,95,30]},
   gearH:[100,390],arm:[200,440,240],cau:[700,420,4,2,70,26,['ПОЖАР Л','ПОЖАР П','ГИДРО','ОСТАТОК','ГЕН','МАСЛО','ШАССИ','ФОНАРЬ']],txt:[['АСП-17',420,30,9]]},con:RUC(2)});
-SET('Su-24M',{gs:'hud',stk:'ru',thr:2,lay:{rwr:[90,92,48],scope:[880,140,100],
-  dial:{ias:[230,110,56],adi:[400,115,70],alt:[570,110,56],aoa:[90,240,40],acc:[230,250,44],hsi:[400,310,68],vvi:[570,250,46],
-    rpm:[700,330,40],rpm2:[790,330,40],egt:[700,420,36],egt2:[790,420,36],fuel:[900,360,50],clk:[960,470,24]},
-  gearH:[90,390],arm:[160,440,240],cau:[440,430,3,2,72,26,['ПОЖАР','ГИДРО','ОСТАТОК','ГЕН','СТРЕЛОВ','ПРНК']],txt:[['ОРИОН-А',880,256,9],['СТРЕЛОВИДНОСТЬ',570,330,8]]},
-  con:CON('ru',[['РУД ×2 / АЛ-21Ф',['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']],['КРЫЛО',['16°','45°','69°']],'Р-862',['ЗАКРЫЛКИ',['ВЗЛЕТ','ПОСАД']]],[['ЩИТОК АЗС',['ГЕН','АККУМ','ПТ']],'ПНС-24М','РЕЛЬЕФ','ОСВЕЩЕНИЕ'])});
+SET('Su-24M',{gs:'hood',stk:'ru',thr:2,sbs:1,sc:0,lay:{rwr:[560,96,40],
+  dial:{adi:[110,175,74],hsi:[110,365,74],ias:[262,250,48],alt:[262,385,52],aoa:[262,135,40],
+    vbar_fuel:[400,345,95],vbar_rpm:[448,345,95],vbar_egt:[496,345,95],adi2:[600,250,58],vvi:[600,380,46],acc:[700,380,40],rpm:[700,265,40],rpm2:[790,265,40],egt:[790,380,40],fuel:[890,380,44],clk:[960,470,24]},
+  plates:[[330,8,280,150,'ПУЛЬТ ПРИЦЕЛА',['РЕЖИМ','ЯРК','ДАЛЬН','СЕТКА']],[160,8,160,70,'ПОДВЕСКИ',['ЛЕВ','ЦЕНТР','ПРАВ']]],
+  gearH:[960,180],arm:[650,440,220],cau:[650,10,6,4,60,26,['ПОЖАР Л','ПОЖАР П','ГИДРО 1','ГИДРО 2','ОСТАТОК','ГЕН Л','ГЕН П','СТРЕЛОВ','ПРНК','ЗАКРЫЛ','ШАССИ','ФОНАРЬ','ОПАСН ВЫС','РАЗВОРОТ','МАСЛО Л','МАСЛО П','СПО','ТОПЛ','АВТОМАТ','ВОЗДУХ','КИСЛОР','ЛАМПЫ','ТОРМОЗ','РЕЗЕРВ']],
+  txt:[['ТОПЛИВО',448,236,10],['КРЫЛО',890,320,9]]},
+  con:CON('ru',[['РУД ×2 / АЛ-21Ф-3',['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']],['КРЫЛО',['16°','35°','45°','69°']],'Р-862',['ЗАКРЫЛКИ',['ВЗЛЕТ','ПОСАД']]],[['ЩИТОК АЗС',['ГЕН','АККУМ','ПТ']],'ПНС-24М','РЕЛЬЕФ','ОСВЕЩЕНИЕ'])});
 SET('Su-22M4',{gs:'hud',stk:'ru',thr:1,lay:{rwr:[90,92,48],
   dial:{ias:[260,110,58],adi:[440,115,74],alt:[620,110,58],aoa:[110,240,42],acc:[260,255,44],hsi:[440,320,72],vvi:[620,255,48],
     rpm:[790,95,48],egt:[910,95,42],noz:[790,210,38],fuel:[870,320,52],oil:[910,205,34],clk:[960,440,26]},
@@ -256,6 +258,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   // period gunsight bodies (the glass and symbology stay as above)
   if(S.gs==='a4'){box(g,.15,.1,.18,LM(0x1b1d1e),0,-.2,-.82);box(g,.11,.05,.08,LM(0x26292b),0,-.15,-.76);box(g,.04,.03,.03,LM(0x3a3d40),.06,-.13,-.76);}
   else if(S.gs==='asp'){box(g,.13,.13,.2,LM(0x22252a),0,-.19,-.83);box(g,.09,.06,.1,LM(0x2c3036),0,-.13,-.75);const ring=new THREE.Mesh(new THREE.TorusGeometry(.03,.006,8,24),LM(0x111));ring.position.set(0,-.17,-.59);g.add(ring);}
+  else if(S.gs==='hood'){box(g,.22,.1,.24,LM(0x111214,8),0,-.21,-.8);const hd=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.26,20,1,true,0,Math.PI),LM(0x1a1b1c,6));hd.rotation.z=Math.PI/2;hd.rotation.y=Math.PI/2;hd.position.set(0,-.2,-.75);hd.material.side=THREE.DoubleSide;g.add(hd);}
   else if(S.gs==='opt'){box(g,.12,.07,.14,LM(0x17191a),0,-.215,-.82);box(g,.06,.04,.05,LM(0x2a2d30),-.07,-.21,-.77);}
   gl.updateMatrixWorld(true);
   const glass=[[-gw/2,gh/2],[gw/2,gh/2],[gw/2,-gh/2],[-gw/2,-gh/2]].map(([x,y])=>new V3(x,y,0).applyMatrix4(gl.matrixWorld));
@@ -266,14 +269,15 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   const faceM=new THREE.MeshBasicMaterial({map:tx,toneMapped:false});const fm=new THREE.Mesh(new THREE.PlaneGeometry(PW,PH),faceM);fm.position.set(0,-.03,0);pp.add(fm);o.faces.push(faceM);
   const L=layout(S);
   {const bz=LM(0x101214,40),gls=new THREE.MeshPhongMaterial({color:0xffffff,transparent:true,opacity:.1,shininess:120,specular:0x888888,depthWrite:false});
-    const ring=(x,y,r,sq)=>{const xm=lx(x),ym=ly(y)-.03,R=r*PX;
+    const ring=(x,y,r,sq,wd)=>{const xm=lx(x),ym=ly(y)-.03,R=r*PX;
+      if(sq&&wd){const Wm=wd*PX/2;box(pp,2*Wm+.012,.008,.012,bz,xm,ym+R+.004,.006);box(pp,2*Wm+.012,.008,.012,bz,xm,ym-R-.004,.006);box(pp,.008,2*R+.012,.012,bz,xm-Wm-.004,ym,.006);box(pp,.008,2*R+.012,.012,bz,xm+Wm+.004,ym,.006);return;}
       if(sq){[[0,R+.004,2*R+.012,.008],[0,-R-.004,2*R+.012,.008]].forEach(([dx,dy,w,h])=>box(pp,w,h,.012,bz,xm+dx,ym+dy,.006));[[-R-.004,0],[R+.004,0]].forEach(([dx])=>box(pp,.008,2*R+.012,.012,bz,xm+dx,ym,.006));return;}
       const t=new THREE.Mesh(new THREE.TorusGeometry(R+.0035,.0045,8,40),bz);t.position.set(xm,ym,.004);pp.add(t);
       const cup=new THREE.Mesh(new THREE.CylinderGeometry(R+.006,R+.006,.012,36,1,true),bz);cup.rotation.x=Math.PI/2;cup.position.set(xm,ym,.002);pp.add(cup);
       const gl=new THREE.Mesh(new THREE.CircleGeometry(R+.001,36),gls);gl.position.set(xm,ym,.0075);pp.add(gl);
       for(const a of[.8,3.9]){const sc=new THREE.Mesh(new THREE.CylinderGeometry(.0028,.0028,.004,8),LM(0x3a3d40,60));sc.rotation.x=Math.PI/2;sc.position.set(xm+Math.cos(a)*(R+.012),ym+Math.sin(a)*(R+.012),.004);pp.add(sc);}};
     for(const k of Object.keys(L.dial||{})){const[x,y,r]=L.dial[k],t=k.replace(/_.*$/,'');if(t==='lamp'){const lm=new THREE.Mesh(new THREE.SphereGeometry(r*PX,12,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshPhongMaterial({color:0x661a14,transparent:true,opacity:.35,shininess:90}));lm.rotation.x=Math.PI/2;lm.position.set(lx(x),ly(y)-.03,.0);pp.add(lm);continue;}
-      ring(x,y,t==='tapeS'||t==='tapeA'?r:r+5,t==='tapeS'||t==='tapeA');}
+      if(t==='vbar'){const w=Math.max(26,r*.34)+14;ring(x,y,r+8,true,w);continue;}ring(x,y,t==='tapeS'||t==='tapeA'?r:r+5,t==='tapeS'||t==='tapeA');}
     // switch plates, annunciators, gear handle get raised frames
     for(const pl of L.plates||[]){const[x,y,w,h]=pl;box(pp,w*PX,h*PX,.006,LM(0x1a1c1e,10),lx(x+w/2),ly(y+h/2)-.03,-.001);}
     if(L.gearH){const[x,y]=L.gearH;const hd=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.02,16),LM(S.l==='ru'?0xc02a1a:0xe8e8e8,40));hd.rotation.x=Math.PI/2;hd.position.set(lx(x),ly(y+44)-.03,.02);pp.add(hd);}}
@@ -285,7 +289,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   if(L.m2)scr(scopeOf(S.m2),'sq',L.m2[0],L.m2[1],L.m2[2],S.m2);
   if(L.rwr)scr(rwrC,'round',L.rwr[0],L.rwr[1],L.rwr[2],null);
   // side consoles and sills
-  [-1,1].forEach(sd=>{box(g,.2,.09,.95,cm,sd*.43,-.66,-.16);box(g,.05,.16,1.3,dk,sd*.55,-.48,-.2);
+  [-1,1].forEach(sd=>{if(S.sbs&&sd>0)return;box(g,.2,.09,.95,cm,sd*.43,-.66,-.16);box(g,.05,.16,1.3,dk,sd*.55,-.48,-.2);
     if(!S.con)for(let i=0;i<4;i++)box(g,.14,.006,.16,LM(0x24282a),sd*.43,-.612,-.5+i*.2);});
   box(g,.3,.25,.3,dk,0,-.98,-.55);// pedestal under the panel
   // console tops: painted switch panels per jet  S.con={L:[[title,[switches]],..],R:[..]}
@@ -294,9 +298,43 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     list.forEach(([ti,sw],i)=>{const y=i*ph;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(8,y+6,240,ph-12);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=2;x.strokeRect(8,y+6,240,ph-12);
       x.font='bold 15px Arial';x.textAlign='center';x.fillStyle='#e8e8e0';x.fillText(ti,128,y+26);
       (sw||[]).forEach((w,j)=>{const cols=Math.min(3,sw.length),sx=40+(j%cols)*88,sy=y+60+Math.floor(j/cols)*54;x.fillStyle='#4a4a4a';x.beginPath();x.arc(sx,sy,10,0,7);x.fill();x.fillStyle='#ddd';x.fillRect(sx-3,sy-20,6,18);x.font='11px Arial';x.fillStyle='#c8c8c0';x.fillText(w,sx,sy+24);});});
-    const t=new THREE.CanvasTexture(cc);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.19,.94),m);pl.rotation.x=-Math.PI/2;pl.position.set((si?1:-1)*.43,-.613,-.16);g.add(pl);
+    const t=new THREE.CanvasTexture(cc);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.19,.94),m);pl.rotation.x=-Math.PI/2;pl.position.set((si?1:-1)*.43+(si&&S.sbs?.78:0),-.613,-.16);g.add(pl);
     // a few real 3D toggles so the console reads as hardware
-    list.forEach((_,i)=>{for(let j=0;j<2;j++){const tg=box(g,.006,.022,.006,LM(0xcccccc,40),(si?1:-1)*(.43-.05+j*.05),-.6,-.16-.47+(i+.5)*(.94/list.length)+.02,-.4);}});});
+    list.forEach((_,i)=>{for(let j=0;j<2;j++){const tg=box(g,.006,.022,.006,LM(0xcccccc,40),(si?1:-1)*(.43-.05+j*.05)+(si&&S.sbs?.78:0),-.6,-.16-.47+(i+.5)*(.94/list.length)+.02,-.4);}});});
+  // side-by-side: the navigator / WSO station to the right — panel continuation, hooded Orion-A / PNS-24 radar display turned to his seat,
+  // the pedestal with the PNS-24M keyboard between the seats, his stick, his seat with him in it, and the centre canopy frame
+  if(S.sbs){const W=new THREE.Group();W.position.set(.78,0,0);g.add(W);
+    const wp=new THREE.Group();wp.position.set(-.02,-.47,-.68);wp.rotation.x=-.28;W.add(wp);box(wp,.7,.5,.03,pm,0,-.03,-.018);
+    const wcv=document.createElement('canvas');wcv.width=512;wcv.height=360;const wc=wcv.getContext('2d');wc.fillStyle='#'+S.pc.toString(16).padStart(6,'0');wc.fillRect(0,0,512,360);
+    const dl=(x,y,r,t)=>{wc.fillStyle='#050606';wc.beginPath();wc.arc(x,y,r+5,0,7);wc.fill();wc.fillStyle='#0e1212';wc.beginPath();wc.arc(x,y,r,0,7);wc.fill();wc.strokeStyle='#ddd';wc.lineWidth=2;for(let i=0;i<12;i++){const a=i*Math.PI/6;wc.beginPath();wc.moveTo(Math.cos(a)*r*.8+x,Math.sin(a)*r*.8+y);wc.lineTo(Math.cos(a)*r*.95+x,Math.sin(a)*r*.95+y);wc.stroke();}wc.fillStyle='#bbb';wc.font='bold 11px Arial';wc.textAlign='center';wc.fillText(t,x,y+r*.45);};
+    dl(60,280,40,'ВЫСОТА');dl(150,290,36,'СКОРОСТЬ');dl(452,280,40,'ПНП');dl(452,190,34,'ЧАСЫ');
+    wc.fillStyle='rgba(0,0,0,.35)';wc.fillRect(20,20,180,90);wc.fillStyle='#ddd';wc.font='bold 13px Arial';wc.fillText('ПУЛЬТ ОРИОН-А',110,40);
+    for(let i=0;i<6;i++){wc.fillStyle=['#2a6','#d43','#da3','#2a6','#39d','#d43'][i];wc.beginPath();wc.arc(40+i*28,75,9,0,7);wc.fill();}
+    const wt=new THREE.CanvasTexture(wcv),wm=new THREE.MeshBasicMaterial({map:wt,toneMapped:false});o.faces.push(wm);const wf=new THREE.Mesh(new THREE.PlaneGeometry(.68,.48),wm);wf.position.set(0,-.03,0);wp.add(wf);
+    // the hooded radar display: a long black rubber visor, screen at its far end, turned toward the WSO's eye
+    const hood=new THREE.Group();hood.position.set(.02,-.27,-.6);hood.rotation.set(-.2,0,0);W.add(hood);const rub=LM(0x0c0c0d,4);rub.side=THREE.DoubleSide;
+    box(hood,.3,.012,.34,rub,0,.13,0);box(hood,.012,.26,.34,rub,-.15,0,0);box(hood,.012,.26,.34,rub,.15,0,0);box(hood,.3,.012,.14,rub,0,-.13,-.1);
+    for(let i=0;i<4;i++){const z=-.12+i*.08;box(hood,.32,.018,.018,rub,0,.135,z);box(hood,.018,.27,.018,rub,-.155,0,z);box(hood,.018,.27,.018,rub,.155,0,z);}
+    const sm2=new THREE.MeshBasicMaterial({map:liveTex(kind,fcrC),toneMapped:false});o.faces.push(sm2);const scn=new THREE.Mesh(new THREE.PlaneGeometry(.27,.23),sm2);scn.position.set(0,0,-.17);scn.userData.screen='fcr';hood.add(scn);
+    // pedestal between the seats with the PNS-24M navigation keyboard
+    const kcv=document.createElement('canvas');kcv.width=256;kcv.height=512;const kc=kcv.getContext('2d');kc.fillStyle='#'+S.pc.toString(16).padStart(6,'0');kc.fillRect(0,0,256,512);
+    kc.fillStyle='#111';kc.fillRect(30,30,196,200);for(let r=0;r<5;r++)for(let q=0;q<4;q++){kc.fillStyle='#d8d8d0';kc.fillRect(40+q*46,42+r*36,38,28);kc.fillStyle='#222';kc.font='bold 14px Arial';kc.textAlign='center';kc.fillText(String((r*4+q)%10),59+q*46,61+r*36);}
+    kc.fillStyle='#000';kc.fillRect(30,250,196,40);kc.fillStyle='#ff7a30';kc.font='bold 20px monospace';kc.fillText('ПНС 24М  0451',128,277);
+    for(let i=0;i<6;i++){kc.fillStyle='#c33';kc.fillRect(40+(i%3)*64,320+Math.floor(i/3)*70,44,40);}
+    const km=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(kcv),toneMapped:false});o.faces.push(km);const kp=new THREE.Mesh(new THREE.PlaneGeometry(.2,.4),km);kp.rotation.x=-1.1;kp.position.set(-.39,-.66,-.5);W.add(kp);
+    box(W,.22,.3,.42,pm,-.39,-.83,-.45);
+    // WSO stick and throttle-less side, his seat and him
+    const ws=new THREE.Group();ws.position.set(0,-.95,-.28);W.add(ws);box(ws,.025,.33,.025,LM(0x9aa3a5,30),0,.17,0);box(ws,.045,.1,.05,LM(0xb8bfc0,30),0,.37,0,-.2);box(ws,.014,.02,.014,LM(0xc02020),.0,.43,.01);
+    const seat=LM(0x2c3a46,8);box(W,.5,.1,.5,LM(0x9a2a2a,10),0,-1.0,.25);box(W,.5,.75,.12,seat,0,-.6,.55);box(W,.36,.2,.1,LM(0x7a2222,10),0,-.18,.52);
+    const suit=LM(0x4d5a3f,12),hel=LM(0xd8d8d0,40);
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(.17,.19,.55,12),suit);body.position.set(0,-.6,.38);W.add(body);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),hel);head.position.set(0,-.18,.36);W.add(head);
+    const vis=new THREE.Mesh(new THREE.SphereGeometry(.132,16,12,-Math.PI*.35,Math.PI*.7,Math.PI*.35,Math.PI*.3),LM(0x202a30,90));vis.position.copy(head.position);W.add(vis);
+    for(const sd of[-1,1]){const arm=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.42,8),suit);arm.position.set(sd*.2,-.62,.18);arm.rotation.x=1.1;W.add(arm);}
+    // canopy: the centre frame between the two hatches
+    box(g,.05,.04,1.6,LM(0x2c3236,20),.39,.2,-.2);box(g,.03,.36,.03,LM(0x2c3236,20),.39,.02,-.95);
+    // right console for the WSO
+    box(W,.2,.09,.95,cm,.43,-.66,-.16);}
   // own stick and throttle; they copy the borrowed ones' motion each frame
   const stkG=new THREE.Group(),thrG=new THREE.Group();g.add(stkG);g.add(thrG);const sm=LM(0x1a1a1a,30),gm=LM(0x2b2b2b,20),bt=LM(0xb02020,30);
   const st=S.stk||'b8';
@@ -409,6 +447,14 @@ function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb
     else if(t==='map')dial(k,r=>{c.fillStyle='#1d2a1a';c.beginPath();c.arc(0,0,r,0,7);c.fill();c.save();c.rotate(-(P.hdg||0)*D2R);c.strokeStyle='rgba(160,190,120,.35)';c.lineWidth=1;for(let i=-4;i<=4;i++){c.beginPath();c.moveTo(i*r/4,-r);c.lineTo(i*r/4,r);c.moveTo(-r,i*r/4);c.lineTo(r,i*r/4);c.stroke();}
       try{for(const j of jets){if(j===P||!j.alive)continue;const dx=(j.pos.x-P.pos.x)/20000*r,dz=(j.pos.z-P.pos.z)/20000*r;if(dx*dx+dz*dz>r*r)continue;c.fillStyle=j.side===P.side?'#6af':'#f55';c.fillRect(dx-3,dz-3,6,6);}}catch(e){}
       c.restore();c.fillStyle='#ffe060';c.beginPath();c.moveTo(0,-9);c.lineTo(-6,7);c.lineTo(6,7);c.closePath();c.fill();lab(r,S.l==='ru'?'КАРТА':S.l==='fr'?'CARTE':S.l==='sv'?'KARTA':S.l==='zh'?'地图':'MAP',.8);});
+    else if(t==='vbar'){const[x,y,r]=L.dial[k],w=Math.max(26,r*.34),kind=k.split('_')[1];const v=kind==='fuel'?clamp((P.totalFuel||0)/Math.max(1,(P.ac.fuel||3000)+(P.ac.tank||0)),0,1):kind==='rpm'?(run?n/1.1:0):clamp(run?.25+n*.55+ab*.15:0,0,1);
+      const col=kind==='fuel'?'#e8c040':kind==='rpm'?'#5fa8e8':'#e89040';c.fillStyle='#050606';c.fillRect(x-w/2-6,y-r-6,w+12,2*r+12);c.strokeStyle=col;c.lineWidth=3;c.strokeRect(x-w/2-4,y-r-4,w+8,2*r+8);
+      c.fillStyle='#101214';c.fillRect(x-w/2,y-r,w,2*r);for(let i=0;i<=10;i++){c.fillStyle=ink;c.fillRect(x-w/2,y+r-i*r/5,i%5?6:12,2);}
+      const g2=c.createLinearGradient(0,y+r,0,y+r-2*r*v);g2.addColorStop(0,col);g2.addColorStop(1,'#fff8');c.fillStyle=g2;c.fillRect(x-w/2+8,y+r-2*r*v,w-12,2*r*v);
+      T(kind==='fuel'?'Т':kind==='rpm'?'ОБ':'Т°',x,y+r+16,10,dimInk);}
+    else if(t==='adi2')dial(k,r=>{c.save();c.beginPath();c.arc(0,0,r,0,7);c.clip();c.rotate(-(P.bank||0));const po=(P.pitch||0)*R2D*r/40;
+      for(let i=-12;i<12;i++){c.fillStyle=i%2?'#d9d2b8':'#222';c.fillRect(-r*1.5,po+i*r*.18,r*3,r*.18);}c.restore();
+      c.strokeStyle='#ff9020';c.lineWidth=4;c.beginPath();c.moveTo(-r*.6,0);c.lineTo(r*.6,0);c.stroke();lab(r,'ИКВ',.82);});
     else if(t==='trim')gauge(k,.5,ru?'ТРИМ':'TRIM');
     else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
   // sub-panels with switches: [x,y,w,h,title,[switch labels]]
