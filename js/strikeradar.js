@@ -17,6 +17,7 @@ const me=P=>P&&CFG[P.type];
 const gOnly=P=>me(P)&&CFG[P.type].aa===0;
 // active: ground-only sets always show the ground picture; the others when an A/G store is selected (default rule)
 {const _a=AGR.active;AGR.active=function(){const P=player;
+  if(P&&P.ac&&P.ac.noRdr&&!P.ac.tvScope)return false;
   if(gOnly(P))return !!(P.alive&&game.active&&radar.on()&&radar.sensor==='RDR');
   return _a.call(this);};}
 // air targets: none for the ground-only sets, a short ranging limit for the others when the A/G picture is not up
@@ -28,5 +29,5 @@ const gOnly=P=>me(P)&&CFG[P.type].aa===0;
   return _d.apply(this,arguments);};}
 // the phantom-style scope sits in phScopeC: draw the ground picture there and use the phantom scope geometry
 {const _g=AGR.geo;AGR.geo=function(P){return P&&me(P)&&CFG[P.type].ph?{x0:62,x1:298,y0:58,y1:298}:_g.call(this,P);};}
-{const _p=drawPhScope;drawPhScope=function(P){if(P&&me(P)&&CFG[P.type].ph&&AGR.active()){AGR.drawPh(P);return;}return _p(P);};}
+{const _p=drawPhScope;drawPhScope=function(P){if(P&&P.ac&&P.ac.noRdr&&!P.ac.tvScope){_p(P);const c=phScopeC.getContext('2d');c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.fillStyle='#010604';c.fillRect(0,0,360,360);c.fillStyle='#8dffb4';c.globalAlpha=.5;c.font='700 15px "B612 Mono",monospace';c.textAlign='center';c.textBaseline='middle';c.fillText('NO RADAR',180,180);c.globalAlpha=1;return;}if(P&&me(P)&&CFG[P.type].ph&&AGR.active()){AGR.drawPh(P);return;}return _p(P);};}
 })();

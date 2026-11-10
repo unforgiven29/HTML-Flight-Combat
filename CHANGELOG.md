@@ -281,3 +281,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v251
 - Air-to-ground radars for the strike jets (shared ground-map radar with air-to-ground ranging): Tornado GR.4, F-111F and Su-24M are ground-only (no air targets, designate says A/G ONLY); AJS-37, JH-7, Super Etendard and A-4E show the ground picture with a ground store selected and act as a short-range air ranging radar otherwise (10 / 15 / 12 / 9 km).
+
+## v252
+- A/G radar picture and scope removed from radarless jets (noRdr); phantom-style scope shows NO RADAR.
