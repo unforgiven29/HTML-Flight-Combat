@@ -738,11 +738,11 @@ addJet({id:'F-86F',src:'F-4E',side:'BLUE',name:'F-86F Sabre',call:'SABRE',nctr:'
   camp:{cold:{0:['CAP','ESC']}}});
 
 // ---- F-8E ----
-addJet({id:'F-8E',src:'F-4E',side:'BLUE',name:'F-8E Crusader',call:'CRUSADER',nctr:'F-8',foe:'MiG-21',eng:'J57-P-20A',rwr:'ALR-45/50',cv:true,app:145,
+addJet({id:'F-8E',src:'F-4E',side:'BLUE',name:'F-8E Crusader',call:'CRUSADER',nctr:'F-8',foe:'MiG-21',eng:'J57-P-20A',irstn:'ALR-23 IRST',rwr:'ALR-45/50',cv:true,app:145,
   role:'US NAVY · LAST OF THE GUNFIGHTERS · 4× Mk 12 · APQ-94 · AIM-9D',stall:{s:.3,twin:0},
   ac:Object.assign({},imp,{name:'F-8E Crusader',model:makeF8,st:F8ST,empty:9040,fuel:4100,tank:0,S:34.8,CLa:3.8,cd0:.0185,k:.14,mil:47600,ab:80100,spool:4,abLight:.9,
     clt:clt(3.8,1.22,22,.04),cdm:sup(.03,.9),dW:12500,tkG:[5,6],dep:{a:24,rock:1.1,spin:2.8},ff:[.15,1.3,5.2],gLim:6.4,aoaLim:22,roll:3.8,fbw:false,noLimiter:true,adv:.3,
-    rcs:5,irs:1.1,pit:'phantom',eye:eyeOf(-5.0,.8),radar:R('APQ-94',15*NM,[5,10,20],'NM',.1),irst:false,pulse:true,
+    rcs:5,irs:1.1,pit:'phantom',eye:eyeOf(-5.0,.8),radar:R('APQ-94',22*NM,[20,40,60],'NM',.1),irst:true,pulse:true,
     gun:G_('4× Mk 12',67,840,10,576,.003),keepJ:[],rwr:'F8',spo:4,tankName:'—',mcap:1.8}),
   stn:{1:US_IR_OLD,2:US_IR_OLD,3:US_IR_OLD,4:US_IR_OLD,5:['Mk-82','Mk-83','Mk-84','LAU-10'],6:['Mk-82','Mk-83','Mk-84','LAU-10']},
   load:{cold:{1:'AIM-9D',2:'AIM-9D',3:'AIM-9D',4:'AIM-9D'},strike:{1:'AIM-9D',3:'AIM-9D',5:'Mk-83',6:'Mk-83'}},
