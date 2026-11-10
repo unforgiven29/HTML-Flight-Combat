@@ -261,3 +261,8 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v246
 - Cockpit performance: A-7D, F-8E and Mirage 2000 cockpits no longer re-upload every panel texture each frame (only gauges that actually changed). Texture uploads/sec cut about 4-5x; redraws gated on quantised state, smaller gauge canvases, invisible hit-boxes skipped by the renderer.
+
+## v247
+- Mirage 2000C: new RDI radar display (VTB) with PPI and B-scope, ranges 10-320 NM, HFR/ENT/BFR PRF, V/inverted-V contacts with closing Mach, bar marks, TDC altitudes, P/SIL/B status, PSID/PSIC data line, close-combat labels (BORE/VERT/BAH/BA2).
+- Mirage 2000C: new SERVAL (VCM) warner: category glyphs (airborne/ground/missile) with three-letter codes, critical vs low-threat zones, 8 threats + 2 launch warnings, PCM indicator.
+- Fixed the Mirage PRF knob labels (HFR / ENT / BFR) and added the 160 and 320 NM ranges to the range knob.
