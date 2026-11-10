@@ -30,7 +30,7 @@ const isMine=P=>P&&P.type===ID;
 const E0=P=>P.eng&&!P.eng.done?P.eng.e[0]:null;
 const running=P=>{const e=E0(P);return e?e.lit:P.totalFuel>0&&!(P.dm&&P.dm.eng<=0);};
 const rpm=P=>{const e=E0(P);return e?e.rpm:running(P)?58+42*clamp(P.n||0,0,1.02):0;};
-const tot=P=>{const e=E0(P);return e?e.egt*700:running(P)?380+330*clamp(P.n||0,0,1):20;};
+const tot=P=>{const e=E0(P);return e?e.egt*700:window.ENGSYS&&window.ENGSYS.on?ENGSYS.egt(P,0):running(P)?380+330*clamp(P.n||0,0,1):20;};
 const powered=P=>window.START&&P.eng?START.powered(P):running(P);
 const LB=2.2046;
 const fuelLb=P=>(P.totalFuel||0)*LB;
@@ -126,10 +126,10 @@ const F={
    T(c,'% RPM',0,R*.3,13,DIM);c.save();c.translate(0,-R*.38);c.beginPath();c.arc(0,0,R*.22,0,7);c.fillStyle='#161718';c.fill();c.strokeStyle=INK;c.lineWidth=1.2;
    for(let i=0;i<10;i++){const q=(i*36-90)*D2R;c.beginPath();c.moveTo(Math.cos(q)*R*.15,Math.sin(q)*R*.15);c.lineTo(Math.cos(q)*R*.21,Math.sin(q)*R*.21);c.stroke();}
    c.rotate((r%10)*36*D2R);c.fillStyle=INK;c.fillRect(-1.5,-R*.2,3,R*.2);c.restore();needle(c,R,-150+300*clamp(r/110,0,1));},
- oilp:(c,P)=>{const p=running(P)?(rpm(P)<70?20+rpm(P)*.25:38+(P.n||0)*10):0;scale(c,R,-130,130,10,2,[0,20,40,60,80,100],.64,18);arc(c,R*.9,-130+260*.4,-130+260*.55,'#3c3');T(c,'OIL',0,R*.36,14,DIM);T(c,'PSI',0,R*.52,12,DIM);needle(c,R,-130+260*p/100);},
+ oilp:(c,P)=>{const p=window.ENGSYS&&window.ENGSYS.on?ENGSYS.oilP(P,0):running(P)?(rpm(P)<70?20+rpm(P)*.25:38+(P.n||0)*10):0;scale(c,R,-130,130,10,2,[0,20,40,60,80,100],.64,18);arc(c,R*.9,-130+260*.4,-130+260*.55,'#3c3');T(c,'OIL',0,R*.36,14,DIM);T(c,'PSI',0,R*.52,12,DIM);needle(c,R,-130+260*p/100);},
  oilq:(c,P)=>{c.fillStyle='#262624';c.beginPath();c.arc(0,0,R*.98,0,7);c.fill();scale(c,R,-90,90,8,2,['E','1/4','1/2','3/4','F'],.62,15);T(c,'OIL QTY',0,R*.36,14,DIM);needle(c,R,-90+180*(sv('oilq',.82)));},
  // 36 · hydraulic pressure, PC-1 / PC-2 pointers
- hyd:(c,P)=>{const p=k=>running(P)?(rpm(P)>40?.75+.008*Math.sin(now()*2+k):rpm(P)/53):0;scale(c,R,-140,140,8,2,[0,1,2,3,4],.62,20);T(c,'HYD PRESS',0,R*.36,12,DIM);T(c,'PSI × 1000',0,R*.52,10,DIM);
+ hyd:(c,P)=>{const p=k=>window.ENGSYS&&window.ENGSYS.on?ENGSYS.hydN(P,k===2?'B':'A')*.75:running(P)?(rpm(P)>40?.75+.008*Math.sin(now()*2+k):rpm(P)/53):0;scale(c,R,-140,140,8,2,[0,1,2,3,4],.62,20);T(c,'HYD PRESS',0,R*.36,12,DIM);T(c,'PSI × 1000',0,R*.52,10,DIM);
    needle(c,R,-140+280*clamp(p(1)*.99,0,1),.8,6,'#e8e8e0');needle(c,R,-140+280*clamp(p(2),0,1),.86,4,'#ffb21a');},
  lox:(c,P)=>{scale(c,R,-130,130,10,2,[0,2,4,6,8,10],.64,18);T(c,'LIQUID',0,R*.32,12,DIM);T(c,'OXYGEN',0,R*.46,12,DIM);T(c,'LITERS',0,R*.6,10,DIM);
    P._lox=(P._lox==null?9.2:P._lox)-(sv('o2',1)?.0006:0);needle(c,R,-130+260*clamp((lampTest>now()?0:P._lox)/10,0,1));},

@@ -1,5 +1,6 @@
 
 "use strict";
+window.ENGSYS=window.ENGSYS||{on:false,v:(P,k,i,fb)=>fb,lamp:()=>false};   // replaced by js/engsys.js
 /* ============ constants & helpers ============ */
 /* ============ v202 perf core ============
    $ caches '#id' lookups (the frame loop asks for #menu several times a frame); a cached node is re-queried if it left the document. */
@@ -3048,7 +3049,7 @@ function drawViper(){const P=player;if(!P)return;const c=k=>VG[k].getContext('2d
   vdial(c('rpm'),{v:run?64+36*P.n:30*P.n,min:0,max:110,a0:-150,a1:150,major:10,minor:2,fmt:v=>v%20?'':v/10,lbl:'RPM %'});
   vdial(c('ftit'),{v:run?440+P.n*420+P.ab*130:200,min:200,max:1200,a0:-150,a1:150,major:100,fmt:v=>v%200?'':v/100,lbl:'FTIT'});
   vdial(c('noz'),{v:P.ab>.02?20+P.ab*80:(1-P.n)*75+4,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v,lbl:'NOZ POS'});
-  vdial(c('oil'),{v:run?24+P.n*22:0,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL'});
+  vdial(c('oil'),{v:ENGSYS.v(P,'oilP',0,run?24+P.n*22:0),min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL'});
   vdial(c('fuel'),{v:[P.fuel,Math.min(P.fuel,480),P.fuel*.38,P.tankFuel][sys.fuelSel]*2.2046/1000,min:0,max:8,a0:-150,a1:150,major:1,minor:.5,fmt:v=>v%2?'':v,lbl:'FUEL',win:fmtN(Math.round(P.totalFuel*2.2046/10)*10)});
   drawHSI();drawSCP();drawCmdsWin(P);drawViperAux(P);if(P.ac.pit==='eagle')drawEagleG(P);else if(P.ac.pit==='tomcat')drawTomcatG(P);else if(P.ac.pit==='phantom')drawPhantomG(P);else if(P.ac.pit==='fishbed')drawFishbedG(P);else if(P.ac.pit==='hornet')drawHornetG(P);}
 // Block 10 additions: standby ADI, fuel flow, UHF channel/frequency indicator, AOA indicator tape, aux console gauges,
@@ -3075,8 +3076,8 @@ function drawViperAux(P){const c=k=>VG[k].getContext('2d'),run=P.totalFuel>0,hp=
      g.fillStyle='#eef0ea';g.fillRect(30,y-1,d%5?8:16,2);if(!(d%10)){g.font='700 15px "B612 Mono",monospace';g.textAlign='right';g.textBaseline='middle';g.fillText(String(d),26,y);}}g.restore();
    g.strokeStyle='#ffd23a';g.lineWidth=3;g.beginPath();g.moveTo(4,128);g.lineTo(62,128);g.stroke();g.fillStyle='#ffd23a';g.beginPath();g.moveTo(62,120);g.lineTo(54,128);g.lineTo(62,136);g.fill();
    g.fillStyle='#9aa3a0';g.font='700 11px "B612",sans-serif';g.textAlign='center';g.fillText('AOA',32,12);}
-  vdial(c('hydA'),{v:run?(hp<30?1200:3000):(P.n>.1?1500:0),min:0,max:4000,a0:-135,a1:135,major:1000,fmt:v=>v/1000,lbl:'HYD A'});
-  vdial(c('hydB'),{v:run?(hp<40?1800:3000):0,min:0,max:4000,a0:-135,a1:135,major:1000,fmt:v=>v/1000,lbl:'HYD B'});
+  vdial(c('hydA'),{v:ENGSYS.v(P,'hydA',0,run?(hp<30?1200:3000):(P.n>.1?1500:0)),min:0,max:4000,a0:-135,a1:135,major:1000,fmt:v=>v/1000,lbl:'HYD A'});
+  vdial(c('hydB'),{v:ENGSYS.v(P,'hydB',0,run?(hp<40?1800:3000):0),min:0,max:4000,a0:-135,a1:135,major:1000,fmt:v=>v/1000,lbl:'HYD B'});
   vdial(c('epu'),{v:85,min:0,max:100,a0:-120,a1:120,major:20,fmt:v=>v%40?'':v,lbl:'EPU FUEL'});
   vdial(c('lox'),{v:4.2,min:0,max:5,a0:-120,a1:120,major:1,fmt:v=>v,lbl:'LIQUID OXY'});
   vdial(c('cab'),{v:Math.min(P.pos.y*FT,8000+Math.max(0,P.pos.y*FT-23000)*.3)/1000,min:0,max:50,a0:-150,a1:150,major:10,minor:5,fmt:v=>v,lbl:'CABIN ALT'});
@@ -3116,7 +3117,7 @@ function drawMigExtra(P){const run=P.totalFuel>0,d=new Date(),hp=P.hp;
   tapes(rampC.getContext('2d'),128,112,'RAMP',[[clamp((P.mach-.6)/(P.ac.pki?2.2:1),0,1),'#e8e8e2'],[clamp((P.mach-.6)/(P.ac.pki?2.2:1),0,1),'#e8e8e2']]);
   vdial(voltC.getContext('2d'),{v:run?28:24,min:0,max:30,a0:-120,a1:120,major:10,minor:5,fmt:v=>v,lbl:'V'});
   vdial(manoC.getContext('2d'),{v:12,v2:10,min:0,max:20,a0:-135,a1:135,major:5,minor:1,fmt:v=>v,lbl:'M-2A'});
-  const egt=run?420+P.n*380+P.ab*120:150;vdial(MG.egt2.getContext('2d'),{v:egt,min:200,max:1000,a0:-150,a1:150,major:100,minor:50,fmt:v=>v%200?'':v/100,lbl:'T°C RIGHT'});}
+  const egt=ENGSYS.v(P,'egt',1,run?420+P.n*380+P.ab*120:150);vdial(MG.egt2.getContext('2d'),{v:egt,min:200,max:1000,a0:-150,a1:150,major:100,minor:50,fmt:v=>v%200?'':v/100,lbl:'T°C RIGHT'});}
 const fuC=mk(128,256),cmC=mk(320,128),cmpC=mk(128,64),mswC=mk(272,256),gearC=mk(256,138),wlC=mk(128,416);
 const WL=[['FIRE','LEFT'],['FIRE','RIGHT'],['FAIL','GEN'],['HYD',''],['OIL','LEFT'],['OIL','RIGHT'],['BINGO','800'],['A/B',''],['LOWER','GEAR'],['INLET',''],['DANGER','ALTITUDE'],['CRIT','α']];
 function drawMigStatic(){
@@ -3187,7 +3188,7 @@ function drawMig(){const P=player;if(!P)return;const c=k=>MG[k].getContext('2d')
   vdial(c('vvi'),{v:clamp(P.vel.y,-150,150),min:-150,max:150,a0:-240,a1:60,major:50,minor:10,fmt:v=>Math.abs(v),lbl:'Vy m/s'});
   vdial(c('mach'),{v:P.mach,min:.4,max:P.ac.mmax||2.6,a0:-150,a1:150,major:.2,minor:.1,fmt:v=>{const k=Math.round(v*10);return k%4?'':(k/10).toFixed(1);},lbl:'M'});
   vdial(c('ralt'),{v:clamp(agl,0,1500),min:0,max:1500,a0:-150,a1:150,major:250,minor:50,fmt:v=>v%500?'':v/100,lbl:'RALT m',win:agl>1500?'----':String(Math.round(agl))});
-  const rpm=run?64+36*P.n:30*P.n,egt=run?420+P.n*380+P.ab*120:150;
+  const rpm=run?64+36*P.n:30*P.n,egt=ENGSYS.v(P,'egt',0,run?420+P.n*380+P.ab*120:150);
   vdial(c('rpm'),{v:rpm,v2:rpm,min:0,max:110,a0:-150,a1:150,major:10,minor:2,fmt:v=>v%20?'':v,lbl:'RPM % 1·2'});
   vdial(c('egt'),{v:egt,v2:egt,min:200,max:1000,a0:-150,a1:150,major:100,minor:50,fmt:v=>v%200?'':v/100,lbl:'T°C ×100'});
   drawFuelTape(P);drawCarts(P);drawAek(P);drawCompass(P);drawMigLamps(P);drawHSI();drawMigExtra(P);}
@@ -3281,11 +3282,11 @@ function drawEagleG(P){const g=k=>EG[k].getContext('2d'),run=P.totalFuel>0,ft=P.
    s.strokeStyle='#2d3234';s.lineWidth=10;s.beginPath();s.arc(96,96,88,0,7);s.stroke();s.fillStyle='#eef0ea';s.font='700 13px "B612",sans-serif';s.textAlign='center';s.fillText('STBY',96,178);}
   [['L',0],['R',.006]].forEach(([s,o])=>{const nn=clamp(n+(n>.05?o:0),0,1);
     const rpm=run?65+34*nn:24*nn;vdial(g('rpm'+s),{v:rpm,min:0,max:110,a0:-150,a1:150,major:10,minor:2,fmt:v=>v%20?'':v/10,lbl:'RPM '+s,win:String(Math.round(rpm)).padStart(3,'0')});
-    const ftit=run?480+nn*390+ab*140:180;vdial(g('ft'+s),{v:ftit,min:200,max:1200,a0:-150,a1:150,major:100,fmt:v=>v%200?'':v/100,lbl:'FTIT '+s,win:String(Math.round(ftit/5)*5)});
+    const ftit=ENGSYS.v(P,'egt',s==='R'?1:0,run?480+nn*390+ab*140:180);vdial(g('ft'+s),{v:ftit,min:200,max:1200,a0:-150,a1:150,major:100,fmt:v=>v%200?'':v/100,lbl:'FTIT '+s,win:String(Math.round(ftit/5)*5)});
     const ff=run?ffT*(1+o):0;vdial(g('ff'+s),{v:ff/1000,min:0,max:30,a0:-150,a1:150,major:5,minor:1,fmt:v=>v%10?'':v,lbl:'FF '+s,win:String(Math.round(ff/100)*100)});
     vdial(g('nz'+s),{v:ab>.02?20+ab*80:(1-nn)*75+4,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v,lbl:'NOZ '+s});
-    vdial(g('oil'+s),{v:run?26+nn*22:0,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL '+s});});
-  vdial(g('hydP'),{v:run&&P.hp>30?3000:P.hp>30?1200:400,min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'PC'});
+    vdial(g('oil'+s),{v:ENGSYS.v(P,'oilP',s==='R'?1:0,run?26+nn*22:0),min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL '+s});});
+  vdial(g('hydP'),{v:ENGSYS.v(P,'hydA',0,run&&P.hp>30?3000:P.hp>30?1200:400),min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'PC'});
   vdial(g('hydU'),{v:run&&P.hp>20?3000:900,min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'UTL'});
   vdial(g('fq'),{v:P.fuel*2.2046/1000,vmax:(sys.v.bingo??.3)*14,min:0,max:14,a0:-150,a1:150,major:2,minor:1,fmt:v=>v,lbl:'FUEL x1000',win:fmtN(Math.round(P.totalFuel*2.2046/10)*10)});
   vdial(g('clk'),{v:(d.getMinutes()+d.getSeconds()/60)/5,v2:d.getHours()%12+d.getMinutes()/60,min:0,max:12,a0:0,a1:360,major:1,minor:.2,fmt:v=>v===12?'':v%3?'':(v||12)});}
@@ -3320,9 +3321,9 @@ function drawPhantomG(P){const g=k=>PH[k].getContext('2d'),run=P.totalFuel>0,ft=
   const nnL=clamp(n,0,1),nnR=clamp(n+(n>.05?.006:0),0,1);
   [['L',nnL,0],['R',nnR,.006]].forEach(([s,nn,o])=>{
     const rpm=run?65+34*nn:24*nn;vdial(g('rpm'+s),{v:rpm,min:0,max:110,a0:-150,a1:150,major:10,minor:2,fmt:v=>v%20?'':v/10,lbl:'RPM %',win:String(Math.round(rpm)).padStart(3,'0')});
-    const egt=run?480+nn*390+ab*140:180;vdial(g('ft'+s),{v:egt,min:0,max:1200,a0:-150,a1:150,major:200,minor:100,fmt:v=>v/100,lbl:'EGT °C',win:String(Math.round(egt/5)*5)});
+    const egt=ENGSYS.v(P,'egt',s==='R'?1:0,run?480+nn*390+ab*140:180);vdial(g('ft'+s),{v:egt,min:0,max:1200,a0:-150,a1:150,major:200,minor:100,fmt:v=>v/100,lbl:'EGT °C',win:String(Math.round(egt/5)*5)});
     const ff=run?ffT*(1+o):0,shown=ab>.05?ff/4:ff;vdial(g('ff'+s),{v:clamp(shown/1000,0,12),min:0,max:12,a0:-150,a1:150,major:2,minor:1,fmt:v=>v%2?'':v,lbl:'FF x1000'});
-    vdial(g('oil'+s),{v:run?26+nn*22:0,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL '+s});});
+    vdial(g('oil'+s),{v:ENGSYS.v(P,'oilP',s==='R'?1:0,run?26+nn*22:0),min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%40?'':v,lbl:'OIL '+s});});
   drawPhNoz(P,nnL,nnR);
   vdial(g('hyd1'),{v:run&&P.hp>30?3000:P.hp>30?1200:400,min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'PC 1'});
   vdial(g('hyd2'),{v:run&&P.hp>35?3000:P.hp>35?1200:400,min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'PC 2'});
@@ -3352,11 +3353,11 @@ function drawFishbedG(P){const g=k=>FB[k].getContext('2d'),run=P.totalFuel>0,n=P
   vdial(g('clk'),{v:(d.getMinutes()+d.getSeconds()/60)/5,v2:d.getHours()%12+d.getMinutes()/60,min:0,max:12,a0:0,a1:360,major:1,minor:.2,fmt:v=>v===12?'':v%3?'':(v||12)});
   vdial(g('g'),{v:P.nz,vmax:P.maxNz,min:-4,max:10,a0:-150,a1:150,major:1,fmt:v=>v%2?'':v,lbl:'G'});
   const rpm=run?60+40*n:22*n;vdial(g('rpm'),{v:rpm,min:0,max:110,a0:-150,a1:150,major:10,minor:2,fmt:v=>v%20?'':v/10,lbl:'RPM %',win:String(Math.round(rpm)).padStart(3,'0')});
-  const egt=run?420+n*300+ab*120:150;vdial(g('egt'),{v:egt,min:0,max:1000,a0:-150,a1:150,major:200,minor:100,fmt:v=>v/100,lbl:'EGT °C',win:String(Math.round(egt/5)*5)});
-  vdial(g('oilp'),{v:run?3+n*4:0,min:0,max:10,a0:-120,a1:120,major:2,minor:1,fmt:v=>v,lbl:'OIL P'});
-  vdial(g('oilt'),{v:run?55+n*25:20,min:0,max:150,a0:-120,a1:120,major:50,minor:10,fmt:v=>v,lbl:'OIL T'});
+  const egt=ENGSYS.v(P,'egt',0,run?420+n*300+ab*120:150);vdial(g('egt'),{v:egt,min:0,max:1000,a0:-150,a1:150,major:200,minor:100,fmt:v=>v/100,lbl:'EGT °C',win:String(Math.round(egt/5)*5)});
+  vdial(g('oilp'),{v:ENGSYS.v(P,'oilP',0,run?3+n*4:0,1/14.22),min:0,max:10,a0:-120,a1:120,major:2,minor:1,fmt:v=>v,lbl:'OIL P'});
+  vdial(g('oilt'),{v:ENGSYS.v(P,'oilT',0,run?55+n*25:20),min:0,max:150,a0:-120,a1:120,major:50,minor:10,fmt:v=>v,lbl:'OIL T'});
   vdial(g('fuel'),{v:clamp(P.totalFuel,0,3200),min:0,max:3200,a0:-150,a1:150,major:500,minor:250,fmt:v=>v%1000?'':v/1000,lbl:'FUEL kg'});
-  vdial(g('hyd'),{v:run&&P.hp>30?210:P.hp>30?80:20,min:0,max:300,a0:-120,a1:120,major:100,fmt:v=>v/100,lbl:'HYD'});
+  vdial(g('hyd'),{v:ENGSYS.v(P,'hydA',0,run&&P.hp>30?210:P.hp>30?80:20,1/14.22),min:0,max:300,a0:-120,a1:120,major:100,fmt:v=>v/100,lbl:'HYD'});
   vdial(g('noz'),{v:ab>.05?1:n>.7?.5:.1,min:0,max:1,a0:-120,a1:120,major:.5,minor:.25,fmt:v=>v?'':'',lbl:'NOZZLE'});
   vdial(g('aoa'),{v:clamp(P.alpha*R2D,-10,30),min:-10,max:30,a0:-135,a1:135,major:10,minor:5,fmt:v=>v,lbl:'ANGLE ATTACK'});
   {const agl=Math.max(0,P.pos.y-groundAt(P.pos.x,P.pos.z));vdial(g('ralt'),{v:clamp(agl,0,600),min:0,max:600,a0:-150,a1:150,major:100,minor:50,fmt:v=>v,lbl:'M ALTITUDE'});}
@@ -3771,9 +3772,9 @@ function drawTomcatG(P){const g=k=>TC[k].getContext('2d'),run=P.totalFuel>0,ft=P
    c.fillStyle='#f6f6f2';c.beginPath();c.moveTo(96,10);c.lineTo(90,0);c.lineTo(102,0);c.closePath();c.fill();
    c.fillStyle='#000';c.fillRect(64,150,64,22);c.fillStyle='#f2f2ee';c.font='700 15px "B612 Mono",monospace';c.fillText(String(Math.min(999,Math.round(Math.hypot(P.pos.x,P.pos.z)/NM))).padStart(3,'0'),96,162);}
   drawTcEng(P);const pos=ab>.03?2+3*ab:n>.92?.6:1.6-n;
-  [['L',0],['R',.04]].forEach(([s2,o])=>{vdial(g('oil'+s2),{v:run?28+clamp(n,0,1)*30+o*40:0,min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%20?'':v,lbl:'PSI OIL'});
+  [['L',0],['R',.04]].forEach(([s2,o])=>{vdial(g('oil'+s2),{v:ENGSYS.v(P,'oilP',s2==='R'?1:0,run?28+clamp(n,0,1)*30+o*40:0),min:0,max:100,a0:-120,a1:120,major:20,minor:10,fmt:v=>v%20?'':v,lbl:'PSI OIL'});
     vdial(g('noz'+s2),{v:clamp(pos+o,0,5),min:0,max:5,a0:-150,a1:60,major:1,fmt:v=>v,lbl:''});});
-  vdial(g('hydC'),{v:run&&P.hp>30?3000:P.hp>30?1200:400,v2:run&&P.hp>35?3000:P.hp>35?1200:400,min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'HYD PRESS'});
+  vdial(g('hydC'),{v:ENGSYS.v(P,'hydA',0,run&&P.hp>30?3000:P.hp>30?1200:400),v2:ENGSYS.v(P,'hydB',0,run&&P.hp>35?3000:P.hp>35?1200:400),min:0,max:4000,a0:-120,a1:120,major:1000,fmt:v=>v/1000,lbl:'HYD PRESS'});
   vdial(g('brk'),{v:2600,min:0,max:3000,a0:-120,a1:120,major:1000,minor:250,fmt:v=>v/1000,lbl:'EMER BRAKE'});
   vdial(g('cab'),{v:Math.min(50,(ft<8000?ft*.98:7840+(ft-8000)*.34)/1000),min:0,max:50,a0:-150,a1:150,major:10,minor:2,fmt:v=>v/10,lbl:'CABIN ALT'});}
 
@@ -3894,7 +3895,7 @@ function buildCockpit(kind){
      reg([out.caut],{name:'MASTER CAUTION · push to reset',state:()=>sys.caut.was?(sys.caut.ack?'acknowledged':'CAUTION'):'clear',act:()=>{sys.caut.ack=true;sfx.click();}});}
     [['TO/LDG\nCONFIG',0xff3a20,P=>!V.gear&&P.cas<190&&agl(P)*FT<5000&&P.vel.y<0],['ENG\nFIRE',0xff3a20,P=>P.hp<25],['ALT\nLOW',0xff3a20,(P,bl)=>bl&&!V.gear&&agl(P)*FT<500&&P.vel.y<-3]]
       .forEach(([t,c,f],i)=>{const[x,y,rz]=ebrow(-1,i+1);lamp(pnl,x,y,.046,.021,t,c,f,.024,rz);});
-    [['DUAL FC\nFAIL',0xff3a20,P=>P.hp<15],['HYD/OIL\nPRESS',0xff3a20,P=>P.hp<30||P.totalFuel<=0],['CANOPY',0xff3a20,()=>0],['ENGINE',0xff3a20,P=>P.hp<30||P.totalFuel<=0]]
+    [['DUAL FC\nFAIL',0xff3a20,P=>P.hp<15],['HYD/OIL\nPRESS',0xff3a20,P=>ENGSYS.on?(ENGSYS.lamp(P,'hyd')||ENGSYS.lamp(P,'oil')):P.hp<30||P.totalFuel<=0],['CANOPY',0xff3a20,()=>0],['ENGINE',0xff3a20,P=>P.hp<30||P.totalFuel<=0||ENGSYS.lamp(P,'eng')||ENGSYS.lamp(P,'hot')||ENGSYS.lamp(P,'stall')]]
       .forEach(([t,c,f],i)=>{const[x,y,rz]=ebrow(1,i);lamp(pnl,x,y,.046,.021,t,c,f,.024,rz);});
     for(const sd of[-1,1]){const d=[sd*.637,-.771],n=[sd*.771,.637],c=[sd*.29+d[0]*.12+n[0]*.06,.17+d[1]*.12+n[1]*.06];
       add(rbox(.25,.014,.06,.004),black,c[0],c[1],.045,pnl,0,0,sd*-.88);add(rbox(.25,.05,.008,.003),dark,c[0]-n[0]*.024,c[1]-n[1]*.024,.073,pnl,0,0,sd*-.88);}
@@ -3971,7 +3972,7 @@ function buildCockpit(kind){
      lever(fc,-.31,-.075,['ARM · LASER ARM','OFF'],'LASER ARM · the targeting pod lases only when armed',()=>sys.v.larm?0:1,v=>{sys.v.larm=v===0?1:0;},.03);
      lever(fc,-.395,.0,['NORM','QUIET','SILENT'],'RF · emission control: QUIET = radar standby, SILENT = radar off',()=>sys.v.rf||0,v=>{sys.v.rf=v;if(v>0&&radar.power==='ON')radar.setPower(v===1?'STBY':'OFF');},.03);
      // right eyebrow warning lights
-     [['ENG\nFIRE',0xff3a20,()=>player&&player.hp<35],['ENGINE',0xff3a20,()=>player&&player.dm&&player.dm.eng<50],['HYD/OIL\nPRESS',0xff3a20,()=>player&&player.hp<50],['FLCS',0xff3a20,()=>player&&player.hp<40],
+     [['ENG\nFIRE',0xff3a20,()=>player&&player.hp<35],['ENGINE',0xff3a20,()=>player&&player.dm&&(player.dm.eng<50||ENGSYS.lamp(player,'stall')||ENGSYS.lamp(player,'hot'))],['HYD/OIL\nPRESS',0xff3a20,()=>player&&(ENGSYS.on?(ENGSYS.lamp(player,'hyd')||ENGSYS.lamp(player,'oil')):player.hp<50)],['FLCS',0xff3a20,()=>player&&player.hp<40],
       ['DBU\nON',0xff3a20,()=>false],['TO/LDG\nCONFIG',0xff3a20,()=>player&&player.gearPos<.5&&player.pos.y-groundAt(player.pos.x,player.pos.z)<300&&player.vel.length()<100],['CANOPY',0xff3a20,()=>false],['OXY\nLOW',0xff3a20,()=>false]]
       .forEach(([t,c,f],i)=>lamp(fc,.405+(i%2)*.04,.14-Math.floor(i/2)*.026,.036,.02,t,c,f,.024));}
     // ---- centre pedestal (sheet 4 items 21-25): INSTR MODE, AOA indicator, HSI, radar/EO display ----
@@ -4294,7 +4295,7 @@ function buildCockpit(kind){
     // ---- right knee panel: caution light panel ----
     {const rk=new THREE.Group();rk.position.set(.43,-.75,-.54);rk.rotation.set(-.75,-.35,0);eg.add(rk);add(rbox(.17,.2,.03,.008),eP,0,0,-.012,rk);
      plate(rk,0,.085,.15,.016,300,(c,w,h)=>{c.fillStyle='#34393c';c.fillRect(0,0,w,h);lt(c,'CAUTION LIGHTS',w/2,h/2,18);},.004);
-     const CL=[['L GEN',P=>P.hp<35],['R GEN',P=>P.hp<30],['L FUEL\nPUMP',P=>P.fuel<300],['R FUEL\nPUMP',P=>P.fuel<300],['HYD',P=>P.hp<30],['OXYGEN',()=>0],['AV BAY\nHOT',P=>P.hp<50],['EMER\nBST ON',()=>0],
+     const CL=[['L GEN',P=>P.hp<35],['R GEN',P=>P.hp<30],['L FUEL\nPUMP',P=>P.fuel<300],['R FUEL\nPUMP',P=>P.fuel<300],['HYD',P=>ENGSYS.on?ENGSYS.lamp(P,'hyd'):P.hp<30],['OXYGEN',()=>0],['AV BAY\nHOT',P=>P.hp<50],['EMER\nBST ON',()=>0],
        ['L INLET',P=>P.hp<40],['R INLET',P=>P.hp<40],['FLT\nCONTR',P=>P.hp<25],['BINGO\nFUEL',P=>P.totalFuel*2.2046<(sys.v.bingo??.3)*14000],['ROLL\nRATIO',()=>0],['PITCH\nRATIO',()=>0],['AUTO\nPLT',()=>0],['ANTI\nSKID',()=>0]];
      CL.forEach(([t,f],i)=>lamp(rk,-.0375+(i%2)*.075,.06-Math.floor(i/2)*.0185,.066,.0155,t,0xffb020,f,.006));
      {const g=new THREE.Group();g.position.set(0,-.093,.01);rk.add(g);const b=add(rbox(.04,.01,.01,.003),L(0x3a3f43),0,0,0,g);
@@ -4476,8 +4477,8 @@ function buildCockpit(kind){
     // ---- right sub-panel: telelight (caution) panel ----
     {const rk=new THREE.Group();rk.position.set(.4,-.755,-.53);rk.rotation.set(-.75,-.3,0);pg.add(rk);add(rbox(.2,.2,.03,.008),pP,0,0,-.012,rk);
      tag(rk,0,.085,.15,.016,'TELELIGHT PANEL',18,.004);
-     const CL=[['L GEN\nOUT',P=>P.hp<35],['R GEN\nOUT',P=>P.hp<30],['L OIL\nPRESS',P=>P.hp<45||P.totalFuel<=0],['R OIL\nPRESS',P=>P.hp<45||P.totalFuel<=0],['PC 1\nHYD',P=>P.hp<30],['PC 2\nHYD',P=>P.hp<35],
-       ['UTIL\nHYD',P=>P.hp<20],['FUEL\nLOW',P=>P.totalFuel*2.2046<(sys.v.bingo??.3)*14000],['L BLEED\nAIR',P=>P.hp<40],['R BLEED\nAIR',P=>P.hp<40],['STAB\nAUG',P=>P.hp<25],['ANTI\nSKID',()=>V.skid===0],
+     const CL=[['L GEN\nOUT',P=>P.hp<35],['R GEN\nOUT',P=>P.hp<30],['L OIL\nPRESS',P=>ENGSYS.on?ENGSYS.lamp(P,'oilL'):P.hp<45||P.totalFuel<=0],['R OIL\nPRESS',P=>ENGSYS.on?ENGSYS.lamp(P,'oilR'):P.hp<45||P.totalFuel<=0],['PC 1\nHYD',P=>ENGSYS.on?ENGSYS.lamp(P,'hydA'):P.hp<30],['PC 2\nHYD',P=>ENGSYS.on?ENGSYS.lamp(P,'hydB'):P.hp<35],
+       ['UTIL\nHYD',P=>ENGSYS.on?(ENGSYS.lamp(P,'hyd')&&P.dm.hyd<40):P.hp<20],['FUEL\nLOW',P=>P.totalFuel*2.2046<(sys.v.bingo??.3)*14000],['L BLEED\nAIR',P=>P.hp<40],['R BLEED\nAIR',P=>P.hp<40],['STAB\nAUG',P=>P.hp<25],['ANTI\nSKID',()=>V.skid===0],
        ['L INLET\nRAMP',()=>0],['R INLET\nRAMP',()=>0],['EXT TANK\nEMPTY',P=>P.tankFuel>0&&P.tankFuel<60],['CABIN\nPRESS',P=>P.pos.y*FT>45000]];
      CL.forEach(([t,f],i)=>lamp(rk,-.0375+(i%2)*.075,.06-Math.floor(i/2)*.0185,.066,.0155,t,0xffb020,f,.006));
      {const g=new THREE.Group();g.position.set(0,-.093,.01);rk.add(g);const b=add(rbox(.04,.01,.01,.003),L(0x3a3f43),0,0,0,g);
@@ -4696,9 +4697,9 @@ function buildCockpit(kind){
       ttag(ck2,0,.135,.2,.012,'CAUTION · ADVISORY',14,.004);
       const lowF=P=>P.fuel*2.2046<1000;
       const CL=[['PITCH STAB',P=>P.hp<25],['ROLL STAB',P=>P.hp<25],['YAW STAB OP',P=>P.hp<25],['YAW STAB OUT',P=>P.hp<12],['EMERG JETT',()=>!!V.tJett],['LADDER',()=>0],['ECS TURBINE',()=>0],['INLET ICE',()=>0],
-        ['FLAP',()=>0],['HZ TAIL AUTH',P=>P.hp<15],['RUDDER AUTH',P=>P.hp<15],['SPOILERS',()=>0],['AUTO PILOT',()=>0],['L INLET',()=>0],['R INLET',()=>0],['OIL PRESS',P=>P.hp<45||P.totalFuel<=0],
+        ['FLAP',()=>0],['HZ TAIL AUTH',P=>P.hp<15],['RUDDER AUTH',P=>P.hp<15],['SPOILERS',()=>0],['AUTO PILOT',()=>0],['L INLET',()=>0],['R INLET',()=>0],['OIL PRESS',P=>ENGSYS.on?ENGSYS.lamp(P,'oil'):P.hp<45||P.totalFuel<=0],
         ['BLEED DUCT',P=>P.hp<18],['L RAMPS',()=>0],['R RAMPS',()=>0],['OXY LOW',()=>0],['L OVSP/VALVE',()=>0],['R OVSP/VALVE',()=>0],['L GEN',P=>P.hp<35],['R GEN',P=>P.hp<30],
-        ['CANOPY',()=>0],['BINGO',P=>P.totalFuel*2.2046<(sys.v.bingo??.3)*14000],['L OIL HOT',()=>0],['R OIL HOT',()=>0],['CADC',P=>P.hp<15],['HYD PRESS',P=>P.hp<30],['L FUEL PRESS',P=>P.totalFuel<=0],['R FUEL PRESS',P=>P.totalFuel<=0],
+        ['CANOPY',()=>0],['BINGO',P=>P.totalFuel*2.2046<(sys.v.bingo??.3)*14000],['L OIL HOT',()=>ENGSYS.lamp(player,'oilHot')],['R OIL HOT',()=>ENGSYS.lamp(player,'oilHot')],['CADC',P=>P.hp<15],['HYD PRESS',P=>ENGSYS.on?ENGSYS.lamp(P,'hyd'):P.hp<30],['L FUEL PRESS',P=>P.totalFuel<=0],['R FUEL PRESS',P=>P.totalFuel<=0],
         ['L FUEL LOW',lowF],['R FUEL LOW',lowF]];
       const AD=[['WING SWEEP',P=>P.hp<20],['TRANS/RECT',P=>P.hp<20],['MACH TRIM',()=>0],['WSHLD HOT',()=>0],['LAUNCH BAR',()=>0],['INTEG TRIM',P=>P.hp<20],['AHRS',()=>0],['ENG FIRE EXT',()=>0],['AUX FIRE EXT',()=>0]];
       const wr=t=>t.length>9&&t.includes(' ')?t.replace(/ ([^ ]*)$/,'\n$1'):t;

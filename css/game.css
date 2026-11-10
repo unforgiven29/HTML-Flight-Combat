@@ -310,3 +310,7 @@ h2{margin:0;font:700 12px var(--f-mono);letter-spacing:.2em;color:var(--dim);tex
 #cmStrip{position:fixed;left:50%;transform:translateX(-50%);top:calc(8px + env(safe-area-inset-top,0px));z-index:4;padding:4px 12px;background:rgba(6,10,8,.6);border:1px solid rgba(120,215,255,.35);border-radius:5px;font:700 12px var(--f-mono);letter-spacing:.06em;color:#cfeeff;white-space:nowrap;pointer-events:none;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
 #cmStrip span{margin:0 8px;opacity:.5}#cmStrip b{color:#7fd8ff}#cmStrip i.r{font-style:normal;color:#ff9f8f}
 @media (max-width:900px){.cm-legend{display:none}}
+
+/* v263 engine systems page (Shift+G) */
+#esys{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(14% + env(safe-area-inset-bottom,0px));padding:6px 10px;background:rgba(6,10,12,.78);border:1px solid #2c4a52;border-radius:5px;font:700 11px var(--f-mono);color:#cfe;display:grid;gap:2px;pointer-events:none;z-index:4;max-width:min(720px,92vw);white-space:nowrap}
+#esys .h{color:var(--amber);letter-spacing:.16em;font-size:10px}#esys .a{color:var(--amber)}#esys .r{color:var(--warn)}#esys b{color:var(--hud)}#esys .a b,#esys .r b{color:inherit}

@@ -35,7 +35,7 @@ const isMine=P=>P&&P.type===ID;
 const E0=P=>P.eng&&!P.eng.done?P.eng.e[0]:null;
 const running=P=>{const e=E0(P);return e?e.lit:P.totalFuel>0&&!(P.dm&&P.dm.eng<=0);};
 const rpm=P=>{const e=E0(P);return e?e.rpm:running(P)?58+42*clamp(P.n||0,0,1.02):0;};
-const tot=P=>{const e=E0(P);return e?e.egt*700:running(P)?380+330*clamp(P.n||0,0,1):20;};
+const tot=P=>{const e=E0(P);return e?e.egt*700:window.ENGSYS&&window.ENGSYS.on?ENGSYS.egt(P,0):running(P)?380+330*clamp(P.n||0,0,1):20;};
 const powered=P=>window.START&&P.eng?START.powered(P):running(P);
 const LB=2.2046;
 const fuelLb=P=>(P.totalFuel||0)*LB;
@@ -93,7 +93,7 @@ const F={
  // 24 · engine pressure ratio
  pr:(c,P)=>{const r=rpm(P),p=r<30?1:1+lin(r,55,100)*2.4;scale(c,R,-140,140,10,2,['1.5','2.0','2.5','3.0','3.5','4.0'],.62,16);T(c,'PR',0,-R*.34,18,INK);needle(c,R,-140+280*clamp((p-1.5)/2.5,0,1));},
  // 25 · oil quantity (small)
- oilq:(c,P)=>{scale(c,R,-120,120,10,2,['0','20','40','60','80','100'],.62,17);T(c,'OIL',0,R*.4,14,DIM);needle(c,R,-120+240*sv('oilq',.82));},
+ oilq:(c,P)=>{scale(c,R,-120,120,10,2,['0','20','40','60','80','100'],.62,17);T(c,'OIL',0,R*.4,14,DIM);needle(c,R,-120+240*(window.ENGSYS&&window.ENGSYS.on?ENGSYS.oilQ(P,0):sv('oilq',.82)));},
  // 26 · tachometer % rpm with vernier
  rpm:(c,P)=>{const r=rpm(P);scale(c,R,-150,150,20,2,[0,10,20,30,40,50,60,70,80,90,100],.68,15);arc(c,R*.9,-150+300*100/110,150,'#d33');
    T(c,'PERCENT',0,R*.3,12,DIM);T(c,'RPM',0,R*.46,12,DIM);c.save();c.translate(-R*.38,-R*.1);c.beginPath();c.arc(0,0,R*.2,0,7);c.fillStyle='#161718';c.fillRect(-R*.2,-R*.2,R*.4,R*.4);c.strokeStyle=INK;c.lineWidth=1.2;

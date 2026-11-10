@@ -38,6 +38,8 @@ const ACT=[
  ['yL','Rudder left','FLIGHT','h','KeyQ','Q'],['yR','Rudder right','FLIGHT','h','KeyE','E'],
  ['tUp','Throttle up','FLIGHT','h','KeyR','R'],['tDn','Throttle down','FLIGHT','h','KeyF','F'],
  ['sb','Speed brake (hold)','FLIGHT','h','KeyB','B'],
+ ['tSnapMil','Throttle SNAP to MIL (slam)','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(.8),'Shift+R'],['tSnapAb','Throttle SNAP to full A/B','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(1),'—'],['tSnapIdle','Throttle SNAP to IDLE','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(0),'Shift+F'],
+ ['engPg','Engine systems page (oil / EGT / hydraulics / stall margin)','VIEW','f',()=>window.ENGSYS&&ENGSYS.toggle(),'Shift+G'],
  ['gear','Landing gear','FLIGHT','f',()=>BASE.KeyG&&BASE.KeyG.fn(),'G'],
  ['flap','Flaps (F-8E: wing incidence)','FLIGHT','f',()=>flapKey(),'O'],
  ['swF','Wing sweep / nozzle forward','FLIGHT','p','Comma',','],['swA','Wing sweep / nozzle aft','FLIGHT','p','Period','.'],

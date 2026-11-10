@@ -1,5 +1,11 @@
 # Changelog
 
+## v263 — Engine systems (oil, temperature, hydraulics) + intake-based compressor stalls
+- New `js/engsys.js`: per-engine rpm, EGT with redline and over-temp wear, oil pressure/temperature/quantity (starvation seizure), vibration; hydraulic systems A/B with gearbox pumps, fluid and leaks, F-16 EPU and windmill pressure. Gauges and caution lamps in all cockpits (game.js, cwpit.js, F-8, A-4, A-7, AV-8B, Mirage 2000) read the model.
+- Compressor stall rewritten: a load/margin model. Inlet distortion (AoA/sideslip, scaled by intake size and inlet control), throttle transients (fuel-control quality, altitude, slam rate), intake starvation, ingestion (gun gas, missile exhaust, afterburner light), damage and over-temp feed a hazard rate. Large-intake jets (Su-27, F-15) almost never stall; F-86 and MiG-15 rarely; F-4, MiG-21, early F-14A, Mirage III and the Viggen often. Slamming the throttle forward in old jets can stall them; digital controls auto-recover. Keyboard ramping is gentle by design.
+- Sub-system damage: compressor, turbine, fuel control, gearbox, case burn-through, oil leak, hydraulic line/pump, flight-control actuators.
+- Keys: Shift+G engine page (stall margin and loads), Shift+R snap throttle to MIL, Shift+F snap to idle. Per-aircraft numbers live in the tables at the top of `engsys.js`; model constants in `ENGSYS.K`.
+
 ## v262 — VTOL on all V/STOL jets + AV-8B Harrier II cockpit
 - New `js/vtol.js`: Pegasus vectored-thrust model (nozzle 0 aft / STO 10 / 82 VL stop / 98.5 braking, stop release, water injection, LIDS ground cushion, hot-gas ingestion, rpm-scaled RCS, VL weight limit). Yak-38 and Yak-141 get lift jets (armed at 60 deg+, spool + fuel burn). Nozzle pivots animate on all three models. Comma / Period step the detents.
 - New `js/av8pit.js`: AV-8B cockpit rebuilt from the Tactical Manual / DCS guide: EHSD/MENU/VREST/ENG/FUEL/TAC MPCDs, UFC, EDP, caution + warning panels, standby instruments, fuel totalizer, hydraulics gauge, nozzle lever + throttle quadrant, engine/fuel/lights/electrical/COMM/ECS consoles, NAV and VSTOL HUD modes.

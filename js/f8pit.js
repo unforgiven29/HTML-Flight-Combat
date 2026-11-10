@@ -26,7 +26,7 @@ let lampTest=0,qtyTest=0;
 const E0=P=>P.eng&&!P.eng.done?P.eng.e[0]:null;
 const running=P=>{const e=E0(P);return e?e.lit:P.totalFuel>0&&!(P.dm&&P.dm.eng<=0);};
 const rpm=P=>{const e=E0(P);return e?e.rpm:running(P)?62+38*clamp(P.n||0,0,1.05):0;};
-const egt=P=>{const e=E0(P);return e?e.egt*800:running(P)?320+300*clamp(P.n||0,0,1)+120*(P.ab||0):20;};
+const egt=P=>{const e=E0(P);return e?e.egt*800:window.ENGSYS&&window.ENGSYS.on?ENGSYS.egt(P,0):running(P)?320+300*clamp(P.n||0,0,1)+120*(P.ab||0):20;};
 const LB=2.2046;
 
 /* ---------------- 2D drawing helpers for faces ---------------- */
@@ -61,7 +61,7 @@ const F={
    const e=egt(P);c.strokeStyle='#d33';c.lineWidth=7;c.beginPath();c.arc(0,0,R*.9,(-150+300*6.3/12-90)*D2R,(-150+300*6.6/12-90)*D2R);c.stroke();needle(c,R,-150+300*clamp(e/1200,0,1));},
  acc:(c,P)=>{P._minNz=Math.min(P._minNz==null?1:P._minNz,P.nz||1);scale(c,R,-150,150,14,2,[-4,-2,0,2,4,6,8,10],.64,19);T(c,'G UNITS',0,R*.42,13,DIM);
    const a=g=>-150+300*clamp((g+4)/14,0,1);needle(c,R,a(P.maxNz||1),.78,4,'#e8e8e0');needle(c,R,a(P._minNz),.78,4,'#e8e8e0');needle(c,R,a(P.nz||1));},
- oil:G('ENG OIL',-130,130,10,2,[0,20,40,60,80,100],P=>running(P)?(rpm(P)<70?.3+rpm(P)/400:.42+(P.n||0)*.08):0,'PSI'),
+ oil:G('ENG OIL',-130,130,10,2,[0,20,40,60,80,100],P=>window.ENGSYS&&window.ENGSYS.on?ENGSYS.oilP(P,0)/100:running(P)?(rpm(P)<70?.3+rpm(P)/400:.42+(P.n||0)*.08):0,'PSI'),
  ralt:(c,P)=>{const h=Math.max(0,(P.pos.y-groundAt(P.pos.x,P.pos.z))*3.2808),pwr=!!sv('ralt',1),f=v=>v<1000?v/1000*.6:.6+clamp((v-1000)/4000,0,1)*.4;
    scale(c,R,-160,160,20,4,[0,200,400,600,800,1000,'',2000,'',5000],.64,15);T(c,'RADIO',0,R*.28,13,DIM);T(c,'ALTITUDE',0,R*.43,13,DIM);T(c,'FEET',0,R*.58,12,DIM);
    if(!pwr||h>5000){c.fillStyle='#c22';c.fillRect(-R*.3,-R*.62,R*.6,R*.24);T(c,'OFF',0,-R*.5,16,'#fff');}needle(c,R,-160+320*f(pwr?Math.min(h,5000):0));},
@@ -98,7 +98,7 @@ const F={
    T(c,'TRANSFER',0,R*.28,14,DIM);T(c,'FUEL',0,R*.43,14,DIM);T(c,'LBS × 1000',0,R*.58,11,DIM);needle(c,R,-140+280*clamp(x/5000,0,1));},
  ff:(c,P)=>{const f=running(P)?(rpm(P)<70?.08+rpm(P)/700:.12+(P.n||0)*.6+(P.ab||0)*.28):0;scale(c,R,-140,140,24,4,[0,2,4,6,8,10,12],.64,19);T(c,'FUEL FLOW',0,R*.32,13,DIM);T(c,'PPH × 1000',0,R*.5,11,DIM);needle(c,R,-140+280*clamp(f,0,1));},
  lox:G('LIQUID',-130,130,10,2,[0,2,4,6,8,10],P=>.78,'OXYGEN · LITERS'),
- hyd:(lbl)=>(c,P)=>{scale(c,R,-130,130,8,2,[0,1,2,3,4],.62,24);T(c,lbl,0,R*.42,20,DIM);needle(c,R,-130+260*clamp(running(P)?(rpm(P)>40?.75+.01*Math.sin(now()*2):rpm(P)/53):0,0,1),.84,10);},
+ hyd:(lbl)=>(c,P)=>{scale(c,R,-130,130,8,2,[0,1,2,3,4],.62,24);T(c,lbl,0,R*.42,20,DIM);needle(c,R,-130+260*clamp(window.ENGSYS&&window.ENGSYS.on?ENGSYS.hydN(P,/2|3|UTIL/i.test(lbl)?'B':'A')*.75:running(P)?(rpm(P)>40?.75+.01*Math.sin(now()*2):rpm(P)/53):0,0,1),.84,10);},
  tb:(c,P)=>{const rr=P.yawRate!=null?P.yawRate:(P.angVel?P.angVel.y:0);c.fillStyle=INK;for(const x of[-R*.5,0,R*.5])c.fillRect(x-4,-R*.82,8,R*.18);
    c.save();c.translate(0,R*.25);c.rotate(clamp(-rr*R2D*10,-45,45)*D2R);c.fillStyle=INK;c.fillRect(-4,-R*.95,8,R*.8);c.restore();
    c.fillStyle='#ddd';c.beginPath();c.ellipse(0,R*.48,R*.62,R*.16,0,0,Math.PI);c.fill();c.fillStyle='#000';c.beginPath();c.arc(clamp(-(P.beta||0)*R2D*6,-R*.48,R*.48),R*.55,R*.1,0,7);c.fill();
