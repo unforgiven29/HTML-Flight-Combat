@@ -159,3 +159,22 @@ Every system below can be switched off from the console via `window.REALISM`, e.
   - Chaff easily breaks the lock of a pulse (non-Doppler) radar.
   - A pulse-Doppler lock only breaks if the target beams, putting itself and the chaff in the notch.
   - This applies to your own STT lock and to AI radar locks.
+
+## v236 — Mirage F1C from the F1AZ flight manual and Chuck's DCS Mirage F1 guide (`js/mirageF1.js`)
+**Airframe / engine** (F1AZ manual 1F-F1K50AZ-1-1, physical and technical characteristics)
+- Empty equipped 7,824 kg + pilot → 7,920 kg; internal fuel 3,476 kg (4,240 l, SG 0.79); span 8.44 m.
+- Atar 9K-50: 47.7 kN dry / 68.3 kN afterburner (was 49.2 / 70.6).
+- Load factor +7.2 g below M0.95, +6 g supersonic (was a flat 7 g).
+- RP35 drop tanks: 1,155 l (912 kg), was 1,200 l. DEFA 553: 150 rounds per gun (300), was 250.
+
+**Cyrano IV** (CG part 11)
+- Now a pulse radar (was flagged pulse-Doppler): no look-down — below the horizon detection drops to 15–40 % depending on own altitude; chaff breaks its lock easily.
+- Range scales 7 / 15 / 35 / 60 NM (were km); lock-on (APC) only inside 35 NM; ~32 NM detection against a fighter.
+- Azimuth ±60° / ±30°, 4-bar or 1-bar.
+- PRF key toggles **HA** (long pulse, full range) and **IC** (short pulse, −10 % range).
+- Close-combat (TL / BZ) auto-lock only between 400 m and 7 km.
+- R530 / Super 530F can only be fired with the radar in APC (STT); APS (TWS) cannot guide them.
+
+**BF radar detector** replaces the borrowed ALR-46: coarse quadrant bearings, weak identification, no launch warning.
+
+Not changed: cockpit layout, HUD/sight, outer model, Cyrano IV scope drawing (still the generic B-scope).

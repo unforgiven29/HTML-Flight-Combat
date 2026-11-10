@@ -332,9 +332,10 @@ function makeMirage3(){return mkJet({c:0x9b9a7e,dk:0x6b6a55,lt:0xb9b89c,rad:0x2c
   canopy:[[.38,.42,1.4,.62,-4.7,0x5a7488]]
 });}
 
-// ---------- Dassault Mirage F1C (F1AZ / F1CE documentation, Cyrano IV notes) ----------
-// Atar 9K-50 49.2 / 70.6 kN, empty 7,400 kg, 3,400 kg internal (4,300 l), 25 m² swept shoulder wing with full-span slats, 7 g, Cyrano IV (~45 km on a fighter),
-// two DEFA 553 30 mm (125 rds), Super 530F / R530 inboard, Magic on the tips, 1,200 l tanks.
+// ---------- Dassault Mirage F1C (v236: Mirage F1AZ flight manual 1F-F1K50AZ-1-1 + Chuck's DCS Mirage F1 guide) ----------
+// Atar 9K-50 47.7 / 68.3 kN (test bed, AZ manual), empty equipped 7,824 kg + pilot, 3,476 kg internal (4,240 l at SG 0.79), span 8.44 m,
+// +7.2 / -3 g below M0.95 and +6 g above M1.0, Cyrano IV pulse radar (60 NM display, 35 NM lock, no look-down), two DEFA 553 30 mm (150 rds each),
+// R530 / Super 530F inboard, Magic / Sidewinder on the tips, RP35 1,155 l tanks. Radar modes and RWR in js/mirageF1.js.
 const F1ST={1:[-4.2,-.08,1.6],2:[-3.0,-.15,1.3],3:[-1.75,-.2,.9],C:[0,-.96,.4],5:[1.75,-.2,.9],6:[3.0,-.15,1.3],7:[4.2,-.08,1.6]};
 function makeMirageF1(){return mkJet({c:0x8e9584,dk:0x646a5d,lt:0xabb2a1,rad:0x2d322c,st:F1ST,wy:()=>.42,tipX:4.1,
   body:[[-7.7,.02,.0,.02,2],[-6.9,.26,.02,.28,2],[-5.6,.48,.08,.52,2.1],[-4.0,.62,.15,.7,2.3],[-1.5,.74,.08,.76,2.5],[1.5,.74,.05,.72,2.5],[4.5,.6,.05,.6,2.2],[7.0,.5,.05,.5,2]],
@@ -816,16 +817,16 @@ addJet({id:'Mirage III',src:'F-4E',side:'BLUE',name:'Mirage IIIE',call:'MIRAGE',
   camp:{cold:{0:['CAP','INT','STK']}}});
 
 // ---- Mirage F1C ----
-addJet({id:'Mirage F1',src:'F-4E',side:'BLUE',name:'Mirage F1C',call:'MIRAGE',nctr:'MIRAGE F1',foe:'MiG-23',eng:'Atar 9K-50',rwr:'ALR-46',
+addJet({id:'Mirage F1',src:'F-4E',side:'BLUE',name:'Mirage F1C',call:'MIRAGE',nctr:'MIRAGE F1',foe:'MiG-23',eng:'Atar 9K-50',rwr:'BF',
   role:'FRANCE · ALL-WEATHER INTERCEPTOR · CYRANO IV · SUPER 530F',stall:{s:.3,twin:0},
-  ac:Object.assign({},imp,{name:'Mirage F1C',model:makeMirageF1,st:F1ST,empty:7400,fuel:3400,tank:950,ptb:950,S:25,CLa:4.1,cd0:.0175,k:.135,mil:49200,ab:70600,spool:3,abLight:.75,
-    clt:clt(4.1,1.4,24,.05),cdm:sup(.027,.88),dW:11000,tkG:[5,6],dep:{a:26,rock:.9,spin:2.6},ff:[.15,1.35,5.8],gLim:7,aoaLim:24,roll:4.0,fbw:false,noLimiter:true,
-    rcs:4,irs:1.1,pit:'phantom',eye:eyeOf(-4.6,.66),radar:R('Cyrano IV',45000,[10,20,40,80],'KM',.3),irst:false,pulse:false,
-    gun:G_('2× DEFA 553',42,800,26,250,.003),keepJ:['1','7'],rwr:'F1',spo:4,tankName:'1,200 l tank',mcap:2.2}),
+  ac:Object.assign({},imp,{name:'Mirage F1C',model:makeMirageF1,st:F1ST,empty:7920,fuel:3476,tank:912,ptb:912,S:25,CLa:4.1,cd0:.0175,k:.135,mil:47700,ab:68300,spool:3,abLight:.75,
+    clt:clt(4.1,1.4,24,.05),cdm:sup(.027,.88),dW:11000,tkG:[5,6],dep:{a:26,rock:.9,spin:2.6},ff:[.15,1.35,5.8],gLim:7.2,gHi:6,aoaLim:24,roll:4.0,fbw:false,noLimiter:true,
+    rcs:4,irs:1.1,pit:'phantom',eye:eyeOf(-4.6,.66),radar:R('Cyrano IV',32*NM,[7,15,35,60],'NM',.3),irst:false,pulse:true,
+    gun:G_('2× DEFA 553',42,800,26,300,.003),keepJ:['1','7'],rwr:'F1',spo:4,tankName:'RP35 1,155 l tank',mcap:2.2}),
   stn:{1:['Magic 1','Magic 2','AIM-9J','AIM-9P'],7:['Magic 1','Magic 2','AIM-9J','AIM-9P'],2:['SAMP 250','Belouga','Matra F1'],6:['SAMP 250','Belouga','Matra F1'],
        3:['Super 530F','R530','TK','SAMP 250','SAMP 400','Belouga','Matra F1','AS-30L'],5:['Super 530F','R530','TK','SAMP 250','SAMP 400','Belouga','Matra F1','AS-30L'],C:['PTB','SAMP 250','SAMP 400']},
   load:{cold:{1:'Magic 1',7:'Magic 1',3:'Super 530F',5:'Super 530F',C:'PTB'},modern:{1:'Magic 2',7:'Magic 2',3:'Super 530F',5:'Super 530F',C:'PTB'},strike:{1:'Magic 1',7:'Magic 1',2:'SAMP 250',6:'SAMP 250',3:'TK',5:'TK',C:'SAMP 400'}},
-  fv:{hw:4.25,y1:3.6,span:'8.40 m',fus:[.74,.74,.05],wing:[.55,.3,.7],tail:[2.6,.25,.2],eng:[[.75,.05,.18]],engSy:2.4,can:[.66,.38,.42],nose:[0,.3],fins:[[0,.7,3.6]],tips:[[4.2,-.08]]},
+  fv:{hw:4.25,y1:3.6,span:'8.44 m',fus:[.74,.74,.05],wing:[.55,.3,.7],tail:[2.6,.25,.2],eng:[[.75,.05,.18]],engSy:2.4,can:[.66,.38,.42],nose:[0,.3],fins:[[0,.7,3.6]],tips:[[4.2,-.08]]},
   camp:{cold:{0:['CAP','INT','ESC']}}});
 
 // ---- Mirage 2000C ----
