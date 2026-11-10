@@ -79,11 +79,16 @@ Object.assign(PIT['MiG-19'],{pc:0x232523,gs:'asp',stk:'a1',thr:2,lay:{rwr:null,s
   con:{L:[['РУД ×2 / РД-9Б',['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']],['ЗАКРЫЛКИ / ЩИТКИ',['ЗАКР','ЩИТКИ']],['РСИУ-4',['КАНАЛ','ГРОМК']],['ТРИММЕР',['СТАБ','ЭЛЕР']]],
        R:[['ЩИТОК АЗС',['РЛС','ПРИЦЕЛ','АРК']],['РАДИОЛОКАТОР РП-5',['ВКЛ','ДАЛЬН','ЯРК']],['КИСЛОРОД',['ПОДАЧА','АВАР']],['ОСВЕЩЕНИЕ',['УФО','АНО']]]}});
 Object.assign(PIT['F-104S'],{pc:0x2a2d2f,gs:'opt',stk:'b8',thr:1,lay:{rwr:[90,95,56],scope:[512,118,98],
-  dial:{ias:[330,100,60],alt:[330,232,60],vvi:[330,358,50],adi:[512,300,66],hsi:[512,445,56],
-    apc:[690,95,50],rpm:[820,95,56],egt:[940,95,48],acc:[690,225,46],noz:[820,225,46],fuel:[940,225,52],clk:[690,345,40],oil:[820,345,40],hyd:[940,345,40]},
-  gearH:[80,250],arm:[150,440,240],cau:[620,420,4,2,90,30,['FIRE','HYD','FUEL LOW','GEN','OIL','PITCH','CANOPY','TIP TANK']],txt:[['R21G',512,232,10]]},
-  con:{L:[['THROTTLE / ENGINE',['START','IGN','A/B']],['AN/ARC-552 UHF',['CHAN','VOL','MODE']],['FLAPS / TRIM',['T.O.','LAND','TRIM']],['ARMAMENT',['SPARROW','GUN','RKT']]],
-       R:[['R21G RADAR',['MODE','RANGE','GAIN']],['ELECTRICAL',['BATT','GEN','INV']],['NAV / TACAN',['CHAN','MODE']],['LIGHTS / OXY',['INST','POS','O2']]]}});
+  // F-104S: scope top centre, airspeed-Mach / altimeter / VVI column left of the ADI and BDHI, the APC (automatic pitch control) AOA
+  // indicator heading the engine group (tach, EGT, nozzle, oil), fuel / flow, both hydraulic systems, cabin altitude; APC switch + shaker /
+  // kicker lights in the caution block
+  dial:{ias:[330,100,60],alt:[330,232,60],vvi:[330,358,50],adi:[512,300,66],hsi:[512,445,56],turn:[612,452,24],
+    apc:[690,95,50],rpm:[820,95,56],egt:[940,95,48],acc:[690,225,46],noz:[820,225,46],fuel:[940,225,52],clk:[690,340,34],oil:[790,340,34],hyd_1:[875,340,32],hyd_2:[960,340,32],
+    ff:[230,452,30],cab:[100,440,30]},
+  gearH:[80,250],arm:[150,380,200],plates:[[160,180,140,60,'APC',['APC','SHAKER TEST']]],
+  cau:[680,392,4,3,84,26,['FIRE','HYD','FUEL LOW','GEN','OIL','PITCH','CANOPY','TIP TANK','SHAKER','KICKER','APC OFF','MSTR CAUT']],txt:[['R21G/M1',512,232,10],['HYD 1',875,384,8],['HYD 2',960,384,8]]},
+  con:{L:[['THROTTLE / J79',['START','IGN','A/B']],['APC / STAB',['APC','PITCH DAMP','YAW DAMP']],['FLAPS / BLC',['T.O.','LAND','BLC']],['AN/ARC-552 UHF',['UHF','CHAN','VOL']],['ARMAMENT',['MASTER ARM','SPARROW','RKT']],['FUEL',['TIP XFER','PYL XFER','BOOST']]],
+       R:[['R21G RADAR',['RADAR','RANGE','GAIN']],['ELECTRICAL',['BATT','GEN','INV']],['NAV / TACAN',['TACAN','MODE']],['IFF / SIF',['IFF','MODE 3']],['LIGHTS / OXY',['INST','POS','O2']],['ANTI-ICE / PITOT',['PITOT','ENG A/I']]]}});
 Object.assign(PIT['F-5E'],{pc:0x30353a,gs:'opt',stk:'b8',thr:2,lay:{rwr:[80,90,50],scope:[512,95,82],
   dial:{aoa:[190,90,46],ias:[345,120,62],adi:[512,262,72],alt:[680,120,62],acc:[360,290,50],hsi:[512,430,62],vvi:[680,270,56],oil:[680,410,40],
     rpm:[810,90,46],rpm2:[920,90,46],egt:[810,200,44],egt2:[920,200,44],noz:[810,305,40],noz2:[920,305,40],fuel:[865,422,54]},
@@ -128,11 +133,22 @@ SET('F-20',{gs:'hud',stk:'b8',thr:1,lay:{rwr:[512,450,46],m2:[250,175,115],scope
   dial:{adi:[440,385,46],ias:[440,295,36],alt:[584,295,36],vvi:[584,385,36],aoa:[100,60,34],rpm:[930,330,40],egt:[930,420,38],fuel:[100,330,48]},
   gearH:[100,440],arm:[160,450,170],plates:[[396,20,232,120,'UFC',['A/A','A/G','NAV','IFF']]],cau:[690,310,2,3,80,26,['FIRE','HYD','FUEL','GEN','OIL','CANOPY']]},
   con:CON('en',[['THROTTLE / ENGINE',['START','JFS','A/B']],'FUEL','UHF / TACAN','FLAPS / TRIM'],[['ELECTRICAL',['BATT','GEN','EMER']],'APG-67 RADAR','INS','LIGHTS / O2'])});
-SET('F-8E',{gs:'opt',stk:'b8',thr:1,lay:{rwr:null,scope:[512,102,90],
-  dial:{aoa:[200,92,44],ias:[345,110,60],alt:[680,110,60],adi:[512,272,70],acc:[345,262,50],vvi:[680,262,54],hsi:[512,435,58],
-    rpm:[830,92,52],egt:[945,92,46],noz:[830,215,42],fpr:[945,215,40],fuel:[880,345,56],oil:[680,400,36],clk:[945,450,30]},
-  gearH:[80,250],arm:[140,430,250],cau:[150,170,2,3,90,26,['FIRE','HYD','FUEL LOW','GEN','WING','CANOPY']],txt:[['APQ-94',512,206,9]]},
-  con:CON('en',[['ENGINE',['MASTER','IGN','A/B']],['WING INCIDENCE',['UP','DOWN']],'UHF','ARMAMENT'],[['RADAR APQ-94',['MODE','RANGE','GAIN']],'ELECTRICAL','TACAN','LIGHTS / O2'])});
+SET('F-8E',{gs:'opt',stk:'b8',thr:1,lay:{rwr:null,scope:[512,96,80],
+  // F-8E instrument board, NAVAIR 01-45HHD-1 figure 1-3 sheet 2: engine stack far left (tach / EPR / EGT), AOA-VVI-accel column,
+  // radar altimeter over airspeed-Mach over altimeter, APQ-94 scope top centre over the attitude indicator, course indicator over the
+  // BDHI right of centre, clock / UHF channel, fuel group (flow, transfer, main, LOX) and three hydraulic gauges far right
+  dial:{rpm:[130,200,36],epr:[130,292,36],egt:[130,386,36],aoa:[220,190,34],vvi:[220,290,36],acc:[220,388,34],oil:[218,98,26],
+    ralt:[318,104,40],ias:[320,238,46],alt:[320,358,46],adi:[512,286,64],trim:[566,396,18],droop:[458,396,18],
+    crs:[614,128,36],hsi:[620,258,48],clk:[706,190,28],uhf:[782,190,30],ff:[704,298,30],xfr:[784,292,32],fuel:[716,392,38],lox:[808,392,30],
+    hyd_1:[880,250,19],hyd_2:[880,298,19],hyd_3:[880,346,19],turn:[620,396,26],
+    gi_n:[36,206,10],gi_l:[20,232,10],gi_r:[52,232,10],lamp_fire:[392,40,11],lamp_fuel:[600,36,9],lamp_oxy:[850,140,8],lamp_hydw:[880,398,9]},
+  arm:[400,432,220],cau:[8,262,1,4,58,22,['RUD TRIM','AIL TRIM','SPD BRK','PROBE']],
+  plates:[[150,40,50,38,'PROBE',['EXT']],[660,30,110,44,'FUEL',['DUMP','XFER']],[6,160,62,22,'WNG-WHL-DRP',[]]],
+  txt:[['APQ-94',512,186,9],['FIRE',392,62,9],['FUEL LOW',600,54,8],['O2',850,158,8],['OIL/HYD',880,416,8],['DROOP',458,420,8],['TRIM',566,420,8],['HYD PRESS',880,226,8]]},
+  con:{L:[['ENGINE',['MASTER','FUEL CTL','IGN']],['WING INCIDENCE',['HANDLE','RELEASE','DOWNLOCK']],['STAB AUG',['YAW STAB','ROLL STAB','EMER TRIM']],['AUTOPILOT',['MASTER','HDG HOLD']],
+         ['THROTTLE',['SPD BRK','CRUISE DRP','CAT GRIP']],['APC',['ENGAGE','STBY']],['RADAR APQ-94',['RADAR','RANGE','GAIN']],['FIRE CONTROL',['SIDEWINDER','GUNS','RKT']]],
+       R:[['ARRESTING GEAR',['HOOK']],['ANTI-ICE / PITOT',['ENG A/I','PITOT']],['EMERG GEN',['EMER GEN','MSTR GEN']],['AIR COND',['MODE','TEMP']],
+         ['TACAN',['TACAN','CHAN']],['EXT LIGHTS',['POS','ANTI-COL']],['WINGFOLD',['FOLD']],['UHF / IFF',['UHF','IFF','CODER']]]}});
 // --- British / French / Swedish / Italian ---
 SET('Lightning F.6',{gs:'gun',stk:'a1',thr:2,lay:{rwr:null,scope:[512,105,94],
   dial:{ias:[170,100,52],mach:[60,100,40],alt:[170,240,52],adi:[335,215,76],hsi:[690,215,76],vvi:[360,385,48],acc:[60,240,38],turn:[200,395,46],
@@ -233,6 +249,45 @@ SET('JH-7',{gs:'hud',stk:'b8',thr:2,lay:{rwr:[90,92,48],scope:[512,130,110],
     rpm:[860,250,40],rpm2:[960,250,40],egt:[860,345,36],egt2:[960,345,36],fuel:[910,440,46]},
   gearH:[90,400],arm:[150,450,180],cau:[600,460,4,1,60,24,['火警','液压','余油','发电']],txt:[['雷达 / 显示',512,256,9]]},con:ZC(2,'雷达 / 地形')});
 
+// ---------- v238: console switch state + actions ----------
+// get(jet, switch, panel) -> on/off; flip() toggles and runs the game action bound to it (radar power / range, master arm, gear, flaps,
+// speed brake, wing incidence or sweep, APC, A/B is display only). Unbound switches keep their own state for the session.
+const CW_SW=window.CW_SW={st:{},redraw:[],
+  key:(id,w,ti)=>id+'|'+(ti||'')+'|'+w,
+  fn(w,ti){const T=(ti||'').toUpperCase(),W=w.toUpperCase();
+    if(/RADAR|РЛС|APQ|APG|CYRANO|AGAVE|PS-|AI\.23|雷达|R21G|RP-5|ORION|KLEN/.test(T)){if(/^(RADAR|MODE|РЕЖ|MOD|ВКЛ|MARCHE|TILL|开)$/.test(W))return'radar';if(/RANGE|DIST|ДАЛЬН|PORTEE|AVST|DALN/.test(W))return'range';}
+    if(/^(MASTER ARM|ARM|ARMT|ГЛАВН|HUVUDSÄKR|总电门)$/.test(W)||/ARMAMENT|ВООРУЖ|ARMEMENT|BEVÄPN|武器/.test(T)&&/^(ARM|MASTER|ГЛАВН|总电门)$/.test(W))return'arm';
+    if(/^(GEAR|ШАССИ|TRAIN|STÄLL|起落架)$/.test(W))return'gear';
+    if(/FLAP|ЗАКРЫЛ|VOLETS|KLAFF|襟翼/.test(T)&&j0(W))return'flap';
+    if(/^(SPD BRK|ЩИТКИ|AEROF)$/.test(W))return'sb';
+    if(/WING INCIDENCE/.test(T)&&W==='HANDLE')return'winc';
+    if(/WING SWEEP|КРЫЛО/.test(T))return'sweep';
+    if(W==='APC'||(T==='APC'&&W==='ENGAGE'))return'apc';
+    if(W==='CRUISE DRP')return'droop';
+    return null;},
+  get(id,w,ti){const k=this.key(id,w,ti),f=this.fn(w,ti),P=(typeof player!=='undefined'?player:null);
+    try{if(P&&P.type===id){if(f==='radar')return radar.power!=='OFF';if(f==='arm')return game.armPos===0;if(f==='gear')return !!sys.v.gear;if(f==='flap'||f==='winc')return (P.flapCmd||0)>.5;if(f==='sb')return !!keys.has('KeyB');}}catch(e){}
+    if(f==='apc'){const v=this.st[id+'|APC'];return v===undefined?true:v;}
+    if(id&&w==='APC'&&ti===undefined){const v=this.st[id+'|APC'];return v===undefined?true:v;}
+    const v=this.st[k];return v===undefined?/^(MASTER|BATT|GEN|INV|BOOST|IGN|PITCH DAMP|YAW DAMP|YAW STAB|ROLL STAB|MSTR GEN|UHF|IFF|TACAN|POS|INST|O2|PITOT|RADAR|ГЕН|АККУМ|BATT)$/.test(w.toUpperCase()):v;},
+  label(id,w,ti){const f=this.fn(w,ti);if(f==='range')return'RANGE '+(radar.ranges[radar.ri]||'');if(f==='winc')return this.get(id,w,ti)?'WING UP (7°)':'WING DOWN';return this.get(id,w,ti)?'ON':'OFF';},
+  flip(id,w,ti){const f=this.fn(w,ti),P=(typeof player!=='undefined'?player:null),on=!this.get(id,w,ti);
+    try{if(f==='radar')radar.power=on?'ON':'OFF',radar.warm=on?Math.max(radar.warm||0,3):0;
+      else if(f==='range')radar.ri=(radar.ri+1)%radar.ranges.length;
+      else if(f==='arm')setArm(on?0:1);
+      else if(f==='gear'&&CTL.map.KeyG)CTL.map.KeyG.fn();
+      else if(f==='flap')flapKey();
+      else if(f==='sb'){if(on)keys.add('KeyB');else keys.delete('KeyB');}
+      else if(f==='winc'&&window.CW_SYS)CW_SYS.wingInc();
+      else if(f==='sweep')sweepStep(on?1:-1);
+      else if(f==='apc')this.st[id+'|APC']=on;
+      else this.st[this.key(id,w,ti)]=on;}catch(e){console.warn('[cwpit] switch',e);}
+    if(f!=='apc'&&f!=='radar'&&f!=='arm'&&f!=='gear'&&f!=='flap'&&f!=='winc'&&f!=='sb')this.st[this.key(id,w,ti)]=on;
+    this.redraw.forEach(d=>{try{d();}catch(e){}});}};
+function j0(W){return/^(T\.O\.|AUTO|ЗАКР|ВЗЛЕТ|起飞|ON|UP|ВКЛ)$/.test(W);}
+// repaint console tops a few times a second so levers follow keyboard changes too
+setInterval(()=>{if((typeof player!=='undefined'?player:null)&&PIT[player.type])CW_SW.redraw.forEach(d=>{try{d();}catch(e){}});},500);
+
 // ---------- geometry helpers ----------
 const LM=(c,sh=10)=>new THREE.MeshPhongMaterial({color:c,shininess:sh,specular:0x1c1c1c});
 const box=(par,w,h,d,m,x,y,z,rx=0)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.rotation.x=rx;par.add(o);return o;};
@@ -293,14 +348,25 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     if(!S.con)for(let i=0;i<4;i++)box(g,.14,.006,.16,LM(0x24282a),sd*.43,-.612,-.5+i*.2);});
   box(g,.3,.25,.3,dk,0,-.98,-.55);// pedestal under the panel
   // console tops: painted switch panels per jet  S.con={L:[[title,[switches]],..],R:[..]}
+  // console tops: painted switch panels per jet S.con={L:[[title,[switches]],..],R:[..]}. v238: every switch is a clickable control
+  // (state shown on the lever, tooltip with ON/OFF); switches that have a game function call it (see CW_SW.act)
   if(S.con)['L','R'].forEach((sd,si)=>{const list=S.con[sd]||[];const cc=document.createElement('canvas');cc.width=256;cc.height=1024;const x=cc.getContext('2d');
-    x.fillStyle='#'+(S.cc||S.pc).toString(16).padStart(6,'0');x.fillRect(0,0,256,1024);const ph=1024/Math.max(1,list.length);
-    list.forEach(([ti,sw],i)=>{const y=i*ph;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(8,y+6,240,ph-12);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=2;x.strokeRect(8,y+6,240,ph-12);
-      x.font='bold 15px Arial';x.textAlign='center';x.fillStyle='#e8e8e0';x.fillText(ti,128,y+26);
-      (sw||[]).forEach((w,j)=>{const cols=Math.min(3,sw.length),sx=40+(j%cols)*88,sy=y+60+Math.floor(j/cols)*54;x.fillStyle='#4a4a4a';x.beginPath();x.arc(sx,sy,10,0,7);x.fill();x.fillStyle='#ddd';x.fillRect(sx-3,sy-20,6,18);x.font='11px Arial';x.fillStyle='#c8c8c0';x.fillText(w,sx,sy+24);});});
-    const t=new THREE.CanvasTexture(cc);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.19,.94),m);pl.rotation.x=-Math.PI/2;pl.position.set((si?1:-1)*.43+(si&&S.sbs?.78:0),-.613,-.16);g.add(pl);
-    // a few real 3D toggles so the console reads as hardware
-    list.forEach((_,i)=>{for(let j=0;j<2;j++){const tg=box(g,.006,.022,.006,LM(0xcccccc,40),(si?1:-1)*(.43-.05+j*.05)+(si&&S.sbs?.78:0),-.6,-.16-.47+(i+.5)*(.94/list.length)+.02,-.4);}});});
+    const t=new THREE.CanvasTexture(cc);const ph=1024/Math.max(1,list.length);
+    const draw=()=>{x.fillStyle='#'+(S.cc||S.pc).toString(16).padStart(6,'0');x.fillRect(0,0,256,1024);
+      list.forEach(([ti,sw],i)=>{const y=i*ph;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(8,y+6,240,ph-12);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=2;x.strokeRect(8,y+6,240,ph-12);
+        x.font='bold 15px Arial';x.textAlign='center';x.fillStyle='#e8e8e0';x.fillText(ti,128,y+24);
+        (sw||[]).forEach((w,j)=>{const cols=Math.min(3,sw.length),sx=40+(j%cols)*88,sy=y+Math.min(60,ph*.48)+Math.floor(j/cols)*54,on=CW_SW.get(id,w,ti);
+          x.fillStyle='#4a4a4a';x.beginPath();x.arc(sx,sy,10,0,7);x.fill();x.fillStyle=on?'#f0f0e8':'#9a9a92';x.fillRect(sx-3,on?sy-20:sy+2,6,18);
+          x.fillStyle=on?'#56ff7a':'#3a2a20';x.beginPath();x.arc(sx+16,sy-12,3.5,0,7);x.fill();
+          x.font='11px Arial';x.fillStyle='#c8c8c0';x.fillText(w,sx,sy+Math.min(26,ph*.2));});});t.needsUpdate=true;};
+    draw();CW_SW.redraw.push(draw);
+    const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.19,.94),m);pl.rotation.x=-Math.PI/2;
+    const cx=(si?1:-1)*.43+(si&&S.sbs?.78:0);pl.position.set(cx,-.613,-.16);g.add(pl);
+    const hm=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+    list.forEach(([ti,sw],i)=>{(sw||[]).forEach((w,j)=>{const cols=Math.min(3,sw.length),sx=40+(j%cols)*88,sy=i*ph+Math.min(60,ph*.48)+Math.floor(j/cols)*54;
+      const hb=new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.03),hm);hb.position.set(cx+(sx/256-.5)*.19,-.6,-.16+(sy/1024-.5)*.94);hb.userData.cwFx=1;
+      const def={meshes:[hb],name:ti+' · '+w,state:()=>CW_SW.label(id,w,ti),act:()=>{CW_SW.flip(id,w,ti);try{sfx.click();}catch(e){}}};hb.userData.ctl=def;g.add(hb);
+      const lv=box(g,.006,.022,.006,LM(0xcccccc,40),cx+(sx/256-.5)*.19,-.6,-.16+(sy/1024-.5)*.94,-.4);lv.userData.cwFx=1;});});});
   // side-by-side: the navigator / WSO station to the right — panel continuation, hooded Orion-A / PNS-24 radar display turned to his seat,
   // the pedestal with the PNS-24M keyboard between the seats, his stick, his seat with him in it, and the centre canopy frame
   if(S.sbs){const W=new THREE.Group();W.position.set(.78,0,0);g.add(W);
@@ -455,14 +521,26 @@ function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb
     else if(t==='adi2')dial(k,r=>{c.save();c.beginPath();c.arc(0,0,r,0,7);c.clip();c.rotate(-(P.bank||0));const po=(P.pitch||0)*R2D*r/40;
       for(let i=-12;i<12;i++){c.fillStyle=i%2?'#d9d2b8':'#222';c.fillRect(-r*1.5,po+i*r*.18,r*3,r*.18);}c.restore();
       c.strokeStyle='#ff9020';c.lineWidth=4;c.beginPath();c.moveTo(-r*.6,0);c.lineTo(r*.6,0);c.stroke();lab(r,'ИКВ',.82);});
-    else if(t==='trim')gauge(k,.5,ru?'ТРИМ':'TRIM');
-    else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
+    else if(t==='trim')dial(k,r=>{ticks(r,-60,60,6,2);ndl(r,clamp((P.trim||P.ctl&&P.ctl.p*.3||0)*60,-60,60),.8);lab(r,'NOSE',-.4);});
+    else if(t==='epr')dial(k,r=>{ticks(r,-135,135,10,2);nums(r,-135,135,['1.0','1.5','2.0','2.5','3.0','3.5']);ndl(r,-135+270*clamp(run?(.12+n*.6+ab*.15):0,0,1));lab(r,'EPR');});
+    else if(t==='ralt')dial(k,r=>{const h=Math.max(0,(P.pos.y-groundAt(P.pos.x,P.pos.z))*3.2808),v=h<5000?h/5000:1;ticks(r,-150,150,10,2);nums(r,-150,150,[0,1,2,3,4,5]);
+      if(h<5000)ndl(r,-150+300*v);else{c.fillStyle='#d23';c.fillRect(-r*.35,-r*.15,r*.7,r*.3);T('OFF',0,0,Math.round(r*.2),'#fff');}lab(r,'RADAR ALT ×1000',.48);});
+    else if(t==='xfr')gauge(k,clamp(((P.totalFuel||0)-(P.ac.fuel||3000)*.55)/((P.ac.fuel||3000)*.45),0,1),'TRANSFER LB');
+    else if(t==='uhf')dial(k,r=>{c.fillStyle='#000';c.fillRect(-r*.55,-r*.3,r*1.1,r*.6);T(String(((Math.floor((P.id||0))%18)+1)).padStart(2,'0'),0,0,Math.round(r*.45),'#fff');lab(r,'UHF CHAN',.62);});
+    else if(t==='crs')dial(k,r=>{c.save();c.rotate(-(P.hdg||0)*D2R);ticks(r,0,350,35,3);c.restore();c.strokeStyle='#e8c040';c.lineWidth=3;c.beginPath();c.moveTo(0,-r*.8);c.lineTo(0,r*.8);c.stroke();lab(r,'COURSE',.5);});
+    else if(t==='droop'){const[x,y,r]=L.dial[k];const fl=(P.flapCmd||0)>.5,tr=P._wingT>0;c.fillStyle='#050606';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();
+      if(tr){for(let i=-3;i<4;i++){c.fillStyle=i%2?'#eee':'#222';c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();c.translate(x,y);c.rotate(.8);c.fillRect(i*r*.3,-r,r*.3,2*r);c.restore();}}
+      else{c.fillStyle='#111';c.beginPath();c.arc(x,y,r,0,7);c.fill();T(fl?'DN':'UP',x,y,Math.round(r*.7),'#fff');}}
+    else if(t==='gi'){const[x,y,r]=L.dial[k];let gd=false;try{gd=!!sys.v.gear;}catch(e){}const tr=(P.gearPos!=null)&&P.gearPos>.05&&P.gearPos<.95;c.fillStyle='#050606';c.beginPath();c.arc(x,y,r+3,0,7);c.fill();
+      c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();if(tr){for(let i=-4;i<5;i++){c.fillStyle=i%2?'#eee':'#222';c.save();c.translate(x,y);c.rotate(.8);c.fillRect(i*r*.3,-r*2,r*.3,4*r);c.restore();}}
+      else if(gd){c.fillStyle='#ddd';c.fillRect(x-r,y-r,2*r,2*r);c.fillStyle='#222';c.beginPath();c.arc(x,y,r*.55,0,7);c.fill();}else{c.fillStyle='#222';c.fillRect(x-r,y-r,2*r,2*r);T('UP',x,y,Math.round(r*.8),'#fff');}c.restore();}
+    else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):k.includes('fuel')?P.totalFuel<(P.ac.fuel||3000)*.15:k.includes('hydw')?P.hp<45:false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
   // sub-panels with switches: [x,y,w,h,title,[switch labels]]
   for(const pl of L.plates||[]){const[x,y,w,h,ti,sw]=pl;c.fillStyle='rgba(0,0,0,.28)';c.fillRect(x,y,w,h);c.strokeStyle='rgba(255,255,255,.22)';c.lineWidth=2;c.strokeRect(x,y,w,h);
     T(ti,x+w/2,y+11,10,ink);(sw||[]).forEach((s,i)=>{const n2=sw.length,sx=x+w*(i+.5)/n2,sy=y+h*.58;c.fillStyle='#555';c.beginPath();c.arc(sx,sy,7,0,7);c.fill();c.fillStyle='#ddd';c.fillRect(sx-2,sy-15,4,14);T(s,sx,y+h-9,8,dimInk);});}
   // annunciator / caution grid: [x,y,cols,rows,cw,ch,[labels]]
   if(L.cau){const[x,y,cols,rows,cw,ch,items]=L.cau,lowF=P.totalFuel<(P.ac.fuel||3000)*.15;
-    const lit=s=>/FIRE|ПОЖАР/.test(s)?P.fire>0||P.hp<25:/HYD|ГИДР/.test(s)?P.hp<45:/FUEL|ТОПЛ|ОСТАТ|BINGO/.test(s)?lowF:/GEN|ГЕН/.test(s)?!run:/OIL|МАСЛ/.test(s)?!run:false;
+    const lit=s=>/SHAKER/.test(s)?!!P._shk:/KICKER/.test(s)?!!P._kick:/APC OFF/.test(s)?(window.CW_SW&&CW_SW.get(P.type,'APC')===false):/MSTR CAUT/.test(s)?(P.hp<45||P.totalFuel<(P.ac.fuel||3000)*.15||!!P._kick):/FIRE|ПОЖАР/.test(s)?P.fire>0||P.hp<25:/HYD|ГИДР/.test(s)?P.hp<45:/FUEL|ТОПЛ|ОСТАТ|BINGO/.test(s)?lowF:/GEN|ГЕН/.test(s)?!run:/OIL|МАСЛ/.test(s)?!run:false;
     items.forEach((s,i)=>{const cx=x+(i%cols)*cw,cy=y+Math.floor(i/cols)*ch,on=lit(s),red=/FIRE|ПОЖАР/.test(s);c.fillStyle=on?(red?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(cx+2,cy+2,cw-4,ch-4);T(s,cx+cw/2,cy+ch/2,s.length>8?7:9,on?'#200':'#7a6a40');});}
   // landing-gear handle with three lights: [x,y]
   if(L.gearH){const[x,y]=L.gearH;let gd=false;try{gd=P.ac.cockpit==='fulcrum'?!!sys.mig.gear:!!sys.v.gear;}catch(e){}
