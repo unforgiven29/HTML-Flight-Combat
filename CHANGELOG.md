@@ -1,5 +1,11 @@
 # Changelog
 
+## v262 — VTOL on all V/STOL jets + AV-8B Harrier II cockpit
+- New `js/vtol.js`: Pegasus vectored-thrust model (nozzle 0 aft / STO 10 / 82 VL stop / 98.5 braking, stop release, water injection, LIDS ground cushion, hot-gas ingestion, rpm-scaled RCS, VL weight limit). Yak-38 and Yak-141 get lift jets (armed at 60 deg+, spool + fuel burn). Nozzle pivots animate on all three models. Comma / Period step the detents.
+- New `js/av8pit.js`: AV-8B cockpit rebuilt from the Tactical Manual / DCS guide: EHSD/MENU/VREST/ENG/FUEL/TAC MPCDs, UFC, EDP, caution + warning panels, standby instruments, fuel totalizer, hydraulics gauge, nozzle lever + throttle quadrant, engine/fuel/lights/electrical/COMM/ECS consoles, NAV and VSTOL HUD modes.
+- MPCDs rebuilt to the real 20-OSB layout and page set (MENU, EHSD with DATA, ENG, STRS, VREST VL/VTO/STO/CRUS/BNGO, HUD, BIT, CONF, IFF, EW/RWR, COMM, CAS, EMER, SDAT, CARD, FLIR/DMT/TPOD STBY); bezel DAY/NGT, OFF/BRT, SYM, GAIN, CONT controls.
+- `game.js`: vtHook integration in Jet.step; ground-effect unloading uses jet-borne lift.
+
 ## v261 — IFF simulation (Modes 1/2/3A/C/4, interrogator, ROE)
 - New `js/iff.js`: per-jet transponders with the day's code table, Mode 4 crypto key (HOLD/ZERO), 15 s IDENT, interrogator (110 km, LOS, 14° cone on bug/lock/nose, 3 cycles) giving FRIEND / POSS FRD / NO REPLY / UNKNOWN.
 - Radar scopes now show unidentified friendlies as contacts; only positively identified friends are filtered. Wingmen can start with zeroised Mode 4, wrong codes or a dead transponder.
