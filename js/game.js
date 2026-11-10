@@ -1027,7 +1027,7 @@ class Missile{
       else this.lastP.addScaledVector(this.lastV,dt);}
     else if(this.active){
       if(!this.track&&d.seek==='ARH'&&tb>0&&!(this.noReacq>this.t)){let best=null,bd=1e9;
-        for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh))continue;{const jm=jamOfMsl(j,d,this.pos);if(jm&&jm.noise&&jm.far&&!d.hoj)continue;}const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
+        for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;{const jm=jamOfMsl(j,d,this.pos);if(jm&&jm.noise&&jm.far&&!d.hoj)continue;}const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
           if(dd<18000&&vd.angleTo(r)<(this.maddog?d.search:d.gimbal*.5)&&dd<bd){bd=dd;best=j;}}
         if(best){this.track=best;this.maddog=false;if(best===player)rwrEvent('active');}}
       if(this.track){const los=_mr.copy(this.track.pos).sub(this.pos),dd=los.length();los.divideScalar(dd);
@@ -1062,7 +1062,7 @@ class Missile{
       if(this.slip>.25&&r.length()>150){this.track=null;this.slip=0;if(d.seek==='SARH')this.seekLost=true;P=null;}}
     // an IR head whose flare burned out, or that lost the target, sweeps a small cone to reacquire
     if(d.seek==='IR'&&this.active&&!this.track&&tb>-1){let best=null,bd=1e9;
-      for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
+      for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
         if(vd.angleTo(r)<Math.max(d.search,8*D2R)&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
       if(best){this.track=best;P=_mP.copy(best.pos);Vt=_mVt.copy(best.vel);}}
     // imaging / doppler CCM: a decoy that separates from the real target in speed gets rejected
@@ -1178,7 +1178,7 @@ function bulletFree(i){const b=bullets[i],last=bullets.pop();if(last!==b)bullets
 function updateBullets(dt){
   for(let i=bullets.length-1;i>=0;i--){const b=bullets[i],prev=b.q.copy(b.p);
     b.v.y-=G*dt;b.v.multiplyScalar(1-rho(b.p.y)*.06*dt);b.p.addScaledVector(b.v,dt);b.t+=dt;let hit=false;
-    for(const j of jets){if(!j.alive||j===b.o||isFr(j,b.o)||prev.distanceToSquared(j.pos)>4e6)continue;
+    for(const j of jets){if(!j.alive||j===b.o||IFF.hitSkip(b.o,j)||prev.distanceToSquared(j.pos)>4e6)continue;
       if(segDist(prev,b.p,j.pos,j.vel,dt)<6.5){if(b.o===player||!b.o.remote)j.hitFrom=b.o.pos;applyHit(j,b.dmg,b.o,'GUN');hit=true;glow.emit(b.p,null,.25,4,9,1,.8,.4,1);smoke.emit(b.p,null,1.5,2,6,.2,.2,.2,.6);break;}}
     if(!hit&&b.o===player&&GND.units.length)hit=GND.bullet(prev,b.p,b);
     if(hit||b.t>3||b.p.y<groundAt(b.p.x,b.p.z)){bulletFree(i);continue;}
@@ -1388,7 +1388,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
   // (one tube transmitter behind ferrite phase shifters) has fewer, longer dwells and a slower revisit than an AESA (a T/R module per element).
   esaOn(){return !!this.esa&&this.sensor==='RDR';},
   esaPar(){return this.esa==='A'?{dw:.003,rv:.2,tdw:2,nl:4}:{dw:.006,rv:.4,tdw:3,nl:3};},
-  esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
+  esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
       if(Math.abs(ra-az)>this.beam/2||Math.abs(re-el)>this.bmV()/2||a.off>this.gimbal()+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<1-Math.pow(1-pdOf(sn),this.esaPar().nl))this.hit(j,a,sn,now);}},  // a dwell is a burst of pulses: several looks integrated per beam position
@@ -1520,7 +1520,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       else if(b.w>=b.h){this.antAz=b.az+b.w*Math.sin(t*this.rate/b.w);this.antEl=b.el+b.h*((t*.8%2)-1);}
       else{this.antEl=b.el+b.h*Math.sin(t*this.rate/b.h);this.antAz=b.az+b.w*((t*.8%2)-1);}
       let best=null,bd=1e9;
-      for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const q=this.bang(j.pos);
+      for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const q=this.bang(j.pos);
         if(q.d>Rm||Math.abs(q.az-b.az)>b.w+this.beam/2||Math.abs(q.el-b.el)>b.h+this.beam/2)continue;
         const a=this.ang(j.pos);if(a.off<gim&&this.acmDet(j,a)&&q.d<bd){bd=q.d;best=j;}}
       this.acmBest=best;if(best&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
@@ -1534,7 +1534,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     else if(this.antAz<lo){this.antAz=lo;this.dir=1;this.bar=(this.bar+1)%this.nb();}
     {const g=this.glim(),te=clamp(this.barEl(),-g.ed*D2R,g.eu*D2R),de=te-this.antEl;const es=(this.aesa?3000:50)*D2R*dt;this.antEl+=clamp(de,-es,es);}
     const a0=Math.min(prev,this.antAz)-this.beam/2,a1=Math.max(prev,this.antAz)+this.beam/2;
-    for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos);
+    for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
       const st=this.gl.stab||this.sensor==='IRST',ra=st?a.az:a.baz,re=st?a.el:a.bel;
       const CR=this.spin()?CONE:0;// conical scan: the detector's field circles the pointing axis, so a target is only modulated while it lies inside the cone
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
@@ -1606,7 +1606,7 @@ const hasHelmet=()=>!!player&&helmetFit(player.type,player.era);
 const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&hasHelmet()&&(player.ac.cockpit==='fulcrum'?mw()==='HELM':Math.hypot(head.yaw,head.pitch)>.26);
 function irTarget(type){// IR seeker: helmet-cued (if fitted and the missile can look that far), slaved to the radar/IRST track, else uncaged on the boresight
   const d=MSL[type];if(!d||d.seek!=='IR')return null;const f=player.fwd(new V3());
-  const ok=(j,cone,dir)=>{if(j===player||!j.alive||isFr(j,player))return false;const rel=j.pos.clone().sub(player.pos),dd=rel.length();
+  const ok=(j,cone,dir)=>{if(j===player||!j.alive||IFF.hide(j))return false;const rel=j.pos.clone().sub(player.pos),dd=rel.length();
     return dir.angleTo(rel)<cone&&f.angleTo(rel)<d.gimbal*.95&&dd<irLockRange(d,j,player.pos);};
   const pick=(dir,cone)=>{let best=null,bd=1e9;for(const j of jets)if(ok(j,cone,dir)){const dd=j.pos.distanceTo(player.pos);if(dd<bd){bd=dd;best=j;}}return best;};
   if(game.cage)return pick(f,1.2*D2R);
@@ -3237,7 +3237,7 @@ const SE={mpdR:mk(360,360),mL:mk(360,360),mC:mk(360,360),ufc:mk(400,224),emd:mk(
     // UFC: six 20-character rows on a dark green-black liquid crystal, scratchpad in the bottom right
     {const c=this.ufc.getContext('2d');c.fillStyle='#030705';c.fillRect(0,0,400,224);c.fillStyle='#8dffa4';c.font='700 23px "B612 Mono",monospace';c.textBaseline='middle';c.textAlign='left';
      const d=new Date(),hm=[d.getHours(),d.getMinutes(),d.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':'),ft=Math.round(P.pos.y*FT/10)*10;
-     const R=this.menu===0?['TCN  001X     T/R','IFF  M3 0012  M4 A','ILS  108.10',this.emisOn?'*EMIS LMT':' EMIS LMT','*U1 '+this.U1[this.u1]+'  G','U2 305.500  CH 4']
+     const R=this.menu===0?['TCN  001X     T/R','IFF  M3 '+IFF.st.c3+'  M4 '+(IFF.st.m4&&IFF.st.crypt==='NORM'?IFF.st.key:'--'),'ILS  108.10',this.emisOn?'*EMIS LMT':' EMIS LMT','*U1 '+this.U1[this.u1]+'  G','U2 305.500  CH 4']
        :this.menu===1?['HUD  NORM','TF   OFF   CARA ON','RDR  '+radar.power,(P.ac.rio?'WSO  '+(rio.on?'AUTO':'MAN'):''),'DL   RCV','EGI  NAV']
        :['FUEL '+fmtN(Math.round(P.totalFuel*2.2046/10)*10),'BINGO '+fmtN(Math.round((V.bingo??.3)*14000/100)*100),'GS '+Math.round(P.vel.length()*1.944)+'  M '+P.mach.toFixed(2),'ALT '+fmtN(ft),'TIME '+hm,''];
      R.forEach((s,i)=>c.fillText(s,14,20+i*36));if(this.sc){c.textAlign='right';c.fillText(this.sc,388,200);}
@@ -3922,7 +3922,7 @@ function buildCockpit(kind){
     // stores control panel (27) with its master arm / SMS column (31-34) and the autopilot switches (28-30)
     add(rbox(.172,.148,.022,.005),black,-.2,-.05,.02,pnl);face(scpC,new THREE.PlaneGeometry(.164,.13),-.2,-.05,.0315,pnl,true,{screen:'scp'});
     add(new THREE.PlaneGeometry(.164,.13),glassM,-.2,-.05,.0322,pnl);out._f16aHide.push(...pnl.children.slice(_sc0));
-    panel(pnl,-.348,.045,.068,.036,'',[{t:'pb',x:68,y:44,w:30,h:26,l:'IFF IDENT',n:'IFF IDENT',fx:1,act:()=>flash('IFF IDENT',900)}],null,.014);
+    panel(pnl,-.348,.045,.068,.036,'',[{t:'pb',x:68,y:44,w:30,h:26,l:'IFF IDENT',n:'IFF IDENT',fx:1,act:()=>IFF.ctl.ident()}],null,.014);
     add(rbox(.088,.07,.012,.003),black,-.348,-.026,.026,pnl);face(marmC,new THREE.PlaneGeometry(.082,.064),-.348,-.026,.0325,pnl,false);
     lever(pnl,-.348-.041+52/160*.082,-.026+.032-72/128*.064,['MASTER ARM','OFF','SIMULATE'],'MASTER ARM',()=>game.armPos,setArm,.0325);
     {const a=sys.mig.ap;
@@ -4900,7 +4900,7 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
       const kb=[['1','2','3'],['4','5','6'],['7','8','9'],['CLR','0','ENT']];
       kb.forEach((r,i)=>r.forEach((k,j)=>{const[x,y]=uf(127+j*62,94+i*44);hit(hp,x,y,54*sc,40*sc,'UFC · KEY '+k,()=>{const p=V.ufcPad||'';if(k==='CLR'){if(p)V.ufcPad='';else{V.ufcFn='';V.ufcOn={};}}else if(k==='ENT')V.ufcPad='';else V.ufcPad=(p+k).slice(-7);},()=>V.ufcPad||'');}));
       for(let i=0;i<5;i++){const[x,y]=uf(292,82+i*40);hit(hp,x,y,26*sc,26*sc,'UFC · OPTION SELECT '+(i+1),()=>{const o=V.ufcOn||(V.ufcOn={}),k=(V.ufcFn||'')+i;o[k]=!o[k];},()=>{const t=(UFCF[V.ufcFn||'']||[])[i];return t?t+((V.ufcOn||{})[(V.ufcFn||'')+i]?' (selected)':''):'';});}
-      ['A/P','IFF','TCN','ILS','D/L','BCN','ON/OFF'].forEach((f,i)=>{const[x,y]=uf(96+i*58,273);hit(hp,x,y,52*sc,30*sc,'UFC · '+f,()=>{if(f==='ON/OFF')V.ufcOff=!V.ufcOff;else V.ufcFn=V.ufcFn===f?'':f;},()=>f==='ON/OFF'?(V.ufcOff?'OFF':'ON'):V.ufcFn===f?'selected':'');});
+      ['A/P','IFF','TCN','ILS','D/L','BCN','ON/OFF'].forEach((f,i)=>{const[x,y]=uf(96+i*58,273);hit(hp,x,y,52*sc,30*sc,'UFC · '+f,()=>{if(f==='ON/OFF')V.ufcOff=!V.ufcOff;else{V.ufcFn=V.ufcFn===f?'':f;if(f==='IFF')IFF.ctl.ident();}},()=>f==='ON/OFF'?(V.ufcOff?'OFF':'ON'):V.ufcFn===f?'selected':'');});
       {const[x,y]=uf(484,82);hit(hp,x,y,48*sc,34*sc,'UFC · EMCON',()=>{V.emcon=!V.emcon;},()=>V.emcon?'EMCON':'');}
       {const[x,y]=uf(36,94);dial(hp,x,y,.0085,'UFC · COMM 1 VOL',{cont:1,get:()=>V.c1v??.7,set:v=>V.c1v=v},.0275);}
       {const[x,y]=uf(36,214);dial(hp,x,y,.0095,'UFC · COMM 1 CHANNEL',{wrap:true,n:20,get:()=>(V.uch||1)-1,set:v=>V.uch=v+1,label:v=>'CH '+(v+1)},.0275);}
@@ -6138,6 +6138,7 @@ function pickle(force){if(!player||!player.alive||game.paused||player.gloc>0)ret
   let tg=null,lnk=false;
   if(d.seek==='IR'){tg=irTarget(w);if(!tg&&!force){flash(isMig()?'NO SEEKER LOCK':'NO TONE',1200);return;}}
   else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(isHornet()&&d.seek==='ARH'&&radar.mode!=='STT'&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
+  {const _r=IFF.roeCheck(tg);if(_r&&!force){flash('NO RELEASE · '+_r,1600);radio('Negative, '+_r.toLowerCase()+'.');return;}}
   {const _m=fireMissile(w,player,tg,player.release(w));if(lnk&&_m){_m.dlx=true;flash(SN[w]+' · DATALINK',1200);}}game.pickleCd=.8;
   if(isMig()&&sys.mig.salvo===0&&!force&&player.count(w)>0)setTimeout(()=>{if(player&&player.alive&&!game.paused&&player.count(w)>0)fireMissile(w,player,tg&&tg.alive?tg:null,player.release(w));},280);
 }
@@ -7661,7 +7662,7 @@ const GND={units:[],bombs:[],rkts:[],sites:[],zsus:[],kills:0,targets:0,
   sam(S,dt,now){const R=S.surn,P=player;if(!R.alive){R.ai.radarLock=false;return;}
     S.sweep=(S.sweep+dt*Math.PI*2/4)%(Math.PI*2);// 1S11 antenna turns at 15 rpm
     const ant=R.mesh.userData.ant;
-    const tgt=P&&P.alive&&P.side!==R.side?P:null;
+    const tgt=P&&P.alive&&(P.side!==R.side||IFF.sam(P,R))?P:null;
     const rel=tgt?_gwB.copy(tgt.pos).sub(R.pos):null,d=rel?rel.length():1e9,brg=rel?Math.atan2(rel.x,-rel.z):0;
     const vis=tgt&&this.canSee(R,tgt,GTY.SURN.R0*1.5,20);
     // radial (Doppler) speed: the CW tracker and the missile's seeker both need a closing or opening rate
@@ -8967,7 +8968,7 @@ function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
       for(const m of missiles)if(m.alive&&m.draw)m.draw();}
     for(let i=missiles.length-1;i>=0;i--)if(!missiles[i].alive)missiles.splice(i,1);
     for(const d of decoys)d.update(dt);for(let i=decoys.length-1;i>=0;i--)if(!decoys[i].alive)decoys.splice(i,1);
-    updateBullets(dt);GND.tick(dt);if(game.scen==='CAMP')CAMP.tick(dt);radar.update(dt);rio.update(dt);DL.tick(dt);nctrTick(dt);cmdsTick(dt);game.pickleCd-=dt;
+    updateBullets(dt);GND.tick(dt);if(game.scen==='CAMP')CAMP.tick(dt);radar.update(dt);try{IFF.update(dt);}catch(e){}rio.update(dt);DL.tick(dt);nctrTick(dt);cmdsTick(dt);game.pickleCd-=dt;
     const f=P.fwd(_fF);P.fdot.lerp(_fD.copy(f).sub(P.prevF).divideScalar(dt),.25);P.prevF.copy(f);
     smoke.update(dt);glow.update(dt);sfx.engine(P.n*(P.dm.eng>0?(P.cs.st?.35+.65*P.cs.thr:1):.3),P.ab,P.alive&&P.totalFuel>0&&P.dm.eng>0);
     if(net.on){pubT-=dt;if(pubT<=0){net.publish();pubT=1/20;}
@@ -9697,7 +9698,7 @@ const EMPD={d:{L:{pg:'AAR',m:0,t:''},R:{pg:'TPOD',m:0,t:''},C:{pg:'ARMT',m:0,t:'
       case'DLVRY':{const a=AGW[game.wsel];tx(c,'A/G DELIVERY',180,40,'center');const r=[['WPN',a?SN[game.wsel]:'---'],['MODE',a?(a.k==='bomb'||a.k==='pod'?'CDIP':'AUTO'):'---'],['REL',REL[PACS.rel]],['QTY',String(PACS.qty)],['INTV','75 FT'],['FUZE',FZ[PACS.fz]],['ARM T','4.0 SEC'],['LST',SNS.lstT+' SEC'],['CODE',LCODE()]];
         r.forEach(([k,v],i)=>{tx(c,k,80,84+i*24,'left');tx(c,v,180,84+i*24,'left');});return;}
       case'SMRT':return this.smrt(c,P);
-      case'IFF':tx(c,'IFF',180,40,'center');[['M1','12'],['M2','2134'],['M3/A','0012'],['M4','A  ON'],['MC','ON'],['MODE','NORM']].forEach(([k,v],i)=>{tx(c,k,100,90+i*28,'left');tx(c,v,190,90+i*28,'left');});return;
+      case'IFF':tx(c,'IFF',180,40,'center');IFF.page().forEach(([k,v],i)=>{tx(c,k,100,90+i*28,'left');tx(c,v,190,90+i*28,'left');});return;
       case'WIND':tx(c,'WIND MODEL',180,40,'center');{const w=window.ENV&&ENV.wind;tx(c,'SFC  270 / '+(w&&w.kt!=null?w.kt:8)+' KT',90,120,'left');tx(c,'FL100 270 / '+Math.round(((w&&w.kt)||8)*1.8)+' KT',90,150,'left');}return;
       default:tx(c,(D.t||'PAGE'),180,150,'center');tx(c,'NO DATA',180,178,'center',FS);}},
   adi(c,P){const cx=180,cy=176,K=4.6;c.save();c.beginPath();c.arc(cx,cy,118,0,7);c.clip();c.translate(cx,cy);c.rotate(-P.bank);const py=P.pitch*R2D*K;
@@ -12136,7 +12137,7 @@ try{
 {const _co=radar.coop;radar.coop=function(){if(!this._cx&&player&&player.type==='MiG-31')return true;return _co.apply(this,arguments);};}
 // 8TK search runs whatever the radar is doing: passive bearings only (no range of its own)
 {const _u=radar.update;let acc=0;radar.update=function(dt){const r=_u.apply(this,arguments);try{if(!player||player.type!=='MiG-31'||!player.alive)return r;acc+=dt;if(acc<.25)return r;acc=0;
-  const now=performance.now()/1000;for(const j of jets){if(j===player||!j.alive||isFr(j,player))continue;const a=this.ang(j.pos);
+  const now=performance.now()/1000;for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
     if(Math.abs(a.baz)>IRG.az*D2R||a.bel>IRG.eu*D2R||a.bel<-IRG.ed*D2R)continue;const c=j.fwd(new V3()).dot(player.pos.clone().sub(j.pos).normalize());
     if(a.d<this.irRange(j,a,c)&&terrLOS(player.pos,j.pos)&&Math.random()<.8)M31IR.set(j,{az:a.az,el:a.el,t:now});}
   for(const [j,e] of M31IR)if(!j.alive||now-e.t>3)M31IR.delete(j);}catch(e){}return r;};}
