@@ -206,10 +206,22 @@ SET('AJS-37',{gs:'hud',stk:'b8',thr:1,lay:{rwr:[90,92,48],scope:[512,130,112],
   con:CON('sv',[['MOTOR RM8B',['START','EBK','REVERS']],'RADIO FR 22','BEVÄPNING / RB',['TRIM',['TIPP','ROLL']]],[['RADAR PS-37',['MOD','AVST','HÖJD']],'ELSYSTEM','CK37 NAVIGATION','BELYSNING / SYRE'])});
 // --- Soviet ---
 const RUC=(e)=>CON('ru',[['РУД / ДВИГАТЕЛЬ',e===2?['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']:['ЗАПУСК','ФОРСАЖ']],'Р-862 / РСБН',['ЗАКРЫЛКИ',['ВЗЛЕТ','ПОСАДКА']],['ВООРУЖЕНИЕ',['ГЛАВН','ВЫБОР','СБРОС']]],[['ЩИТОК АЗС',['ГЕН','АККУМ','ПТ']],'СОИ / ЛД','КИСЛОРОД','ОСВЕЩЕНИЕ']);
-SET('Su-25',{gs:'asp',stk:'ru',thr:2,lay:{rwr:[90,92,48],
-  dial:{ias:[240,110,58],adi:[420,115,72],alt:[600,110,58],aoa:[100,240,42],acc:[240,255,44],hsi:[420,315,72],vvi:[600,255,48],
-    rpm:[760,95,44],rpm2:[870,95,44],egt:[760,205,40],egt2:[870,205,40],fuel:[815,330,52],oil:[600,375,34],clk:[960,95,30]},
-  gearH:[100,390],arm:[200,440,240],cau:[700,420,4,2,70,26,['ПОЖАР Л','ПОЖАР П','ГИДРО','ОСТАТОК','ГЕН','МАСЛО','ШАССИ','ФОНАРЬ']],txt:[['АСП-17',420,30,9]]},con:RUC(2)});
+// v253: Su-25 front panel rebuilt after the instrument-panel figure (items 1-20): 1 gear lever, 2 УАП-14 AOA + G, 3 КУС-1100 IAS,
+// 4 КПП ADI, 5 АЧС clock, 6 ВАР VVI, 7 М-2 machmeter, 8 fuel quantity, 9 СПО-15 «Берёза», 10 warning lights, 11 weapon status panel
+// (yellow station lamps / green ready lamps, Б УР НРС ВПУ, gun К 1/2 1/4), 12 ПУ СУО weapon control panel, 13 ППС configuration indicator,
+// 14 distance-to-waypoint counter, 15 РВ radar altimeter, 16 ВД-20 altimeter, 17 ПНП HSI, 18 ИТА-2 RPM, 19 ИТГ turbine temperatures, 20 РСБН panel.
+SET('Su-25',{gs:'asp',stk:'ru',thr:2,lay:{rwr:[955,100,50],
+  dial:{aoa:[140,92,46],acc:[140,198,40],ias:[262,104,58],adi:[420,118,74],clk:[524,52,20],vvi:[604,112,50],mach:[716,92,40],fuel:[830,110,54],
+    ralt:[262,262,46],alt:[262,392,56],hsi:[420,330,74],rpm:[576,268,46],rpm2:[680,268,46],egt:[576,384,38],egt2:[680,384,38],gi:[48,92,24]},
+  gearH:[48,190],
+  plates:[[96,250,124,60,'ВООР · Б УР НРС ВПУ',['К','1/2','1/4']],
+    [96,318,124,64,'ПУ СУО',['ФИКС','ПРОГР','ЗАЛП','СЕРИЯ']],
+    [760,322,250,80,'РСБН',['МАРШР','ВОЗВР','ПОСАД','1АЭР','2АЭР']]],
+  cau:[760,196,4,4,62,30,['ПОЖАР Л','ПОЖАР П','ГИДРО 1','ГИДРО 2','ОСТАТОК','ГЕН Л','ГЕН П','МАСЛО','ШАССИ','ФОНАРЬ','ВИБР','ТОРМОЗ','ОТКАЗ','НЕ ВЫП','РЕЗЕРВ','ЗАКР']],
+  txt:[['АСП-17БЦ-8',420,22,9],['ППС',48,60,9],['ДАЛЬНОСТЬ  000 КМ',420,438,11,'#ffb060'],['УАП-14',140,138,8],['РВ-5',262,312,8],['ВД-20',262,452,8],['ИТА-2',628,320,8],['ИТГ',628,430,8],['СПО-15',955,160,8],['М',716,138,8]]},
+  con:CON('ru',[['РУД / ЗАПУСК Р-95Ш',['ЗАПУСК Л','ЗАПУСК П','СТОП-КРАН']],['ТОПЛИВО',['ПЦН Л','ПЦН П','ПЕРЕКАЧ']],['ЗАКРЫЛКИ / ПРЕДКР',['ВЗЛЕТ','ПОСАДКА','ПРЕДКР']],
+      ['Р-862 / АРК-15',['Р-862','АРК','СПУ']],['ТРИММЕР',['РВ','ЭЛЕР']]],
+    [['ЭЛЕКТРОПИТАНИЕ',['ГЕН Л','ГЕН П','АККУМ']],['ДИСС-7 / РСБН',['ДИСС','РСБН','СОД']],['СРО / ОТВЕТЧИК',['СРО','ОПОЗН','АВАР']],['КИСЛОРОД КП-52',['КИСЛ','СМЕСЬ']],['ОСВЕЩЕНИЕ',['ПРИБ','КАБ','АНО']],['ЩИТОК АЗС',['ПТ','СУО','ПНК']],['КЛЕН-ПС ЛАЗЕР',['ЛАЗЕР','ПОДСВЕТ']],['СПО-15 «БЕРЁЗА»',['ПИТАНИЕ','ПОИСК','ТЕСТ']]])});
 SET('Su-24M',{gs:'hood',stk:'ru',thr:2,sbs:1,sc:0,lay:{rwr:[560,96,40],
   dial:{adi:[110,175,74],hsi:[110,365,74],ias:[262,250,48],alt:[262,385,52],aoa:[262,135,40],
     vbar_fuel:[400,345,95],vbar_rpm:[448,345,95],vbar_egt:[496,345,95],adi2:[600,250,58],vvi:[600,380,46],acc:[700,380,40],rpm:[700,265,40],rpm2:[790,265,40],egt:[790,380,40],fuel:[890,380,44],clk:[960,470,24]},
@@ -335,7 +347,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     for(const k of Object.keys(L.dial||{})){const[x,y,r]=L.dial[k],t=k.replace(/_.*$/,'');if(t==='lamp'){const lm=new THREE.Mesh(new THREE.SphereGeometry(r*PX,12,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshPhongMaterial({color:0x661a14,transparent:true,opacity:.35,shininess:90}));lm.rotation.x=Math.PI/2;lm.position.set(lx(x),ly(y)-.03,.0);pp.add(lm);continue;}
       if(t==='vbar'){const w=Math.max(26,r*.34)+14;ring(x,y,r+8,true,w);continue;}ring(x,y,t==='tapeS'||t==='tapeA'?r:r+5,t==='tapeS'||t==='tapeA');}
     // switch plates, annunciators, gear handle get raised frames
-    for(const pl of L.plates||[]){const[x,y,w,h]=pl;box(pp,w*PX,h*PX,.006,LM(0x1a1c1e,10),lx(x+w/2),ly(y+h/2)-.03,-.001);}
+    for(const pl of L.plates||[]){const[x,y,w,h]=pl;box(pp,w*PX,h*PX,.006,LM(0x1a1c1e,10),lx(x+w/2),ly(y+h/2)-.03,-.0045);}
     if(L.gearH){const[x,y]=L.gearH;const hd=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.02,16),LM(S.l==='ru'?0xc02a1a:0xe8e8e8,40));hd.rotation.x=Math.PI/2;hd.position.set(lx(x),ly(y+44)-.03,.02);pp.add(hd);}}
   const scr=(canvas,shape,cx,cy,r,id)=>{if(!canvas)return;const cxm=lx(cx),cym=ly(cy)-.03;
     if(shape==='round'){const h=new THREE.Mesh(new THREE.CylinderGeometry(r*PX+.012,r*PX+.016,.03,40),blk);h.rotation.x=Math.PI/2;h.position.set(cxm,cym,.012);pp.add(h);}else box(pp,2*r*PX+.03,2*r*PX+.03,.03,blk,cxm,cym,.012);
