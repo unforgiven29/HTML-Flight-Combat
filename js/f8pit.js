@@ -169,7 +169,9 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   {const eg=new THREE.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:false});const e=new THREE.Mesh(eg,pm);e.position.z=-.031;e.userData.cwFx=1;board.add(e);}
   // scope hood (15): raised box, rectangular CRT window
   box(board,(725-488)*K,(330-85)*K,.05,dk,bx(606),by(207),.025);
-  {const m=new THREE.MeshBasicMaterial({map:liveTex(ctx.kind,phScopeC),toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.PlaneGeometry(110*K,170*K),m);sc.position.set(bx(606),by(212),.051);sc.userData.screen='phscope';board.add(sc);
+  {const IP=window.F8IP626,cv=document.createElement('canvas');cv.width=IP?IP.W:260;cv.height=IP?IP.H:380;const sct=new THREE.CanvasTexture(cv);sct.generateMipmaps=false;sct.minFilter=THREE.LinearFilter;ctx.o.tex.push(sct);
+    const m=new THREE.MeshBasicMaterial({map:sct,toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.PlaneGeometry(130*K,190*K),m);sc.position.set(bx(606),by(212),.051);sc.userData.screen='phscope';board.add(sc);
+    {let lt=0;upd.push(()=>{const n=performance.now();if(n-lt<90)return;lt=n;try{if(IP)IP.draw(cv.getContext('2d'),PL());sct.needsUpdate=true;}catch(e){}});}
     box(board,(130)*K,(190)*K,.004,blk,bx(606),by(212),.049);
     // six scope knobs on the bezel
     [[505,130,'INT'],[505,190,'STORE'],[505,250,'CURSOR'],[707,130,'GAIN'],[707,190,'MKR'],[707,250,'FOCUS']].forEach(([x,y,n])=>knob(board,bx(x),by(y),.055,13*K,'SCOPE · '+n,['1','2','3','4','5'],'scope'+n));}
@@ -334,7 +336,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
    const pwr=()=>({OFF:0,STBY:1,ON:2})[radar.power]??2;
    kn(rd,.2,.42,.013,'RADAR POWER',['OFF','STBY','OPR'],'rpwr',pwr,v=>{radar.power=['OFF','STBY','ON'][v];if(v===2)radar.warm=Math.max(radar.warm||0,3);});rd.lab('OFF STBY OPR',.2,.72,10);
    kn(rd,.5,.42,.013,'RANGE',radar.ranges.map(String),'rrng',()=>radar.ri,v=>{radar.ri=clamp(v,0,radar.ranges.length-1);});rd.lab('RANGE',.5,.72,10);
-   kn(rd,.8,.42,.013,'MODE',['SEARCH','BEACON','MAP'],'rmode');rd.lab('MODE',.8,.72,10);kn(rd,.35,.85,.009,'GAIN',['1','2','3','4','5'],'rgain');kn(rd,.65,.85,.009,'TILT',['-5','0','+5','+10'],'rtilt');
+   kn(rd,.8,.42,.013,'MODE',['SEARCH','BEACON','MAP'],'rmode');tg(rd,.9,.85,'SENSOR (RADAR / IRST)',['RDR','IRST'],()=>radar.sensor==='IRST'?1:0,v=>{try{if((v===1)!==(radar.sensor==='IRST'))radar.toggleSensor();}catch(e){}});rd.lab('MODE',.8,.72,10);kn(rd,.35,.85,.009,'GAIN',['1','2','3','4','5'],'rgain');kn(rd,.65,.85,.009,'TILT',['-5','0','+5','+10'],'rtilt');
    const fc=cpanel(-1,-.07,.05,'FIRE CONTROL');kn(fc,.25,.45,.013,'SIGHT MODE',['CAGED','GUNS','MSL','RKT'],'sight');kn(fc,.6,.45,.011,'RETICLE',['DIM','MED','BRT'],'ret');tg(fc,.85,.45,'GUNSIGHT POWER',['OFF','ON'],()=>sv('gsp',1),v=>{ST.gsp=v;});fc.lab('SIGHT',.25,.8,10);fc.lab('RETICLE',.6,.8,10);fc.lab('POWER',.85,.8,10);
    const fz=cpanel(-1,.05,.13,'FUSE CONTROL');kn(fz,.3,.55,.01,'BOMB FUSE',['INST','DLY 1','DLY 2'],'bfz');kn(fz,.7,.55,.01,'RKT FUSE',['INST','DLY'],'rfz');
    const ox=cpanel(-1,.13,.23,'VENT / OXYGEN');tg(ox,.25,.55,'OXYGEN (4)',['OFF','ON'],()=>sv('o2',1),v=>{ST.o2=v;});tg(ox,.55,.55,'ANTI-EXPOSURE COVERALL VENT (3)',['OFF','ON'],()=>sv('aex',0),v=>{ST.aex=v;});tg(ox,.82,.55,'SPEED BRAKE OVERRIDE (2)',['NORMAL','OVERRIDE'],()=>sv('sbo',0),v=>{ST.sbo=v;},{guard:true});

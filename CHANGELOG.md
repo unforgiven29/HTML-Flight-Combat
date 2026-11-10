@@ -261,3 +261,23 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v246
 - Cockpit performance: A-7D, F-8E and Mirage 2000 cockpits no longer re-upload every panel texture each frame (only gauges that actually changed). Texture uploads/sec cut about 4-5x; redraws gated on quantised state, smaller gauge canvases, invisible hit-boxes skipped by the renderer.
+
+## v247
+- Mirage 2000C: new RDI radar display (VTB) with PPI and B-scope, ranges 10-320 NM, HFR/ENT/BFR PRF, V/inverted-V contacts with closing Mach, bar marks, TDC altitudes, P/SIL/B status, PSID/PSIC data line, close-combat labels (BORE/VERT/BAH/BA2).
+- Mirage 2000C: new SERVAL (VCM) warner: category glyphs (airborne/ground/missile) with three-letter codes, critical vs low-threat zones, 8 threats + 2 launch warnings, PCM indicator.
+- Fixed the Mirage PRF knob labels (HFR / ENT / BFR) and added the 160 and 320 NM ranges to the range knob.
+
+## v248
+- F-8E: AN/APQ-94 indicator IP-626 drawn after the NATOPS figure (search, acquisition, track, attack, breakaway; AH bar, tilt mark, range strobe, R max, aiming circle/dot; extended-range, T, in-envelope, J and IR lamps). Ranges 20/40/60 NM.
+- F-8E: ALR-23 IRST added (sensor switch on the radar set panel, or the usual sensor key); the IR picture appears on the same indicator with the IR lamp lit.
+
+## v249
+- Su-25, Su-22M4 and MiG-27K: no radar. The HUD no longer shows radar status or a scope; the panel switch reads СОИ / ЛД (laser ranger) and the sensor is named as a laser ranger.
+- Su-24M: radar picture no longer drawn on the HUD (it stays on the hooded display).
+- MiG-27K: Kaira-23 TV on a big hooded display, yellow-filtered live picture from the nose head (gimbal +/-12 deg, three fields of view, laser range, lock mark).
+
+## v250
+- AV-8B, Alpha Jet, Jaguar, AMX and Yak-38 now have no radar (alongside the Su-25, Su-22M4 and MiG-27K): no radar text on the HUD and the radar display page reads NO RADAR.
+
+## v251
+- Air-to-ground radars for the strike jets (shared ground-map radar with air-to-ground ranging): Tornado GR.4, F-111F and Su-24M are ground-only (no air targets, designate says A/G ONLY); AJS-37, JH-7, Super Etendard and A-4E show the ground picture with a ground store selected and act as a short-range air ranging radar otherwise (10 / 15 / 12 / 9 km).

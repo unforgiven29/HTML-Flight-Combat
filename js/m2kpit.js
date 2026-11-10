@@ -389,8 +389,8 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // 34 radar control panel: wired to the game radar
   {const [a,b]=zz(.4,.56);const p=cp(-1,a,b,'COMMANDE RADAR (34)');
     kn(p,.2,.4,.013,'RADAR OPERATION (34)',['OFF','WARM UP','STBY','ON'],'rop',()=>{try{return radar.power==='OFF'?0:(radar.warm||0)>.5&&radar.power!=='ON'?1:2+(sv('rstby',0)?0:1);}catch(e){return 3;}},v=>{try{if(v===0){radar.power='OFF';radar.warm=0;ST.rstby=0;}else{radar.power='ON';radar.warm=Math.max(radar.warm||0,3);ST.rstby=v===2?1:0;}}catch(e){}});
-    kn(p,.5,.4,.011,'RADAR RANGE (34)',['10','20','40','80'],'rrg',()=>{try{return radar.ri;}catch(e){return 2;}},v=>{try{radar.ri=v%radar.ranges.length;}catch(e){}});
-    kn(p,.8,.4,.011,'PRF SELECTOR (34)',['AUTO','A (ENT)','B (HFR)'],'rprf',()=>{try{return radar.prf==='A'?1:radar.prf==='B'?2:0;}catch(e){return 0;}},v=>{try{radar.prf=['AUTO','A','B'][v];}catch(e){}});
+    kn(p,.5,.4,.011,'RADAR RANGE (34)',['10','20','40','80','160','320'],'rrg',()=>{try{return radar.ri;}catch(e){return 2;}},v=>{try{radar.ri=v%radar.ranges.length;}catch(e){}});
+    kn(p,.8,.4,.011,'PRF SELECTOR (34)',['HFR','ENT','BFR'],'rprf',()=>{try{return radar.prf==='A'?0:radar.prf==='B'?2:1;}catch(e){return 1;}},v=>{try{radar.prf=['A','AUTO','B'][v];}catch(e){}});
     kn(p,.2,.75,.01,'AZIMUTH (34)',['WIDE','MIDDLE','NARROW'],'raz',()=>{try{return radar.ai;}catch(e){return 0;}},v=>{try{radar.ai=v;}catch(e){}});
     kn(p,.5,.75,.01,'BARS (34)',['4','2','1'],'rbar',()=>{try{return radar.bi;}catch(e){return 0;}},v=>{try{radar.bi=v;}catch(e){}});
     tg(p,.8,.75,'DISPLAY MODE (34)',['PPI','B-SCOPE'],()=>sv('rdisp',0),v=>{ST.rdisp=v;});}
@@ -447,6 +447,6 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     P._trimP=(P._trimP||0)*.97+(P.ctl?P.ctl.p:0)*.03;}};}
 
 PIT[ID].custom=build;
-window.M2KPIT={sv:k=>ST[k]};
+window.M2KPIT={sv:k=>ST[k],set:(k,v)=>{ST[k]=v;}};
 console.info('[m2kpit] Mirage 2000C instrument panel map cockpit active');
 })();
