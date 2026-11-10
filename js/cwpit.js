@@ -54,6 +54,43 @@ const LB={
  ru:{ias:'СКОРОСТЬ',alt:'ВЫСОТА',vvi:'ВАР',aoa:'α',g:'Ny',rpm:'ОБ %',egt:'Т°',fuel:'ТОПЛИВО',ff:'РАСХОД',clk:'',arm:'ГЛАВН ВКЛ',safe:'ВЫКЛ',gear:'ШАССИ',fire:'ПОЖАР',hyd:'ГИДРО',low:'ОСТАТОК',eng:'ДВИГ',wpn:'ОРУЖИЕ',kt:'КМ/Ч',ft:'М',ab:'ФОРС'},
  zh:{ias:'空速',alt:'高度',vvi:'升降',aoa:'攻角',g:'过载',rpm:'转速 %',egt:'排温',fuel:'燃油',ff:'油耗',clk:'',arm:'总电门',safe:'保险',gear:'起落架',fire:'火警',hyd:'液压',low:'余油',eng:'发动机',wpn:'武器',kt:'公里/时',ft:'米',ab:'加力'}};
 
+
+// ======================= accurate layouts, batch 1 (1950s–60s gun-sight fighters) =======================
+// positions are canvas px on the 1024×512 main-panel face; dial keys: ias alt vvi aoa acc mach adi hsi turn cmp clk rpm rpm2 egt egt2 noz noz2
+// fuel fpr oil hyd oxy apc lamp_*; plates [x,y,w,h,title,[switches]]; cau [x,y,cols,rows,cw,ch,[legends]]; gearH [x,y]; arm [x,y,w]
+Object.assign(PIT['F-86F'],{pc:0x1d1f20,gs:'a4',stk:'a1',thr:1,lay:{rwr:null,
+  dial:{acc:[70,100,44],ias:[190,105,62],hsi:[340,105,62],adi:[500,105,70],alt:[660,105,62],cmp:[190,250,56],turn:[340,250,56],vvi:[500,255,60],oxy:[660,250,46],
+    rpm:[800,100,58],egt:[930,100,52],fpr:[800,240,46],oil:[930,232,42],hyd:[800,360,44],fuel:[930,352,54],clk:[660,370,40],lamp_fire:[580,330,10]},
+  gearH:[70,250],arm:[150,410,300],plates:[[480,410,210,70,'BOMB-ROCKET-TANK',['SEL','ARM','JETT']]],txt:[['FIRE',580,350,9]]},
+  con:{L:[['ENGINE',['MASTER','IGNITION','EMER FUEL']],['THROTTLE QUADRANT',['SPD BRK','MIC']],['AN/ARC-27 UHF',['CHAN','VOL','TONE']],['TRIM / FLAPS',['RUD','FLAP','T/O TRIM']]],
+       R:[['ELECTRICAL',['BATT','GEN','INVERTER']],['LIGHTS',['POS','FUS','INST']],['A-4 GUNSIGHT',['FILTER','CAGE','RANGE']],['OXYGEN / CB',['DILUTER','EMER','CB']]]}});
+Object.assign(PIT['MiG-15'],{pc:0x232523,gs:'asp',stk:'a1',thr:1,lay:{rwr:null,
+  dial:{mach:[215,105,48],ias:[350,105,62],adi:[512,110,74],turn:[660,105,56],rpm:[800,105,58],egt:[930,105,50],
+    oxy:[215,250,46],alt:[350,260,62],vvi:[512,265,58],cmp:[660,260,58],fuel:[800,255,56],fpr:[930,240,44],oil:[930,352,40],clk:[800,385,38],lamp_mach:[275,40,9],lamp_fire:[930,440,10]},
+  gearH:[80,170],arm:[40,400,250],plates:[[330,355,360,78,'ВООРУЖЕНИЕ',['Н-37Д','НР-23','БОМБЫ','ФКП']]],
+  txt:[['М 0.92',275,62,9],['ПОЖАР',930,462,9]]},
+  con:{L:[['РУД / ВК-1',['ЗАПУСК','СТОП']],['ЗАКРЫЛКИ',['20°','55°']],['РСИУ-3М',['КАНАЛ','ГРОМК']],['ЭЛ. ЩИТОК',['АККУМ','ГЕН','ПО-750']]],
+       R:[['ЩИТОК АЗС',['АРК','ПРИЦЕЛ','ФОТО']],['АВАРИЙН',['ШАССИ','ЗАКРЫЛ','ТОРМ']],['КИСЛОРОД КП-14',['ПОДАЧА','АВАР']],['ОСВЕЩЕНИЕ',['УФО','ФАРА']]]}});
+Object.assign(PIT['MiG-19'],{pc:0x232523,gs:'asp',stk:'a1',thr:2,lay:{rwr:null,scope:[890,115,92],
+  dial:{mach:[90,110,46],ias:[230,110,60],adi:[390,118,70],turn:[540,110,52],rpm:[690,105,50],
+    oxy:[90,250,44],alt:[230,255,60],vvi:[390,265,56],cmp:[540,255,56],rpm2:[690,232,50],
+    egt:[800,300,46],egt2:[920,300,46],fuel:[690,365,50],oil:[800,410,36],fpr:[920,410,36],lamp_fire:[540,345,10]},
+  gearH:[90,370],arm:[150,410,230],plates:[[395,360,240,72,'ВООРУЖЕНИЕ',['НР-30','РС','БОМБЫ','ФКП']]],txt:[['ПОЖАР',540,365,9],['РП-5',890,222,10]]},
+  con:{L:[['РУД ×2 / РД-9Б',['ЗАПУСК Л','ЗАПУСК П','ФОРСАЖ']],['ЗАКРЫЛКИ / ЩИТКИ',['ЗАКР','ЩИТКИ']],['РСИУ-4',['КАНАЛ','ГРОМК']],['ТРИММЕР',['СТАБ','ЭЛЕР']]],
+       R:[['ЩИТОК АЗС',['РЛС','ПРИЦЕЛ','АРК']],['РАДИОЛОКАТОР РП-5',['ВКЛ','ДАЛЬН','ЯРК']],['КИСЛОРОД',['ПОДАЧА','АВАР']],['ОСВЕЩЕНИЕ',['УФО','АНО']]]}});
+Object.assign(PIT['F-104S'],{pc:0x2a2d2f,gs:'opt',stk:'b8',thr:1,lay:{rwr:[90,95,56],scope:[512,118,98],
+  dial:{ias:[330,100,60],alt:[330,232,60],vvi:[330,358,50],adi:[512,300,66],hsi:[512,445,56],
+    apc:[690,95,50],rpm:[820,95,56],egt:[940,95,48],acc:[690,225,46],noz:[820,225,46],fuel:[940,225,52],clk:[690,345,40],oil:[820,345,40],hyd:[940,345,40]},
+  gearH:[80,250],arm:[150,440,240],cau:[620,420,4,2,90,30,['FIRE','HYD','FUEL LOW','GEN','OIL','PITCH','CANOPY','TIP TANK']],txt:[['R21G',512,232,10]]},
+  con:{L:[['THROTTLE / ENGINE',['START','IGN','A/B']],['AN/ARC-552 UHF',['CHAN','VOL','MODE']],['FLAPS / TRIM',['T.O.','LAND','TRIM']],['ARMAMENT',['SPARROW','GUN','RKT']]],
+       R:[['R21G RADAR',['MODE','RANGE','GAIN']],['ELECTRICAL',['BATT','GEN','INV']],['NAV / TACAN',['CHAN','MODE']],['LIGHTS / OXY',['INST','POS','O2']]]}});
+Object.assign(PIT['F-5E'],{pc:0x30353a,gs:'opt',stk:'b8',thr:2,lay:{rwr:[80,90,50],scope:[512,95,82],
+  dial:{aoa:[190,90,46],ias:[345,120,62],adi:[512,262,72],alt:[680,120,62],acc:[360,290,50],hsi:[512,430,62],vvi:[680,270,56],oil:[680,410,40],
+    rpm:[810,90,46],rpm2:[920,90,46],egt:[810,200,44],egt2:[920,200,44],noz:[810,305,40],noz2:[920,305,40],fuel:[865,422,54]},
+  gearH:[80,250],arm:[140,415,240],cau:[130,170,2,4,90,26,['L GEN','R GEN','HYD','FUEL LOW','L FIRE','R FIRE','OXY','CANOPY']],txt:[['APQ-159',512,190,9]]},
+  con:{L:[['THROTTLES / ENGINE',['L START','R START','IGN']],['ARMAMENT',['ARM','GUNS','MSL']],['FUEL',['BOOST L','BOOST R','XFEED']],['FLAPS / TRIM',['AUTO','RUD','AIL']]],
+       R:[['RADAR APQ-159',['MODE','RANGE','GAIN']],['ELECTRICAL',['BATT','L GEN','R GEN']],['UHF / TACAN',['CHAN','VOL','MODE']],['LIGHTS / OXY',['INST','FORM','O2']]]}});
+
 // ---------- geometry helpers ----------
 const LM=(c,sh=10)=>new THREE.MeshPhongMaterial({color:c,shininess:sh,specular:0x1c1c1c});
 const box=(par,w,h,d,m,x,y,z,rx=0)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.rotation.x=rx;par.add(o);return o;};
@@ -76,6 +113,10 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   else{// reflector gunsight: glass plate in a thin frame on a centre post
     [[0,gh/2],[0,-gh/2]].forEach(([x,y])=>box(g,gw,.005,.005,fr,x,gy+y,gz));[-1,1].forEach(sd=>box(g,.005,gh,.005,fr,sd*gw/2,gy,gz));
     box(g,.016,.11,.016,blk,0,-.17,-.64);}
+  // period gunsight bodies (the glass and symbology stay as above)
+  if(S.gs==='a4'){box(g,.15,.12,.2,LM(0x1b1d1e),0,-.205,-.7);box(g,.11,.05,.08,LM(0x26292b),0,-.16,-.66);box(g,.04,.03,.03,LM(0x3a3d40),.06,-.14,-.66);}
+  else if(S.gs==='asp'){box(g,.13,.15,.24,LM(0x22252a),0,-.2,-.72);box(g,.09,.06,.1,LM(0x2c3036),0,-.13,-.67);const ring=new THREE.Mesh(new THREE.TorusGeometry(.03,.006,8,24),LM(0x111));ring.position.set(0,-.17,-.59);g.add(ring);}
+  else if(S.gs==='opt'){box(g,.12,.08,.16,LM(0x17191a),0,-.215,-.69);box(g,.06,.04,.05,LM(0x2a2d30),-.07,-.21,-.65);}
   gl.updateMatrixWorld(true);
   const glass=[[-gw/2,gh/2],[gw/2,gh/2],[gw/2,-gh/2],[-gw/2,-gh/2]].map(([x,y])=>new V3(x,y,0).applyMatrix4(gl.matrixWorld));
   // main panel: shaped body, painted face (one canvas), scope / RWR / second display set into it
@@ -90,15 +131,33 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     const m=new THREE.MeshBasicMaterial({map:liveTex(kind,canvas),toneMapped:false});const ms=new THREE.Mesh(geo,m);ms.position.set(cxm,cym,.0285);if(id)ms.userData.screen=id;pp.add(ms);o.faces.push(m);};
   if(L.scope)scr(scopeOf(S.sc),S.sc==='ph'?'round':'sq',L.scope[0],L.scope[1],L.scope[2],S.sc==='ph'?'phscope':'fcr');
   if(L.m2)scr(scopeOf(S.m2),'sq',L.m2[0],L.m2[1],L.m2[2],S.m2);
-  scr(rwrC,'round',L.rwr[0],L.rwr[1],L.rwr[2],null);
+  if(L.rwr)scr(rwrC,'round',L.rwr[0],L.rwr[1],L.rwr[2],null);
   // side consoles and sills
   [-1,1].forEach(sd=>{box(g,.2,.09,.95,cm,sd*.43,-.66,-.16);box(g,.05,.16,1.3,dk,sd*.55,-.48,-.2);
-    for(let i=0;i<4;i++)box(g,.14,.006,.16,LM(0x24282a),sd*.43,-.612,-.5+i*.2);});
+    if(!S.con)for(let i=0;i<4;i++)box(g,.14,.006,.16,LM(0x24282a),sd*.43,-.612,-.5+i*.2);});
   box(g,.3,.25,.3,dk,0,-.98,-.55);// pedestal under the panel
-  return{g,cv,tx,S,L,glass,lb:LB[S.l]||LB.en,t:0};}
+  // console tops: painted switch panels per jet  S.con={L:[[title,[switches]],..],R:[..]}
+  if(S.con)['L','R'].forEach((sd,si)=>{const list=S.con[sd]||[];const cc=document.createElement('canvas');cc.width=256;cc.height=1024;const x=cc.getContext('2d');
+    x.fillStyle='#'+(S.cc||S.pc).toString(16).padStart(6,'0');x.fillRect(0,0,256,1024);const ph=1024/Math.max(1,list.length);
+    list.forEach(([ti,sw],i)=>{const y=i*ph;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(8,y+6,240,ph-12);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=2;x.strokeRect(8,y+6,240,ph-12);
+      x.font='bold 15px Arial';x.textAlign='center';x.fillStyle='#e8e8e0';x.fillText(ti,128,y+26);
+      (sw||[]).forEach((w,j)=>{const cols=Math.min(3,sw.length),sx=40+(j%cols)*88,sy=y+60+Math.floor(j/cols)*54;x.fillStyle='#4a4a4a';x.beginPath();x.arc(sx,sy,10,0,7);x.fill();x.fillStyle='#ddd';x.fillRect(sx-3,sy-20,6,18);x.font='11px Arial';x.fillStyle='#c8c8c0';x.fillText(w,sx,sy+24);});});
+    const t=new THREE.CanvasTexture(cc);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.19,.94),m);pl.rotation.x=-Math.PI/2;pl.position.set((si?1:-1)*.43,-.613,-.16);g.add(pl);
+    // a few real 3D toggles so the console reads as hardware
+    list.forEach((_,i)=>{for(let j=0;j<2;j++){const tg=box(g,.006,.022,.006,LM(0xcccccc,40),(si?1:-1)*(.43-.05+j*.05),-.6,-.16-.47+(i+.5)*(.94/list.length)+.02,-.4);}});});
+  // own stick and throttle; they copy the borrowed ones' motion each frame
+  const stkG=new THREE.Group(),thrG=new THREE.Group();g.add(stkG);g.add(thrG);const sm=LM(0x1a1a1a,30),gm=LM(0x2b2b2b,20),bt=LM(0xb02020,30);
+  const st=S.stk||'b8';
+  box(stkG,.025,.34,.025,sm,0,.17,0);
+  if(st==='ru'){const ring=new THREE.Mesh(new THREE.TorusGeometry(.045,.008,8,20,Math.PI*1.3),gm);ring.position.set(0,.36,0);ring.rotation.z=-Math.PI*.15;stkG.add(ring);box(stkG,.03,.07,.03,gm,0,.34,0);box(stkG,.012,.02,.012,bt,.02,.38,-.01);}
+  else if(st==='a1'){box(stkG,.035,.1,.04,gm,0,.38,0,-.2);box(stkG,.012,.025,.012,bt,0,.43,.005);box(stkG,.006,.03,.02,LM(0x888888),0,.36,-.025);}
+  else{box(stkG,.04,.12,.045,gm,0,.39,-.005,-.25);box(stkG,.016,.018,.016,LM(0x777777),0,.455,.005);box(stkG,.012,.02,.012,bt,-.018,.43,.0);box(stkG,.006,.03,.02,LM(0x888888),0,.37,-.03);}
+  const nt=S.thr||1;for(let i=0;i<nt;i++){const lv=new THREE.Group();lv.position.x=(i-(nt-1)/2)*.035;box(lv,.012,.16,.012,sm,0,.08,0);box(lv,nt>1?.03:.05,.05,.05,gm,0,.17,0);thrG.add(lv);}
+  return{g,cv,tx,S,L,glass,lb:LB[S.l]||LB.en,t:0,stkG,thrG};}
 
 // panel layout in canvas px: [x, y, r]
-function layout(S){const sc=!!S.sc,two=!!S.m2,L={dial:{}};
+function layout(S){if(S.lay){const L=JSON.parse(JSON.stringify(S.lay));if(!L.scope)L.scope=null;L.dial=L.dial||{};if(!L.rwr)L.rwr=null;return L;}
+  const sc=!!S.sc,two=!!S.m2,L={dial:{}};
   L.rwr=[88,92,58];L.dial.ias=[222,104,70];L.dial.aoa=[88,232,54];L.dial.vvi=[222,248,60];
   L.dial.alt=[800,104,70];L.dial.clk=[940,90,46];
   if(S.e===2){L.dial.rpm=[800,240,56];L.dial.rpm2=[940,214,50];}else{L.dial.rpm=[800,240,56];L.dial.ff=[940,214,46];}
@@ -151,6 +210,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
     c.fillStyle='#ffb21a';c.beginPath();c.moveTo(0,-r);c.lineTo(-7,-r+14);c.lineTo(7,-r+14);c.closePath();c.fill();c.strokeStyle='#ffb21a';c.lineWidth=3;c.beginPath();c.moveTo(0,-r*.3);c.lineTo(0,r*.3);c.moveTo(-r*.22,0);c.lineTo(r*.22,0);c.stroke();
     T(String(Math.round(P.hdg||0)).padStart(3,'0'),0,r*.55,12,'#fff');});
   // stores / gear / caution block
+  if(!B.L.box){return extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk);}
   const[bx,by,bw,bh]=B.L.box;c.fillStyle='rgba(0,0,0,.35)';c.fillRect(bx,by,bw,bh);c.strokeStyle='rgba(255,255,255,.25)';c.lineWidth=2;c.strokeRect(bx,by,bw,bh);
   const armed=game.armPos===0,w=game.wsel||'GUN';
   T(lb.arm,bx+14,by+20,12,ink,'left');c.fillStyle=armed?'#ff4a2a':'#3a1612';c.fillRect(bx+170,by+9,62,22);T(armed?'ARM':lb.safe,bx+201,by+20,11,armed?'#fff':'#a08070');
@@ -164,10 +224,53 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   cau.forEach(([s,on],i)=>{const x=bx+214+(i%2)*46,y=by+78+Math.floor(i/2)*34;c.fillStyle=on?(i===0?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(x-21,y-13,42,26);T(s,x,y,s.length>6?7:9,on?'#200':'#7a6a40');});
   // scope / display labels under the screens
   if(B.L.scope){const[x,y,r]=B.L.scope;T(S.sc==='ph'?(S.l==='ru'?'РЛС':S.l==='zh'?'雷达':'RADAR'):'',x,y+r+18,11,dimInk);}
-  T(B.S.l==='ru'?'СПО':S.l==='zh'?'告警':'RWR',B.L.rwr[0],B.L.rwr[1]+B.L.rwr[2]+15,10,dimInk);}
+  if(B.L.rwr)T(B.S.l==='ru'?'СПО':S.l==='zh'?'告警':'RWR',B.L.rwr[0],B.L.rwr[1]+B.L.rwr[2]+15,10,dimInk);
+  extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk);}
+
+
+// ---------- extra instruments, sub-panels, annunciators, gear handle (per-jet layouts) ----------
+function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb,ru=S.l==='ru',run=P.totalFuel>0,n=clamp(P.n||0,0,1.1),ab=P.ab||0;
+  const lab=(r,s,y=.42)=>T(s,0,r*y,Math.max(8,Math.round(r*.15)),dimInk);
+  const gauge=(k,v,txt,a0=-135,a1=135,nn=10)=>dial(k,r=>{ticks(r,a0,a1,nn,2);ndl(r,a0+(a1-a0)*clamp(v,0,1));lab(r,txt);});
+  for(const k of Object.keys(L.dial)){const t=k.replace(/_.*$/,'');
+    if(t==='oil')gauge(k,run?.35+n*.4:0,ru?'МАСЛО':'OIL PSI');
+    else if(t==='hyd')gauge(k,run?.75+.02*Math.sin(performance.now()/900):0,ru?'ГИДРО':'HYD PSI');
+    else if(t==='noz'||t==='noz2')gauge(k,ab>.02?.85:clamp(1-n,0,1)*.4,ru?'СОПЛО':'NOZ POS %');
+    else if(t==='egt2')dial(k,r=>{ticks(r,-135,135,9,3);ndl(r,-135+270*clamp(run?.25+n*.55+ab*.15-.012:0,0,1));lab(r,lb.egt);});
+    else if(t==='fpr')gauge(k,run?.3+n*.5:0,ru?'ДАВЛ ТОПЛ':'FUEL PRESS');
+    else if(t==='oxy')gauge(k,.82,ru?'КИСЛОРОД':'OXYGEN');
+    else if(t==='cab')gauge(k,clamp(P.pos.y/15000,0,1)*.6,ru?'ВЫСОТА КАБ':'CABIN ALT');
+    else if(t==='lox')gauge(k,.7,ru?'КИСЛОРОД':'LOX');
+    else if(t==='acc')dial(k,r=>{ticks(r,-150,150,15,5);nums(r,-150,150,[-5,0,5,10]);ndl(r,-150+300*clamp(((P.nz||1)+5)/15,0,1));ndl(r,-150+300*clamp(((P.maxNz||1)+5)/15,0,1),.7,'#e05040',2);lab(r,ru?'ПЕРЕГРУЗКА':'ACCEL G',.4);});
+    else if(t==='mach')dial(k,r=>{ticks(r,-150,150,12,2);nums(r,-150,150,ru?['.5','.6','.7','.8','.9','1.0']:['.4','.8','1.2','1.6','2.0','2.4']);
+      const m=P.mach||0,v=ru?(m-.5)/.5:(m-.4)/2;ndl(r,-150+300*clamp(v,0,1));lab(r,ru?'М':'MACH');});
+    else if(t==='turn')dial(k,r=>{const rr=(P.yawRate!=null?P.yawRate:(P.angVel?P.angVel.y:0));ndl(r,clamp(-rr*R2D*12,-60,60),.8);
+      c.fillStyle='#222';c.fillRect(-r*.55,r*.42,r*1.1,r*.22);c.fillStyle='#fff';c.beginPath();c.arc(clamp((P.beta||0)*R2D*-4,-r*.45,r*.45),r*.53,r*.09,0,7);c.fill();lab(r,ru?'ЭУП':'TURN',-.45);});
+    else if(t==='cmp')dial(k,r=>{c.save();c.rotate(-(P.hdg||0)*D2R);for(let i=0;i<36;i++){c.save();c.rotate(i*10*D2R);c.fillStyle=ink;c.fillRect(-1,-r*.95,2,i%3?r*.08:r*.15);if(i%9===0)T(ru?['С','В','Ю','З'][i/9]:['N','E','S','W'][i/9],0,-r*.68,Math.round(r*.2));c.restore();}c.restore();
+      let br=0;try{const tg=jets.find(j=>j!==P&&j.alive&&j.side!==P.side);if(tg)br=Math.atan2(tg.pos.x-P.pos.x,-(tg.pos.z-P.pos.z))*R2D-(P.hdg||0);}catch(e){}ndl(r,br,.85,'#e8c040',3);lab(r,ru?'АРК':'RADIO COMP',.35);});
+    else if(t==='apc')dial(k,r=>{ticks(r,-120,120,8,2);ndl(r,-120+240*clamp(((P.alpha||0)*R2D)/25,0,1));c.strokeStyle='#e03030';c.lineWidth=5;c.beginPath();c.arc(0,0,r*.9,(-90+60)*D2R,(-90+120)*D2R);c.stroke();lab(r,'APC / AOA');});
+    else if(t==='trim')gauge(k,.5,ru?'ТРИМ':'TRIM');
+    else if(t==='lamp'){const[x,y,r]=L.dial[k];const on=k.includes('mach')?(P.mach||0)>.92:k.includes('fire')?(P.fire>0):false;c.fillStyle='#090909';c.beginPath();c.arc(x,y,r+4,0,7);c.fill();c.fillStyle=on?'#ff3a2a':'#4a1410';c.beginPath();c.arc(x,y,r,0,7);c.fill();}}
+  // sub-panels with switches: [x,y,w,h,title,[switch labels]]
+  for(const pl of L.plates||[]){const[x,y,w,h,ti,sw]=pl;c.fillStyle='rgba(0,0,0,.28)';c.fillRect(x,y,w,h);c.strokeStyle='rgba(255,255,255,.22)';c.lineWidth=2;c.strokeRect(x,y,w,h);
+    T(ti,x+w/2,y+11,10,ink);(sw||[]).forEach((s,i)=>{const n2=sw.length,sx=x+w*(i+.5)/n2,sy=y+h*.58;c.fillStyle='#555';c.beginPath();c.arc(sx,sy,7,0,7);c.fill();c.fillStyle='#ddd';c.fillRect(sx-2,sy-15,4,14);T(s,sx,y+h-9,8,dimInk);});}
+  // annunciator / caution grid: [x,y,cols,rows,cw,ch,[labels]]
+  if(L.cau){const[x,y,cols,rows,cw,ch,items]=L.cau,lowF=P.totalFuel<(P.ac.fuel||3000)*.15;
+    const lit=s=>/FIRE|ПОЖАР/.test(s)?P.fire>0||P.hp<25:/HYD|ГИДР/.test(s)?P.hp<45:/FUEL|ТОПЛ|ОСТАТ|BINGO/.test(s)?lowF:/GEN|ГЕН/.test(s)?!run:/OIL|МАСЛ/.test(s)?!run:false;
+    items.forEach((s,i)=>{const cx=x+(i%cols)*cw,cy=y+Math.floor(i/cols)*ch,on=lit(s),red=/FIRE|ПОЖАР/.test(s);c.fillStyle=on?(red?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(cx+2,cy+2,cw-4,ch-4);T(s,cx+cw/2,cy+ch/2,s.length>8?7:9,on?'#200':'#7a6a40');});}
+  // landing-gear handle with three lights: [x,y]
+  if(L.gearH){const[x,y]=L.gearH;let gd=false;try{gd=P.ac.cockpit==='fulcrum'?!!sys.mig.gear:!!sys.v.gear;}catch(e){}
+    c.fillStyle='rgba(0,0,0,.35)';c.fillRect(x-40,y-50,80,112);c.fillStyle='#999';c.fillRect(x-4,y+(gd?0:-40),8,48);c.fillStyle=ru?'#d23a2a':'#e8e8e8';c.beginPath();c.arc(x,y+(gd?44:4),11,0,7);c.fill();
+    [[x-24,y+56],[x,y+56],[x+24,y+56]].forEach(([a,b])=>{c.fillStyle=gd?'#46ff6a':'#123a1a';c.beginPath();c.arc(a,b-10,6,0,7);c.fill();});T(lb.gear,x,y-40,9,ink);}
+  // armament block (master arm + selected weapon): [x,y,w]
+  if(L.arm){const[x,y,w]=L.arm,armed=game.armPos===0,wn=game.wsel||'GUN';let cnt='';try{cnt=wn==='GUN'?String(P.gun.ammo):String(P.count(wn));}catch(e){}
+    c.fillStyle='rgba(0,0,0,.35)';c.fillRect(x,y,w,58);T(lb.arm,x+8,y+14,10,ink,'left');c.fillStyle=armed?'#ff4a2a':'#3a1612';c.fillRect(x+w-62,y+4,56,20);T(armed?'ARM':lb.safe,x+w-34,y+14,10,armed?'#fff':'#a08070');
+    c.fillStyle='#000';c.fillRect(x+6,y+30,w-12,22);T(((typeof SN!=='undefined'&&SN[wn])||wn)+'  '+cnt,x+12,y+41,12,'#7dffa0','left');}
+  // painted placards
+  for(const[tx,x,y,sz,cl]of L.txt||[])T(tx,x,y,sz||10,cl||dimInk);}
 
 // ---------- switching ----------
-const boards={};let cur=null;
+const boards={};let cur=null;const _sc=new THREE.Vector3();
 // keep only the borrowed stick, throttle, pedals: walk down from the root and hide every branch that holds none of them
 function keepObjs(o){const k=[o.stk,o.thr,o.eBoot];for(const pk of['pedV','pedE','pedR'])if(o[pk]&&o[pk].g)k.push(o[pk].g);return new Set(k.filter(Boolean));}
 function sweep(o,B,hid){const keep=keepObjs(o),anc=new Set();for(const k of keep)for(let p=k.parent;p&&p!==o.root;p=p.parent)anc.add(p);
@@ -181,6 +284,8 @@ selectCockpit=function(kind,pit){deactivate();const r=_sel(kind,pit);try{if(play
 for(const kind of['viper','fulcrum']){const o=ck[kind];if(!o||!o.anims)continue;
   o.anims.push(()=>{if(!cur||cur.kind!==kind||!player)return;if(!PIT[player.type]||cur.id!==player.type){deactivate();return;}
     sweep(o,cur.B,cur.hid);
+    {const B=cur.B,cp=(src,dst)=>{if(!src)return;src.updateMatrixWorld(true);src.matrixWorld.decompose(dst.position,dst.quaternion,_sc);if(src.visible){src.visible=false;if(!cur.hid.includes(src))cur.hid.push(src);}};
+      cp(o.stk,B.stkG);cp(o.thr,B.thrG);}
     if(!cur.B.g.visible)cur.B.g.visible=true;o.glass=cur.B.glass;
     const B=cur.B;if((B.t^=1))return;try{paint(B,player);B.tx.needsUpdate=true;}catch(e){}});}
 window.CW_PIT=PIT;
