@@ -105,7 +105,7 @@ SET('A-4E',{gs:'opt',stk:'b8',thr:1,lay:{rwr:[85,90,48],scope:[512,92,78],
     rpm:[830,92,52],egt:[945,92,46],fpr:[830,215,42],oil:[945,215,40],fuel:[880,345,56],clk:[684,400,38]},
   gearH:[80,250],arm:[140,420,250],plates:[[150,170,140,60,'LABS',['MODE','TIMER']]],cau:[760,440,3,2,80,26,['FIRE','OIL','FUEL LOW','HYD','GEN','SPD BRK']],txt:[['APG-53A',512,182,9]]},
   con:CON('en',[['ENGINE / FUEL',['MASTER','DROP TK','START']],'AN/ARC-51 UHF',['ARMAMENT',['STA 1','STA 2','STA 3']],'TRIM / FLAPS'],[['RADAR APG-53A',['MODE','GAIN','TILT']],'ELECTRICAL','TACAN','LIGHTS / OXY'])});
-SET('A-7D',{gs:'hud',stk:'b8',thr:1,lay:{rwr:[90,92,52],scope:[860,120,92],
+SET('A-7D',{gs:'hud',gw:.3,gh:.25,gy:-.045,stk:'b8',thr:1,lay:{rwr:[90,92,52],scope:[860,120,92],
   dial:{aoa:[230,92,44],ias:[340,100,56],adi:[512,110,74],alt:[680,100,56],vvi:[680,230,46],acc:[340,230,46],map:[512,355,110],
     rpm:[810,300,46],egt:[920,300,44],fuel:[865,425,52],oil:[700,400,36],clk:[700,470,30]},
   gearH:[80,260],arm:[140,425,240],cau:[150,170,2,3,90,26,['FIRE','HYD','FUEL LOW','GEN','OIL','NAV']],txt:[['PMDS',512,478,9],['APQ-126',860,226,9]]},
@@ -301,7 +301,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   const pm=LM(S.pc),dk=LM(0x16191b,6),cm=LM(S.cc||S.pc,8),blk=LM(0x0d0f10,4);
   // glare shield and sight head
   box(g,.92,.03,.42,dk,0,-.262,-.95);box(g,.62,.026,.05,dk,0,-.272,-.735);
-  const hud=S.s==='hud',gw=hud?(S.wide?.24:.21):.15,gh=hud?.19:.13,gy=hud?-.075:-.1,gz=-.615;
+  const hud=S.s==='hud',gw=S.gw||(hud?(S.wide?.24:.21):.15),gh=S.gh||(hud?.19:.13),gy=S.gy!=null?S.gy:hud?-.075:-.1,gz=-.615;
   box(g,hud?.24:.17,.06,.13,blk,0,-.225,-.81);
   const gmat=new THREE.MeshBasicMaterial({color:0x9effd0,transparent:true,opacity:.07,depthWrite:false,side:THREE.DoubleSide});
   const gl=new THREE.Mesh(new THREE.PlaneGeometry(gw,gh),gmat);gl.position.set(0,gy,gz);gl.rotation.x=-.08;g.add(gl);

@@ -9863,7 +9863,7 @@ function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(
 const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&u.nv!=null)return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
 const wrapA=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const hash2=(x,z)=>{const s=Math.sin(x*12.9898+z*78.233)*43758.5453;return s-Math.floor(s);};
-const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E'];
+const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D'];
 const LCODES=['1688','1511','1111','1234','2222'];
 
 /* ---------------- stores: pods and the Maverick family ---------------- */
@@ -10163,6 +10163,7 @@ const AGR={NC:96,NB:96,val:null,sh:null,colT:null,cv:null,ictx:null,img:null,mod
     c.imageSmoothingEnabled=true;},
   drawPh(P){const c=phScopeC.getContext('2d');this.step(P);this.draw(c,360,P);}
 };
+window.AGR=AGR;
 
 // the FCR format: A/G radar takes over whenever an A/G store is selected and the radar is on
 {const _d=drawFCR;drawFCR=function(){const P=player;if(P&&AGR.active()){const c=fcr;AGR.step(P);AGR.draw(c,360,P);return;}return _d();};}
