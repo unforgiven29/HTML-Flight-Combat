@@ -20,7 +20,7 @@ const ID='A-7D',K=.00098,OX=625,OY=270;
 const PL=()=>typeof player!=='undefined'?player:null;
 const bx=x=>(x-OX)*K,by=y=>(OY-y)*K;
 const now=()=>performance.now()/1000;
-let STV=0,FK='',SK='';
+let STV=0,FK='',SK='',FKA=[];
 const ST=new Proxy({},{set(t,k,v){t[k]=v;STV++;return true;}});
 const sv=(k,d)=>ST[k]===undefined?d:ST[k];
 let lampTest=0,fireTest=0,mcAck=false;
@@ -189,7 +189,10 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // redraw gating: gauges redraw only when what they show has changed (quantised to what is visible)
   const q=(v,s)=>Math.round((v||0)*s);
   const FASTK=new Set(['masi','aoa','adi','hsi','alt','vvi','acc','sby','ralt']);
-  const gate=k=>{let last=null;const fast=FASTK.has(k);return()=>{const key=fast?FK:SK;if(key===last)return false;last=key;return true;};};
+  // v259: each fast gauge keys only on the values it shows (plus STV and a 2 Hz refresh), instead of every gauge redrawing and
+  // re-uploading whenever any flight value changes. Gauges not listed in FKSUB keep the full key, as before.
+  const FKSUB={masi:[3,4],asi:[3,4],aoa:[5,13],adi:[0,1,2,5,10,12,13],sby:[0,1,2,10],hsi:[2,12],crs:[2,12],bdhi:[2,12],alt:[6],vvi:[7],acc:[8,9],ralt:[11],tb:[0,2,8,10]};
+  const gate=k=>{let last=null;const fast=FASTK.has(k),sub=FKSUB[k];return()=>{const key=!fast?SK:sub?sub.map(i=>FKA[i]).join()+'|'+STV+'|'+Math.floor(now()*2):FK;if(key===last)return false;last=key;return true;};};
   const PC=0x3a3e41,pm=LM(PC,12),dk=LM(0x1b1d1f,8),blk=LM(0x0b0c0d,4),bz=LM(0x141618,40),met=LM(0x9aa0a4,60);
   const board=new THREE.Group();board.position.set(0,-.565,-.74);board.rotation.x=-.18;g.add(board);
   // ---- outline traced from figure 1-3: two lobes either side of the HUD well, ARMT and check-list tabs, ARMAMENT RELEASE pedestal ----
@@ -475,7 +478,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   let t=0;
   return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;if(!cautions(P).length)mcAck=false;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;
         {const E=P.eng&&!P.eng.done?P.eng.e[0]:null;let h=0;try{h=q(P.pos.y-groundAt(P.pos.x,P.pos.z),.66);}catch(e){}let b=0;try{b=q(brgField(P),2)+q(distField(P),4);}catch(e){}
-     FK=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV].join();
+     FKA=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV];FK=FKA.join();
      SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.gearPos,20),q(P.flapPos!=null?P.flapPos:P.flapCmd,20),q(P.sb,20),Math.floor(now()),lampTest>now()?1:0,STV,E?q(E.rpm,2)+'/'+q(E.egt,40)+(E.lit?1:0):'',(P.fire||0)>0?1:0,q(P._trimP,20),q(P.ctl?P.ctl.r:0,20),(typeof cautions==='function'?cautions(P).join('.'):''),P.hook?1:0,P.onGnd?1:0].join();}
     for(let i=0;i<upd.length;i++){try{upd[i](P);}catch(e){}}
     P._trimP=(P._trimP||0)*.97+(P.ctl?P.ctl.p:0)*.03;}};}
