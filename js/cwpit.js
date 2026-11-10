@@ -497,7 +497,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   const rpm=k=>dial(k,r=>{const E=P.eng,ei=k==='rpm2'?1:0,v=E&&!E.done&&E.e[Math.min(ei,E.e.length-1)]?E.e[Math.min(ei,E.e.length-1)].rpm/100:run?(.62+.38*(k==='rpm2'?n*.995:n)):0;ticks(r,-135,135,11,2);nums(r,-135,135,[0,20,40,60,80,100]);ndl(r,-135+270*clamp(v/1.1,0,1));T(lb.rpm,0,r*.42,9,dimInk);T(String(Math.round(v*100)),0,-r*.3,11);if(ab>.02){T(lb.ab,0,r*.66,9,'#ffb030');}});
   rpm('rpm');rpm('rpm2');
   dial('ff',r=>{ticks(r,-135,135,10,2);ndl(r,-135+270*clamp(run?(.12+n*.55+ab*.33):0,0,1));T(lb.ff,0,r*.42,8,dimInk);});
-  dial('egt',r=>{ticks(r,-135,135,9,3);const E=P.eng,e=k=>E&&!E.done?clamp(E.e[0].egt+k,0,1):clamp(run?.25+n*.55+ab*.15+k:0,0,1);ndl(r,-135+270*e(0));if(S.e===2)ndl(r,-135+270*e(-.012),.62,'#e8c040',3);T(lb.egt+(S.l==='en'?' °C':''),0,r*.42,9,dimInk);});
+  dial('egt',r=>{ticks(r,-135,135,9,3);const E=P.eng,X=window.ENGSYS,e=k=>E&&!E.done?clamp(E.e[0].egt+k,0,1):X&&X.on?clamp(X.egt(P,0)/900+k,0,1):clamp(run?.25+n*.55+ab*.15+k:0,0,1);ndl(r,-135+270*e(0));if(S.e===2)ndl(r,-135+270*e(-.012),.62,'#e8c040',3);T(lb.egt+(S.l==='en'?' °C':''),0,r*.42,9,dimInk);});
   dial('fuel',r=>{const f=P.totalFuel||0,mx=Math.max(1,(P.ac.fuel||3000)+(P.ac.tank||0)*2),v=imp?f*2.2046:f;ticks(r,-135,135,10,2);ndl(r,-135+270*clamp(f/mx,0,1));
     c.fillStyle='#000';c.fillRect(-r*.48,r*.18,r*.96,r*.32);T(String(Math.round(v/10)*10),0,r*.34,12,'#fff');T(lb.fuel+(imp?' LB':' KG'),0,-r*.35,9,dimInk);});
   // ADI
@@ -522,7 +522,7 @@ function paint(B,P){const c=B.cv.getContext('2d'),S=B.S,lb=B.lb,ru=S.l==='ru'||S
   let gd=false;try{gd=P.ac.cockpit==='fulcrum'?!!sys.mig.gear:!!sys.v.gear;}catch(e){}const tr=(P.gearPos!=null)&&P.gearPos>.05&&P.gearPos<.95;
   T(lb.gear,bx+14,by+92,12,ink,'left');[[bx+150,by+80],[bx+125,by+104],[bx+175,by+104]].forEach(([x,y])=>{c.fillStyle=tr?'#ff3a2a':gd?'#46ff6a':'#123a1a';c.beginPath();c.arc(x,y,10,0,7);c.fill();});
   // caution lamps
-  const lowF=P.totalFuel<(P.ac.fuel||3000)*.15,cau=[[lb.fire,P.fire>0||P.hp<25],[lb.hyd,P.hp<45],[lb.low,lowF],[lb.eng,!run]];
+  const lowF=P.totalFuel<(P.ac.fuel||3000)*.15,X_=window.ENGSYS&&window.ENGSYS.on?window.ENGSYS:null,cau=[[lb.fire,P.fire>0||P.hp<25],[lb.hyd,X_?X_.lamp(P,'hyd'):P.hp<45],[lb.low,lowF],[lb.eng,!run||(X_&&(X_.lamp(P,'oil')||X_.lamp(P,'hot')||X_.lamp(P,'stall')||X_.lamp(P,'vib')))]];
   cau.forEach(([s,on],i)=>{const x=bx+214+(i%2)*46,y=by+78+Math.floor(i/2)*34;c.fillStyle=on?(i===0?'#ff3a2a':'#ffb21a'):'#2a2416';c.fillRect(x-21,y-13,42,26);T(s,x,y,s.length>6?7:9,on?'#200':'#7a6a40');});
   // scope / display labels under the screens
   if(B.L.scope){const[x,y,r]=B.L.scope;T(S.sc==='tv'?'КАЙРА-23 ТВ':S.sc==='ph'?(S.l==='ru'?'РЛС':S.l==='zh'?'雷达':'RADAR'):'',x,y+r+18,11,dimInk);}
@@ -535,10 +535,10 @@ function extra(B,P,c,T,dial,ticks,nums,ndl,ink,dimInk){const S=B.S,L=B.L,lb=B.lb
   const lab=(r,s,y=.42)=>T(s,0,r*y,Math.max(8,Math.round(r*.15)),dimInk);
   const gauge=(k,v,txt,a0=-135,a1=135,nn=10)=>dial(k,r=>{ticks(r,a0,a1,nn,2);ndl(r,a0+(a1-a0)*clamp(v,0,1));lab(r,txt);});
   for(const k of Object.keys(L.dial)){const t=k.replace(/_.*$/,'');
-    if(t==='oil')gauge(k,run?.35+n*.4:0,ru?'МАСЛО':'OIL PSI');
-    else if(t==='hyd')gauge(k,run?.75+.02*Math.sin(performance.now()/900):0,ru?'ГИДРО':'HYD PSI');
+    if(t==='oil'){const X=window.ENGSYS,ix=/_2$/.test(k)?1:0;gauge(k,X&&X.on?Math.min(1,(/_\d$/.test(k)?X.oilP(P,ix):X.oilWorst(P))/(X.oilNom(P)*1.6)):run?.35+n*.4:0,ru?'МАСЛО':'OIL PSI');}
+    else if(t==='hyd'){const X=window.ENGSYS,sy=/_2$|_3$/.test(k)?'B':'A';gauge(k,X&&X.on?Math.min(1.05,X.hyd(P,sy)/(X.pnom(P)*1.33)):run?.75+.02*Math.sin(performance.now()/900):0,ru?'ГИДРО':'HYD PSI');}
     else if(t==='noz'||t==='noz2')gauge(k,ab>.02?.85:clamp(1-n,0,1)*.4,ru?'СОПЛО':'NOZ POS %');
-    else if(t==='egt2')dial(k,r=>{ticks(r,-135,135,9,3);ndl(r,-135+270*clamp(run?.25+n*.55+ab*.15-.012:0,0,1));lab(r,lb.egt);});
+    else if(t==='egt2')dial(k,r=>{ticks(r,-135,135,9,3);const E=P.eng,X=window.ENGSYS;ndl(r,-135+270*(E&&!E.done&&E.e[1]?clamp(E.e[1].egt,0,1):X&&X.on?clamp(X.egt(P,1)/900,0,1):clamp(run?.25+n*.55+ab*.15-.012:0,0,1)));lab(r,lb.egt);});
     else if(t==='fpr')gauge(k,run?.3+n*.5:0,ru?'ДАВЛ ТОПЛ':'FUEL PRESS');
     else if(t==='oxy')gauge(k,.82,ru?'КИСЛОРОД':'OXYGEN');
     else if(t==='cab')gauge(k,clamp(P.pos.y/15000,0,1)*.6,ru?'ВЫСОТА КАБ':'CABIN ALT');
