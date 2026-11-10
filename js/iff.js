@@ -9,6 +9,9 @@ const IFF=(function(){
     c1:DAY.m1,c2:DAY.m2,c3:'1200',key:'A',crypt:'NORM',ident:0,mon:true,auto:true,roe:'TIGHT',reply:0,test:0,t:0};
   const tab=new Map();                  // jet -> {s:'UNK'|'FRIEND'|'POSS'|'NOREPLY', t:time, prog:0..1, since:time}
   let lastMsg=0,sweepT=0;
+  // AN/APX-80 Combat Tree (F-4D/E): triggers the Soviet SRO-2 'Odd Rods' transponder. Only these types carry a set it can trigger.
+  const CT_SET=new Set(['MiG-15','MiG-19','MiG-21']);st.ct=true;
+  const hasCT=()=>player&&player.type==='F-4E';
   const now=()=>performance.now()/1000;
   const E=j=>{let e=tab.get(j);if(!e){e={s:'UNK',t:0,prog:0,since:0};tab.set(j,e);}return e;};
   const on=()=>st.pwr!=='OFF'&&st.pwr!=='STBY';
@@ -58,7 +61,7 @@ const IFF=(function(){
     if(st.roe==='TIGHT'&&s==='UNK')return 'ROE TIGHT · ID REQD';
     return null;
   }
-  function label(j){const s=status(j);return s==='FRIEND'?'FRIEND':s==='POSS'?'POSS FRD':s==='NOREPLY'?'NO REPLY':'UNKNOWN';}
+  function label(j){const s=status(j);return s==='FRIEND'?'FRIEND':s==='POSS'?'POSS FRD':s==='NOREPLY'?'NO REPLY':s==='CT'?'CT·'+(j.type||'').toUpperCase():'UNKNOWN';}
   function sam(P,R){// friendly SAM battery R treats the player as a target if he stays NO REPLY while ROE is FREE
     if(!P||P.side!==R.side||st.roe!=='FREE')return false;const x=xp(P);return !answer(x,{m1:1,m2:1,m3:1,m4:1})&&performance.now()/1000-(st.badSince||1e9)>20;}
 
@@ -103,11 +106,15 @@ const IFF=(function(){
       if(j.remote){e.s=j.side===player.side?'FRIEND':'NOREPLY';continue;}
       const lit=(on()&&(st.auto||manual)&&inBeam(j,dir))||(manual&&on()&&_b.copy(j.pos).sub(player.pos).length()<RNG&&terrLOS(player.pos,j.pos)&&Math.acos(Math.max(-1,Math.min(1,_b.normalize().dot(player.fwd(_a)))))<CONE*2.5);
       if(lit){e.prog+=dt/1.5;if(e.prog>=1){e.prog=0;const a=(j.side===player.side||Math.random()<.04)?answer(xp(j),modes):answer(xp(j),modes);
-          const ns=a==='FRIEND'?'FRIEND':a==='POSS'?'POSS':'NOREPLY';
+          let ns=a==='FRIEND'?'FRIEND':a==='POSS'?'POSS':'NOREPLY';
+          if(ns==='NOREPLY'&&hasCT()&&st.ct&&j.side!==player.side&&CT_SET.has(j.type)){
+            if(j._ctOn===undefined)j._ctOn=Math.random()<.85;      // set may be switched off / unserviceable
+            if(j._ctOn){ns='CT';if(e.s!=='CT'&&SET.calls==='ON')radio('Combat Tree, '+j.type+' transponder, bearing '+Math.round(((Math.atan2(j.pos.x-player.pos.x,-(j.pos.z-player.pos.z))*57.3)+360)%360)+'.');}}
           if(e.s!==ns){if(ns==='NOREPLY'&&e.s==='UNK')e.since=t;if(ns==='FRIEND'&&e.s!=='FRIEND'&&j.callsign&&SET.calls==='ON'&&j.ai&&j.ai.friend&&t-lastMsg>6){lastMsg=t;}}
           e.s=ns;e.t=t;}}
       else if(e.prog>0)e.prog=Math.max(0,e.prog-dt*.5);
-      if(e.s!=='UNK'&&t-e.t>25&&e.s!=='NOREPLY')e.s='UNK';       // a stale ID decays: the beam has to come back
+      if(e.s!=='UNK'&&t-e.t>25&&e.s!=='NOREPLY'&&e.s!=='CT')e.s='UNK';
+      if(e.s==='CT'&&t-e.t>8)e.s='UNK';       // a stale ID decays: the beam has to come back
       if(e.s==='NOREPLY'&&t-e.t>40)e.s='UNK';
       // Mode 4 REPLY lamp
       if(lit&&e.s==='FRIEND')st.reply=t+.4;
@@ -140,7 +147,7 @@ const IFF=(function(){
   function hudLine(){
     if(!on())return 'IFF '+st.pwr;
     const m=[st.m1?'1':'',st.m2?'2':'',st.m3a?'3A':'',st.mc?'C':'',st.m4&&st.crypt==='NORM'?'4':''].filter(Boolean).join('/');
-    return 'IFF '+m+(st.ident>0?' IDENT':'')+' · M3 '+st.c3+' · ROE '+st.roe;}
+    return 'IFF '+m+(st.ident>0?' IDENT':'')+(hasCT()?' · CT '+(st.ct?'ON':'OFF'):'')+' · M3 '+st.c3+' · ROE '+st.roe;}
   let bar=null,barTxt='';
   function hud(){
     if(!bar){bar=document.createElement('div');bar.id='iffbar';bar.style.cssText='position:fixed;left:10px;bottom:10px;z-index:20;font:11px/1.35 ui-monospace,Menlo,monospace;color:#9fe3a8;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:3px;pointer-events:none;white-space:pre';document.body.appendChild(bar);}
@@ -153,6 +160,7 @@ const IFF=(function(){
     if(typeof CTL==='undefined')return;
     CTL.map['+Digit8']={fn:()=>interrogate(true)};
     CTL.map['+Digit9']={fn:()=>ctl.ident()};
+    CTL.map['+Digit7']={fn:()=>{if(!hasCT()){flash('NO COMBAT TREE',900);return;}st.ct=!st.ct;flash('COMBAT TREE '+(st.ct?'ON':'OFF'),1000);}};
     CTL.map['+Digit0']={fn:()=>ctl.cycleRoe()};
   }
   return {page,sync,st,tab,xp,answer,status,known,hide,hitSkip,mslSkip,badFor,roeCheck,label,sam,interrogate,update,ctl,hudLine,install,DAY,on,E};

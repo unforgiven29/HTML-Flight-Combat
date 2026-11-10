@@ -4,6 +4,7 @@
 - New `js/iff.js`: per-jet transponders with the day's code table, Mode 4 crypto key (HOLD/ZERO), 15 s IDENT, interrogator (110 km, LOS, 14° cone on bug/lock/nose, 3 cycles) giving FRIEND / POSS FRD / NO REPLY / UNKNOWN.
 - Radar scopes now show unidentified friendlies as contacts; only positively identified friends are filtered. Wingmen can start with zeroised Mode 4, wrong codes or a dead transponder.
 - ROE: TIGHT (needs NO REPLY), FREE, HOLD. Missiles/guns can hit unidentified friendlies; wingmen and friendly SAMs may engage persistent NO REPLY friends under ROE FREE.
+- F-4E Combat Tree (AN/APX-80): triggers the SRO-2 transponder of MiG-15, MiG-19 and MiG-21 only (shown as CT·MIG-xx, ~85% of sets serviceable); other types stay NO REPLY. Shift+7 toggles it.
 - Cockpit IFF panels (F-15, F-16, MiG-21 SRO-2, F/A-18 UFC + MFD page) drive the engine. Keys: Shift+8 interrogate, Shift+9 IDENT, Shift+0 cycle ROE.
 
 ## v260 — A-4E Skyhawk cockpit, 1:1 with NATOPS figure FO-1
