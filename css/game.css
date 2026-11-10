@@ -314,3 +314,6 @@ h2{margin:0;font:700 12px var(--f-mono);letter-spacing:.2em;color:var(--dim);tex
 /* v263 engine systems page (Shift+G) */
 #esys{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(14% + env(safe-area-inset-bottom,0px));padding:6px 10px;background:rgba(6,10,12,.78);border:1px solid #2c4a52;border-radius:5px;font:700 11px var(--f-mono);color:#cfe;display:grid;gap:2px;pointer-events:none;z-index:4;max-width:min(720px,92vw);white-space:nowrap}
 #esys .h{color:var(--amber);letter-spacing:.16em;font-size:10px}#esys .a{color:var(--amber)}#esys .r{color:var(--warn)}#esys b{color:var(--hud)}#esys .a b,#esys .r b{color:inherit}
+
+#strp{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(14% + env(safe-area-inset-bottom,0px));padding:6px 10px;background:rgba(6,10,12,.78);border:1px solid #2c4a52;border-radius:5px;font:700 11px var(--f-mono);color:#cfe;display:grid;gap:2px;pointer-events:none;z-index:4;max-width:min(720px,92vw);white-space:nowrap}
+#strp .h{color:var(--amber);letter-spacing:.16em;font-size:10px}#strp .a{color:var(--amber)}#strp .r{color:var(--warn)}#strp b{color:var(--hud)}#strp .a b,#strp .r b{color:inherit}
