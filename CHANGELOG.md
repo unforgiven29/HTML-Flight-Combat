@@ -292,3 +292,17 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 ## v254
 - Su-25: Klen-PS nose laser designator with no screen — "+" spot and slant range on the HUD, ЛАЗЕР switch / N key, laser bombs and Kh-25ML / Kh-29L ride the spot.
 - Su-25 console: КЛЕН-ПС ЛАЗЕР and СПО-15 «БЕРЁЗА» panels (power / search wired to the warner).
+
+## v255 — campaign and multiplayer upgrade (`js/campmp.js`)
+**Campaign**
+- **Sortie debrief**: the tasking you flew is graded against what actually happened near the target (CAS: red ground units destroyed within 15 km, SEAD: the SAM battery, STRIKE: the airfield hangars, CAP: an air kill). A completed task takes red reserves and adds to ours and is written to the war log; a partial task takes 1 red reserve; a failed one is logged. The result is shown under the sortie result. Progress counts everything that happened there, not only your own kills.
+- **Theatre panel** on the CAMPAIGN tab: win condition, airfields held, how far the front has moved since day 1, reserves bar, and each red airfield with its distance behind the line, jets left and damage.
+- **Export / import save** (JSON file) for moving a campaign between machines.
+
+**Multiplayer**
+- **Ping** per pilot (round trip through the host) in the scoreboard and in a live pilot list (jet, K/D, ping) on the MULTIPLAYER tab.
+- **Chat**: Ctrl+Enter in flight, or the box in the room panel.
+- **Invite links**: `?room=CODE&mode=coop|ffa` opens the MULTIPLAYER tab with the code filled in. New buttons: NEW CODE, COPY INVITE LINK.
+- **Dogfight rounds**: score limit set by the host (10 / 20 / 30 / none). At the limit everyone sees the standings, scores reset and the room respawns. 4 s of spawn protection after each dogfight spawn.
+- **Co-op**: the host's selected tasking is shared with every pilot in the room.
+- Tested in headless Chrome with a mocked room (chat, ping, round flow, tie handling, task sync, debrief). **Not tested over a real network from the build environment (PeerJS broker unreachable there) — needs a check with two machines.**
