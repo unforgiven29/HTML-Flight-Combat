@@ -95,3 +95,20 @@ Both jets now draw an IKSh-1M (ИКШ-1М) style HUD built from cockpit photos a
 - **Combat:** vertical range bar with zone flags and the ⇦ target caret, mode column (РЛП / ТП, ППС / ЗПС, СНП, ИЗЛ, А), antenna azimuth scale ±70 with a triangle, target circle with the numbered steering diamond, TWS track marks, ПР / БЕЗ ЗАХВ, boxed missile time to impact, РКЦ range bottom left, ПЦ / ДВБ (БВБ in close combat) and the selected round (e.g. 77-1) bottom right, УВОД ОТКЛ when GCAS is off.
 - **Navigation:** bearing / distance to the waypoint (277/ 38.9КМ), waypoint name, AoA arc, waypoint diamond on the heading scale.
 - English labels follow the HUD-language setting. The Su-30MK2 and Su-27SM keep their own HUDs.
+
+## v229 — the Cold War hangar (33 new jets)
+Every type in `Viper Sortie Docs/planes/Cold War` that the game did not have. New files: `js/coldwar.js` (airframe builder, menu icons, new stores) and `js/coldwar-jets.js` (the aircraft).
+
+**BLUFOR:** A-4E Skyhawk, A-7D Corsair II, AV-8B Harrier II (NA), Alpha Jet E, Super Étendard, F-100A, F-104S, F-106A, F-111F, F-20A, F-5E, F-86F, F-8E, J 35F Draken, AJS 37 Viggen, AMX, Lightning F.6, Mirage IIIE, Mirage F1C, Mirage 2000C, Jaguar A, Tornado GR.4.
+**REDFOR:** Su-25, Su-24M, Su-22M4, MiG-27K, MiG-15bis, MiG-19P, Yak-38, Yak-141, J-11, J-8F, JH-7.
+
+Each has its own flight data (thrust, weights, fuel, wing, limits), radar or ranging set, gun, stations and period loadouts (cold / modern / strike), RWR, chaff / flares, NATO call sign, side, campaign roles and a procedural 3D model + menu icon.
+- **New missiles:** AIM-4F/G, Rb 24 / 24J / 27 / 28 / 74, Firestreak, Red Top, R530, Super 530F / 530D, Magic 1 / 2, Aspide, PL-5E, PL-8, PL-11, PL-12.
+- **New A/G stores:** AS-37 Martel, AS-30L, AM39 Exocet, Rb 75 / 04E / 15F, m/71, BL755, Belouga, SAMP 250 / 400, Matra F1, ARAK, UB-16 / UB-32 / ORO-57K, S-24B, Kh-25ML, Kh-58U, YJ-82, KD-88, LS-500J.
+- **No-afterburner jets** (A-4, A-7, AV-8B, Alpha Jet, SEM, F-86, AMX, Su-25, MiG-15, Yak-38): throttle stops at MIL.
+- **Swing wings** (F-111F 16/45/72, Tornado 25/45/67, Su-24M 16/45/69, Su-22M4 30/45/63, MiG-27K 16/45/72): `,` / `.` step through each jet's own sweep stops.
+- **V/STOL** (AV-8B, Yak-38, Yak-141): `,` / `.` set the nozzle angle; vectored thrust (plus lift jets on the Yaks) gives jet-borne lift for slow flight, short take-off, VIFF. No true hover — the flight model flies the velocity vector.
+- **Two-seaters with AI back-seater:** F-111F, Tornado GR.4, Su-24M, JH-7 (WSO).
+- **Cockpits are borrowed** (not built yet): Phantom pit for most older Western jets, F-16A pit for F-20 / AMX / Mirage 2000, Hornet pit for AV-8B, MiG-21 pit for Su-25 / MiG-15 / MiG-19 / Yak-38, MiG-23 pit for Su-24M / Su-22M4 / MiG-27K / J-8F / JH-7, MiG-29 pit for Yak-141, Su-27 pit for J-11. MiG-21/23-pit jets show the SPO-10 in the player cockpit.
+- Fix: `flPaint` (MiG-23 scope / HUD clutter) crashed when a clutter level came out NaN.
+- Docs note: `Lightning F.6/manuals` contains the F-111F flight manual, not a Lightning one.

@@ -2493,7 +2493,7 @@ function flPaint(c,m,px,base){const C=flClutter,now=performance.now()/1000,g=sys
   for(let ia=0;ia<C.nA;ia++)for(let ir=0;ir<C.nR;ir++){const i=ia*C.nR+ir,age=now-C.t[i];if(age>3.2)continue;
     const I=C.v[i]*Math.exp(-age/1.4)*(.35+g*1.3);if(I<.16-g*.08)continue;
     const sd=Math.floor(C.t[i]*7),j1=hash(ia*13+sd,ir*7)-.5,j2=hash(ir*11+sd,ia*5+3)-.5;
-    const L2=Math.min(3,Math.floor(I*3));lv[L2].push([((ia+.5+j1*.8)/C.nA)*2-1,(ir+.5+j2*.7)/C.nR,.6+hash(ia,ir+sd)*1.1]);if(I>.5)lv[Math.max(0,L2-1)].push([((ia+.5-j2)/C.nA)*2-1,(ir+.5+j1)/C.nR,.5+hash(ir,ia+sd)*.8]);}
+    const L2=Math.max(0,Math.min(3,Math.floor(I*3)||0));lv[L2].push([((ia+.5+j1*.8)/C.nA)*2-1,(ir+.5+j2*.7)/C.nR,.6+hash(ia,ir+sd)*1.1]);if(I>.5)lv[Math.max(0,L2-1)].push([((ia+.5-j2)/C.nA)*2-1,(ir+.5+j1)/C.nR,.5+hash(ir,ia+sd)*.8]);}
   c.lineCap='round';
   lv.forEach((arr,k)=>{if(!arr.length)return;c.globalAlpha=base*[.3,.5,.75,.95][k];c.lineWidth=px*[1.6,2,2.5,3][k];c.beginPath();
     for(const[u,v,l]of arr){const a=m(u-du*l,v),b=m(u+du*l,v);if(a&&b){c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);}}c.stroke();});
