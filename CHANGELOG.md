@@ -1,5 +1,11 @@
 # Changelog
 
+## v260 — A-4E Skyhawk cockpit, 1:1 with NATOPS figure FO-1
+- **New `js/a4pit.js`** — the A-4E no longer uses the generic Cold War template. Instrument panel, left console and right console are rebuilt from NAVAIR 01-40AVC-1 figure FO-1 (A-4E cockpit, changed 1 March 1970), keyed items 1-61.
+- **Instrument panel** — AJB-3A attitude indicator, radar scope, LABS timer, accelerometer, 8-day clock, pressure ratio, oil quantity, tachometer with vernier, exhaust temperature, fuel flow, fuel quantity, radar altimeter, dead reckoning indicator, standby attitude, BDHI, VSI, altimeter with counters and baro window, AOA indicator, Mach / airspeed (80-650 kt), cabin pressure altitude and LOX gauges, ladder caution lights, LANDING / TAKEOFF check lists, armament panel with EMER SELECT / GUNS / ARM / five station switches / function selector / MASTER ARM, AWRS panel, EMER and BOMB release tabs, gear and hook handles, AOA indexer on the glareshield.
+- **Left console** — wheels and flaps indicators, LABS control, APC, JATO, spoiler arm, flap handle, throttle with friction / lock and speed brake switch, engine control (wing fuel dump, start, fuel control), radar control, AFCS, GCBS / beacon, oxygen / anti-G, suit vent, smoke abatement, manual fuel shutoff, canopy handle, emergency speedbrake.
+- **Right console** — trim position indicators, NAV control, UHF, TACAN, SIF, IFF, compass control, interior lights, misc switches, AFCS test, exterior lights, air conditioning, rain removal, fuel transfer bypass, spare lamps.
+
 ## v259 — performance, smaller download, F3 overlay
 - **Cockpit shadows** — the shadow pass redrew every cockpit mesh a second time each frame. Outside HIGH it now refreshes only when the sun moves relative to the cockpit, or 15 times a second for moving parts: roughly 35-40% fewer draw calls per frame at 60 fps in AUTO.
 - **Shadow map size** — AUTO was running a 2048 map instead of its 1024 (the initial size was never corrected).
