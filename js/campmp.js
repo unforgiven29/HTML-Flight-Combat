@@ -51,14 +51,19 @@ function taskProbe(){const st=CAMP.st,t=CAMP.task;if(!st||!t)return null;
     if(t.kind==='SEAD'){const id=+String(t.id).replace('SEAD',''),a=st.ad.find(q=>q.id===id);return{kind:'SEAD',id,n:a?a.al.reduce((m,v)=>m+(v?1:0),0):0};}
     if(t.kind==='STRIKE'){const bid=String(t.id).replace('STK','');return{kind:'STRIKE',bid,n:st.ad.filter(a=>a.k==='BT'&&String(a.b)===bid&&a.al[0]).length};}
     if(t.kind==='CAP'){return{kind:'CAP',n:0};}
+    if((t.kind==='INTERCEPT'||t.kind==='ESCORT')&&t.fid!=null){const fl=CAMP._bfl&&CAMP._bfl.get(t.fid);return{kind:t.kind,n:fl?fl.dead:0,drop:fl&&fl.dropped?1:0,nuke:fl&&fl.nuke?1:0};}
   }catch(e){}
   return null;}
-function snap(){const t=CAMP.task;return{task:t?{id:t.id,kind:t.kind,label:t.label,x:t.x,z:t.z}:null,probe:taskProbe(),ak:0,gk:0};}
+function snap(){const t=CAMP.task;return{task:t?{id:t.id,kind:t.kind,label:t.label,x:t.x,z:t.z,fid:t.fid}:null,probe:taskProbe(),ak:0,gk:0};}
 
 function grade(S,sortie){if(!S||!S.task||!S.probe)return null;
   const now=(()=>{const keep=CAMP.task;CAMP.task=S.task;const p=taskProbe();CAMP.task=keep;return p;})();
   if(!now)return null;const was=S.probe.n,left=now.n,k=S.task.kind,ak=sortie?sortie.ak:0;let state='NONE',txt='';
-  if(k==='CAS'){const d=was-left;txt=d+' red ground unit'+(d===1?'':'s')+' destroyed near the target area';state=d>=3?'DONE':d>=1?'PART':'NONE';}
+  if(k==='INTERCEPT'||k==='ESCORT'){const kills=left-was,dr=now.drop,big=!!S.probe.nuke||!!now.nuke;
+    if(k==='INTERCEPT'){if(kills>0&&!dr){state='DONE';txt='bomber flight destroyed before it reached its target'+(big?' · nuclear attack averted':'');}else if(kills>0){state='PART';txt=kills+' bomber'+(kills===1?'':'s')+' shot down, but the bombs were dropped';}else{state='NONE';txt=dr?'the bombers hit their target':'no bomber brought down';}}
+    else{state=dr&&kills===0?'DONE':dr?'PART':'NONE';txt=dr?(kills?kills+' bomber'+(kills===1?'':'s')+' lost, the strike went in':'strike delivered, no bombers lost'):'the strike did not reach its target';}
+    return{kind:k,label:S.task.label,state,txt,big};}
+    if(k==='CAS'){const d=was-left;txt=d+' red ground unit'+(d===1?'':'s')+' destroyed near the target area';state=d>=3?'DONE':d>=1?'PART':'NONE';}
   else if(k==='SEAD'){txt=left===0?'SAM battery destroyed':'battery still has '+left+' launcher'+(left===1?'':'s');state=left===0&&was>0?'DONE':left<was?'PART':'NONE';}
   else if(k==='STRIKE'){const d=was-left;txt=left===0&&was>0?'airfield hangars destroyed':d+' of '+was+' hangar'+(was===1?'':'s')+' destroyed';state=left===0&&was>0?'DONE':d>=1?'PART':'NONE';}
   else if(k==='CAP'){txt=ak+' air kill'+(ak===1?'':'s')+' on station';state=ak>=1?'DONE':'NONE';}
@@ -75,7 +80,7 @@ function grade(S,sortie){if(!S||!S.task||!S.probe)return null;
   const r=_se.apply(this,arguments);
   try{
     if(g&&st){
-      if(g.state==='DONE'&&!dead||g.state==='DONE'&&dead){const rr=g.kind==='CAP'?2:4;st.res[1]=Math.max(0,st.res[1]-rr);st.res[0]+=Math.ceil(rr*.75);this.log('Tasking complete ('+g.kind+'): '+g.txt+'. Red reserves -'+rr+'.','b');}
+      if(g.state==='DONE'&&!dead||g.state==='DONE'&&dead){const rr=g.big?10:g.kind==='CAP'?2:4;st.res[1]=Math.max(0,st.res[1]-rr);st.res[0]+=Math.ceil(rr*.75);this.log('Tasking complete ('+g.kind+'): '+g.txt+'. Red reserves -'+rr+'.','b');}
       else if(g.state==='PART'){st.res[1]=Math.max(0,st.res[1]-1);this.log('Tasking partly done ('+g.kind+'): '+g.txt+'.','');}
       else this.log('Tasking not completed ('+g.kind+'): '+g.txt+'.','r');
       this.save();}

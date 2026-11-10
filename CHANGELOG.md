@@ -306,3 +306,17 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - **Dogfight rounds**: score limit set by the host (10 / 20 / 30 / none). At the limit everyone sees the standings, scores reset and the room respawns. 4 s of spawn protection after each dogfight spawn.
 - **Co-op**: the host's selected tasking is shared with every pilot in the room.
 - Tested in headless Chrome with a mocked room (chat, ping, round flow, tie handling, task sync, debrief). **Not tested over a real network from the build environment (PeerJS broker unreachable there) — needs a check with two machines.**
+
+## v256 — AI bombers and nuclear escalation (`js/strategic.js`)
+**Bombers**
+- Two AI-only heavy airframes: **Tu-95MS Bear** (red faction) and **B-52H** (blue faction), eight bomb stations each. They are built from the transport model (swept wing, four turboprops / eight pods) and have no cockpit, so the shapes are approximations.
+- Both sides fly bomber raids with fighter escorts, about one flight per side at a time: airfield hangars or troop concentrations, level run-in at 8-9 km, a stick of bombs released one by one along the track. Bombers do not fight back, run for home when damaged or empty, and are counted by flight.
+- Enemy flights appear as **INTERCEPT** tasks, our own as **ESCORT**; the sortie debrief grades them (bombers destroyed before they drop = task complete). DARKSTAR calls enemy raids.
+
+**Nuclear escalation** (rare; OFF / RARE / LIKELY switch on the CAMPAIGN tab, default RARE)
+- A **strategic alert** meter (DEFCON 5 to 2) rises with the front moving, airfields lost, bomber raids and earlier detonations. Only near the top does the losing side roll for a nuclear raid.
+- The raid: about 90 s of warning, then two bombers, one carrying a parachute-retarded weapon, escorted. Top-priority INTERCEPT (ESCORT if it is ours). Shoot the carrier down before it releases and the attack is averted.
+- Detonation (50-150 kt): flash, fireball, mushroom cloud, expanding shockwave that damages every aircraft by distance (instant kill inside ~6 km), airfield at ground zero destroyed, ground units and air defences wiped out, reserves -30 % for the victim, marker on the theatre map. Co-op: the host announces it and every pilot sees it.
+- At most two detonations per campaign. The victim's side retaliates 70 % of the time, otherwise (and after the second) both governments call a ceasefire and the campaign ends.
+- Time skips resolve a raid on the averages (about 45 % are stopped).
+- Tested in headless Chrome with the sim stepped by hand: bomb stick accuracy, nuclear sequence from alert to ceasefire, shockwave damage by distance, debrief grading, save/load. Not tested in a live multiplayer room.

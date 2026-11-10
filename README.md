@@ -10,6 +10,7 @@ index.html               page shell + UI markup
 css/game.css             all game styles
 js/game.js               the sim (flight model, avionics, AI, campaign, MP)
 js/campmp.js             campaign debrief/theatre panel/save export, multiplayer ping/chat/invite/rounds
+js/strategic.js          AI heavy bombers, strategic alert, nuclear escalation event
 js/assets.js             loads custom models/audio and hooks them into the game
 assets/assets.config.js  ← edit this to add your own models and sounds
 assets/models/           .glb / .gltf files
