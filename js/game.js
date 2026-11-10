@@ -733,12 +733,13 @@ class Jet{
     const pr=clamp(lerp(pP+5*(aCmd-al),pP+1.4*((c.p>.2?55*D2R:Math.min(aCmd,6*D2R))-al),dep),-1.4-dep*1.4,1.4+dep*1.4),yr=clamp(pY+4*(this.beta+c.y*.09)*(1-.6*dep)-this.spinDir*dep*.25-(ac.adv||0)*c.r*clamp((ad-6)/16,0,1.6)*clamp(qd/9000,.3,1),-1.6,1.6);
     const rMax=ac.roll*clamp(qd/16000,.15,1)*(al>.35?.5:1)*(this.hp<35?.6:1);
     this.rr=lerp(this.rr,c.r*rMax*auth+rock+this.rBias()+this.spinDir*dp.spin*dep,1-Math.exp(-dt*7));
+    const vw=this.ac.vstol&&this.vtHook?this.vtHook(dt,a,c,T,m,f,u,rt,V,pr,yr):null;if(vw)this.rr=vw.rr;
     this.nz=(a.dot(u)+G*u.y)/G;if(this===player)this.maxNz=Math.max(this.maxNz,this.nz);
     if(this.nz>(ac.gUlt||9.6)){this.hp-=(this.nz-(ac.gUlt||9.6))*6*dt;if(this===player&&Math.random()<dt*2)flash('OVER-G',800);if(this.hp<=0){this.kill('AIRFRAME FAILURE');return;}}
     if(this===player)this.gEffects(dt);
     this.vel.addScaledVector(a,dt);this.pos.addScaledVector(this.vel,dt);
-    _w.set(pr,-yr,0);const wl=_w.length();if(wl>1e-6){_dq.setFromAxisAngle(_w.divideScalar(wl),wl*dt);this.q.multiply(_dq);}
-    if(Math.abs(this.rr)>1e-5){_tq.setFromAxisAngle(_ax.copy(vd),this.rr*dt);this.q.premultiply(_tq);}
+    _w.set(vw?vw.pr:pr,-(vw?vw.yr:yr),0);const wl=_w.length();if(wl>1e-6){_dq.setFromAxisAngle(_w.divideScalar(wl),wl*dt);this.q.multiply(_dq);}
+    if(Math.abs(this.rr)>1e-5){_tq.setFromAxisAngle(_ax.copy(vw?f:vd),this.rr*dt);this.q.premultiply(_tq);}
     this.q.normalize();
     if(this.hp<60&&Math.random()<.6)smoke.emit(this.pos,null,4,3,14,.25,.24,.23,.55,.3);
     if(ac.smoky&&!out&&this.n>.8&&this.ab<.4&&Math.random()<dt*ac.smoky*30)for(const sx of[-.58,.58])smoke.emit(this.pos.clone().addScaledVector(f,9.5).addScaledVector(rt,sx),this.vel.clone().multiplyScalar(.97),5,.5,4.5,.2,.2,.21,.3,.35);
@@ -6844,7 +6845,7 @@ Object.assign(Jet.prototype,{
     else this.shake*=1-dt*2;},
   // the ground: wheels on pavement or grass, nose-wheel steering, brakes, rotation, belly landing, crash limits
   groundFx(dt){const P=this.pos,gh=groundAt(P.x,P.z),H=GH;
-    if(P.y>gh+H+.02){if(this.onGnd){this.onGnd=false;if(this===player)flash('AIRBORNE',900);}return;}
+    if(P.y>gh+H+.02||this.vel.y>.25){if(this.onGnd){this.onGnd=false;if(this===player)flash('AIRBORNE',900);}return;}// (a jet-borne climb leaves the ground as soon as it has a real rate of climb)
     const vel=this.vel,W=this._W,V=vel.length();
     if(!this.onGnd){ // touchdown / first contact
       const sink=Math.max(0,-vel.y),pitch=this.pitch*R2D,bank=this.bank*R2D,gd=this.gearPos>.9&&this.dm.gear>25,pav=onPaved(P.x,P.z),
@@ -6864,7 +6865,7 @@ Object.assign(Jet.prototype,{
     P.y=gh+H;if(vel.y<0)vel.y=0;
     const hdg=this.gHdg,fx=Math.sin(hdg),fz=-Math.cos(hdg),rx=Math.cos(hdg),rz=Math.sin(hdg);
     let vgx=vel.x+W.x,vgz=vel.z+W.z,lon=vgx*fx+vgz*fz,lat=vgx*rx+vgz*rz;
-    const pav=onPaved(P.x,P.z),ac=this.acx||this.ac,rh=rho(P.y),qd=.5*rh*V*V,CL=tab(this.fx0(ac).clt,this.alpha*R2D),unl=clamp(1-qd*ac.S*Math.max(CL,0)/(this.mass*G),0,1);
+    const pav=onPaved(P.x,P.z),ac=this.acx||this.ac,rh=rho(P.y),qd=.5*rh*V*V,CL=tab(this.fx0(ac).clt,this.alpha*R2D),unl=clamp(1-(qd*ac.S*Math.max(CL,0)+(this.vtLift||0))/(this.mass*G),0,1);
     const mu=this.belly?.4:pav?.026:.11,brk=this.brk*(this.dm.hyd<20?.3:1)*(this.belly?0:1),dec=(mu+.3*brk)*G*unl*dt;
     if(lon>0)lon=Math.max(0,lon-dec);else lon=Math.min(0,lon+dec);
     lat*=Math.exp(-dt*(this.belly?4:10));

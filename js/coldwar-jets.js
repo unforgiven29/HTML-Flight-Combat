@@ -110,8 +110,10 @@ function makeAV8(){return mkJet({c:0x6f7778,dk:0x4e5556,lt:0x8b9394,rad:0x5e6668
   ventral:[{pts:[[5.3,-.3],[6.3,-.75],[7.0,-.75],[7.1,-.3]],th:.05}],
   canopy:[[.42,.5,1.6,.68,-4.6,0x5a7488]],
   extra:(g,M)=>{// four swivelling nozzles, gun / strake pods, outrigger gear fairings at the wingtips
-    for(const sd of[-1,1]){for(const z of[-1.2,1.0]){const n=new THREE.Mesh(new THREE.CylinderGeometry(.28,.32,.62,18,1,true),M.met);n.position.set(sd*.95,-.35,z);g.add(n);
-      rim(g,.3,.04,M.dk,sd*.95,-.66,z,1,1);}
+    g.userData.noz=[];
+    for(const sd of[-1,1]){for(const z of[-1.2,1.0]){const pv=new THREE.Group();pv.position.set(sd*.95,-.35,z);g.add(pv);g.userData.noz.push(pv);
+      const n=new THREE.Mesh(new THREE.CylinderGeometry(.28,.32,.62,18,1,true),z<0?M.lt:M.met);n.position.y=-.31;pv.add(n);
+      const r=rim(pv,.3,.04,M.dk,0,-.62,0,1,1);r.rotation.x=Math.PI/2;}
       pod(g,2.9,.2,M.dk,sd*.42,-.86,.6,1,1,14);pod(g,.9,.09,M.dk,sd*4.0,.2,1.45,1,1,10);}}
 });}
 
@@ -507,8 +509,10 @@ function makeYak38(){return mkJet({c:0x7f8a8f,dk:0x5a6468,lt:0x9aa5aa,rad:0x2c31
   tail:{pts:[[.3,5.6],[2.0,6.6],[2.0,7.1],[.3,7.4]],y:.3,th:.06},
   fins:[{pts:[[3.6,.6],[6.3,3.0],[7.3,3.0],[7.7,.6]],th:.1}],
   canopy:[[.38,.42,1.2,.74,-5.3,0x5a7488]],
-  extra:(g,M)=>{for(const sd of[-1,1]){const n=new THREE.Mesh(new THREE.CylinderGeometry(.3,.34,.7,18,1,true),M.met);n.position.set(sd*.82,-.35,2.2);g.add(n);rim(g,.32,.04,M.dk,sd*.82,-.7,2.2);}
-    rim(g,.55,.04,M.dk,0,.88,-3.0,1,.5);}// cruise nozzles, lift-jet door
+  extra:(g,M)=>{g.userData.noz=[];for(const sd of[-1,1]){const pv=new THREE.Group();pv.position.set(sd*.82,-.35,2.2);g.add(pv);g.userData.noz.push(pv);
+      const n=new THREE.Mesh(new THREE.CylinderGeometry(.3,.34,.7,18,1,true),M.met);n.position.y=-.35;pv.add(n);const r=rim(pv,.32,.04,M.dk,0,-.7,0);r.rotation.x=Math.PI/2;}
+    rim(g,.55,.04,M.dk,0,.88,-3.0,1,.5);// lift-jet doors (forward lift engine bay), opened by the lift-engine start
+    g.userData.liftDoors=[];for(const z of[-3.0,-1.7]){const d=new THREE.Group();d.position.set(0,.9,z-.4);g.add(d);const pl=new THREE.Mesh(new THREE.BoxGeometry(.8,.025,.8),M.dk);pl.position.z=.4;d.add(pl);g.userData.liftDoors.push(d);}}
 });}
 
 // ---------- Yakovlev Yak-141 'Freestyle' (cockpit photos, cutaways in the docs folder) ----------
@@ -525,7 +529,11 @@ function makeYak141(){return mkJet({c:0x7f8b92,dk:0x5a656b,lt:0x9aa6ad,rad:0xb7b
   nozzles:[[0,.0,4.9,.62,.55,.7]],ab:5,
   canopy:[[.4,.46,1.35,.84,-5.6,0x5a7488]],
   extra:(g,M)=>{for(const sd of[-1,1]){const bm=new THREE.Mesh(sloft([[2.5,.08,.25,.08,2],[4,.24,.32,.22,2.4],[8.6,.18,.3,.18,2.2]],18),M.mat);bm.position.x=sd*1.3;g.add(bm);}
-    rim(g,.6,.04,M.dk,0,.95,-2.6,1,.5);}// tail booms, lift-jet door
+    rim(g,.6,.04,M.dk,0,.95,-2.6,1,.5);// tail booms, lift-jet door
+    g.userData.liftDoors=[];{const d=new THREE.Group();d.position.set(0,1.0,-3.0);g.add(d);const pl=new THREE.Mesh(new THREE.BoxGeometry(1.0,.025,.9),M.dk);pl.position.z=.45;d.add(pl);g.userData.liftDoors.push(d);}
+    // three-bearing swivel nozzle (the rear nozzle turns down through 95°)
+    g.userData.noz=[];{const pv=new THREE.Group();pv.position.set(0,.0,4.4);g.add(pv);g.userData.noz.push(pv);
+      const n=new THREE.Mesh(new THREE.CylinderGeometry(.5,.58,.9,22,1,true),M.met);n.position.y=-.45;pv.add(n);const r=rim(pv,.56,.05,M.dk,0,-.9,0);r.rotation.x=Math.PI/2;}}
 });}
 
 // ---------- Shenyang J-8F 'Finback-B' ----------
@@ -601,7 +609,7 @@ addJet({id:'A-7D',src:'F-4E',side:'BLUE',name:'A-7D Corsair II',call:'SLUF',nctr
 
 // ---- AV-8B ----
 addJet({id:'AV-8B',src:'F-18C',side:'BLUE',name:'AV-8B Harrier II',call:'HARRIER',nctr:'AV-8B',foe:'MiG-23',eng:'F402-RR-408 (Pegasus 11-61)',rwr:'ALR-67(V)2',noAB:true,ccip:true,cv:true,app:110,
-  vstol:{nozMax:98,key:true},role:'USMC · V/STOL ATTACK · PEGASUS · ARBS · GAU-12',stall:{s:.05,twin:0},
+  vstol:{nozMax:98.5,key:true,type:'harrier',stops:[0,10,25,45,60,82,98.5],stopAt:82,rate:42,water:181,wetK:.915,vlMax:9300,rcs:{p:26,r:42,y:30},lids:1},role:'USMC · V/STOL ATTACK · PEGASUS · ARBS · GAU-12',stall:{s:.05,twin:0},
   ac:Object.assign({},imp,{name:'AV-8B Harrier II',model:makeAV8,st:AV8ST,empty:6340,fuel:3519,tank:910,S:22.61,CLa:4.3,cd0:.026,k:.115,mil:104000,ab:104000,spool:2.2,abLight:99,
     clt:clt(4.3,1.55,24,.12),cdm:sub(.05,.82),dW:10400,tkG:[5,6],dep:{a:26,rock:1.0,spin:2.4},ff:[.2,2.4,2.4],gLim:8,aoaLim:22,roll:4.2,fbw:false,noLimiter:false,
     rcs:3,irs:1.1,pit:'hornet',eye:eyeOf(-4.6,.68),radar:R('ARBS / angle-rate',8000,[5,10],'NM',.05),irst:false,noRdr:true,pulse:true,
@@ -982,7 +990,7 @@ addJet({id:'MiG-19',src:'MiG-21',side:'RED',name:'MiG-19P',call:'FARMER',nctr:'M
 
 // ---- Yak-38 ----
 addJet({id:'Yak-38',src:'MiG-21',side:'RED',name:'Yak-38',call:'FORGER',nctr:'YAK-38',foe:'AV-8B',eng:'R-27V-300 + 2× RD-36-35FV',rwr:'SPO-10',noAB:true,cv:true,app:120,
-  vstol:{nozMax:90,key:true},role:'USSR · V/STOL SHIPBORNE ATTACK · LIFT + CRUISE ENGINES · R-60M',stall:{s:.2,twin:0},
+  vstol:{nozMax:90,key:true,type:'yak38',stops:[0,15,30,45,60,75,90],rate:30,lift:{F:58800,on:60,off:35,spool:4,sfc:4.2e-5},rcs:{p:22,r:36,y:24}},role:'USSR · V/STOL SHIPBORNE ATTACK · LIFT + CRUISE ENGINES · R-60M',stall:{s:.2,twin:0},
   ac:Object.assign({},met,{name:'Yak-38',model:makeYak38,st:Y38ST,empty:7385,fuel:2900,tank:480,S:18.4,CLa:4.0,cd0:.025,k:.13,mil:66700,ab:66700,spool:2.6,abLight:99,
     clt:clt(4.0,1.3,20,.04),cdm:sub(.05,.82),dW:10300,tkG:[4,5],dep:{a:22,rock:1.1,spin:2.6},ff:[.2,1.9,1.9],gLim:6,aoaLim:18,roll:2.6,fbw:false,noLimiter:true,
     rcs:4,irs:1.0,pit:'fishbed',eye:eyeOf(-5.3,.74),radar:R('no radar (ASP-PFD)',2500,[1,2.5],'KM',.02),irst:false,noRdr:true,pulse:true,
@@ -995,7 +1003,7 @@ addJet({id:'Yak-38',src:'MiG-21',side:'RED',name:'Yak-38',call:'FORGER',nctr:'YA
 
 // ---- Yak-141 ----
 addJet({id:'Yak-141',src:'MiG-29',side:'RED',name:'Yak-141',call:'FREESTYLE',nctr:'YAK-141',foe:'AV-8B',eng:'R-79V-300 + 2× RD-41',rwr:'SPO-15LM',cv:true,app:130,keepGci:true,hms:'HMS_ALWAYS',
-  vstol:{nozMax:95,key:true},role:'USSR · SUPERSONIC V/STOL FIGHTER (PROTOTYPE) · ZHUK · R-77',stall:{s:.2,twin:0},
+  vstol:{nozMax:95,key:true,type:'yak141',stops:[0,15,30,45,60,75,95],rate:30,lift:{F:83400,on:60,off:35,spool:4,sfc:4.2e-5},rcs:{p:24,r:40,y:26}},role:'USSR · SUPERSONIC V/STOL FIGHTER (PROTOTYPE) · ZHUK · R-77',stall:{s:.2,twin:0},
   ac:{name:'Yak-141',model:makeYak141,st:Y141ST,empty:11650,fuel:4400,tank:1180,S:31.7,CLa:4.0,cd0:.021,k:.13,mil:107900,ab:152000,spool:2.4,abLight:.6,
     clt:clt(4.0,1.4,24,.04),cdm:sup(.032,.88),dW:15800,tkG:[5,6],dep:{a:26,rock:.8,spin:2.4},ff:[.3,2.6,10],gLim:7,aoaLim:24,roll:3.6,fbw:true,
     rcs:5,irs:1.4,ols:undefined,eye:eyeOf(-5.6,.84),radar:R('Zhuk',40*NM,[10,25,50,100],'KM',.55),irst:false,
@@ -1058,30 +1066,7 @@ try{for(const s of NEW){if(!s.camp)continue;for(const era of Object.keys(s.camp)
 /* ---------------- no-afterburner types: the throttle tops out at MIL ---------------- */
 {const _st=Jet.prototype.step;Jet.prototype.step=function(dt){if(this.ac&&this.ac.noAB&&this.thr>.8)this.thr=.8;return _st.call(this,dt);};}
 
-/* ---------------- V/STOL: nozzle / lift-jet thrust vectored downward ([ and ] set the nozzle angle on Harrier, Yak-38, Yak-141) ---------------- */
-// The flight model flies the velocity vector, so there is no true hover: the vectored thrust gives jet-borne lift for very slow flight, short take-offs
-// and vertical landings, and VIFF (nozzles down in forward flight) for a quick deceleration and nose-up rotation.
-const VS={noz:0,cmd:0};W_VS();
-function W_VS(){window.CW_VSTOL=VS;}
-{const _st=Jet.prototype.step,_up=new V3(),_fw=new V3();Jet.prototype.step=function(dt){const r=_st.call(this,dt);
-  const v=this.ac&&this.ac.vstol;if(!v||this!==player||!this.alive||this.remote)return r;
-  VS.noz+=Math.max(-90*dt,Math.min(90*dt,VS.cmd-VS.noz));const th=VS.noz*D;if(th<.5*D)return r;
-  const T=engThrust(this.ac,this.n,0,this.mach||0,this.pos.y)*(this.thrK?this.thrK():1),m=this.mass;
-  // lift jets (Yak-38 / Yak-141) add ~45-55 % of the cruise engine's thrust when the nozzles are down past 60°
-  const lift=(this.type==='Yak-38'||this.type==='Yak-141')&&VS.noz>60?.5:0;
-  this.up(_up);this.fwd(_fw);const a=T/m;
-  this.vel.addScaledVector(_fw,a*(Math.cos(th)-1)*dt).addScaledVector(_up,a*(Math.sin(th)+lift)*dt);
-  // reaction-control: at low airspeed the puffer jets hold the attitude level-ish so the jet does not tumble
-  const V=this.vel.length();if(V<70){const k=1-V/70;this.ctl.p*=1-k*.5;}
-  if(lift)this.fuel=Math.max(0,this.fuel-dt*.9);
-  return r;};}
-// Comma / Period (the wing-sweep keys) set the nozzle angle on the V/STOL jets; manual swing wings step through their own sweep stops
-{const _sw=sweepStep;sweepStep=function(d){const P=player;if(P&&P.alive&&P.ac&&P.ac.vstol){const mx=P.ac.vstol.nozMax||90;VS.cmd=Math.max(0,Math.min(mx,VS.cmd+d*15));
-    try{flash('NOZZLES '+Math.round(VS.cmd)+'°',800);sfx.click();}catch(_){}return;}
-  if(P&&P.alive&&P.ac&&P.ac.swing&&!P.ac.swing.auto&&P.ac.cwSrc){const A=P.ac.swing.a;let i=A.indexOf(P.sweepCmd);if(i<0)i=1;i=Math.max(0,Math.min(A.length-1,i+d));
-    if(A[i]===P.sweepCmd)return;P.sweepCmd=A[i];try{flash('WING '+A[i]+'°',900);sfx.click();}catch(_){}return;}
-  return _sw.apply(this,arguments);};}
-{const _sp=Jet.prototype.spawn;if(_sp)Jet.prototype.spawn=function(){const r=_sp.apply(this,arguments);if(this===player){VS.noz=0;VS.cmd=0;}return r;};}
+/* V/STOL flight model, nozzle lever and HUD live in js/vtol.js */
 
 window.CW_NEW=NEW.map(s=>s.id);
 console.info('[coldwar] added '+NEW.length+' jets: '+window.CW_NEW.join(', '));
