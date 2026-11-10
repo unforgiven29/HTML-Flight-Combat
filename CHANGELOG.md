@@ -253,3 +253,8 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v244
 - Generic Cold War cockpits: reflector gunsight glass enlarged and raised so the reticle sits inside it (it was clipped at the top edge); glass tint stronger; pipper and ring thicker with a brighter glow.
+
+## v245
+- Mirage 2000C: new cockpit (js/m2kpit.js) built from the DCS M-2000C flight manual's "Instruments Panel Map" (items 1-75) and Chuck's guide. Main panel, HUD pedestal, VTB radar screen, RWR, alarm lights, centre pedestal, both sill panels and both consoles are laid out as on the map, with live gauges and working controls (gear and emergency gear, master arm, radar operation / range / PRF / azimuth / bars, battery / generator / fuel / start, throttle, master caution, fire test, lights).
+- Centre control stick (the F-16 side stick no longer shows on the Mirage).
+- Approximate: positions traced by eye from a low-resolution figure; console sub-panel order and the contents of the INS, IFF and PCA / PPA panels follow the item list, not a close-up of each panel.
