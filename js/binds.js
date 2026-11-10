@@ -32,6 +32,7 @@ const ACT=[
  ['wGun','Select gun','WEAPONS','p','Digit1','1'],['wIr','Select IR missile','WEAPONS','p','Digit2','2'],
  ['wRdr','Select radar missile','WEAPONS','p','Digit3','3'],['wAg','Select A/G store','WEAPONS','p','Digit7','4'],
  ['arm','Master arm','WEAPONS','p','KeyM','M'],['jett','Jettison tanks','WEAPONS','p','Backspace','Backspace'],
+ ['scopeSw','Scope: radar ⇄ weapon video (Maverick / TV)','WEAPONS','f',()=>window.WPNSCOPE&&WPNSCOPE.toggle(),'—'],
  ['pUp','Pitch down (push)','FLIGHT','h','KeyW','W'],['pDn','Pitch up (pull)','FLIGHT','h','KeyS','S'],
  ['rL','Roll left','FLIGHT','h','KeyA','A'],['rR','Roll right','FLIGHT','h','KeyD','D'],
  ['yL','Rudder left','FLIGHT','h','KeyQ','Q'],['yR','Rudder right','FLIGHT','h','KeyE','E'],

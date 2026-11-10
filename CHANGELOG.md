@@ -1,5 +1,11 @@
 # Changelog
 
+## v257 — radar NaN, weapon-video scope switch, R-77M / R-37M pylons, multiplayer join feedback
+- **Radar NaN / undefined (F-8E and every jet with 2-3 radar ranges)** — BVR start set the range index to 3 whatever the radar had, so a 3-range radar (F-8E APQ-94 20/40/60, A-7D, F-5E, Mirage III, ...) read past its list and `rngM` became NaN. Start now clamps to the radar's own list; `rngM` and `radar.reset()` clamp too.
+- **Radar ⇄ weapon scope switch** (`js/wpnscope.js`) — the F-4E's RDR/WPN scope switch now exists on every single-scope jet with a Maverick / TV / IIR / laser-seeker store: A-4E, A-7D, F-5E, Super Etendard, AJS-37, Mirage III, Mirage F1 (round scope) and AV-8B, F-20, AMX, Yak-141, JH-7 (square display). 3-D toggle beside the scope, RDR/WPN tabs on the scope (click), a bind (Settings > Key & button binds > Weapons), and it follows the store selector. IJKL slew the seeker while the video is up.
+- **R-77M / R-37M** — added to the Su-30SM and Su-35S pylon lists (R-37M on 4/5/6/7, R-77M on the wing, fuselage and tunnel stations) and R-77M to the MiG-31's wing pylons; they were in the loadout tables but not selectable.
+- **Multiplayer** — join shows each step (room server, host found, retry n of 4) and a plain error when a network blocks WebRTC; TCP/443 relay fallbacks added for school / hot-spot networks.
+
 ## v215 — bug-report pass (11/08) and five new jets
 
 ### Bug reports (`bug reports/bugs.txt`)
