@@ -318,7 +318,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   gl.updateMatrixWorld(true);
   const glass=[[-gw/2,gh/2],[gw/2,gh/2],[gw/2,-gh/2],[-gw/2,-gh/2]].map(([x,y])=>new V3(x,y,0).applyMatrix4(gl.matrixWorld));
   // main panel: shaped body, painted face (one canvas), scope / RWR / second display set into it
-  if(S.custom){const r=S.custom({g,o,kind,id,S,box,LM,dk,pm,cm,blk,liveTex});return Object.assign({g,cv:null,tx:null,S,L:{dial:{}},glass,lb:LB[S.l]||LB.en,t:0},r);}
+  if(S.custom){const n0=o.tex.length,r=S.custom({g,o,kind,id,S,box,LM,dk,pm,cm,blk,liveTex});const shared=new Set(o._cwT?o._cwT.values():[]);for(let i=n0;i<o.tex.length;i++)if(!shared.has(o.tex[i]))o.tex[i]._dirty=false;return Object.assign({g,cv:null,tx:null,S,L:{dial:{}},glass,lb:LB[S.l]||LB.en,t:0},r);}
   const pp=new THREE.Group();pp.position.set(0,-.472,-.668);pp.rotation.x=-.28;g.add(pp);
   box(pp,PW+.03,PH+.03,.03,pm,0,-.03,-.018);box(pp,PW+.2,.2,.03,pm,0,-.33,-.03,0);
   const cv=document.createElement('canvas');cv.width=CW;cv.height=CH;const tx=new THREE.CanvasTexture(cv);tx.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());o.tex.push(tx);

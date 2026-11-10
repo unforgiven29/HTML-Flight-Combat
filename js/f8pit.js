@@ -17,7 +17,8 @@ const ID='F-8E',K=.00077,OX=606,OY=380;
 const PL=()=>typeof player!=='undefined'?player:null;
 const bx=x=>(x-OX)*K,by=y=>(OY-y)*K;
 const now=()=>performance.now()/1000;
-const ST={};                 // switch positions that have no game function
+let STV=0,FK='',SK='';
+const ST=new Proxy({},{set(t,k,v){t[k]=v;STV++;return true;}});                 // switch positions that have no game function
 const sv=(k,d)=>ST[k]===undefined?d:ST[k];
 let lampTest=0,qtyTest=0;
 
@@ -136,7 +137,11 @@ const LAMPS=[
 
 /* ---------------- build ---------------- */
 function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
-  const hit=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+  const hit=new THREE.MeshBasicMaterial({visible:false});
+  // redraw gating: gauges redraw only when what they show has changed (quantised to what is visible)
+  const q=(v,s)=>Math.round((v||0)*s);
+  const FASTK=new Set(['aoa','vvi','acc','ralt','asi','alt','adi','crs','bdhi','tb','tach']);
+  const gate=k=>{let last=null;const fast=FASTK.has(k);return()=>{const key=fast?FK:SK;if(key===last)return false;last=key;return true;};};
   const PC=0x3a3e41,pm=LM(PC,12),dk=LM(0x1b1d1f,8),blk=LM(0x0b0c0d,4),bz=LM(0x141618,40),met=LM(0x9aa0a4,60);
   const board=new THREE.Group();board.position.set(0,-.47,-.70);board.rotation.x=-.24;g.add(board);
   // ---- board outline (figure 1-3): arched top, centre hood over the scope, armament pedestal below the ADI ----
@@ -170,13 +175,13 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     [[505,130,'INT'],[505,190,'STORE'],[505,250,'CURSOR'],[707,130,'GAIN'],[707,190,'MKR'],[707,250,'FOCUS']].forEach(([x,y,n])=>knob(board,bx(x),by(y),.055,13*K,'SCOPE · '+n,['1','2','3','4','5'],'scope'+n));}
   // instruments: square cases, live faces, glass
   const glsM=new THREE.MeshPhongMaterial({color:0xffffff,transparent:true,opacity:.08,shininess:140,specular:0x8a8a8a,depthWrite:false});
-  function inst(k,x,y,hs,draw,round=true){const S=k==='adi'?320:hs<25?96:256,cv=document.createElement('canvas');cv.width=cv.height=S;const t=new THREE.CanvasTexture(cv);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;ctx.o.tex.push(t);
+  function inst(k,x,y,hs,draw,round=true){const S=k==='adi'?256:hs<25?96:192,cv=document.createElement('canvas');cv.width=cv.height=S;const t=new THREE.CanvasTexture(cv);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;ctx.o.tex.push(t);
     const c=cv.getContext('2d'),r=hs*K;box(board,2*r*1.04,2*r*1.04,.03,bz,bx(x),by(y),.008);// case
     const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const fm=new THREE.Mesh(round?new THREE.CircleGeometry(r*.9,48):new THREE.PlaneGeometry(r*1.6,r*1.6),m);fm.position.set(bx(x),by(y),.0235);fm.userData.cwFx=1;board.add(fm);
     if(round){const ring=new THREE.Mesh(new THREE.TorusGeometry(r*.92,r*.05,8,40),LM(0x0a0a0a,30));ring.position.set(bx(x),by(y),.0245);ring.userData.cwFx=1;board.add(ring);}
     const gl=new THREE.Mesh(round?new THREE.CircleGeometry(r*.92,40):new THREE.PlaneGeometry(r*1.65,r*1.65),glsM);gl.position.set(bx(x),by(y),.026);gl.userData.cwFx=1;gl.renderOrder=2;board.add(gl);
     for(const [sx,sy] of[[-1,-1],[1,-1],[-1,1],[1,1]]){const s=new THREE.Mesh(new THREE.CylinderGeometry(r*.06,r*.06,.004,8),met);s.rotation.x=Math.PI/2;s.position.set(bx(x)+sx*r*.85,by(y)+sy*r*.85,.024);board.add(s);}
-    upd.push(P=>{if(round){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
+    const gt=gate(k);upd.push(P=>{if(!gt())return;if(round){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
   INST.forEach(([k,x,y,hs,d])=>inst(k,x,y,hs,d,true));SMALL.forEach(([k,x,y,hs,d])=>inst(k,x,y,hs,d,false));
   // lamps
   LAMPS.forEach(([k,x,y,w,h,lg,col,lit])=>{if(!w)return;const cv=document.createElement('canvas');cv.width=128;cv.height=Math.round(128*h/w);const c=cv.getContext('2d'),t=new THREE.CanvasTexture(cv);ctx.o.tex.push(t);
@@ -353,7 +358,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     lpf(.08,.85,0xffb020,P=>!!sv('aice',0));lpf(.18,.85,0xffb020,P=>!!sv('aice',0)&&!running(P));lpf(.8,.62,0xff3020,P=>!!sv('rat',0));
     // cockpit pressure altimeter (5) and main generator indicator (24)
     const mini=(u,v,r,draw,round)=>{const cv2=document.createElement('canvas');cv2.width=cv2.height=round?192:96;const c2=cv2.getContext('2d'),t2=new THREE.CanvasTexture(cv2);ctx.o.tex.push(t2);const m2=new THREE.MeshBasicMaterial({map:t2,toneMapped:false});ctx.o.faces.push(m2);
-      const fm=new THREE.Mesh(round?new THREE.CircleGeometry(r,32):new THREE.PlaneGeometry(r*2,r*2),m2);fm.position.set(...P2(u,v));fm.position.z+=.002;fp.add(fm);upd.push(P=>{if(round){face(c2,192);c2.scale(192/256,192/256);}draw(c2,P);t2.needsUpdate=true;});};
+      const fm=new THREE.Mesh(round?new THREE.CircleGeometry(r,32):new THREE.PlaneGeometry(r*2,r*2),m2);fm.position.set(...P2(u,v));fm.position.z+=.002;fp.add(fm);const gt2=gate('m');upd.push(P=>{if(!gt2())return;if(round){face(c2,192);c2.scale(192/256,192/256);}draw(c2,P);t2.needsUpdate=true;});};
     mini(.55,.38,.022,F.cab,true);mini(.9,.82,.009,F.small('gen'),false);
     // arresting gear handle (1): hook-shaped handle on the inboard edge
     {const h=new THREE.Group();h.position.set(...P2(.05,.25));h.position.z+=.01;fp.add(h);box(h,.008,.008,.04,met,0,0,.02);box(h,.024,.012,.01,LM(0xe8e8e8,30),0,-.006,.04);
@@ -393,6 +398,9 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // per-frame: instruments ~15 Hz, lamps and switch positions every frame
   let t=0,fr=0;
   return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;fr++;
+        {const E=P.eng&&!P.eng.done?P.eng.e[0]:null;let h=0;try{h=q(P.pos.y-groundAt(P.pos.x,P.pos.z),.66);}catch(e){}let b=0;try{b=q(brgField(P),2)+q(distField(P),4);}catch(e){}
+     FK=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV].join();
+     SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.gearPos,20),q(P.flapPos!=null?P.flapPos:P.flapCmd,20),q(P.sb,20),Math.floor(now()),lampTest>now()?1:0,STV,E?q(E.rpm,2)+'/'+q(E.egt,40)+(E.lit?1:0):'',(P.fire||0)>0?1:0,q(P._trimP,20),q(P.ctl?P.ctl.r:0,20),(typeof cautions==='function'?cautions(P).join('.'):''),P.hook?1:0,P.onGnd?1:0].join();}
     for(let i=0;i<upd.length;i++){try{upd[i](P);}catch(e){}}
     // nose trim indicator: follow the pitch input slowly
     P._trimP=(P._trimP||0)*.97+(P.ctl?P.ctl.p:0)*.03;}};}
