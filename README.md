@@ -8,7 +8,10 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 ```
 index.html               page shell + UI markup
 css/game.css             all game styles
-js/game.js               the sim (flight model, avionics, AI, campaign, MP)
+js/game.js               the sim (flight model, avionics, AI, campaign, MP) and the shared cockpit scene
+js/planes/registry.js    plane registry: per-jet files register here, game.js pulls their data in
+js/planes/<jet>.js       one file per original jet family: f16, f15, f18, f14, f4, mig29, su27, mig21, mig23, mig25
+                         (flight data, loadouts, countermeasures, model builder, variants, jet-specific cockpit/MFD code)
 js/campmp.js             campaign debrief/theatre panel/save export, multiplayer ping/chat/invite/rounds
 js/strategic.js          AI heavy bombers, strategic alert, nuclear escalation event
 js/assets.js             loads custom models/audio and hooks them into the game

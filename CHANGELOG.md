@@ -1,5 +1,20 @@
 # Changelog
 
+## v259 — performance, smaller download, F3 overlay
+- **Cockpit shadows** — the shadow pass redrew every cockpit mesh a second time each frame. Outside HIGH it now refreshes only when the sun moves relative to the cockpit, or 15 times a second for moving parts: roughly 35-40% fewer draw calls per frame at 60 fps in AUTO.
+- **Shadow map size** — AUTO was running a 2048 map instead of its 1024 (the initial size was never corrected).
+- **LOW graphics terrain** — drawn from every second grid vertex: ~55% fewer triangles per frame. Collision and radar height data unchanged.
+- **A-7D / F-8E gauges** — each fast gauge redraws only when its own values change (plus a 2 Hz refresh), instead of all nine whenever anything moved: gauge texture uploads roughly halved.
+- **F3 performance overlay** — FPS, frame time, draw calls, triangles, heap, render scale.
+- **Minified deploy** — `scripts/build.sh` + `.github/workflows/pages.yml` publish a comment-stripped build (names untouched): ~18% less JS to download (838 → 684 KB gzipped). Needs Settings → Pages → Source: "GitHub Actions".
+- **Checked** — game data identical to v257, all 56 jets started in BVR/WVR/STRIKE/GUN and had every cockpit control clicked with no errors.
+
+## v258 — original jets split into one file each (`js/planes/`)
+- **Modular jets** — the ten original jet families now live in their own files, like the newer jets: `f16`, `f15`, `f18`, `f14`, `f4`, `mig29`, `su27`, `mig21`, `mig23`, `mig25` (variants F-16C, F-15E, F/A-18E, F-14B/D, MiG-29S/SMT, Su-27SM / Su-33 / Su-30SM / Su-30MK2 / Su-35S and MiG-31 are in their family's file). Each file holds the jet's flight data (`AC` entry), stations and loadouts, countermeasures, RWR / NCTR / callsign / role rows, model builder, variant definitions and the jet-specific cockpit, MFD and HUD code. `game.js` is about 320 KB smaller.
+- **How it works** — `js/planes/registry.js` loads first; each jet file registers its tables and one-off blocks. `game.js` calls `PLANES.apply('<TABLE>',<TABLE>)` right after it declares each keyed table and `PLANES.run('<jet>','<tag>')` where an inline block used to be, so everything still happens at the same point in the same order. To change a jet, edit its file; to add one, copy a file and add its script tag before `game.js`.
+- **Checked** — every table (`AC`, `LOAD`, `STN`, `CMS`, `FV`, `RWR_OF`, missiles, weapons, ...) dumps byte-for-byte identical to v257, and all 23 type ids start a sortie with the same cockpit scene, controls and stores and no console errors.
+- **Still in `game.js`** — the shared 'viper' and 'fulcrum' cockpit builders and code that serves several jets at once (radar, HUD dispatch, A/G pages, campaign, stores for all jets). Those are infrastructure, not one jet's code.
+
 ## v257 — radar NaN, weapon-video scope switch, R-77M / R-37M pylons, multiplayer join feedback
 - **Radar NaN / undefined (F-8E and every jet with 2-3 radar ranges)** — BVR start set the range index to 3 whatever the radar had, so a 3-range radar (F-8E APQ-94 20/40/60, A-7D, F-5E, Mirage III, ...) read past its list and `rngM` became NaN. Start now clamps to the radar's own list; `rngM` and `radar.reset()` clamp too.
 - **Radar ⇄ weapon scope switch** (`js/wpnscope.js`) — the F-4E's RDR/WPN scope switch now exists on every single-scope jet with a Maverick / TV / IIR / laser-seeker store: A-4E, A-7D, F-5E, Super Etendard, AJS-37, Mirage III, Mirage F1 (round scope) and AV-8B, F-20, AMX, Yak-141, JH-7 (square display). 3-D toggle beside the scope, RDR/WPN tabs on the scope (click), a bind (Settings > Key & button binds > Weapons), and it follows the store selector. IJKL slew the seeker while the video is up.
