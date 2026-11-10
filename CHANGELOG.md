@@ -127,3 +127,35 @@ Each has its own flight data (thrust, weights, fuel, wing, limits), radar or ran
 - **Fuel and countermeasures:** RP-541 wing tank 1,580 kg, RP-522 centreline tank 995 kg. Spirale 112 chaff / 16 flares.
 - **RWR:** renamed Serval (receiver model still borrowed from the ALR-69).
 - New file `js/m2000c.js`.
+
+## v235 — realism layer for every aircraft (`js/realism.js`)
+Every system below can be switched off from the console via `window.REALISM`, e.g. `REALISM.ctl=false`.
+
+**Flight**
+- **Inertia and control response.** Stick inputs now go through a second-order actuator/airframe filter for each jet:
+  - Fly-by-wire jets respond quickly and are well damped.
+  - Hydraulic jets are slower, and jets with no limiter overshoot.
+  - Heavy jets and low dynamic pressure respond more slowly.
+- **Lift changes with Mach.** Lift-curve slope and maximum lift rise slightly toward M0.9 and fall away when supersonic (≈1/√(M²−1)), so supersonic turns need more AoA and bleed energy.
+- **Store drag** now depends on each store's type and mass, is scaled by the jet's wing area, and rises in the transonic range.
+- **Asymmetric stores** roll the jet toward the heavy wing, more so under G. Fly-by-wire jets trim most of this out.
+- **High AoA:**
+  - Buffet starts at 70% of the departure AoA.
+  - Transonic buffet when pulling hard.
+  - Ailerons lose effectiveness at high AoA on non-fly-by-wire jets.
+- **Ground effect:** a cushion and lower induced drag within one wingspan of the ground.
+
+**Radar**
+- **RCS changes with aspect:** lowest nose-on, highest from the beam and from above or below (planform), with a nozzle return from the tail. AI jets' RCS now also includes the stores they carry.
+- **Clutter:**
+  - Low-flying targets near the radar horizon fade in and out (multipath).
+  - Pulse-Doppler radars have a blind band at a range equal to their own altitude (the altitude line).
+  - Medium-PRF look-down at low altitude suffers from sidelobe clutter.
+  - Rain shortens radar range.
+- **Track quality:**
+  - Close targets jitter in angle (glint) because the reflection wanders across their span.
+  - RWS/TWS track files that miss about 3 scan frames are dropped.
+- **Chaff vs Doppler:**
+  - Chaff easily breaks the lock of a pulse (non-Doppler) radar.
+  - A pulse-Doppler lock only breaks if the target beams, putting itself and the chaff in the notch.
+  - This applies to your own STT lock and to AI radar locks.
