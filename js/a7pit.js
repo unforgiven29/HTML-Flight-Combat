@@ -20,7 +20,8 @@ const ID='A-7D',K=.00098,OX=625,OY=270;
 const PL=()=>typeof player!=='undefined'?player:null;
 const bx=x=>(x-OX)*K,by=y=>(OY-y)*K;
 const now=()=>performance.now()/1000;
-const ST={};
+let STV=0,FK='',SK='';
+const ST=new Proxy({},{set(t,k,v){t[k]=v;STV++;return true;}});
 const sv=(k,d)=>ST[k]===undefined?d:ST[k];
 let lampTest=0,fireTest=0,mcAck=false;
 const isMine=P=>P&&P.type===ID;
@@ -184,7 +185,11 @@ function cautions(P){const L=[];if(!running(P))L.push('ENG');if(fuelLb(P)<2000)L
 
 /* ---------------- build ---------------- */
 function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
-  const hit=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+  const hit=new THREE.MeshBasicMaterial({visible:false});
+  // redraw gating: gauges redraw only when what they show has changed (quantised to what is visible)
+  const q=(v,s)=>Math.round((v||0)*s);
+  const FASTK=new Set(['masi','aoa','adi','hsi','alt','vvi','acc','sby','ralt']);
+  const gate=k=>{let last=null;const fast=FASTK.has(k);return()=>{const key=fast?FK:SK;if(key===last)return false;last=key;return true;};};
   const PC=0x3a3e41,pm=LM(PC,12),dk=LM(0x1b1d1f,8),blk=LM(0x0b0c0d,4),bz=LM(0x141618,40),met=LM(0x9aa0a4,60);
   const board=new THREE.Group();board.position.set(0,-.565,-.74);board.rotation.x=-.18;g.add(board);
   // ---- outline traced from figure 1-3: two lobes either side of the HUD well, ARMT and check-list tabs, ARMAMENT RELEASE pedestal ----
@@ -235,13 +240,13 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     knob(hp,...P2(.41,.5),.007,'TF CLEARANCE SET',['300','500','1000'],'tfclr',()=>sv('tfclr',2));
     knob(hp,...P2(.66,.5),.007,'HUD BRIGHTNESS',['DIM','MED','BRT'],'hbrt',()=>{try{return sys.hud.brt>.8?2:sys.hud.brt>.45?1:0;}catch(e){return 2;}},v=>{try{sys.hud.brt=[.35,.65,1][v];}catch(e){}});}
   const glsM=new THREE.MeshPhongMaterial({color:0xffffff,transparent:true,opacity:.08,shininess:140,specular:0x8a8a8a,depthWrite:false});
-  function inst(k,x,y,hs,draw,round=true){const S=k==='adi'||k==='hsi'?320:hs<16?96:256,cv=document.createElement('canvas');cv.width=cv.height=S;const t=new THREE.CanvasTexture(cv);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;ctx.o.tex.push(t);
+  function inst(k,x,y,hs,draw,round=true){const S=k==='adi'||k==='hsi'?256:hs<16?96:192,cv=document.createElement('canvas');cv.width=cv.height=S;const t=new THREE.CanvasTexture(cv);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;ctx.o.tex.push(t);
     const c=cv.getContext('2d'),r=hs*K;box(board,2*r*1.04,2*r*1.04,.03,bz,bx(x),by(y),.008);
     const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const fm=new THREE.Mesh(round?new THREE.CircleGeometry(r*.9,48):new THREE.PlaneGeometry(r*1.8,r*1.8),m);fm.position.set(bx(x),by(y),.0235);fm.userData.cwFx=1;board.add(fm);
     if(round){const ring=new THREE.Mesh(new THREE.TorusGeometry(r*.92,r*.05,8,40),LM(0x0a0a0a,30));ring.position.set(bx(x),by(y),.0245);ring.userData.cwFx=1;board.add(ring);
       const gl=new THREE.Mesh(new THREE.CircleGeometry(r*.92,40),glsM);gl.position.set(bx(x),by(y),.026);gl.userData.cwFx=1;gl.renderOrder=2;board.add(gl);
       for(const [sx,sy] of[[-1,-1],[1,-1],[-1,1],[1,1]]){const s=new THREE.Mesh(new THREE.CylinderGeometry(r*.06,r*.06,.004,8),met);s.rotation.x=Math.PI/2;s.position.set(bx(x)+sx*r*.85,by(y)+sy*r*.85,.024);board.add(s);}}
-    upd.push(P=>{if(round){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
+    const gt=gate(k);upd.push(P=>{if(!gt())return;if(round){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
   INST.forEach(([k,x,y,hs,d])=>inst(k,x,y,hs,d,true));SQ.forEach(([k,x,y,hs,d])=>inst(k,x,y,hs,d,false));
   function lampAt(par,x,y,z,w,h,lg,col,lit,ww,hh){const cv=document.createElement('canvas');cv.width=128;cv.height=Math.max(32,Math.round(128*hh/ww));const c=cv.getContext('2d'),t=new THREE.CanvasTexture(cv);ctx.o.tex.push(t);
     const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const lm=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);lm.position.set(x,y,z);lm.userData.cwFx=1;par.add(lm);let last=null;
@@ -335,7 +340,11 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // figure y → z, per console
   const zL=y=>CZ0+(y-195)/(580-195)*(CZ1-CZ0),zR=y=>CZ0+(y-210)/(605-210)*(CZ1-CZ0);
   // bodies, sills, pedestal
-  box(g,.26,.42,.34,dk,0,-1.0,-.66);[-1,1].forEach(sd=>{box(g,.22,.1,.98,LM(0x2a2d30,8),sd*.43,-.675,-.15);box(g,.05,.2,1.3,LM(0x25282a,8),sd*.555,-.5,-.2);});
+  box(g,.18,.34,.22,dk,0,-1.0,-.68);
+  // console tops sit just under the panel plates (CY) so the painted panels show; longerons are a low sill, not a wall
+  [-1,1].forEach(sd=>{box(g,.22,.1,.98,LM(0x2a2d30,8),sd*.43,CY-.052,-.15);box(g,.05,.1,1.3,LM(0x25282a,8),sd*.555,-.55,-.2);});
+  // tub: floor, fuselage skin below the consoles, kick board under the panel and a backing behind the HUD well so nothing shows the ground through the cockpit
+  {const sk=LM(0x1c1f21,6);box(g,1.14,.02,1.5,sk,0,-1.23,-.1);[-1,1].forEach(sd=>box(g,.03,.66,1.3,sk,sd*.565,-.93,-.2));box(g,1.1,.5,.03,sk,0,-1.0,-.86);box(g,.9,.42,.02,sk,0,-.52,-.83);}
 
   // ======== LEFT CONSOLE (figure 1-7) — u 0 = outboard ========
   // 1 · EMER POWER handle, landing gear controls, gear / flap / pitch & roll trim indicators (forward, angled)
@@ -345,7 +354,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     const t=new THREE.CanvasTexture(cv);ctx.o.tex.push(t);const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.205,.108),m);pl.userData.cwFx=1;fp.add(pl);
     const P2=(u,v)=>[-.1025+u*.205,.054-v*.108,.003];
     const mini=(u,v,r,draw)=>{const cv2=document.createElement('canvas');cv2.width=cv2.height=96;const c2=cv2.getContext('2d'),t2=new THREE.CanvasTexture(cv2);ctx.o.tex.push(t2);const m2=new THREE.MeshBasicMaterial({map:t2,toneMapped:false});ctx.o.faces.push(m2);
-      const fm=new THREE.Mesh(new THREE.PlaneGeometry(r*2,r*2),m2);fm.position.set(...P2(u,v));fm.position.z+=.002;fp.add(fm);upd.push(P=>{draw(c2,P);t2.needsUpdate=true;});};
+      const fm=new THREE.Mesh(new THREE.PlaneGeometry(r*2,r*2),m2);fm.position.set(...P2(u,v));fm.position.z+=.002;fp.add(fm);const gt2=gate('m');upd.push(P=>{if(!gt2())return;draw(c2,P);t2.needsUpdate=true;});};
     mini(.68,.45,.016,F.small('ptrim'));mini(.88,.45,.016,F.small('rtrim'));mini(.62,.88,.009,F.small('gear'));mini(.75,.88,.009,F.small('gear'));mini(.86,.88,.009,(c,P)=>{const S=96;c.setTransform(1,0,0,1,0,0);c.fillStyle='#111';c.fillRect(0,0,S,S);const f=P.flapPos!=null?P.flapPos:P.flapCmd||0;
       if(f>.05&&f<.95&&Math.abs((P.flapCmd||0)-f)>.02)barber(c,S/2,S/2,S*.45);else T(c,f>.5?'DN':'UP',S/2,S/2,S*.38,'#fff');});
     // emergency power (RAT) handle
@@ -463,6 +472,9 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   box(stkG,.026,.34,.026,LM(0x1a1a1a,30),0,.17,0);box(stkG,.042,.12,.048,LM(0x2a2a2a,20),0,.39,-.004,-.25);box(stkG,.014,.016,.014,LM(0x777777,30),0,.455,.004);box(stkG,.012,.022,.012,LM(0xb02020,30),-.018,.43,0);box(stkG,.006,.03,.022,LM(0x888888,30),0,.37,-.03);
   let t=0;
   return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;if(!cautions(P).length)mcAck=false;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;
+        {const E=P.eng&&!P.eng.done?P.eng.e[0]:null;let h=0;try{h=q(P.pos.y-groundAt(P.pos.x,P.pos.z),.66);}catch(e){}let b=0;try{b=q(brgField(P),2)+q(distField(P),4);}catch(e){}
+     FK=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV].join();
+     SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.gearPos,20),q(P.flapPos!=null?P.flapPos:P.flapCmd,20),q(P.sb,20),Math.floor(now()),lampTest>now()?1:0,STV,E?q(E.rpm,2)+'/'+q(E.egt,40)+(E.lit?1:0):'',(P.fire||0)>0?1:0,q(P._trimP,20),q(P.ctl?P.ctl.r:0,20),(typeof cautions==='function'?cautions(P).join('.'):''),P.hook?1:0,P.onGnd?1:0].join();}
     for(let i=0;i<upd.length;i++){try{upd[i](P);}catch(e){}}
     P._trimP=(P._trimP||0)*.97+(P.ctl?P.ctl.p:0)*.03;}};}
 

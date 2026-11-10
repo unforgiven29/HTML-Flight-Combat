@@ -301,9 +301,9 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   const pm=LM(S.pc),dk=LM(0x16191b,6),cm=LM(S.cc||S.pc,8),blk=LM(0x0d0f10,4);
   // glare shield and sight head
   box(g,.92,.03,.42,dk,0,-.262,-.95);box(g,.62,.026,.05,dk,0,-.272,-.735);
-  const hud=S.s==='hud',gw=S.gw||(hud?(S.wide?.24:.21):.15),gh=S.gh||(hud?.19:.13),gy=S.gy!=null?S.gy:hud?-.075:-.1,gz=-.615;
+  const hud=S.s==='hud',gw=S.gw||(hud?(S.wide?.24:.21):.2),gh=S.gh||(hud?.19:.2),gy=S.gy!=null?S.gy:hud?-.075:-.045,gz=-.615;
   box(g,hud?.24:.17,.06,.13,blk,0,-.225,-.81);
-  const gmat=new THREE.MeshBasicMaterial({color:0x9effd0,transparent:true,opacity:.07,depthWrite:false,side:THREE.DoubleSide});
+  const gmat=new THREE.MeshBasicMaterial({color:0x9effd0,transparent:true,opacity:.13,depthWrite:false,side:THREE.DoubleSide});
   const gl=new THREE.Mesh(new THREE.PlaneGeometry(gw,gh),gmat);gl.position.set(0,gy,gz);gl.rotation.x=-.08;g.add(gl);
   const fr=new THREE.MeshBasicMaterial({color:0x121415});
   if(hud){[-1,1].forEach(sd=>box(g,.012,gh+.06,.016,blk,sd*(gw/2+.006),gy-.02,gz-.005,-.08));box(g,gw+.024,.012,.016,blk,0,gy+gh/2+.006,gz-.003,-.08);}
@@ -318,7 +318,7 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   gl.updateMatrixWorld(true);
   const glass=[[-gw/2,gh/2],[gw/2,gh/2],[gw/2,-gh/2],[-gw/2,-gh/2]].map(([x,y])=>new V3(x,y,0).applyMatrix4(gl.matrixWorld));
   // main panel: shaped body, painted face (one canvas), scope / RWR / second display set into it
-  if(S.custom){const r=S.custom({g,o,kind,id,S,box,LM,dk,pm,cm,blk,liveTex});return Object.assign({g,cv:null,tx:null,S,L:{dial:{}},glass,lb:LB[S.l]||LB.en,t:0},r);}
+  if(S.custom){const n0=o.tex.length,r=S.custom({g,o,kind,id,S,box,LM,dk,pm,cm,blk,liveTex});const shared=new Set(o._cwT?o._cwT.values():[]);for(let i=n0;i<o.tex.length;i++)if(!shared.has(o.tex[i]))o.tex[i]._dirty=false;return Object.assign({g,cv:null,tx:null,S,L:{dial:{}},glass,lb:LB[S.l]||LB.en,t:0},r);}
   const pp=new THREE.Group();pp.position.set(0,-.472,-.668);pp.rotation.x=-.28;g.add(pp);
   box(pp,PW+.03,PH+.03,.03,pm,0,-.03,-.018);box(pp,PW+.2,.2,.03,pm,0,-.33,-.03,0);
   const cv=document.createElement('canvas');cv.width=CW;cv.height=CH;const tx=new THREE.CanvasTexture(cv);tx.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());o.tex.push(tx);

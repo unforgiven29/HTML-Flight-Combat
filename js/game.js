@@ -13520,9 +13520,9 @@ document.querySelectorAll('.keys').forEach(k=>{k.innerHTML=html;});
 {const _ph=drawPhantomSight;drawPhantomSight=function(P,fs,lh){if(P.ac.pit!=='phantom')return _ph(P,fs,lh);
   const ppd=KPX*D2R,RED='#ff3a2a',L=radar.mode==='STT'?radar.lock:null,lk=L&&!radar.noRng,gun=game.wsel==='GUN',bs=hb(0,0);
   const dist=L?L.pos.distanceTo(P.pos):0,sp=gun?proj(gunFun(P,lk?clamp(dist,150,1800):900)):bs;if(!sp)return;
-  hx.save();hx.strokeStyle=hx.fillStyle=RED;hx.shadowColor='rgba(255,40,20,.6)';hx.shadowBlur=4;hx.lineWidth=1.6;const R=ppd*2.86;
-  hx.beginPath();hx.arc(sp.x,sp.y,2.2,0,7);hx.fill();circ(sp.x,sp.y,R);
-  for(let i=0;i<4;i++){const a=i*Math.PI/2,c=Math.cos(a),s=Math.sin(a);line(sp.x+c*R,sp.y+s*R,sp.x+c*(R+7),sp.y+s*(R+7));}
+  hx.save();hx.strokeStyle=hx.fillStyle=RED;hx.shadowColor='rgba(255,60,30,.9)';hx.shadowBlur=9;hx.lineWidth=2.8;const R=ppd*2.86;
+  hx.beginPath();hx.arc(sp.x,sp.y,3.6,0,7);hx.fill();circ(sp.x,sp.y,R);
+  for(let i=0;i<4;i++){const a=i*Math.PI/2,c=Math.cos(a),s=Math.sin(a);line(sp.x+c*R,sp.y+s*R,sp.x+c*(R+10),sp.y+s*(R+10));}
   if(lk&&dist<1800){hx.lineWidth=3;hx.beginPath();hx.arc(sp.x,sp.y,R-6,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(dist/1800,0,1));hx.stroke();}
   hx.restore();};}
 
