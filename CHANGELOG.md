@@ -1,5 +1,11 @@
 # Changelog
 
+## v261 — IFF simulation (Modes 1/2/3A/C/4, interrogator, ROE)
+- New `js/iff.js`: per-jet transponders with the day's code table, Mode 4 crypto key (HOLD/ZERO), 15 s IDENT, interrogator (110 km, LOS, 14° cone on bug/lock/nose, 3 cycles) giving FRIEND / POSS FRD / NO REPLY / UNKNOWN.
+- Radar scopes now show unidentified friendlies as contacts; only positively identified friends are filtered. Wingmen can start with zeroised Mode 4, wrong codes or a dead transponder.
+- ROE: TIGHT (needs NO REPLY), FREE, HOLD. Missiles/guns can hit unidentified friendlies; wingmen and friendly SAMs may engage persistent NO REPLY friends under ROE FREE.
+- Cockpit IFF panels (F-15, F-16, MiG-21 SRO-2, F/A-18 UFC + MFD page) drive the engine. Keys: Shift+8 interrogate, Shift+9 IDENT, Shift+0 cycle ROE.
+
 ## v260 — A-4E Skyhawk cockpit, 1:1 with NATOPS figure FO-1
 - **New `js/a4pit.js`** — the A-4E no longer uses the generic Cold War template. Instrument panel, left console and right console are rebuilt from NAVAIR 01-40AVC-1 figure FO-1 (A-4E cockpit, changed 1 March 1970), keyed items 1-61.
 - **Instrument panel** — AJB-3A attitude indicator, radar scope, LABS timer, accelerometer, 8-day clock, pressure ratio, oil quantity, tachometer with vernier, exhaust temperature, fuel flow, fuel quantity, radar altimeter, dead reckoning indicator, standby attitude, BDHI, VSI, altimeter with counters and baro window, AOA indicator, Mach / airspeed (80-650 kt), cabin pressure altitude and LOX gauges, ladder caution lights, LANDING / TAKEOFF check lists, armament panel with EMER SELECT / GUNS / ARM / five station switches / function selector / MASTER ARM, AWRS panel, EMER and BOMB release tabs, gear and hook handles, AOA indexer on the glareshield.
