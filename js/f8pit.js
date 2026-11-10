@@ -252,7 +252,8 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     lamps.push(P=>{m.color.set(lampTest>now()||lit(P)?col:0x221a10);});const h=new THREE.Mesh(new THREE.BoxGeometry(.016,.01,.016),hit);h.position.set(x,y,z);h.userData.cwFx=1;g.add(h);reg(g,h,name,()=>lit(PL())?'ON':'OFF',()=>{});};
   // console bodies, centre pedestal below the armament panel, footwell kick panels (hide the borrowed rudder-pedal rods)
   box(g,.26,.42,.34,dk,0,-1.02,-.66);box(g,.72,.5,.03,LM(0x202325,6),0,-1.06,-.86);[-1,1].forEach(sd=>box(g,.03,.42,.4,LM(0x232628,6),sd*.17,-1.0,-.66));
-  [-1,1].forEach(sd=>{box(g,.22,.1,.96,LM(0x2a2d30,8),sd*.43,-.675,-.15);box(g,.05,.2,1.3,LM(0x25282a,8),sd*.555,-.5,-.2);});
+  [-1,1].forEach(sd=>{box(g,.22,.1,.96,LM(0x2a2d30,8),sd*.43,-.675,-.15);box(g,.05,.1,1.3,LM(0x25282a,8),sd*.555,-.55,-.2);});
+  {const sk=LM(0x1c1f21,6);box(g,1.14,.02,1.5,sk,0,-1.23,-.1);[-1,1].forEach(sd=>box(g,.03,.66,1.3,sk,sd*.565,-.93,-.2));box(g,.9,.42,.02,sk,0,-.52,-.83);}
   // ======== LEFT CONSOLE (figure 1-4 sheet 2) ========
   // forward stab / autopilot panel (15-25), angled up in front of the throttle
   {const fp=new THREE.Group();fp.position.set(-.43,-.565,-.63);fp.rotation.x=-.75;g.add(fp);box(fp,.21,.13,.012,dk,0,0,-.007);

@@ -244,3 +244,9 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
   - Sector PPI picture with range arcs, antenna sweep, cursor and SPI. Enter designates the cursor point.
 - **Approximate:** the solution-cue and pullup-cue movement and the airspeed / altitude scale behaviour are read from the figures and text, not from the NWDS equations. TF is a display and HUD cue only (no automatic terrain following). The radar returns come from the shared ground-map model.
 - `cwpit`: a jet can set its own combiner size (`gw`, `gh`, `gy`). `game.js`: `AGR` is exposed as `window.AGR`, and the A-7D is added to the A/G radar list.
+
+## v243
+- A-7D / F-8E cockpits: console panels in the A-7D were buried under the console tops (only the switches showed) — tops lowered below the panel plates.
+- Longerons lowered from a tall wall to a low sill so the console panels are no longer hidden from the seat.
+- Added a floor, fuselage side skin and kick board, and a backing behind the instrument lobes, so the ground no longer shows through the cockpit.
+- A-7D stick boot reduced to a realistic size.

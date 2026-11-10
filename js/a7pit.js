@@ -335,7 +335,11 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // figure y → z, per console
   const zL=y=>CZ0+(y-195)/(580-195)*(CZ1-CZ0),zR=y=>CZ0+(y-210)/(605-210)*(CZ1-CZ0);
   // bodies, sills, pedestal
-  box(g,.26,.42,.34,dk,0,-1.0,-.66);[-1,1].forEach(sd=>{box(g,.22,.1,.98,LM(0x2a2d30,8),sd*.43,-.675,-.15);box(g,.05,.2,1.3,LM(0x25282a,8),sd*.555,-.5,-.2);});
+  box(g,.18,.34,.22,dk,0,-1.0,-.68);
+  // console tops sit just under the panel plates (CY) so the painted panels show; longerons are a low sill, not a wall
+  [-1,1].forEach(sd=>{box(g,.22,.1,.98,LM(0x2a2d30,8),sd*.43,CY-.052,-.15);box(g,.05,.1,1.3,LM(0x25282a,8),sd*.555,-.55,-.2);});
+  // tub: floor, fuselage skin below the consoles, kick board under the panel and a backing behind the HUD well so nothing shows the ground through the cockpit
+  {const sk=LM(0x1c1f21,6);box(g,1.14,.02,1.5,sk,0,-1.23,-.1);[-1,1].forEach(sd=>box(g,.03,.66,1.3,sk,sd*.565,-.93,-.2));box(g,1.1,.5,.03,sk,0,-1.0,-.86);box(g,.9,.42,.02,sk,0,-.52,-.83);}
 
   // ======== LEFT CONSOLE (figure 1-7) — u 0 = outboard ========
   // 1 · EMER POWER handle, landing gear controls, gear / flap / pitch & roll trim indicators (forward, angled)
