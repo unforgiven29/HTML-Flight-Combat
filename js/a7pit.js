@@ -225,6 +225,8 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // forward looking radar (7): square bezel, round CRT showing the radar picture, four corner knobs, six-button column
   box(board,192*K,180*K,.03,dk,bx(331),by(295),.012);
   {const scC=typeof phScopeC!=='undefined'?phScopeC:null;if(scC){const m=new THREE.MeshBasicMaterial({map:liveTex(ctx.kind,scC),toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.CircleGeometry(74*K,48),m);sc.position.set(bx(330),by(295),.0285);sc.userData.screen='phscope';board.add(sc);}}
+  // v257: radar / weapon-video switch (Maverick on the forward-looking radar scope), lower right of the scope bezel
+  try{if(window.WPNSCOPE&&WPNSCOPE.can(ID))WPNSCOPE.mount(board,{cx:bx(330),cy:by(295),R:74*K,px:bx(331+96+24),py:by(295+90-14),z:.012});}catch(e){console.warn('[a7pit] scope switch',e);}
   // APR-36 (10): the jet's RWR picture
   box(board,100*K,92*K,.03,dk,bx(452),by(138),.012);
   try{if(typeof rwrC!=='undefined'){const m=new THREE.MeshBasicMaterial({map:liveTex(ctx.kind,rwrC),toneMapped:false});ctx.o.faces.push(m);const rw=new THREE.Mesh(new THREE.CircleGeometry(40*K,40),m);rw.position.set(bx(452),by(138),.0285);board.add(rw);}}catch(e){}

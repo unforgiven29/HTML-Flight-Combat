@@ -2013,7 +2013,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     if(tws&&mg&&this.bugOK()){this._alT=(this._alT||0)-dt;if(this._alT<=0){this._alT=.25;const w=game.wsel,wd=MSL[w];
       if(wd&&w!=='GUN'&&wd.seek==='SARH'&&player.count(w)>0){let rm=0;try{rm=dlzGet(w,this.bug).rmax;}catch(e){}
         if(rm&&this.trkPos(this.bug,this.tracks.get(this.bug),now).distanceTo(player.pos)<rm*.85){const a=this.ang(this.bug.pos);if(a.off<gim&&this.detect(this.bug,a)){this.stt(this.bug);flash('AUTO LOCK',900);}}}}}},
-  get rngM(){return this.ranges[this.ri]*this.unit;},
+  get rngM(){const n=this.ranges.length;return this.ranges[Math.max(0,Math.min(n-1,(this.ri|0)))]*this.unit;},
   designate(){if(this.mode==='STT')return;if(!this.on()){flash(isMig()?'RADAR OFF':'NO RAD',900);return;}
     if(this.mode==='ACM'){if(this.acmBest&&this.acmBest.alive)this.stt(this.acmBest);else sfx.click();return;}const rng=this.rngM,tws=this.mode==='TWS',now=performance.now()/1000;let best=null,bd=1e9;
     for(const [j,tk] of this.tracks){if(!j.alive)continue;const q=tws?this.ang(this.trkPos(j,tk,now)):tk;const dd=Math.hypot((q.az-this.cur.az)/(120*D2R)*(isFishbed()?.12:1),this.sensor==='IRST'?(q.el-(this.cur.el||0))/(60*D2R):q.d/rng-this.cur.r);if(dd<.09&&dd<bd){bd=dd;best=j;}}
@@ -2042,7 +2042,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     this.cur.r=clamp(this.cur.r,.02,.98);},
   reset(ac){if(ac){const r=ac.radar;this.ranges=r.ranges;this.unit=r.unit;this.ul=r.ul;this.R0=r.R0;this.ecc=r.ecc==null?.5:r.ecc;this.awg=!!r.awg;this.beam=r.beam||3.3*D2R;const q=RGIM[r.name]||[60,60,60,1];this.gl={az:q[0],eu:q[1],ed:q[2],stab:q[3]};}
     this.strobes.clear();this.hoj=false;this.pull=0;this.rngErr=0;this.jamLock=null;
-    flClutter.v.fill(0);this.mode='RWS';this.sensor='RDR';this.lock=null;this.bug=null;this.bugMan=false;this.fromTWS=false;this.fromACM=false;this.acmBest=null;if(ac)this.acm=ac.cockpit==='fulcrum'?'VERT':this.awg?'PAL':'30x20';this.tracks.clear();this.elCmd=0;this.cur={az:0,r:.5,el:0};this.antAz=0;this.notched=0;}
+    flClutter.v.fill(0);this.mode='RWS';this.sensor='RDR';this.lock=null;this.bug=null;this.bugMan=false;this.fromTWS=false;this.fromACM=false;this.acmBest=null;if(ac)this.acm=ac.cockpit==='fulcrum'?'VERT':this.awg?'PAL':'30x20';this.tracks.clear();this.elCmd=0;this.cur={az:0,r:.5,el:0};this.antAz=0;this.notched=0;if(this.ri>this.ranges.length-1)this.ri=this.ranges.length-1;}
 };
 // one-dimensional fly-out: Rmax (target holds its LOS speed), Rne (target turns cold at full speed); IR shots capped by seeker lock range
 function dlz(type,tg){const d=MSL[type],ph=d.ph,h=(player.pos.y+tg.pos.y)/2,los=_dz.copy(tg.pos).sub(player.pos),R0=los.length();los.normalize();
@@ -6586,7 +6586,7 @@ const net={on:false,lobby:null,r:null,me:'',code:'',cs:'',score:{k:0,d:0},peers:
     let room=null,err='';
     for(const [kind,mk] of tries){let r=null;try{r=await mk();}catch(e){}if(!r)continue;
       try{this.r=await r.join('vs-'+code);room=r;break;}catch(e){err=(e&&e.code)||'error';}}
-    if(!room){st.textContent='Could not connect ('+(err||'no network route')+'). Check your internet connection and that WebRTC is not blocked, then try again.';return false;}
+    if(!room){st.textContent='Could not connect: '+(err||'no network route')+'. Check the internet connection, that both players typed the same room code, and that WebRTC is not blocked, then try again.';return false;}
     this.lobby=room;this.code=code;this.cs=cs;this.on=true;this.isHost=this.r.role?this.r.role==='host':this.r.peers().length<=1;this.score={k:0,d:0};this.feed=[];
     this.unsub=[this.r.onPeers(ch=>this.onPeers(ch)),
       this.r.on('hit',m=>this.onHit(m)),this.r.on('cm',m=>this.onCm(m)),this.r.on('kill',m=>this.onKill(m))];
@@ -6660,6 +6660,7 @@ function renderScore(){const el=$('#score');if(!net.on){el.hidden=true;return;}e
 function peerRoom(){return{async join(name){
   const me='p'+Math.random().toString(36).slice(2,10),hid='viper-sortie-'+name.replace(/[^a-z0-9-]/g,'-'),peers=new Map(),pcb=[],ev={},conns=new Set();
   let role='',pr=null,hc=null,up=true;
+  const say=t=>{try{const e=document.getElementById('mpStatus');if(e)e.textContent=t;}catch(_){}};   // v257: show where the join is, instead of a bare "Connecting…"
   const self=()=>({peer:me,sameTab:true,isMe:true,presence:peers.get(me)||{}}),fire=ch=>pcb.forEach(f=>f(Object.assign({peers:room.peers(),joined:[],updated:[],left:[]},ch)));
   const handle=m=>{if(!m||typeof m!=='object')return;
     if(m.t==='pres'){const had=peers.has(m.peer);peers.set(m.peer,m.data);if(m.peer===me)return;const p={peer:m.peer,presence:m.data,sameTab:false,isMe:false};fire(had?{updated:[p]}:{joined:[p]});}
@@ -6678,7 +6679,8 @@ function peerRoom(){return{async join(name){
     async leave(){if(up){send({t:'left',peer:me});}up=false;clearInterval(hbT);try{pr&&pr.destroy();}catch(e){}}};
   // several STUN servers plus the PeerJS public TURN relay, so two players behind strict routers (school / phone hot-spots) can still be joined
   const O=Object.assign({config:{iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']},
-    {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'}],sdpSemantics:'unified-plan'}},window.PEER_OPTS||{});
+    {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'},
+    {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}],sdpSemantics:'unified-plan',iceCandidatePoolSize:4}},window.PEER_OPTS||{});
   const keep=p=>p.on('disconnected',()=>{if(up&&pr===p)setTimeout(()=>{try{if(up&&!p.destroyed)p.reconnect();}catch(e){}},700);});   // the broker dropped us: sign back in, the data links stay up
   let hbT=0,rejoining=false;
   const dropAll=()=>{const l=[...peers.keys()].filter(k=>k!==me).map(k=>({peer:k}));l.forEach(x=>peers.delete(x.peer));if(l.length)fire({left:l});};
@@ -6700,16 +6702,18 @@ function peerRoom(){return{async join(name){
         c.on('close',()=>{conns.delete(c);if(c.pid){const l={t:'left',peer:c.pid};relay(l);handle(l);}});c.on('error',()=>{});});
       res();});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type||'error'});});});
-  const asClient=()=>new Promise((res,rej)=>{const p=new Peer(O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'could not reach the host'});},10000);
-    p.on('open',()=>{const c=p.connect(hid,{reliable:true,serialization:'json'});
+  const asClient=()=>new Promise((res,rej)=>{const p=new Peer(O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'could not open a link to the host (a school / work network may be blocking WebRTC; try another network or a phone hot-spot)'});},15000);
+    p.on('open',()=>{say('Room server reached · opening a link to the host…');const c=p.connect(hid,{reliable:true,serialization:'json'});
       c.on('open',()=>{clearTimeout(t);pr=p;role='client';hc=c;c.last=performance.now();keep(p);res();});
       c.on('data',m=>{c.last=performance.now();if(m&&m.t==='hb')return;handle(m);});c.on('close',()=>{if(up&&role==='client'&&hc===c)handle({t:'down'});});c.on('error',()=>{});});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type==='peer-unavailable'?'host not found':e&&e.type||'error'});});});
   // v215: joining is retried. The room id can still be held by the broker for a while after a host closes his tab ("host not found" although the
   // id is taken); we then wait and try both roles again instead of failing on the first attempt.
   const connect=async()=>{let last=null;for(let i=0;i<4;i++){
+      say('Contacting the room server… (try '+(i+1)+' of 4)');
       try{await asHost();return;}catch(e){last=e;if(!(e&&e.code==='unavailable-id')){if(i<3){await wait(700+i*500);continue;}throw e;}}
-      try{await asClient();return;}catch(e){last=e;await wait(900+Math.random()*900);}}
+      say('Room "'+name.replace(/^vs-/,'')+'" is already hosted · joining…');
+      try{await asClient();return;}catch(e){last=e;say('Could not reach the host yet · retrying… ('+(i+1)+' of 4)');await wait(900+Math.random()*900);}}
     throw last||{code:'error'};};
   await connect();hbT=setInterval(beat,2000);
   flash(role==='host'?'HOSTING ROOM · tell friends the code':'JOINED ROOM',2200);
@@ -6768,7 +6772,7 @@ async function start0(scen){
       for(const f of o.flights){const ty=f.type==='AUTO'||teamOK(f.type)?foe:f.type,pr=[Math.cos(f.hdg*D2R),Math.sin(f.hdg*D2R)];
         for(let i=0;i<f.n;i++){const off=(i-(f.n-1)/2)*f.sp,x=f.x+pr[0]*off,z=f.z+pr[1]*off,b=new Jet(1,ty,foeLoad(ty,lk),game.era);
           b.spawn(x,Math.max(f.alt+(i%2)*500,groundAt(x,z)+250),z,f.hdg,f.spd);b.ai=new AI(b);b.ai.plan(f);bandits.push(b);}}
-      radar.ri=radar.ranges.length>4?4:3;game.wsel=defaultWeapon('rdr');}
+      radar.ri=Math.min(radar.ranges.length>4?4:3,radar.ranges.length-1);game.wsel=defaultWeapon('rdr');}
     else if(scen==='WVR'){player.spawn(0,4900,8000,0,230);mk(500,5000,2000,180,230);radar.ri=0;game.wsel=defaultWeapon('ir');}
     else if(scen==='RANGE'){player.spawn(0,6000,8000,0,230);rangeSetup(foe);radar.ri=2;game.wsel=defaultWeapon('rdr');}
     else{player.spawn(0,4900,8000,0,220);mk(700,5000,5000,180,220);radar.ri=0;game.wsel='GUN';}
@@ -14214,6 +14218,10 @@ try{
   for(const era of Object.keys(CMS))CMS[era]['Su-35S']=[96,96];
   ENGN['Su-35S']='2× AL-41F1S (117S)';IRSTN['Su-35S']='OLS-35';ENG_SUP['Su-35S']=.05;CALLS['Su-35S']='FLANKER-E';NCTR_ID['Su-35S']='SU-35';FOE['Su-35S']='F-15C';RWR_OF['Su-35S']='L-150';
   ACROLE['Su-35S']='RUSSIA · AIR SUPERIORITY · 3D THRUST VECTORING · IRBIS-E PESA · OLS-35 · R-77M / R-37M';HMS_ALWAYS.add('Su-35S');
+  // v257: R-77M and R-37M were in the loadout tables but missing from the pylon lists, so they could not be picked on the stations
+  {const addW=(id,sts,ws)=>{const S=STN[id];if(!S)return;for(const k of sts){S[k]=S[k]||[];for(const w of ws)if(MSL[w]&&!S[k].includes(w))S[k].push(w);}};
+   for(const id of['Su-30SM','Su-35S']){addW(id,['2','9','3','8','11','12','5','6','5B','6B'],['R-77M']);addW(id,['4','7'],['R-77M','R-37M']);addW(id,['5','6'],['R-37M']);}
+   addW('MiG-31',['2','3'],['R-77M']);}
   try{CTYPES.modern[1].CAP.unshift('Su-35S');CTYPES.modern[1].ESC.unshift('Su-35S');}catch(e){}
 }catch(e){console.warn('v215 Su-35S',e);}
 // Su-30MK2 (KnAAZ two-seater: no canards, no thrust vectoring): two AL-31F, empty 17,700 kg, 9,400 kg internal fuel, N001VEP (two-target R-77 TWS, sea and

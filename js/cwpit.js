@@ -354,6 +354,8 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
     const geo=shape==='round'?new THREE.CircleGeometry(r*PX,48):new THREE.PlaneGeometry(2*r*PX,2*r*PX);
     const m=new THREE.MeshBasicMaterial({map:liveTex(kind,canvas),toneMapped:false});const ms=new THREE.Mesh(geo,m);ms.position.set(cxm,cym,.0285);ms.userData.cwFx=0;if(id)ms.userData.screen=id;pp.add(ms);o.faces.push(m);};
   if(L.scope)scr(scopeOf(S.sc),S.sc==='ph'?'round':'sq',L.scope[0],L.scope[1],L.scope[2],S.sc==='ph'?'phscope':'fcr');
+  // v257: radar / weapon-video switch beside the scope on every single-scope jet that carries a Maverick or TV store
+  if(L.scope&&S.sc!=='tv'&&window.WPNSCOPE&&WPNSCOPE.can(id)){try{WPNSCOPE.mount(pp,{cx:lx(L.scope[0]),cy:ly(L.scope[1])-.03,R:L.scope[2]*PX,round:S.sc==='ph'});}catch(e){console.warn('[cwpit] scope switch',e);}}
   if(L.scope&&S.sc==='tv'){// the big hooded TV tube: a black rubber visor around the screen, open at the bottom toward the pilot
     const[x,y,r]=L.scope,cxm=lx(x),cym=ly(y)-.03,hw=r*PX+.03,rub=LM(0x0c0c0d,4);rub.side=THREE.DoubleSide;
     box(pp,2*hw+.02,.014,.1,rub,cxm,cym+hw,.07);box(pp,.014,2*hw,.1,rub,cxm-hw,cym,.07);box(pp,.014,2*hw,.1,rub,cxm+hw,cym,.07);}
