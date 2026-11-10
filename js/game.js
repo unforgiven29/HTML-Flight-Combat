@@ -922,7 +922,7 @@ const MSL={
   'R-27T':   {trk:.5,ccm:0,loft:.25,seek:'IR',ign:.3,burn:6,acc:140,cd:4.8e-5,maxG:30,gimbal:50*D2R,fuse:11,life:60,N:4,res:.5,rmin:2000,stop:280,search:2.5*D2R,smoke:.45,mass:254,irR:22000,front:.5,aiR:16000,aiOff:12*D2R},
   'R-27ER':  {hoj:1,ecc:.3,seek:'SARH',ign:.3,burn:9,acc:150,cd:4.4e-5,maxG:30,gimbal:50*D2R,fuse:13,life:70,N:4,res:.65,rmin:2500,stop:280,search:0,smoke:.45,mass:350,aiR:32000,aiOff:20*D2R},
   'R-27ET':  {trk:.5,ccm:.1,loft:.35,seek:'IR',ign:.3,burn:9,acc:150,cd:4.4e-5,maxG:30,gimbal:50*D2R,fuse:11,life:70,N:4,res:.55,rmin:2500,stop:280,search:2.5*D2R,smoke:.45,mass:343,irR:24000,front:.5,aiR:20000,aiOff:12*D2R},
-  'R-77':    {hoj:1,ecc:.6,trk:.8,ccm:.5,loft:.4,seek:'ARH',ign:.3,burn:7,acc:105,cd:4.2e-5,maxG:38,gimbal:55*D2R,fuse:14,life:70,pit:15000,N:4,res:.7,rmin:2000,stop:290,search:14*D2R,smoke:.4,mass:175,aiR:28000,aiOff:20*D2R},
+  'R-77':    {p2:{r:7000,t:4,T:5900,mp:10},tN:{r:2500,k:1.35},hoj:1,ecc:.6,trk:.8,ccm:.5,loft:.4,seek:'ARH',ign:.3,burn:7,acc:105,cd:4.2e-5,maxG:38,gimbal:55*D2R,fuse:14,life:70,pit:15000,N:4,res:.7,rmin:2000,stop:290,search:14*D2R,smoke:.4,mass:175,aiR:28000,aiOff:20*D2R},
   // MiG-23ML: R-24R (SARH, Sapfir-23ML illumination), R-24T (IR, TP-23M / radar cued, narrow-gimbal tail-biased seeker), R-60M (short-range all-aspect IR dogfight round)
   'R-24R':   {ecc:.2,seek:'SARH',ign:.3,burn:5.5,acc:138,cd:5.2e-5,maxG:25,gimbal:45*D2R,fuse:13,life:60,N:4,res:.55,rmin:1500,stop:280,search:0,smoke:.6,mass:243,aiR:20000,aiOff:20*D2R},
   'R-24T':   {trk:.45,ccm:0,loft:.2,seek:'IR',ign:.3,burn:5.5,acc:138,cd:5.2e-5,maxG:25,gimbal:40*D2R,fuse:11,life:60,N:4,res:.45,rmin:1500,stop:280,search:2.5*D2R,smoke:.6,mass:235,irR:18000,front:.35,aiR:13000,aiOff:12*D2R},
@@ -1016,6 +1016,9 @@ class Missile{
   update(dt){
     const d=this.def,ph=d.ph;this.t+=dt;const V=Math.max(this.vel.length(),1),vd=_mv.copy(this.vel).divideScalar(V);
     const tb=this.t-d.ign;this.burning=tb>0&&tb<d.burnT;this.sustain=this.burning&&tb>ph.tb;
+    // d.p2 = {r,t,T,mp}: second motor pulse (dual-pulse / re-ignition, e.g. R-77): once the main motor is out and the target is inside r metres, a reserve grain of mp kg lights for t seconds at T newtons
+    if(d.p2){if(this.p2s==null&&tb>d.burnT&&this.track&&this.pos.distanceTo(this.track.pos)<d.p2.r){this.p2s=0;this.p2Flash=1;}
+      if(this.p2s!=null&&this.p2s<d.p2.t){this.p2s+=dt;this.burning=true;this.sustain=true;}}
     let P=null,Vt=null;
     if(this.track&&!this.track.alive){const sr=this.track.isDecoy&&this.track.type==='chaff'&&this.track.src;this.track=sr&&sr.alive&&d.seek!=='IR'?sr:null;}
     if(d.seek==='SARH'){const tg=this.target,jm=tg&&!this.seekLost&&tg.alive?jamOfMsl(tg,d,this.pos):null;
@@ -1087,9 +1090,11 @@ class Missile{
       if(d.apn&&this.track&&!this.track.isDecoy&&this.track.accV){r.normalize();const at=_mtmp.copy(this.track.accV);at.addScaledVector(r,-at.dot(r));cmd.addScaledVector(at,d.N*.5);}
       cmd.y+=G;}
     else if(this.maddog&&tb>0)cmd.y+=G;
+    // d.tN = {r,k}: terminal navigation gain, the guidance command is multiplied by k once the target is inside r metres (end-game agility)
+    if(d.tN&&this.track&&this.pos.distanceTo(this.track.pos)<d.tN.r)cmd.multiplyScalar(d.tN.k);
     cmd.addScaledVector(vd,-cmd.dot(vd));
     // ---- airframe: motor, lift-limited turn, autopilot lag, drag ----
-    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T,m]=mslMotor(d,tb,rr);this.mass=m;this.thrust=T;
+    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T0,m0]=mslMotor(d,tb,rr);let T=T0,m=m0;if(d.p2){m+=d.p2.mp*(this.p2s==null?1:Math.max(0,1-this.p2s/d.p2.t));if(this.p2s!=null&&this.p2s<d.p2.t)T=d.p2.T*(1+.08*(1-rr/1.225));}this.mass=m;this.thrust=T;
     const tvcA=this.burning&&d.tvc?T*d.tvc/m:0;this.tvcOn=tvcA>0;
     const aeroMax=qd*ph.S*ph.cnMax/m,amax=Math.min(d.maxG*G,aeroMax+tvcA);
     if(cmd.lengthSq()>amax*amax)cmd.setLength(amax);
@@ -1106,7 +1111,7 @@ class Missile{
       // contact-fuzed rounds (AIM-4 Falcon) must strike the airframe: the hit radius is the target's own body size, not a proximity shell
       if(d.contact){const hr=Math.max(1.4,.4*Math.sqrt((j.ac&&j.ac.S)||28));if(dd<hr){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,360*rnd(.95,1.1),this.sh,this.type);return;}continue;}
       if(dd<d.fuse){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,340*(1-.55*dd/d.fuse)*rnd(.9,1.1),this.sh,this.type);return;}}
-    if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||(this.t>d.ign+d.burnT&&V<d.stop-60)){this.remove(true);return;}
+    if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||(this.t>d.ign+d.burnT&&V<d.stop-60&&!(d.p2&&this.p2s==null&&this.track))){this.remove(true);return;}
     this.fxT=(this.fxT||0)+dt;}
   // visuals once per frame: smoke trail (dense on the boost, thin on the sustainer) and the body pointed along its angle of attack
   draw(){if(!this.alive)return;const d=this.def;
