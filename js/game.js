@@ -1700,7 +1700,9 @@ function drawHUD(){
   const C=P.ac.pit==='fishbed'?'#ffd84a':P.ac.pit==='flogger'?'#5effc4':P.ac.pit==='foxbat'?'#ffd84a':P.ac.cockpit==='fulcrum'?'#4dff94':'#59ff9f';
   hx.strokeStyle=hx.fillStyle=C;hx.shadowColor=P.ac.pit==='fishbed'?'rgba(255,216,74,.6)':'rgba(89,255,159,.6)';hx.shadowBlur=3;
   const poly=P.alive&&P.gloc<=0?hudPoly():null;
-  if(poly){hx.save();hx.beginPath();poly.forEach((p,i)=>i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y));hx.closePath();hx.clip();
+  if(poly&&P.ac.noHud){/* no HUD in this cockpit (F-106A): only the fixed optical-sight reticle, no data or symbology */hx.save();hx.beginPath();poly.forEach((p,i)=>i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y));hx.closePath();hx.clip();
+    const b=hb(0,0);if(b){hx.globalAlpha=.85;hx.lineWidth=1.6;circ(b.x,b.y,KPX*D2R*2.4);hx.beginPath();hx.arc(b.x,b.y,1.6,0,7);hx.fill();}hx.restore();}
+  else if(poly){hx.save();hx.beginPath();poly.forEach((p,i)=>i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y));hx.closePath();hx.clip();
     const mg=P.ac.cockpit==='fulcrum',vb=mg?sys.mig.setka:sys.hud.brt*[1,.8,.55][sys.hud.day];hx.globalAlpha=clamp(vb*1.15,0,1);
     if(!mg&&sys.hud.filter){hx.strokeStyle=hx.fillStyle=P.ac.pit==='fishbed'?'#d9b43a':'#3cc979';}
     if(vb>.04){drawHudSym(P,fs,lh);agHud(P,fs);if(!mg&&sys.hud.cam&&blink){const p=hb(9.6,5.4);if(p)txt('REC',p.x,p.y,'right');}}

@@ -20,7 +20,7 @@
    ============================================================================ */
 (function(){'use strict';
 if(typeof Jet==='undefined'||typeof AC==='undefined'){console.warn('[structure] Jet/AC missing');return;}
-const SX=window.STRUCT={pull:1.62,debug:false};
+const SX=window.STRUCT={pull:1.3,tear:.35,debug:false};   // pull: stick authority above rated G (stays under the 1.5x ultimate, so one hard pull overstresses but does not instantly fold a wing); tear: seconds above ultimate before a wing goes
 Object.defineProperty(SX,'on',{get(){try{return SET.struct!=='OFF';}catch(e){return true;}},set(v){try{SET.struct=v?'REAL':'OFF';}catch(e){}}});
 const sm=x=>{x=x<0?0:x>1?1:x;return x*x*(3-2*x);};
 const PL=()=>{try{return player;}catch(e){return null;}};
@@ -144,7 +144,7 @@ function tick(j,dt){const st=get(j);if(!st||!j.alive||j.remote)return;const ac=j
     if(st.def>.45&&(j.leak||0)<.2)j.leak=.2;
     if(j===PL()){const c=st.def>.6?3:st.def>.3?2:st.def>.04?1:0;if(c>st.cue){st.cue=c;try{radio(['','AIRFRAME OVERSTRESS · REDUCE G','WING SKIN WRINKLING · NO MORE G','WING STRUCTURE CRACKING · EJECT IF IT BREAKS'][c],true);}catch(e){}}}}
   // failure
-  if(r>ult&&!(st.off.L&&st.off.R)){st.fail+=dt;if(st.fail>.1){const side=dm.wl<dm.wr?'L':dm.wr<dm.wl?'R':Math.random()<.5?'L':'R';
+  if(r>ult&&!(st.off.L&&st.off.R)){st.fail+=dt;if(st.fail>SX.tear){const side=dm.wl<dm.wr?'L':dm.wr<dm.wl?'R':Math.random()<.5?'L':'R';
       if(!st.off[side])sever(j,side);else sever(j,side==='L'?'R':'L');
       if(!(st.off.L&&st.off.R)&&st.second===null)st.second=.25+Math.random()*.9;st.fail=0;}}
   else st.fail=Math.max(0,st.fail-dt*2);

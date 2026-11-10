@@ -119,7 +119,7 @@ SET('F-100A',{pc:0x1d1f20,gs:'a4',stk:'a1',thr:1,lay:{rwr:null,
     rpm:[830,100,56],egt:[945,100,48],noz:[830,232,44],fpr:[945,232,42],oil:[830,350,40],hyd:[945,350,40],fuel:[690,385,50],clk:[945,450,32],lamp_fire:[580,350,10]},
   gearH:[70,370],arm:[140,420,280],plates:[[440,410,200,68,'ARMAMENT',['GUNS','RKT','BOMB']]],txt:[['FIRE',580,370,9]]},
   con:CON('en',[['ENGINE / A/B',['MASTER','IGN','A/B']],'AN/ARC-34 UHF','TRIM / FLAPS','SPEED BRAKE'],[['ELECTRICAL',['BATT','GEN','INV']],['A-4 GUNSIGHT',['FILTER','CAGE','RANGE']],'LIGHTS','OXYGEN'])});
-SET('F-106A',{gs:'gun',stk:'b8',thr:1,lay:{rwr:[85,440,46],scope:[512,135,120],
+SET('F-106A',{gs:'opt',noGlass:1,gw:.1,gh:.085,gy:-.07,stk:'b8',thr:1,lay:{rwr:[85,440,46],scope:[512,135,120],
   dial:{tapeS:[300,150,110],tapeA:[724,150,110],adi:[330,385,62],map:[512,390,96],hsi:[694,385,62],aoa:[150,110,44],acc:[150,240,42],
     rpm:[860,90,46],egt:[960,90,40],noz:[860,200,40],fuel:[910,320,52],oil:[960,200,36],clk:[860,440,32]},
   gearH:[150,390],cau:[860,380,2,2,72,24,['FIRE','HYD','FUEL LOW','GEN']],arm:[220,470,200],txt:[['MA-1',512,270,10],['TSD',512,494,8]]},
@@ -316,10 +316,10 @@ function build(id,kind){const S=PIT[id],o=ck[kind],root=o.root,g=new THREE.Group
   const hud=S.s==='hud',gw=S.gw||(hud?(S.wide?.24:.21):.2),gh=S.gh||(hud?.19:.2),gy=S.gy!=null?S.gy:hud?-.075:-.045,gz=-.615;
   box(g,hud?.24:.17,.06,.13,blk,0,-.225,-.81);
   const gmat=new THREE.MeshBasicMaterial({color:0x9effd0,transparent:true,opacity:.13,depthWrite:false,side:THREE.DoubleSide});
-  const gl=new THREE.Mesh(new THREE.PlaneGeometry(gw,gh),gmat);gl.position.set(0,gy,gz);gl.rotation.x=-.08;g.add(gl);
+  const gl=new THREE.Mesh(new THREE.PlaneGeometry(gw,gh),gmat);gl.position.set(0,gy,gz);gl.rotation.x=-.08;g.add(gl);if(S.noGlass)gl.visible=false;
   const fr=new THREE.MeshBasicMaterial({color:0x121415});
   if(hud){[-1,1].forEach(sd=>box(g,.012,gh+.06,.016,blk,sd*(gw/2+.006),gy-.02,gz-.005,-.08));box(g,gw+.024,.012,.016,blk,0,gy+gh/2+.006,gz-.003,-.08);}
-  else{// reflector gunsight: glass plate in a thin frame on a centre post
+  else if(!S.noGlass){// reflector gunsight: glass plate in a thin frame on a centre post
     [[0,gh/2],[0,-gh/2]].forEach(([x,y])=>box(g,gw,.005,.005,fr,x,gy+y,gz));[-1,1].forEach(sd=>box(g,.005,gh,.005,fr,sd*gw/2,gy,gz));
     box(g,.016,.09,.016,blk,0,-.18,-.66);}
   // period gunsight bodies (the glass and symbology stay as above)

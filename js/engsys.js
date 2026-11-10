@@ -89,7 +89,7 @@ const nEng=t=>{try{if(window.START)return window.START.spec(t).n;}catch(e){}retu
 /* ===================================== STALL MODEL (pure) ===================================== */
 // c: {a,b (deg, absolute), M, cas, alt, n (0-1 throttle spool), nT, rate (throttle units/s), ab, imp, h (engine health 0-1), comp, fcu, egtN}
 // returns the loads in "points of surge margin" and r = total / margin
-const K=ES.K={dk:.085,dexp:2.4,a0:18,a1:10,bk:.045,Tc:.12,Ti:.5,LK:3,R0:.62};   // tuning knobs for the stall model
+const K=ES.K={dk:.085,dexp:2.4,a0:18,a1:10,bk:.045,Tc:.12,Ti:.5,LK:3,R0:.62,FD:.30,FM:.12,FF:.7};   // tuning knobs for the stall model
 function loads(c,p){
   const ikE=Math.pow(p.ik,.8)*(.75+.5*p.ic);
   const aref=K.a0+K.a1*p.ic;
@@ -170,7 +170,9 @@ Jet.prototype.stallTick=function(dt){
   if(cs.st===0){
     cs.cool-=dt;if(cs.thr<1)cs.thr=Math.min(1,cs.thr+dt/2.2);
     if(cs.cool<=0&&this.n>.25&&this.fuel>0&&ES.stalls){
-      const lam=hazard(L.r)*ES.rate;
+      // FADEC / digital control (fc >= FF): the control schedules fuel, nozzle and stators around surge, so the onset moves out
+      // by FD and what is left is scaled by FM. Stalls then only come from real abuse (extreme AoA, ingestion, damage)
+      const fad=p.fc>=K.FF,lam=hazard(fad?L.r-K.FD:L.r)*ES.rate*(fad?K.FM:1);
       if(lam>0&&Math.random()<lam*dt)this.stallStart(causeOf(L));}
     return;}
   cs.t+=dt;

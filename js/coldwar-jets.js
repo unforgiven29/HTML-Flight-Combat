@@ -676,7 +676,7 @@ addJet({id:'F-104S',src:'F-4E',side:'BLUE',name:'F-104S Starfighter',call:'ZIPPE
 // ---- F-106A ----
 addJet({id:'F-106A',src:'F-4E',side:'BLUE',name:'F-106A Delta Dart',call:'SIX',nctr:'F-106',foe:'MiG-25',eng:'J75-P-17',rwr:'ALR-46',irstn:'MA-1 IR search set',dl:true,
   role:'USAF ADC · INTERCEPTOR · MA-1 / SAGE · AIM-4 FALCON · SIX SHOOTER',stall:{s:.3,twin:0},
-  ac:Object.assign({},imp,{name:'F-106A Delta Dart',model:makeF106,st:F106ST,empty:11077,fuel:4580,tank:1100,S:64.8,CLa:2.9,cd0:.0155,k:.21,mil:76500,ab:109000,spool:4.2,abLight:.9,
+  ac:Object.assign({},imp,{name:'F-106A Delta Dart',noHud:true,model:makeF106,st:F106ST,empty:11077,fuel:4580,tank:1100,S:64.8,CLa:2.9,cd0:.0155,k:.21,mil:76500,ab:109000,spool:4.2,abLight:.9,
     clt:clt(2.9,1.15,28,.0),cdm:sup(.024,.92),dW:15500,tkG:[4,5],dep:{a:30,rock:.8,spin:2.4},ff:[.2,1.9,7],gLim:7,aoaLim:26,roll:3.4,fbw:false,noLimiter:true,
     rcs:8,irs:1.3,pit:'phantom',eye:eyeOf(-6.2,.88),radar:R('MA-1',35*NM,[10,20,40,80],'NM',.35),irst:true,ols:{tail:18000,head:6000,lrf:0},pulse:true,
     gun:G_('M61A1 (Six Shooter)',100,1030,9,650,.0024),keepJ:[],rwr:'106',spo:4,tankName:'360 gal tank',mcap:2.3,vne:1350}),

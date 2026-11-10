@@ -1,5 +1,12 @@
 # Changelog
 
+## v265 — F-106A cockpit 1:1 with T.O. 1F-106A-1, no HUD, TSD, crash and FADEC-stall fixes
+- New `js/f106pit.js`: F-106A cockpit after T.O. 1F-106A-1 figure FO-1 (conventional instrument display) with both consoles (left 1-38, right 1-37). Radar scope on top, then ADI, HSI and the Tactical Situation Display down the centre; airspeed-AoA indicator (80-800 kt, rotating 0-100 kt scale, FINAL / MIN SAFE SPD AoA marks), Mach indicator (0.4-2.2, command Mach, striped max-allowable pointer), AAU-19/A altimeter (drums, Kollsman 28.1-31.0, STBY flag), VVI, EPR 1.2-3.4, tach, EGT, fuel flow, fuel quantity with selector, command/target altitude indicator, turn-and-slip, cabin altitude, accelerometer, standby attitude and compass, warning and gear lights.
+- No HUD in the F-106A: the HUD symbology and glass are gone. Only a small fixed optical-sight reticle remains (no data).
+- TSD (item 46): heading-up or north-up, 20/40/80/160 NM, own aircraft, TACAN station and runway, radar and data-link tracks with altitude and velocity vector, assigned-target lead steering line, bearing/range readout. The HSI has TAC / TGT / UHF / DL bearing pointer, NAV / DL / ILS / MAN lights, course arrow and CDI (5 deg per dot).
+- Flight model: stick authority above rated G cut from 1.62x to 1.3x (`STRUCT.pull`), below the 1.5x ultimate, and a wing needs `STRUCT.tear` = 0.35 s over ultimate (was 0.1 s), so a hard pull no longer folds a wing at once.
+- FADEC / digital engines (fuel-control class >= 0.7: F100/F110/F404/AL-41 etc.) now stall only rarely: surge onset is moved out by `ENGSYS.K.FD` and the rate scaled by `K.FM`; analog engines are unchanged.
+
 ## v264 — G-overstress, wing failure, leading-edge slats
 - New `js/structure.js`. Limit load = rated G for the current weight, stores, Mach and damage; ultimate = 1.5x (or the type's gUlt) with a per-airframe strength spread. Non-FBW jets (not the MiG-29 family's soft limiter) lose the rated-G cap for the player: full back stick commands more G than the structure holds. FBW jets keep their limiter and AI pilots never get the extra authority.
 - Above the limit load the airframe takes permanent deformation (wing health, fuel leak and the limit itself all fall); past ultimate for about 0.1 s a wing tears off. The wing is cut from the model and thrown away as burning debris, stores on it go with it, the jet rolls, and the second wing usually follows. Combat damage that takes a wing to 0 % separates it the same way.
