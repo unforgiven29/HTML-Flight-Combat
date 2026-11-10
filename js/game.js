@@ -58,7 +58,7 @@ const renderer=new THREE.WebGLRenderer({canvas:glc,antialias:true,powerPreferenc
 const gfx={mode:'AUTO',scale:1,cap:1.5,panelHz:30,panelT:1,acc:0,n:0,good:0,shadow:1024,panelK:0};
 try{const v=localStorage.getItem('viper.gfx');if(['AUTO','HIGH','LOW'].includes(v))gfx.mode=v;}catch(e){}
 // player settings (OPTIONS · SETTINGS), saved per browser; setApply() pushes them into the view, controls, sound and renderer
-const SET_DEF={fov:70,look:15,sens:1,inv:'0',kbd:'SMOOTH',curve:'SOFT',dz:.12,vol:80,eng:80,tone:75,skill:'1',geff:'FULL',calls:'ON',shadow:'ON',clouds:'FULL',fx:'FULL',fps:'OFF',labels:'OFF',hudlang:'RU'};
+const SET_DEF={fov:70,look:15,sens:1,inv:'0',kbd:'SMOOTH',curve:'SOFT',dz:.12,vol:80,eng:80,tone:75,skill:'1',geff:'FULL',struct:'REAL',calls:'ON',shadow:'ON',clouds:'FULL',fx:'FULL',fps:'OFF',labels:'OFF',hudlang:'RU'};
 const SET=Object.assign({},SET_DEF);
 try{const o=JSON.parse(localStorage.getItem('viper.set')||'null');if(o&&typeof o==='object')for(const k in SET_DEF)if(o[k]!=null&&typeof o[k]===typeof SET_DEF[k])SET[k]=o[k];}catch(e){}
 const setSave=()=>{try{localStorage.setItem('viper.set',JSON.stringify(SET));}catch(e){}};
@@ -736,7 +736,7 @@ class Jet{
     this.rr=lerp(this.rr,c.r*rMax*auth+rock+this.rBias()+this.spinDir*dp.spin*dep,1-Math.exp(-dt*7));
     const vw=this.ac.vstol&&this.vtHook?this.vtHook(dt,a,c,T,m,f,u,rt,V,pr,yr):null;if(vw)this.rr=vw.rr;
     this.nz=(a.dot(u)+G*u.y)/G;if(this===player)this.maxNz=Math.max(this.maxNz,this.nz);
-    if(this.nz>(ac.gUlt||9.6)){this.hp-=(this.nz-(ac.gUlt||9.6))*6*dt;if(this===player&&Math.random()<dt*2)flash('OVER-G',800);if(this.hp<=0){this.kill('AIRFRAME FAILURE');return;}}
+    if(!(window.STRUCT&&STRUCT.on)&&this.nz>(ac.gUlt||9.6)){this.hp-=(this.nz-(ac.gUlt||9.6))*6*dt;if(this===player&&Math.random()<dt*2)flash('OVER-G',800);if(this.hp<=0){this.kill('AIRFRAME FAILURE');return;}}
     if(this===player)this.gEffects(dt);
     this.vel.addScaledVector(a,dt);this.pos.addScaledVector(this.vel,dt);
     _w.set(vw?vw.pr:pr,-(vw?vw.yr:yr),0);const wl=_w.length();if(wl>1e-6){_dq.setFromAxisAngle(_w.divideScalar(wl),wl*dt);this.q.multiply(_dq);}

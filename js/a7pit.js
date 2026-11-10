@@ -151,7 +151,7 @@ const F={
    T(c,'LOX',S*.3,S*.86,S*.06);T(c,'IND TEST',S*.3,S*.94,S*.05);},
  small:(kind)=>(c,P)=>{const S=c.canvas.width;c.setTransform(1,0,0,1,0,0);c.fillStyle='#111';c.fillRect(0,0,S,S);
    if(kind==='gear'){const tr=P.gearPos!=null&&P.gearPos>.05&&P.gearPos<.95;if(tr)barber(c,S/2,S/2,S*.45);else if(gearDn()&&P.gearPos>.9){c.fillStyle='#ddd';c.beginPath();c.arc(S/2,S/2,S*.42,0,7);c.fill();c.fillStyle='#111';c.beginPath();c.arc(S/2,S/2,S*.18,0,7);c.fill();}else T(c,'UP',S/2,S/2,S*.38,'#fff');}
-   else if(kind==='le'){const dn=(P.flapPos||P.flapCmd||0)>.1||(P.alpha||0)*R2D>9;T(c,dn?'DN':'UP',S/2,S/2,S*.38,'#fff');}
+   else if(kind==='le'){const dn0=(P.flapPos||P.flapCmd||0)>.1||(P.alpha||0)*R2D>9,dn=window.STRUCT?STRUCT.slatOut(P,dn0):dn0;T(c,dn?'DN':'UP',S/2,S/2,S*.38,'#fff');}
    else if(kind==='ptrim'||kind==='rtrim'){c.strokeStyle=INK;c.lineWidth=2;const v=kind==='ptrim'?clamp(P._trimP||0,-1,1):clamp(P.ctl?P.ctl.r||0:0,-1,1);
      if(kind==='ptrim'){for(let i=-4;i<=4;i++){c.beginPath();c.moveTo(S*.35,S/2+i*S*.1);c.lineTo(S*.6,S/2+i*S*.1);c.stroke();}c.fillStyle='#ffb21a';c.beginPath();c.moveTo(S*.65,S/2-v*S*.4);c.lineTo(S*.9,S/2-v*S*.4-10);c.lineTo(S*.9,S/2-v*S*.4+10);c.fill();T(c,'NOSE',S*.17,S*.12,S*.11,DIM);T(c,'DN',S*.17,S*.88,S*.12,DIM);}
      else{for(let i=-4;i<=4;i++){c.beginPath();c.moveTo(S/2+i*S*.1,S*.35);c.lineTo(S/2+i*S*.1,S*.6);c.stroke();}c.fillStyle='#ffb21a';c.beginPath();c.moveTo(S/2+v*S*.4,S*.65);c.lineTo(S/2+v*S*.4-10,S*.9);c.lineTo(S/2+v*S*.4+10,S*.9);c.fill();T(c,'L   ROLL   R',S/2,S*.15,S*.1,DIM);}}}};
