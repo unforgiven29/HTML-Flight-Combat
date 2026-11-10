@@ -178,3 +178,19 @@ Every system below can be switched off from the console via `window.REALISM`, e.
 **BF radar detector** replaces the borrowed ALR-46: coarse quadrant bearings, weak identification, no launch warning.
 
 Not changed: cockpit layout, HUD/sight, outer model, Cyrano IV scope drawing (still the generic B-scope).
+
+## v237 — Cold War interceptor systems (`js/interceptors.js`)
+**MiG-19P · RP-5 Izumrud** (DCS MiG-19P manual / Chuck's guide, RP-1/RP-5 ground-check notes)
+- Search dish: two-way raster ±60° az, −10…+20° el, 1.33 s frame; one fixed 12 km display with 2 km lines; ~8–10 km detection on a fighter, weak look-down.
+- Tracking dish: lock only inside **4 km** and inside a **±7° cone** off the nose; the lock drops if the target leaves the cone or opens past 5 km.
+- The scope **goes blank on lock** (ЗАХВАТ shown); range is read from the sight.
+
+**F-106A · Hughes MA-1**
+- Non-Doppler: low targets hide in ground clutter (range falls to 30–65 % in look-down, worst when low).
+- **Trigger = fire consent.** With a lock and an AIM-4F / AIM-4G / Genie selected, the trigger arms the computer and the MA-1 fires the round itself when the solution is met (range window from closure, ≤10° off the nose; ≤4° for the Genie). Press again to withdraw consent.
+- **AIR-2A Genie** added in the centre of the bay (default load 2× AIM-4F, 2× AIM-4G, 1× Genie): unguided rocket, ~10 km, detonates within 300 m of any hostile.
+- Steering-dot attack display on the scope in STT (dot, shrinking range circle that flashes in range, closure, CONSENT).
+
+**Lightning F.6 · AI.23B Airpass**: head-down attack display in STT (steering dot, range circle, **A** when armed, attack square in range); weaker look-down.
+
+**J 35F**: Rb 28 is now contact-fuzed only (no proximity fuze); Rb 27 keeps its 9 m proximity fuze.
