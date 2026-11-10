@@ -250,3 +250,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Longerons lowered from a tall wall to a low sill so the console panels are no longer hidden from the seat.
 - Added a floor, fuselage side skin and kick board, and a backing behind the instrument lobes, so the ground no longer shows through the cockpit.
 - A-7D stick boot reduced to a realistic size.
+
+## v244
+- Generic Cold War cockpits: reflector gunsight glass enlarged and raised so the reticle sits inside it (it was clipped at the top edge); glass tint stronger; pipper and ring thicker with a brighter glow.
