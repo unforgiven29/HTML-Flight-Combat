@@ -350,7 +350,7 @@ function makeMirageF1(){return mkJet({c:0x8e9584,dk:0x646a5d,lt:0xabb2a1,rad:0x2
 
 // ---------- Dassault Mirage 2000C (RDI, S5; DCS manual / guide) ----------
 // SNECMA M53-P2 64.3 / 95.1 kN, empty 7,500 kg, 3,160 kg internal, 41 m² delta, quadruplex FBW (9 g, ~29° AoA limit), Thomson-CSF RDI pulse-doppler
-// (~45 NM, look-down), Super 530D / 530F on the inner wing stations, Magic 2 outboard, two DEFA 554 30 mm (125 rds), Spirale chaff / flares, Serval RWR, Sabre jammer.
+// (65 NM HFR vs 5 m², look-down to 30 m), Super 530D / 530F on the inner wing stations, Magic 2 outboard, two DEFA 554 30 mm (125 rds), Spirale chaff / flares, Serval RWR, Sabre jammer.
 const M2KST={1:[-3.45,-.4,2.4],2:[-2.35,-.45,1.6],3:[-.75,-.95,-1.2],4:[-.75,-.95,1.8],C:[0,-1.02,.4],6:[.75,-.95,1.8],7:[.75,-.95,-1.2],8:[2.35,-.45,1.6],9:[3.45,-.4,2.4]};
 function makeMirage2000(){return mkJet({c:0x8e979e,dk:0x646c72,lt:0xadb5bb,rad:0x2d3236,st:M2KST,wy:()=>-.25,
   body:[[-7.3,.02,.05,.02,2],[-6.6,.26,.06,.28,2],[-5.4,.5,.12,.54,2.1],[-3.8,.64,.2,.72,2.3],[-1.5,.78,.1,.78,2.5],[1.5,.8,.05,.74,2.6],[4.5,.66,.05,.62,2.3],[6.6,.55,.05,.55,2.1]],
@@ -829,19 +829,30 @@ addJet({id:'Mirage F1',src:'F-4E',side:'BLUE',name:'Mirage F1C',call:'MIRAGE',nc
   camp:{cold:{0:['CAP','INT','ESC']}}});
 
 // ---- Mirage 2000C ----
-addJet({id:'Mirage 2000',src:'F-16',side:'BLUE',name:'Mirage 2000C',call:'MIRAGE',nctr:'MIRAGE 2000',foe:'MiG-29',eng:'M53-P2',rwr:'ALR-69',ccip:true,
+// v234: RAZBAM DCS M-2000C flight manual + Chuck's guide. RDI 65 NM vs 5 m² (HFR), 3° beam, ±60° az / ±55° el gimbal; Serval RWR, Sabre jammer,
+// Spirale 112 chaff / 16 flares; RP-541 1,700 l wing tanks (1,580 kg), RP-522 1,300 l centreline (995 kg); DEFA 554 1,800 rpm each, 125 rds.
+// Stores per the DCS 2000C: Magic outboard (1/9), Super 530 inboard wing (2/8), bombs on the wing roots and fuselage. 530D-with-A/G and mixed-A/G
+// loads are refused in js/m2000c.js (targeting-computer restriction, CG §1.2).
+if(AGW['Mk-82AIR']&&!AGW['Mk-82SE']){AGW['Mk-82SE']=Object.assign({},AGW['Mk-82AIR']);SN['Mk-82SE']='MK82S';STORE_NAME['Mk-82SE']='Mk 82 Snakeye · fin-retarded, 500 lb';}
+if(AGW['GBU-12']&&!AGW['GBU-16']){AGW['GBU-16']=Object.assign({},AGW['GBU-12'],{mass:476,L:3.7,R:.178,soft:60,hard:14});SN['GBU-16']='GBU16';STORE_NAME['GBU-16']='GBU-16 Paveway II · laser, 1,000 lb';}
+if(AGW['Matra F1']&&!AGW['Matra F4']){AGW['Matra F4']=Object.assign({},AGW['Matra F1'],{cap:18,mass:180,L:2.2,R:.2});SN['Matra F4']='SNEB';STORE_NAME['Matra F4']='Matra F4 · 18 SNEB 68 mm';}
+{const M2K_FUS=['Mk-82','Mk-82SE','Mk-82AIR','SAMP 250','Belouga','GBU-12'];
+addJet({id:'Mirage 2000',src:'F-16',side:'BLUE',name:'Mirage 2000C',call:'MIRAGE',nctr:'MIRAGE 2000',foe:'MiG-29',eng:'M53-P2',rwr:'Serval',ccip:true,
   role:'FRANCE · FBW DELTA · RDI · SUPER 530D · MAGIC 2 · 2× DEFA 554',stall:{s:.1,twin:0},
   ecm:{cold:{n:'Sabre',jp:1,dec:.6,kg:0,cd:0,warm:20},modern:{n:'Sabre',jp:1.2,dec:.66,kg:0,cd:0,warm:20}},
-  ac:{name:'Mirage 2000C',model:makeMirage2000,st:M2KST,empty:7500,fuel:3160,tank:1350,ptb:1050,S:41,CLa:3.0,cd0:.016,k:.18,mil:64300,ab:95100,spool:2.2,abLight:.6,
+  ac:{name:'Mirage 2000C',model:makeMirage2000,st:M2KST,empty:7500,fuel:3160,tank:1580,ptb:995,S:41,CLa:3.0,cd0:.016,k:.18,mil:64300,ab:95100,spool:2.2,abLight:.6,
     clt:clt(3.0,1.45,32,.02),cdm:sup(.025,.9),dW:10500,tkG:[5.5,7],dep:{a:36,rock:.6,spin:2.0},ff:[.15,1.4,6.8],gLim:9,aoaLim:29,roll:4.8,fbw:true,
-    rcs:2.5,irs:1.1,eye:eyeOf(-4.3,.72),radar:R('RDI',45*NM,[10,20,40,80],'NM',.55),irst:false,pulse:false,
-    gun:G_('2× DEFA 554',60,800,26,250,.0028),keepJ:['1','9'],rwr:'M2',spo:4,tankName:'1,700 l tank',mcap:2.2},
-  stn:{1:['Magic 2','Magic 1'],9:['Magic 2','Magic 1'],2:['Super 530D','Super 530F','TK','SAMP 250','GBU-12','Belouga'],8:['Super 530D','Super 530F','TK','SAMP 250','GBU-12','Belouga'],
-       3:['SAMP 250','Mk-82','Belouga'],7:['SAMP 250','Mk-82','Belouga'],4:['SAMP 250','Mk-82','Belouga'],6:['SAMP 250','Mk-82','Belouga'],C:['PTB','SAMP 400','GBU-12']},
-  load:{cold:{1:'Magic 2',9:'Magic 2',2:'Super 530F',8:'Super 530F',C:'PTB'},modern:{1:'Magic 2',9:'Magic 2',2:'Super 530D',8:'Super 530D',C:'PTB'},strike:{1:'Magic 2',9:'Magic 2',3:'SAMP 250',7:'SAMP 250',4:'SAMP 250',6:'SAMP 250',C:'PTB'}},
-  cms:{cold:[112,32],modern:[112,32]},
+    rcs:2.5,irs:1.1,eye:eyeOf(-4.3,.72),radar:R('RDI',65*NM,[10,20,40,80],'NM',.55,{beam:3*D}),irst:false,pulse:false,
+    gun:G_('2× DEFA 554',60,800,26,250,.0028),keepJ:['1','9'],rwr:'M2',spo:4,tankName:'RP-541 1,700 l tank',mcap:2.2,rel:[2,8,4,6,3,7,'C',1,9]},
+  stn:{1:['Magic 2','Magic 1'],9:['Magic 2','Magic 1'],
+       2:['Super 530D','Super 530F','TK','Mk-82','Mk-82SE','SAMP 250','Belouga','GBU-12','GBU-16','Matra F4'],8:['Super 530D','Super 530F','TK','Mk-82','Mk-82SE','SAMP 250','Belouga','GBU-12','GBU-16','Matra F4'],
+       3:M2K_FUS,7:M2K_FUS,4:M2K_FUS,6:M2K_FUS,C:['PTB','Mk-82','Mk-82SE','SAMP 250','SAMP 400','Belouga','GBU-12','GBU-16','GBU-24']},
+  load:{cold:{1:'Magic 2',9:'Magic 2',2:'Super 530F',8:'Super 530F',C:'PTB'},modern:{1:'Magic 2',9:'Magic 2',2:'Super 530D',8:'Super 530D',C:'PTB'},
+        strike:{1:'Magic 2',9:'Magic 2',3:'Mk-82',7:'Mk-82',4:'Mk-82',6:'Mk-82',2:'TK',8:'TK'}},
+  cms:{cold:[112,16],modern:[112,16]},
   fv:{hw:4.6,y1:4.0,span:'9.13 m',fus:[.8,.78,.05],wing:[-.22,-.22,.75],eng:[[.78,.05,.2]],engSy:2.3,can:[.72,.4,.44],nose:[.05,.3],fins:[[0,.75,4.0]]},
   camp:{cold:{0:['CAP','ESC','INT']},modern:{0:['CAP','ESC']}}});
+}// rel: bomb release order from the PPA (FM p.132), outboard pairs inward, centreline last
 
 // ---- Jaguar A ----
 addJet({id:'Jaguar',src:'F-4E',side:'BLUE',name:'Jaguar A',call:'JAGUAR',nctr:'JAGUAR',foe:'MiG-21',eng:'2× Adour Mk 102',rwr:'ALR-46',ccip:true,

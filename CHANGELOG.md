@@ -112,3 +112,18 @@ Each has its own flight data (thrust, weights, fuel, wing, limits), radar or ran
 - **Cockpits are borrowed** (not built yet): Phantom pit for most older Western jets, F-16A pit for F-20 / AMX / Mirage 2000, Hornet pit for AV-8B, MiG-21 pit for Su-25 / MiG-15 / MiG-19 / Yak-38, MiG-23 pit for Su-24M / Su-22M4 / MiG-27K / J-8F / JH-7, MiG-29 pit for Yak-141, Su-27 pit for J-11. MiG-21/23-pit jets show the SPO-10 in the player cockpit.
 - Fix: `flPaint` (MiG-23 scope / HUD clutter) crashed when a clutter level came out NaN.
 - Docs note: `Lightning F.6/manuals` contains the F-111F flight manual, not a Lightning one.
+
+## v234 — Mirage 2000C from the DCS M-2000C flight manual and Chuck's guide
+- **RDI radar:** 65 NM against a 5 m² target in HFR, 3° beam, ±60° azimuth / ±55° elevation gimbal. Azimuth scans are ±60 / 30 / 15°; the antenna sweeps at 100°/s on ±60 and 50°/s on the narrower scans.
+- **PRF key:** cycles through the three RDI PRFs:
+  - **HFR:** 65 NM search, 50 NM lock, weak against tail-aspect targets.
+  - **ENT (interleaved):** 45 NM search, 20 NM lock.
+  - **BFR:** 25 NM, no lock, blind when looking down.
+  - ACM auto-acquisition always uses HFR.
+- **PPA missile preparation:** Super 530D takes 45 s and Magic II takes 30 s. Both are pre-prepped on air starts. The Magic has 90 min of seeker coolant.
+- **Trigger delays:** Magic 0.5 s. Super 530D 0.8 s from STT and 1.0 s from TWS (the radar goes to STT first).
+- **Loadouts (CG §1.2):** the Super 530D cannot be loaded with air-to-ground stores, and different air-to-ground stores cannot be mixed. Bombs release in the PPA order 2, 8, 4, 6, 3, 7, C.
+- **Stores:** Mk-82 / Mk-82SE / Mk-82AIR / SAMP 250 / Belouga / GBU-12 on the fuselage. GBU-16, Matra F4 (18 SNEB) and RP-541 tanks on the inner wing. GBU-24 / SAMP 400 / RP-522 on the centreline.
+- **Fuel and countermeasures:** RP-541 wing tank 1,580 kg, RP-522 centreline tank 995 kg. Spirale 112 chaff / 16 flares.
+- **RWR:** renamed Serval (receiver model still borrowed from the ALR-69).
+- New file `js/m2000c.js`.
