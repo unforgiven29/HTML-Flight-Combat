@@ -1059,7 +1059,7 @@ class Missile{
       const mp=clamp(1-agl/220,0,1)*clamp(1-graze/(14*D2R),0,1);
       if(mp>0){this.mpPh=(this.mpPh||rnd(0,6))+dt*rnd(3,7);P.y-=agl*mp*(.55+.6*Math.sin(this.mpPh));P.x+=Math.sin(this.mpPh*1.7)*14*mp;P.z+=Math.cos(this.mpPh*1.3)*14*mp;}}
     // poor seekers (AIM-4 Falcon): the aim point wanders around the target, scaled with range, so the round often misses
-    if(P&&d.wob){this.wbPh=(this.wbPh||rnd(0,6))+dt*rnd(2,5);const rr=this.pos.distanceTo(P),w=Math.min(60,6+rr*.012);P.x+=Math.sin(this.wbPh*1.3)*w;P.y+=Math.cos(this.wbPh*.9)*w*.7;P.z+=Math.sin(this.wbPh*1.9+1)*w;}
+    if(P&&d.wob){this.wbPh=(this.wbPh||rnd(0,6))+dt*rnd(2,5);const rr=this.pos.distanceTo(P),w=Math.min(30,4+rr*.006);P.x+=Math.sin(this.wbPh*1.3)*w;P.y+=Math.cos(this.wbPh*.9)*w*.7;P.z+=Math.sin(this.wbPh*1.9+1)*w;}
     // seeker gimbal-rate limit: a line-of-sight rate above the head's tracking rate for a quarter second breaks the track
     if(P&&(this.track||d.seek==='SARH')&&(this.active||d.seek==='SARH')){const r=_mr.copy(P).sub(this.pos),vr=_mvr.copy(Vt).sub(this.vel),lr=_mtmp.copy(r).cross(vr).length()/Math.max(r.lengthSq(),1);
       this.slip=lr>d.trk?(this.slip||0)+dt:Math.max(0,(this.slip||0)-dt*2);
