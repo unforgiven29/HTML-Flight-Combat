@@ -1,5 +1,9 @@
 # Changelog
 
+## v268 — Sensor suite parameter registry v3.0.0
+- New `docs/sensor_suite_v3.txt`: the full radar / IRST / pulse radar / realism parameter registry (56 sections, 2,047 parameters): 01-19 radar, 20-29 IRST, passive ranging and radar+IRST fusion, 30-38 pulse radar, 39-56 realism physics (link budget, arrays, propagation, RCS, micro-Doppler, signal processing, INS, tracking, jamming, ESM, IFF, radiometry, environment, scheduling, SAR/GMTI, datalink, human factors, reliability).
+- New `js/sensorreg.js` (generated from the doc), loaded in `index.html`: `SENSOR_REG.sections`, `SENSOR_REG.create(ids?)` for a typed default state object, `createBySection(ids?)`, `lookup(name)` and `curve(table, x)`.
+
 ## v265 — F-106A cockpit 1:1 with T.O. 1F-106A-1, no HUD, TSD, crash and FADEC-stall fixes
 - New `js/f106pit.js`: F-106A cockpit after T.O. 1F-106A-1 figure FO-1 (conventional instrument display) with both consoles (left 1-38, right 1-37). Radar scope on top, then ADI, HSI and the Tactical Situation Display down the centre; airspeed-AoA indicator (80-800 kt, rotating 0-100 kt scale, FINAL / MIN SAFE SPD AoA marks), Mach indicator (0.4-2.2, command Mach, striped max-allowable pointer), AAU-19/A altimeter (drums, Kollsman 28.1-31.0, STBY flag), VVI, EPR 1.2-3.4, tach, EGT, fuel flow, fuel quantity with selector, command/target altitude indicator, turn-and-slip, cabin altitude, accelerometer, standby attitude and compass, warning and gear lights.
 - No HUD in the F-106A: the HUD symbology and glass are gone. Only a small fixed optical-sight reticle remains (no data).
