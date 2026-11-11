@@ -1,5 +1,23 @@
 # Changelog
 
+## v281 — F-111F gun, no radar picture on strike HUDs, MiG-27K TV weapons slaved to the Kaira head, J-11 / J-8F
+- F-111F has the M61A1 in the weapons bay (1,000 rounds).
+- Su-24M, Su-22M4, MiG-27K and JH-7: the HUD no longer draws the radar picture (range scale, scan box and strobe, ACM cues, lock box and the NO LOCK cue). Their air-to-air sets are ranging / ground modes only.
+- MiG-27K: no radar information on the HUD. Kh-29T / TD / L and KAB-500Kr seekers are slaved to the Kaira-23 TV head, so the TV picture and the weapon look at the same point (СЛЕЖ shows on the screen); the seeker's reach is the head's gimbal (about 20 deg). Fixed: the Kaira elevation was inverted, so slewing up looked down.
+- J-11 uses the Su-27 cockpit (its separate MiG-23-style panel is gone).
+- J-8F keeps its own cockpit but gets the Su-27 style HUD and radar picture.
+- Checked in a browser: the pod slew direction of the common targeting pod (I = further out) was already correct; only the Kaira head was inverted.
+
+## v280 — ACM reachable again on pulse-radar jets; Mirage 2000 DDM SAMIR is a pod
+- Fixed: jets with pulse radars and no TWS (F-4E and the like) could not reach their ACM modes with the radar-mode key, because the cycle went RWS -> TWS and TWS is refused on a pulse set. RWS now goes straight to ACM, then 30x20 -> VERT -> BORE -> RWS.
+- The Mirage 2000 DDM SAMIR missile-approach warner is now a pod store on its own pseudo-stations 1P / 9P at the Magic II wingtip pylons, so it is carried alongside the Magic 2 / Magic 1 rails, not instead of them. The warner works while a pod is loaded; without one the Mirage has no MAWS. Default loads carry both pods. Pod weight (14 kg), size and signature are estimates.
+
+## v279 — the Su-27 family's L-005S jammer is a real pod store
+- `L-005S` Sorbtsiya-S is now a station store like the ALQ-131: load it on the wingtip stations 1 and 10 (in place of the R-73s). It has weight (45 kg each), drag, a visible pod mesh on the wingtip and an entry in the loadout lists under PODS. Applies to Su-27, Su-27SM, Su-33, Su-30SM, Su-35S, Su-30MK2 and J-11. The old rule "jammer only while both wingtip rails are empty" is gone; the jammer works while at least one pod is loaded, and one pod radiates half the power of two (burn-through x1.41). ECM description and the ECM panels say how many pods are fitted, or where to load them.
+- Default loadouts still carry R-73s on the wingtips, so nothing changes until you swap them (AI Russian jets therefore still do not jam).
+- Fixed: jammer and ELINT pods (ALQ-119 / 131 / 184, Sky Shadow, L-080) had no radar signature entry, so a jet carrying one got an RCS of NaN. They now have one (0.35 m2; L-005S 0.12 m2).
+- Pod size, weight and signature are gameplay estimates.
+
 ## v278 — jamming on the radar equation: escort / stand-off noise, sidelobes, aspect, spot vs barrage, band
 - New `js/jamming.js`. Until now a jammer only hid its own aircraft, with one fixed burn-through range. Burn-through now comes from the radar equation with real geometry: a target is hidden while `R^4 * (E_self/R^2 + sum E_j * g(theta_j) / R_j^2) > sigma * K`, where `g` is the radar's receive pattern toward each other jammer (Gaussian main lobe plus a sidelobe floor, minus sidelobe blanking / cancelling) and `K` is the old calibration, so a lone jammer, nose-on, against an average radar gives exactly the old range. The result goes out through `jamOf()` / `jamOfMsl()`, so the player's radar, AI radars, GCI / AWACS scans, the DL wingman picture and the SAM radars all use it.
 - Escort and stand-off jamming: a jamming wingman inside the radar beam hides the formation (test: F-15C 0.9 km off a MiG-29 at 45 km, the MiG is tracked 39 of 47 samples with the layer off, 0 with it on). A strong jammer close to the radar masks targets far off the beam through the sidelobes: with a jammer 6 km away and 30 degrees off the beam, a target at 50 km is hidden for the RP-22SM (burn-through 28 km) and not for the APQ-120 (51 km), N019 (81 km), APG-66 (100 km), AWG-9 (192 km) or APG-79 (497 km). Several jammers add in power. A jammer behind a ridge from the radar adds nothing (line of sight, cached 0.5 s).
