@@ -17,15 +17,23 @@ Object.assign(AGW,{
   'ALQ-131':{k:'ecm',mass:300,L:2.8,R:.21,col:0x8a9096},
   'ALQ-184':{k:'ecm',mass:260,L:3.95,R:.2,col:0x8a9096},
   'Sky Shadow':{k:'ecm',mass:250,L:3.4,R:.2,col:0x6c766c},
+  // L-005S Sorbtsiya-S: one pod on each wingtip rail (stations 1 and 10), in place of the R-73s. Size and weight are gameplay estimates.
+  'L-005S':{k:'ecm',mass:45,L:2.9,R:.1,col:0x7d857a},
   'L-080':{k:'hts',mass:300,L:3.6,R:.19,col:0x7f8a86}});
-Object.assign(SN,{'ALQ-119':'Q119','ALQ-131':'Q131','ALQ-184':'Q184','Sky Shadow':'SKYSH','L-080':'L080'});
+// the signature table in game.js was filled before these stores existed, so without this the jet's RCS (own RCS + stores) came out NaN with a pod loaded
+for(const k of['ALQ-119','ALQ-131','ALQ-184','Sky Shadow','L-005S','L-080']){const a=AGW[k];if(a&&a.rcs==null){a.rcs=k==='L-005S'?.12:.35;a.irsB=a.irsC=.02;}}
+Object.assign(SN,{'ALQ-119':'Q119','ALQ-131':'Q131','ALQ-184':'Q184','Sky Shadow':'SKYSH','L-005S':'L005S','L-080':'L080'});
 Object.assign(STORE_NAME,{'ALQ-119':'AN/ALQ-119(V) jammer pod','ALQ-131':'AN/ALQ-131(V) jammer pod','ALQ-184':'AN/ALQ-184(V) jammer pod',
-  'Sky Shadow':'Sky Shadow jammer pod','L-080':'L-080 Fantasmagoria ELINT pod'});
+  'Sky Shadow':'Sky Shadow jammer pod','L-005S':'L-005S Sorbtsiya-S jammer pod (wingtip)','L-080':'L-080 Fantasmagoria ELINT pod'});
 try{MODERN_ONLY.add('ALQ-184');}catch(e){}
 // jets whose jammer is a pod: type -> {era: pod}; preferred stations (left side first)
 const POD={'F-16':{cold:'ALQ-131',modern:'ALQ-184',st:['5']},'F-16C':{cold:'ALQ-131',modern:'ALQ-184',st:['5']},
   'F-4E':{cold:'ALQ-119',modern:'ALQ-131',st:['3']},'A-7D':{cold:'ALQ-119',modern:'ALQ-131',st:['8','1']},
   'Tornado GR.4':{cold:'Sky Shadow',modern:'Sky Shadow',st:['1','9']}};
+// Su-27 family: the jammer is the pair of L-005S wingtip pods, loaded on stations 1 / 10 instead of the R-73s; weight and drag come from the stores
+for(const t of['Su-27','Su-27SM','Su-33','Su-30SM','Su-35S','Su-30MK2','J-11']){const S=STN[t];if(!S)continue;
+  for(const k of['1','10'])if(Array.isArray(S[k]))S[k]=[...new Set([...S[k],'L-005S'])];
+  for(const era of['cold','modern']){const f=ECM_FIT[t]&&ECM_FIT[t][era];if(f){f.kg=0;f.cd=0;f.pod='L-005S';}}}
 const PODN=new Set(Object.keys(AGW).filter(k=>AGW[k].k==='ecm'));
 // station geometry for the new pylons
 try{if(typeof F16ST!=='undefined'&&!F16ST[5])F16ST[5]=[0,-.92,.9];}catch(e){}

@@ -588,15 +588,17 @@ const ECM_MODES=['OFF','STBY','AUTO','NOISE','DECM'];
 const BT0=18000,BT_REF=42*NM,BTM0=3200;
 const ecmFit=(type,era)=>{const t=ECM_FIT[type];return t?t[era]||t.cold:null;};
 // the wingtip pods only fit with both wingtip rails empty
-const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.tips||(!j.load['1']&&!j.load['10']))&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s]&&AGW[s].k==='ecm'));// v233: pod jammers need their pod on a station
+const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s]&&AGW[s].k==='ecm'));// v233: pod jammers need their pod on a station
 // Burn-through. A jammer's power at the radar falls with R^2 (one way) while the radar's own skin echo falls with R^4 (there and back), so inside
 // R_bt = k * sqrt(P_radar * RCS / ERP_jammer) the target shows through the noise. For a given receiver P_radar scales with R0^4, so R_bt scales with R0^2.
 // Deception needs far less J/S than noise, but the true skin echo beats it inside roughly half the noise burn-through range.
-function jamOf(tg,rd){const e=tg.ecm;if(!e||!e.on||!rd)return null;const f=e.fit,r=rd.R0/BT_REF,bt=BT0*r*r*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(f.jp),ecc=rd.ecc==null?.5:rd.ecc;
+// the Su-27's L-005S is a pair of wingtip pods: one pod radiates half the power
+const jpOf=(tg,f)=>f.tips?f.jp*Math.max(.05,((tg.load['1']==='L-005S')+(tg.load['10']==='L-005S'))/2):f.jp;
+function jamOf(tg,rd){const e=tg.ecm;if(!e||!e.on||!rd)return null;const f=e.fit,r=rd.R0/BT_REF,bt=BT0*r*r*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(jpOf(tg,f)),ecc=rd.ecc==null?.5:rd.ecc;
   return{noise:e.tech==='NOISE',dec:e.tech==='DECM',bt,btD:bt*.45,rate:f.dec*(1-ecc)*.28};}
 // A missile seeker is only a few km away but has a small aperture and little power: its burn-through is short, and shorter again against deception.
 function jamOfMsl(tg,d,pos){const e=tg.ecm;if(!e||!e.on)return null;const f=e.fit,r=pos.distanceTo(tg.pos),
-    bt=clamp(BTM0*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(f.jp)*(d.seek==='SARH'?.85:1),1200,6500);
+    bt=clamp(BTM0*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(jpOf(tg,f))*(d.seek==='SARH'?.85:1),1200,6500);
   return{noise:e.tech==='NOISE',dec:e.tech==='DECM',bt,far:r>bt,farD:r>bt*.5,pk:f.dec*(1-(d.ecc||.4))*.12};}
 // is a hostile radar tracking the player, or a radar missile guiding on him (what an AUTO jammer reacts to)
 function ecmThreat(j){if(j!==player)return false;for(const o of jets)if(o!==j&&o.alive&&o.ai&&!o.ai.friend&&o.ai.radarLock&&o.ai.t===j)return true;
@@ -614,7 +616,7 @@ function cycleECM(){const P=player;if(!P||!P.alive)return;const e=P.ecm;
   e.mode=(e.mode+1)%5;sfx.click();flash('ECM '+ECM_MODES[e.mode]+(e.mode&&e.warm>0?' · WARM-UP '+Math.ceil(e.warm):''),1300);}
 const ecmTxt=P=>{const e=P&&P.ecm;if(!e||!ecmFitted(P))return'';return e.mode===0?'OFF':e.warm>0?'WARM '+Math.ceil(e.warm):ECM_MODES[e.mode]+(e.on?' XMIT':'');};
 function ecmDesc(ac,era,l){const f=ecmFit(ac,era);if(!f)return'none (RWR, chaff and flares only)';
-  if(f.tips&&(l['1']||l['10']))return'none while the wingtip rails are loaded (clear stations 1 and 10 to fit the '+f.n+' pods)';
+  if(f.tips){const n=(l['1']==='L-005S')+(l['10']==='L-005S');return n?f.n+' · '+n+(n>1?' wingtip pods':' wingtip pod'):'none loaded (put '+f.n+' pods on stations 1 and 10 in place of the R-73s)';}
   return f.n+(f.tips?' pods on the wingtips':f.kg?' pod':' internal');}
 
 /* ============ particles ============ */
