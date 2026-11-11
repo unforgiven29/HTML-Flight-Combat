@@ -56,9 +56,9 @@ function linkTerm(r){const lam=C/(r.carrierFrequencyGHz*1e9),A=Math.PI*Math.pow(
 
 /* ---- the player's registry state ---- */
 const F=window.SENSOR_FUSE={on:true,reg:null,base:null,kLB:1,kBeam:1,spec:HW,binds:[]};
-const SECTIONS=[1,2,3,4,5,7,8,9,10,11,12,17,20,21,23,25,30,39,52];
+const SECTIONS=null;// every section is seeded; enums get their first listed option unless a profile sets one
 
-function seed(j){const a=j.ac,rd=a.radar||{},h=hwOf(rd.name),r=SENSOR_REG.create(SECTIONS);
+function seed(j){const a=j.ac,rd=a.radar||{},h=hwOf(rd.name),r=SENSOR_REG.create(SECTIONS);for(const k in r){const o=SENSOR_REG.enumOptions(k);if(o)r[k]=o[0];}
   const [ant,ghz,D,Pt,pl,pm,ph,nf,bw,loss,watts,warm,gaz,gel]=h,pulse=!!a.pulse,esa=rd.aesa?'AESA':rd.pesa?'PESA':ant;
   Object.assign(r,{radarID:(rd.name||'RADAR').replace(/[^A-Za-z0-9]/g,'_'),radarModelName:rd.name||'',ownerEntityID:j.id||0,radarFaction:j.side==='red'||j.team===1?'Red':'Blue',
     radarPowerState:'Operate',warmupDuration:warm,radarHealth:1,radarFailureMode:'None',radarFailureChancePerSecond:1/(esa==='AESA'?1500:pulse?150:350)/3600,
@@ -80,6 +80,7 @@ function seed(j){const a=j.ac,rd=a.radar||{},h=hwOf(rd.name),r=SENSOR_REG.create
     pulseRadarEnabled:pulse,rmInterleaveEnabled:esa!=='Mechanical_Slotted_Planar',rmTimelineFrameMs:esa==='AESA'?200:esa==='PESA'?400:0});
   if(a.ols||a.irst){const o=a.ols||{};Object.assign(r,{irstID:(o.name||'IRST'),irstModelName:o.name||'IRST',irstOwnerEntityID:j.id||0,irstPowerState:'Operate',irstCooledDetector:true,
     irstEmitsNothing:true,irstHealth:1,irstSpectralBand:'MWIR',irstBandCenterMicrons:4,irstDetectionRangeRearM:o.tail||0,irstDetectionRangeFrontM:o.head||0,irstLrfRangeM:o.lrf||0});}
+  if(F.onSeed)for(const fn of F.onSeed)try{fn(r,j);}catch(e){console.warn('[sensorfuse] seed',e);}
   return r;}
 
 /* ---- two-way bindings: [registry name, read from sim, write to sim] — a registry value that differs from what was last
@@ -156,10 +157,10 @@ function tick(dt){const P=player;if(!F.on||!P||!P.alive)return;
   iT-=dt;if(iT<=0){iT=.5+Math.random()*1.5;intermit=r.radarFailureMode==='Intermittent'?Math.random()>.35:1;}
   // EMCON
   rTime+=dt;if(r.emconState==='Burst_Only'){burst=(rTime%Math.max(2.5,r.emconBurstIntervalSeconds))<2;}else burst=r.emconState!=='Silent';
-  F.radiating=burst&&intermit&&r.radarFailureMode!=='Dead'&&r.electricalBusAvailable&&radar.power==='ON'&&radar.warm<=0;
+  F.radiating=burst&&intermit&&!(F._arc>0)&&r.radarFailureMode!=='Dead'&&r.electricalBusAvailable&&radar.power==='ON'&&radar.warm<=0;
   // link-budget scale and beamwidth relative to the spawn values (no change = published ranges)
   F.kLB=Math.pow(lb.s1/F.base,.25);F.kBeam=(70*lb.lam/r.antennaDiameterMeters)/F.bw0;radar.beam=F.beam0*F.kBeam;
-  derive(r,lb);syncOut(r);
+  derive(r,lb);syncOut(r);runMods(r,dt);
   if(!r.electricalBusAvailable||r.radarFailureMode==='Dead')r.radarPowerState=last.radarPowerState='Emergency';
   // mirrors from the track / lock state
   const L=radar.lock,now=performance.now()/1000;r.lockedTargetEntityID=L?L.id||0:0;
@@ -197,9 +198,20 @@ const horizon=(h1,h2)=>4120*(Math.sqrt(Math.max(h1,0))+Math.sqrt(Math.max(h2,0))
   const hm=(player.pos.y+j.pos.y)/2,dens=Math.exp(-hm/8000);s*=Math.pow(10,-(r.atmosphericLossDbPerKm*dens)*a.d/1000/10);return s;};}
 F.horizon=horizon;
 
+/* ---- per-section modules (js/sensor*.js): F.mod(id, hz, fn(r, c, dt)); c = frame context ---- */
+F.mods=[];F.mod=function(id,hz,fn){F.mods.push({id:id,hz:hz,fn:fn,acc:Math.random()/hz});};
+F.Q=new Proxy({},{get:function(_,k){return F.reg?F.reg[k]:undefined;}});// read-only view for the hooks that act on the sim
+F.debug=false;
+function ctx(dt,r){const P=player,now=performance.now()/1000,L=radar.lock&&radar.lock.alive?radar.lock:null;
+  let pt=L||(radar.bug&&radar.bug.alive?radar.bug:null),tk=pt?radar.tracks.get(pt):null;
+  if(!tk){let bd=1e18;for(const [j,t] of radar.tracks)if(j.alive&&t.d<bd){bd=t.d;pt=j;tk=t;}}
+  const agl=typeof groundAt==='function'?P.pos.y-groundAt(P.pos.x,P.pos.z):P.pos.y;
+  return{P:P,L:L,now:now,dt:dt,pt:tk?pt:null,tk:tk||null,agl:agl,alt:P.pos.y,spd:P.vel?P.vel.length():0,mach:P.mach||0,ias:(P.cas||0)*.5144,pulse:!!P.ac.pulse,irst:radar.sensor==='IRST',rdr:radar.sensor==='RDR'};}
+function runMods(r,dt){const c=ctx(dt,r);for(const m of F.mods){m.acc+=dt;if(m.acc<1/m.hz)continue;const d=m.acc;m.acc=0;c.dt=d;try{m.fn(r,c,d);}catch(e){if(F.debug)console.warn('[sensor '+m.id+']',e);}}}
+
 /* ---- public helpers ---- */
 F.get=k=>F.reg?F.reg[k]:undefined;
-F.set=(k,v)=>{if(!F.reg)return false;if(!SENSOR_REG.lookup(k).length)console.warn('[sensorfuse] not a registry parameter:',k);F.reg[k]=v;return true;};
+F.set=(k,v)=>{if(!F.reg)return false;if(!SENSOR_REG.lookup(k).length){console.warn('[sensorfuse] not a registry parameter:',k);return false;}const o=SENSOR_REG.enumOptions(k);if(o&&o.indexOf(String(v))<0){console.warn('[sensorfuse] '+k+' must be one of',o.join(', '));return false;}F.reg[k]=v;return true;};
 F.repair=()=>{if(F.reg){F.reg.radarFailureMode='None';F.reg.radarHeatCurrent=0;}};
 F.dump=()=>{if(!F.reg)return null;const o={};for(const k of Object.keys(F.reg))if(F.reg[k]!==null&&!(Array.isArray(F.reg[k])&&!F.reg[k].length)&&F.reg[k]!==0&&F.reg[k]!==''&&F.reg[k]!==false)o[k]=F.reg[k];return o;};
 {const _u=radar.update;radar.update=function(dt){try{tick(dt);}catch(e){console.warn('[sensorfuse]',e);}return _u.call(this,dt);};}

@@ -14,5 +14,7 @@ window.SENSOR_REG={version:'3.0.0',sections:S,count:2047,defaultFor:dflt,
 create:function(ids){var o={};pick(ids).forEach(function(s){s.params.forEach(function(p){if(!(p[0] in o))o[p[0]]=dflt(p[1]);});});return o;},
 createBySection:function(ids){var o={};pick(ids).forEach(function(s){var k='s'+(s.id<10?'0':'')+s.id,b=o[k]={};s.params.forEach(function(p){b[p[0]]=dflt(p[1]);});});return o;},
 lookup:function(n){return idx[n]||[];},
+enumOptions:function(n){var d=idx[n];if(!d||!d.length||d[0].type!=='Enum')return null;var o=d[0].desc.replace(/\(.*?\)/g,'').split(/,\s*/).map(function(x){return x.trim();}).filter(function(x){return /^[A-Za-z0-9_.]+$/.test(x);});return o.length?o:null;},
+typeOf:function(n){var d=idx[n];return d&&d.length?d[0].type:null;},
 curve:function(t,x){if(!t||!t.length)return 0;if(x<=t[0][0])return t[0][1];for(var i=1;i<t.length;i++)if(x<=t[i][0]){var a=t[i-1],b=t[i];return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);}return t[t.length-1][1];}};
 })();

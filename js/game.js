@@ -1346,7 +1346,7 @@ function dlEstimate(sh,tg){if(sh===player&&radar.mode==='TWS'&&(radar.bug===tg||
 const IRG={az:30,eu:45,ed:15,stab:1},CONE=1.6*D2R,CONE_ERR=.2*D2R;// ALR-23 conical scan: ~1.6 deg nutation, bearing good to ~0.2 deg from the modulated signal
 const RGIM={'APG-68':[60,60,60,1],'APG-66(V)1':[60,60,60,1],'APG-68(V)5':[60,60,60,1],'APG-63':[60,60,60,1],'APG-73':[70,60,60,1],'APQ-120':[60,45,45,1],'N019':[67,56,40,1],'N001':[60,56,40,1],'RP-22SM':[30,18,12,0],'AWG-9':[65,60,60,1],'Sapfir-23ML':[56,56,40,1],'Sapfir-25':[56,40,30,1]};
 const _qi=new Q4(),_rb=new V3();
-const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',R0:42*NM,ri:2,mode:'RWS',sensor:'RDR',azs:[60,30,10],ai:0,barsL:[4,2,1],bi:0,
+const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',R0:42*NM,ri:2,mode:'RWS',sensor:'RDR',azs:[60,30,10],ai:0,barsL:[4,2,1],bi:0,
   antAz:0,antEl:0,elCmd:0,dir:1,bar:0,beam:3.3*D2R,rate:65*D2R,scanC:0,
   cur:{az:0,r:.5,el:0},tracks:new Map(),lock:null,lostT:0,notched:0,lostWhy:'',strobes:new Map(),hoj:false,pull:0,rngErr:0,jamLock:null,ecc:.5,acmT:0,power:'ON',warm:0,prf:'AUTO',acm:'30x20',fromACM:false,bug:null,bugMan:false,fromTWS:false,
   ang(p){const rel=p.clone().sub(player.pos),d=rel.length(),f=player.fwd(new V3()),h=Math.atan2(f.x,-f.z);
@@ -1446,7 +1446,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       else{const vr=Math.abs(j.vel.dot(_rl.copy(j.pos).sub(player.pos).normalize()));s*=.003+.997*(t=>t*t*(3-2*t))(clamp((vr-17)/22,0,1));}}
     const J=this.jam(j);if(J&&J.noise&&a.d>J.bt)s=0;return s;},
   // measured position: range error along the line of sight, angle error (beamwidth over the root of 2·SNR) across it
-  meas(j,a,snr,out){const sa=this.spin()?CONE_ERR:this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006,sr=player.ac.pulse?120+.004*a.d:25+.0025*a.d,los=_rl.copy(j.pos).sub(player.pos).normalize();
+  meas(j,a,snr,out){const sa=(this.spin()?CONE_ERR:this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006)*this.kAng,sr=(player.ac.pulse?120+.004*a.d:25+.0025*a.d)*this.kRng,los=_rl.copy(j.pos).sub(player.pos).normalize();
     _rp1.set(-los.z,0,los.x);if(_rp1.lengthSq()<1e-6)_rp1.set(1,0,0);_rp1.normalize();_rp2.copy(los).cross(_rp1);
     return out.copy(j.pos).addScaledVector(los,gauss()*sr).addScaledVector(_rp1,gauss()*sa*a.d).addScaledVector(_rp2,gauss()*sa*a.d);},
   // a track file: alpha-beta filter on the hits; the first hit seeds the velocity from the Doppler range rate only
@@ -1454,7 +1454,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     // one detection per pass of the beam: the frames while the beam dwells on the target are one look, not several
     if(tk&&tk.p&&!tk.hoj&&now-tk.t<.35){tk.snr=Math.max(tk.snr||0,snr);return;}
     const pm=this.meas(j,a,snr,_rpm),q=this.ang(pm);
-    if(tk&&tk.p&&now-tk.t<10&&!tk.hoj){const dt=Math.max(now-tk.t,.35),pr=_rp1.copy(tk.p).addScaledVector(tk.v,dt),res=pm.sub(pr),n=Math.min((tk.n||1)+1,8),al=Math.max(.45,2*(2*n-1)/(n*(n+1))),be=Math.max(.12,6/(n*(n+1)));
+    if(tk&&tk.p&&now-tk.t<10&&!tk.hoj){const dt=Math.max(now-tk.t,.35),pr=_rp1.copy(tk.p).addScaledVector(tk.v,dt),res=pm.sub(pr),n=Math.min((tk.n||1)+1,8),al=Math.min(1,Math.max(.45,2*(2*n-1)/(n*(n+1)))*this.kA),be=Math.min(1,Math.max(.12,6/(n*(n+1)))*this.kB);
       tk.p.copy(pr).addScaledVector(res,al);tk.v.addScaledVector(res,be/dt);if(tk.v.length()>950)tk.v.setLength(950);tk.n=n;}
     else{const los=_rl.copy(j.pos).sub(player.pos).normalize(),v=new V3().copy(los).multiplyScalar(j.vel.dot(los));
       this.tracks.set(j,{p:pm.clone(),v,n:1});}
@@ -1509,9 +1509,9 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       if(a.off>gim+2*D2R){this.drop('GIMBAL');return;}
       // jammed beyond burn-through the range channel is blind: the radar keeps the bearing and homes on the noise (HOJ), which needs no Doppler notch
       const J=this.jam(L);this.hoj=!!(J&&J.noise&&a.d>J.bt);
-      if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>1.2){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
+      if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>this.lostG){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
       else{if(L.isGhost){L._life=(L._life==null?2+Math.random()*7:L._life)-dt;if(L._life<=0){L.alive=false;this.drop('LOST');return;}}this.sttAcc=(this.sttAcc||0)+dt;let lost=false;
-        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a)*8);if(ok)this.lostT=0;else{this.lostT+=.1;if(this.lostT>1.2){lost=true;break;}}}
+        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a)*8);if(ok)this.lostT=0;else{this.lostT+=.1;if(this.lostT>this.lostG){lost=true;break;}}}
         if(lost){this.drop(this.notch(L,a)?'NOTCH':'LOST');return;}}
       // deception: the range / velocity gate is walked off the echo, the displayed range creeps away, and when the jammer lets go the track breaks
       if(J&&J.dec&&a.d>J.btD){this.pull=Math.max(0,this.pull+dt*J.rate*(Math.random()<dt*.5*this.ecc?-2:1));this.rngErr=this.pull*this.pull*2600;

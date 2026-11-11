@@ -1,5 +1,10 @@
 # Changelog
 
+## v268 (addendum) — registry variables made live
+- New modules `sensorradar.js`, `sensorirst.js`, `sensorpulse.js`, `sensorsys.js`, `sensorphys1.js`, `sensorphys2.js` cover sections 1-56: values are computed each frame from the sim (geometry, ISA atmosphere, Planck, Friis, INS drift, scheduler load...) and a subset feed back into the sim (track gates and caps, look-down, notch, ESA/radome loss, IR range, receiver losses, thermal derating, EMCON, datalink).
+- `scripts/sensor-coverage.js [--md]` audits which variables are live-written, which change the sim and which are stored-only (`docs/sensor_coverage.md`). Most of the remainder is stored-only.
+- Defaults are unchanged relative to spawn-time baselines, so gameplay only shifts when values are edited (a few ESA/radome losses shift balance slightly).
+
 ## v268 — Sensor suite parameter registry v3.0.0, fused with the radar simulation
 - New `docs/sensor_suite_v3.txt`: the full radar / IRST / pulse radar / realism parameter registry (56 sections, 2,047 parameters): 01-19 radar, 20-29 IRST, passive ranging and radar+IRST fusion, 30-38 pulse radar, 39-56 realism physics (link budget, arrays, propagation, RCS, micro-Doppler, signal processing, INS, tracking, jamming, ESM, IFF, radiometry, environment, scheduling, SAR/GMTI, datalink, human factors, reliability).
 - New `js/sensorreg.js` (generated from the doc), loaded in `index.html`: `SENSOR_REG.sections`, `SENSOR_REG.create(ids?)` for a typed default state object, `createBySection(ids?)`, `lookup(name)` and `curve(table, x)`.
