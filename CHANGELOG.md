@@ -3,6 +3,7 @@
 ## v268 (addendum) — registry variables made live
 - New modules `sensorradar.js`, `sensorirst.js`, `sensorpulse.js`, `sensorsys.js`, `sensorphys1.js`, `sensorphys2.js` cover sections 1-56: values are computed each frame from the sim (geometry, ISA atmosphere, Planck, Friis, INS drift, scheduler load...) and a subset feed back into the sim (track gates and caps, look-down, notch, ESA/radome loss, IR range, receiver losses, thermal derating, EMCON, datalink).
 - `scripts/sensor-coverage.js [--md]` audits which variables are live-written, which change the sim and which are stored-only (`docs/sensor_coverage.md`). Most of the remainder is stored-only.
+- `sensoreffects.js`: the own-jammer variables (power, antenna gain, polarization, technique gating, look-through window, cooling limit) now drive the game's burn-through ranges; the G-LOC threshold, anti-G suit and time-to-LOC drive `gEffects`; mutual radar interference lowers SNR near hostile radars.
 - Defaults are unchanged relative to spawn-time baselines, so gameplay only shifts when values are edited (a few ESA/radome losses shift balance slightly).
 
 ## v268 — Sensor suite parameter registry v3.0.0, fused with the radar simulation
