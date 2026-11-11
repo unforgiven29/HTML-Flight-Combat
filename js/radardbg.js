@@ -66,7 +66,7 @@ function rows(){const F=window.SENSOR_FUSE,r=F&&F.reg,now=performance.now()/1000
   for(const [j,tk] of arr){if(n++>=8){L.push(`  … ${arr.length-8} more`);break;}
     const err=tk.p&&j.pos?tk.p.distanceTo(j.pos):0;
     L.push(`${j===radar.lock?'*':j===radar.bug?'b':' '} ${String(j.type||'?').padEnd(8).slice(0,8)} ${f(tk.d/1852,1).padStart(5)}NM az${f(tk.az*R2).padStart(4)}° hit ${f(now-tk.t,1)}s n${tk.n||0} err ${f(err)}m${tk.hoj?' HOJ':''}${j.alive?'':' DEAD'}`);}
-  return L.join('\n');}
+  try{if(RD.extraRows)for(const x of RD.extraRows())L.push(x);}catch(e){}return L.join('\n');}
 
 function plan(){const W=cv.width,H=cv.height,cx=W/2,cy=H-28,rng=radar.ranges[radar.ri]*radar.unit,s=(H-48)/rng,gim=radar.gimbal();
   const rel=(p)=>{const r=p.clone().sub(player.pos).applyQuaternion(player.q.clone().invert());return{x:r.x,fw:-r.z,y:r.y};};

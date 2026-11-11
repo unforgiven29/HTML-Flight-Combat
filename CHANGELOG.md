@@ -428,5 +428,26 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Weather/terrain: rain loss by band and radar horizon on ground radars (canSee) and AI fighter radars; AI track delay and pulse-radar clutter.
 - Not verified in live play; headless smoke test only (modes switch, no NaN/errors, rain scaling). GMAP is contact-based, not an image.
 
+## v273 — pulse-Doppler signal processor (js/sensorsig.js)
+- Waveform-level model for the player's PD radar: LPRF/MPRF/HPRF PRF sets, pulse width, duty, stagger, M-of-N, per-PRF range eclipsing, ambiguity folding with real blind speeds (lambda*PRF/2), mainlobe-clutter / zero-Doppler filters, sidelobe clutter summed over ambiguous range cells (SCR), integration gain, CFAR loss.
+- Replaces the old fixed eclipse band and smooth-step notch inside snr1. Pulse radars (MiG-21, MiG-23, MiG-25) still use the old logic.
+- F4 overlay SIGNAL block shows mode, eclipsed/blind PRF counts, SCR. Data and sources: docs/radar_waveform_data.md.
+- Headless tests only: beam aspect is blind in MPRF and HPRF, HPRF sees closing targets in the clear and loses tail aspect, MPRF all-aspect but clutter-limited at range.
+
+## v274 — antenna pattern and I/Q CPI simulation (js/sensorsim.js)
+- Antenna: 2-D power pattern from the registry beamwidths (Gaussian main beam, tapered sidelobe envelope with nulls, floor); electronic arrays widen 1/cos(scan) and lose gain cos^1.5.
+- Per non-eclipsed PRF the sim generates complex pulse samples for the target's range gate: ground patches (fine around the beam, coarse all round, every ambiguous range) with sigma0, area, two-way pattern gain and Doppler; Hamming window, FFT, mainlobe-clutter and zero-Doppler filters blank their bins, CA-CFAR around the target bin. Aliasing and blind speeds now come out of the sampling.
+- Result feeds sensorsig as the clutter-limited SNR factor; ~1.7 ms per target evaluation (cached 250 ms).
+- Noise: complex Gaussian noise is added to every sample, so the CFAR reference and the target peak are real random draws.
+- Target RCS fluctuation: Swerling I (fighters) or III (large targets), drawn independently per PRF look so M-of-N gives frequency diversity.
+- Range sidelobes: radars with phase-coded pulse compression (APG-68(V)5/70/73/79, N019M, Zhuk, Zaslon) leak neighbouring-gate clutter at the code's peak sidelobe level; compression also shrinks the clutter cell. Plain-pulse sets have none.
+- Terrain shadowing: a 120-ray horizon profile (4/3-earth curvature, refreshed every 2.5 s or 1.5 km) hides clutter patches behind nearer terrain and gives each patch its real height, so grazing angle and land/sea come from the terrain.
+- Limits: patches use one terrain height per ray step (no slope-facing), no target glint or engine/propeller modulation, ownship multipath not in the CPI, player radar only.
+
+## v275 — IR seeker architectures and IRCCM (js/sensorir.js)
+- Every IR missile maps to a seeker architecture: spin-scan (AIM-9B, R-3S, R-40TD), cooled conical (AIM-9D/E/G/J, R-24T, R-13M), conical + rate logic (AIM-9L/P, R-60M), two-band conical/rosette (AIM-9M, R-73, R-27T/ET), imaging IR focal-plane array (AIM-9X, AGM-65G).
+- IRCCM as hazard rates while the head is on a flare: spectral (reduced by spectrally matched modern flares), kinematic (flare separation velocity), intensity (burn-out / rise), spatial (imaging heads resolve the silhouette inside 7 km and reject point-source flares). Imaging heads hold a pre-launch template at release.
+- Extra seeker physics: flare bloom on imaging arrays, sun / cloud-edge / ground clutter transfer scaled by architecture, rain and cloud scaling of lock range (less for two-band heads), plume aim-point bias for non-imaging heads (imaging aims at the airframe centroid), per-missile state `m.irx` in the F4 overlay.
+- Headless duel test (modern-era flares every 0.35 s, 3.5 km tail shot, 14 trials each): AIM-9B 0/14, AIM-9L 5/14, AIM-9M 9/14, R-73 8/14, AIM-9X 14/14. All thresholds and rates are estimates, not published data.
 ## v276 — F-4 radar scope shows the whole scan
 - The pulse-radar clutter grid was fixed at ±30° but the F-4's B-scope spans ±60°, so only the middle of the scan was painted and track marks beyond ±30° were skipped. The grid now follows the radar gimbal (±60° on the APQ-120); the MiG pulse scopes stay at ±30°.
