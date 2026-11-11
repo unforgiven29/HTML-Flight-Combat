@@ -2049,14 +2049,15 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
   const T=(s,a,e,al='left')=>{const p=hb(a,e);if(p)txt(s,p.x,p.y,al);return p;};const{AZ,E0,E1}=FSC,base=hx.globalAlpha,pki=!!P.ac.pki;
   if(sys.mig.hudm===1)hx.strokeStyle=hx.fillStyle='#46c27a';
   if(now<sys.mig.test){const c=hb(0,-4);if(c){circ(c.x,c.y,k*4);circ(c.x,c.y,k*1.2);line(c.x-k*6,c.y,c.x+k*6,c.y);line(c.x,c.y-k*6,c.x,c.y+k*6);}T('TEST',0,-11,'center');return;}
-  const L=radar.mode==='STT'?radar.lock:null,agl=P.pos.y-groundAt(P.pos.x,P.pos.z),w=game.wsel,wd=MSL[w];
+  const nr=!!(P.ac.noRdr||P.ac.noHudRdr);/* no air-to-air radar picture on this HUD: Su-24M, Su-22, MiG-27K, JH-7 (their sets are ranging / ground modes only) */
+  const L=!nr&&radar.mode==='STT'?radar.lock:null,agl=P.pos.y-groundAt(P.pos.x,P.pos.z),w=game.wsel,wd=MSL[w];
   hx.lineWidth=2.2;
   // artificial horizon: two bars with a gap, the right one carries the sky arrow
   if(!pki){const hz=new V3(f.x,0,f.z);if(hz.lengthSq()<1e-6){const u=P.up();hz.set(-u.x,0,-u.z);}hz.normalize();const hr=new V3(-hz.z,0,hz.x),e=(q,up=0)=>projDir(hz.clone().addScaledVector(hr,q).setY(up).normalize());
     const a1=e(-.24),a2=e(-.05),b1=e(.05),b2=e(.15),sk=e(.15,.075);
     if(a1&&a2)line(a1.x,a1.y,a2.x,a2.y);if(b1&&b2){line(b1.x,b1.y,b2.x,b2.y);if(sk){const dx=sk.x-b2.x,dy=sk.y-b2.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,L2=Math.min(l,k*2.2),tx=b2.x+ux*L2,ty=b2.y+uy*L2;
       line(b2.x+ux*k*1.2,b2.y+uy*k*1.2,tx,ty);line(tx,ty,tx-ux*9-uy*7,ty-uy*9+ux*7);line(tx,ty,tx-ux*9+uy*7,ty-uy*9-ux*7);}}}
-  const scan=!pki&&(m==='RAD'||m==='IR')&&(radar.mode==='RWS'||radar.mode==='TWS')&&w!=='GUN';
+  const scan=!nr&&!pki&&(m==='RAD'||m==='IR')&&(radar.mode==='RWS'||radar.mode==='TWS')&&w!=='GUN';
   // side scales with their carets
   const sc=(x,sd,v)=>{const a=hb(x,E0),b=hb(x,E1);if(!a||!b)return;line(a.x,a.y,b.x,b.y);line(a.x,a.y,a.x-sd*14,a.y);line(b.x,b.y,b.x-sd*14,b.y);
     for(let i=1;i<6;i++){const y=lerp(a.y,b.y,i/6),x0=lerp(a.x,b.x,i/6);line(x0,y,x0-sd*12,y);}
@@ -2074,7 +2075,7 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
     T(String(MDH[sys.mig.dh]),AZ-.4,lerp(E0,E1,.42),'right');
     if(sys.mig.mti)T('MTI',-AZ+.4,E1-1.2);
   }
-  else if(radar.mode==='ACM'&&!L&&radar.on()){[-4.5,4.5].forEach(a=>{const p=hb(a,-12),q=hb(a,3);if(p&&q)line(p.x,p.y,q.x,q.y);});T('CC',-AZ-2.6,0,'right');}
+  else if(!nr&&radar.mode==='ACM'&&!L&&radar.on()){[-4.5,4.5].forEach(a=>{const p=hb(a,-12),q=hb(a,3);if(p&&q)line(p.x,p.y,q.x,q.y);});T('CC',-AZ-2.6,0,'right');}
   // ASP-17ML fixed cross and the gyro / radar lead pipper
   const bs=hb(0,-1.2);if(bs&&pki){// PKI collimator sight: a ring with a centre dot and four ticks, fixed on the aircraft axis
     circ(bs.x,bs.y,k*4.4);circ(bs.x,bs.y,k*1.3);hx.beginPath();hx.arc(bs.x,bs.y,2.2,0,7);hx.fill();[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>line(bs.x+a*k*4.4,bs.y+b*k*4.4,bs.x+a*k*6,bs.y+b*k*6));}
@@ -2096,7 +2097,7 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
   if(w!=='GUN'&&wd&&!scan){const Tg=wd.seek==='IR'?irTarget(w):null;if(Tg){const sp=proj(Tg.pos);if(sp){circ(sp.x,sp.y,12);line(sp.x-18,sp.y,sp.x-12,sp.y);line(sp.x+12,sp.y,sp.x+18,sp.y);}
       if(!L){const ls=Tg.pos.clone().sub(P.pos).normalize(),d=dlzGet(w,Tg),r=Tg.pos.distanceTo(P.pos);if(r>d.rmin&&r<d.rmax&&(r<d.rne||blink))T('PREP',0,-10.4,'center');}}}
   if(w!=='GUN'&&wd){T(`${SN[w]} ${P.count(w)}${game.arm?'':' OFF'}`,-AZ,E1+1.2);
-    if(wd.seek!=='IR'&&!L&&!scan&&radar.mode!=='ACM')T('NO LOCK',0,-9,'center');}
+    if(wd.seek!=='IR'&&!L&&!scan&&!nr&&radar.mode!=='ACM')T('NO LOCK',0,-9,'center');}
   // SOS-3 angle-of-attack warning
   if(P.alpha>(P.acx||P.ac).aoaLim*D2R*.95&&blink)T('α',0,1.6,'center');
   migWarn(P,agl);}

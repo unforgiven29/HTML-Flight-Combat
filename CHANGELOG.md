@@ -1,5 +1,13 @@
 # Changelog
 
+## v281 — F-111F gun, no radar picture on strike HUDs, MiG-27K TV weapons slaved to the Kaira head, J-11 / J-8F
+- F-111F has the M61A1 in the weapons bay (1,000 rounds).
+- Su-24M, Su-22M4, MiG-27K and JH-7: the HUD no longer draws the radar picture (range scale, scan box and strobe, ACM cues, lock box and the NO LOCK cue). Their air-to-air sets are ranging / ground modes only.
+- MiG-27K: no radar information on the HUD. Kh-29T / TD / L and KAB-500Kr seekers are slaved to the Kaira-23 TV head, so the TV picture and the weapon look at the same point (СЛЕЖ shows on the screen); the seeker's reach is the head's gimbal (about 20 deg). Fixed: the Kaira elevation was inverted, so slewing up looked down.
+- J-11 uses the Su-27 cockpit (its separate MiG-23-style panel is gone).
+- J-8F keeps its own cockpit but gets the Su-27 style HUD and radar picture.
+- Checked in a browser: the pod slew direction of the common targeting pod (I = further out) was already correct; only the Kaira head was inverted.
+
 ## v280 — ACM reachable again on pulse-radar jets; Mirage 2000 DDM SAMIR is a pod
 - Fixed: jets with pulse radars and no TWS (F-4E and the like) could not reach their ACM modes with the radar-mode key, because the cycle went RWS -> TWS and TWS is refused on a pulse set. RWS now goes straight to ACM, then 30x20 -> VERT -> BORE -> RWS.
 - The Mirage 2000 DDM SAMIR missile-approach warner is now a pod store on its own pseudo-stations 1P / 9P at the Magic II wingtip pylons, so it is carried alongside the Magic 2 / Magic 1 rails, not instead of them. The warner works while a pod is loaded; without one the Mirage has no MAWS. Default loads carry both pods. Pod weight (14 kg), size and signature are estimates.
