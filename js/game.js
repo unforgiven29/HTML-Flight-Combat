@@ -7995,6 +7995,8 @@ GND.launchMav=function(w,P,pos,tgt){const a=AGW[w],m=makeStore(w);scene.add(m);t
 GND.flyMavs=function(dt){for(let i=this.mavs.length-1;i>=0;i--){const k=this.mavs[i],a=k.a,prev=k.p.clone();k.t+=dt;
     const V=Math.max(k.v.length(),1),vd=_gsB.copy(k.v).divideScalar(V);
     if(k.t>.25&&k.t<.25+a.burn)k.v.addScaledVector(vd,a.dv/a.burn*dt);
+    // ramjet sustainer (Kh-31A/AD ...): same model as the ARM path, holds the Mach limit until the fuel runs out
+    if(a.ramjet&&k.t>=.25+a.burn&&k.t<.25+a.burn+a.sus){const vmax=a.mach*sos(k.p.y),drag=(a.kd||1.8e-5)*rho(k.p.y)/1.225*V*V,acc=clamp(drag+(vmax-V)*.6,0,drag+60);k.v.addScaledVector(vd,acc*dt);}
     // guidance: the seeker holds the target it was locked on (contrast lock); proportional steering with gravity bias, g-limited
     if(k.tgt&&k.t>.4){const tp=_gsA.copy(k.tgt.pos).setY(k.tgt.pos.y+1.2),l=tp.sub(k.p),d=l.length();l.divideScalar(d);
       if(l.dot(vd)>Math.cos(60*D2R)){const tgo=d/V,perp=l.clone().addScaledVector(vd,-l.dot(vd)),acc=perp.multiplyScalar(3.2*V/Math.max(tgo,.2));acc.y+=G*.9;
