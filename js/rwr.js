@@ -19,7 +19,7 @@ const gn=()=>(Math.random()+Math.random()+Math.random()+Math.random()-2)*1.73;
 // per-warner hardware: [arch, DF, TSS dBm, id s, track s, lock ms, displayed, bearing quant deg, warmup s, antennas, band split]
 const HW={'ALR-67(V)3':['Digital','Phase_Interferometer',-68,.6,.4,400,16,1,5,4],'ALR-67(V)2':['Superheterodyne','Amplitude_Comparison',-65,.9,.6,600,12,2,6,4],'ALR-67(V)1':['Superheterodyne','Amplitude_Comparison',-63,1.2,.8,700,12,3,6,4],
   'ALR-56M':['Superheterodyne','Phase_Interferometer',-66,.8,.5,500,16,2,5,4],'ALR-56C':['Superheterodyne','Amplitude_Comparison',-63,1.1,.7,700,12,3,6,4],'ALR-69':['Crystal_Video','Amplitude_Comparison',-58,1.8,1,900,8,5,8,4],
-  'ALR-46':['Crystal_Video','Amplitude_Comparison',-55,2.5,1.4,1200,8,5,10,4],'ALR-45/50':['Crystal_Video','Amplitude_Comparison',-52,4,2,1500,6,10,10,4],'SPO-15LM':['Crystal_Video','Amplitude_Comparison',-52,2,.8,1000,8,10,10,4],'SPO-10':['Crystal_Video','Amplitude_Comparison',-48,0,.5,1500,4,90,15,4]};
+  'ALR-46':['Crystal_Video','Amplitude_Comparison',-55,2.5,1.4,1200,8,5,10,4],'ALR-45/50':['Crystal_Video','Amplitude_Comparison',-52,4,2,1500,6,10,10,4],'SPO-15LM':['Crystal_Video','Amplitude_Comparison',-52,2,.15,190,8,10,10,4],'SPO-10':['Crystal_Video','Amplitude_Comparison',-48,0,.5,1500,4,90,15,4]};
 const X=window.RWRX={r:RWR_REG.create(),on:true,nm:'',t0:-99,pwrT:-99,pwrWas:null,load:0,blank:0,flt:null,fltT:0,hp0:100,lastCM:-99,cmQ:[],dump(){return this.r;},
   set(n,v){if(!RWR_REG.validate(n,v)){console.warn('[rwr] rejected',n,v);return false;}this.r[n]=v;return true;},get:n=>X.r[n]};
 const Q=new Proxy({},{get:(_,n)=>X.r[n]}),r=X.r;
@@ -52,11 +52,11 @@ X.seed=function(sy,nm,P){const h=HW[nm]||HW['ALR-56C'],o=RWR_REG.create();Object
   faultBitStartupCoverage:.9,faultBitContinuousCoverage:.8,faultPartialFailureMode:'Degraded_Sensitivity',faultThermalDriftSensitivity:.03,faultDamageFromHitsFactor:.15,faultMtbfHours:h[0]==='Crystal_Video'?400:1000,faultFirmwareBugsEnabled:false,faultFirmwareBugList:[],faultPowerTransientReset:false,faultIntermittentContact:0,faultIntermittentUnderG:0.0,faultAntennaFailureProb:2e-4,faultReceiverFailureProb:1e-4,faultProcessorFailureProb:5e-5,faultDisplayFailureProb:5e-5,
   coopShareEmittersViaLink:false,coopFuseWithRadarTracks:true,coopFuseBearingGateDeg:10,coopFusedIdFromEmitter:true,coopFusedIdConfidenceBoost:.2});
   // the live object is replaced in place so the exported references (r, Q) stay valid
-  for(const k in o)r[k]=o[k];X.nm=nm;X.sy=sy;X.sens0=h[2];X.t0=RW.clk;X.flt=null;X.hp0=P.hp==null?100:P.hp;r.opModeCurrent='Open';};
+  for(const k in o)r[k]=o[k];X.nm=nm;X.sy=sy;X.sens0=h[2];if(sy.fam==='S15'){r.deintEmitterNewConfirmHits=1;r.pdwInterceptProbabilityPerScan=.97;}if(X.seedSpo)X.seedSpo(sy,P);X.t0=RW.clk;X.flt=null;X.hp0=P.hp==null?100:P.hp;r.opModeCurrent='Open';};
 
 const E=()=>typeof ENV!=='undefined'?ENV:{rain:0,wx:'CLEAR'};
 // ------------------------------------------------------------------ per-frame state
-X.tick=function(dt,P,sy,nm){if(RW.nm!==X.nm||X.sy!==sy)X.seed(sy,nm||RW.nm,P);
+X.tick=function(dt,P,sy,nm){X.dt=dt;if(RW.nm!==X.nm||X.sy!==sy)X.seed(sy,nm||RW.nm,P);
   const pwr=!!(sys.rwr&&sys.rwr.pwr),clk=RW.clk;if(pwr&&X.pwrWas===null)X.pwrT=-999;else if(pwr&&!X.pwrWas)X.pwrT=clk;X.pwrWas=pwr;const since=clk-X.pwrT;
   r.rwrPowerState=!pwr?'Off':X.flt&&X.flt.mode==='Failed'?'Failed':since<r.rwrWarmupTimeS?'Warmup':X.flt?'Degraded':'Operate';
   const radOn=typeof radar!=='undefined'&&radar.on&&radar.on(),jam=!!(P.ecm&&P.ecm.on),iffTx=!!(typeof IFF!=='undefined'&&IFF.st&&IFF.st.interrogating);
@@ -100,7 +100,7 @@ X.rangeMul=function(j,e,d,a,lk,P){const dy=j.pos.y-P.pos.y,el=Math.atan2(dy,Math
   if(r.rwrRxArchitecture==='Crystal_Video'&&X.load>.6)L+=(X.load-.6)*r.rwrRxDesensitizationDb*2;       // a crystal-video set is blinded by strong or dense signals
   // the registry sensitivity relative to the family default is what makes (V)3 reach farther than ALR-46
   L+=(r.rwrRxSensitivityTssDbm-X.sens0);
-  X.lastL=L;return cl(Math.pow(10,-L/20),.02,6);};
+  X.lastL=L;let m=cl(Math.pow(10,-L/20),.02,6);if(X.sy&&X.sy.fam==='S15'&&X.cwBoost)m*=X.cwBoost(j,e);return m;};
 X.sens0=-63;
 
 // probability that a scanning emitter is intercepted during one dwell
@@ -143,6 +143,7 @@ X.post=function(list,sy,P){if(r.rwrPowerState==='Warmup'||r.rwrPowerState==='Fai
   if(X.load>1&&r.deintGhostEmitterEnabled&&Math.random()<r.procOverloadFalseAlarmRise*(X.load-1)*.01&&list.length<cap){const s=list[0];if(s)list.push(Object.assign({},s,{a:Math.random()*6.28-3.14,mode:'S',lk:false,ghost:true,dEst:s.dEst*(.8+Math.random()),score:0}));}
   // lost-quadrant fault: nothing from that sector
   if(X.flt&&X.flt.mode==='Lost_Quadrant')for(let i=list.length-1;i>=0;i--){const qq=Math.floor(((list[i].a*R2%360+405)%360)/90);if(qq===X.flt.q)list.splice(i,1);}
+  if(sy.fam==='S15'&&X.spo15)X.spo15(list,P,X.dt);
   X.top=list[0]||null;};
 
 // RWR-driven dispenser: chaff for radar threats, flares when the missile seeker goes IR/active, with inhibits and a cooldown

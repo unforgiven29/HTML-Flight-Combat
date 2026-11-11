@@ -1,5 +1,10 @@
 # Changelog
 
+## v270 — SPO-15LM rebuilt from the Fulcrum manual
+- RWR registry grows to 758 variables (sections 20-24: threat program, azimuth/track/priority, power + elevation, CW channel + own-radar interlock, panel/lamps/audio).
+- `js/rwrspo15.js`: the MiG-29 warner now follows the manual. Six type lamps (Pi 3 X H F C) from the stock program (emitters outside it light no type lamp; overlapping ones can be taken for a higher priority type; unstable PRFs can defeat recognition). Search vs track from detection length (125-250 ms), track state latched per azimuth channel for 2-4 s, sidelobes of strong search radars can read as track. Channels are visited in turn; two pulse radars in one sector are only separated if 6 dB apart. Power scale in 2 dB steps, B/H elevation only at high power, flashing engagement-zone segment. CW circuit: HPRF fighters first appear as (flashing) X 6-14 dB early, and positive F identification shuts the CW circuit down. Own FCR radiating blanks the whole forward hemisphere. Priority: track > priority sector > type row > PRF > power; main threat remembered 8-12 s (search) / 2-4 s (track). Continuous high tone in track. Panel redrawn to the manual's fig. 30.
+- Not implemented: Nike-Hercules launch detection (the manual notes it is not implemented in DCS either), friendly radars mistaken for threats, ready light delay on re-power only, BIT faults.
+
 ## v269 — RWR realism layer (registry + model)
 - `docs/rwr_registry.txt` (19 sections, 613 variables) -> `js/rwrreg.js` via `scripts/gen-rwr-registry.js`; `js/rwr.js` seeds it per warner (ALR-67/56/69/46/45-50, SPO-15LM, SPO-10) and drives `rwrUpdate()` through six hooks.
 - Detection range now follows a received-power budget: sensitivity, antenna gain by azimuth/elevation, airframe + bank + stores + gear blockage, polarization, radome/cable/installation loss, atmosphere + rain, low-altitude multipath fading, ducting, warmup drift, crystal-video desensitisation. 12 dB less sensitive = 1/4 range; defaults are neutral.

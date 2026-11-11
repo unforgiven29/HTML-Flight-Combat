@@ -682,4 +682,165 @@ faultMaintenanceIntervalHrs  // number: Hours between service
 faultOperatingHoursTotal     // number: Total hours
 faultMtbfHours               // number: Mean time between failures (h)
 faultDamageFromHitsFactor    // number: Chance combat damage affects the unit
+
+[20. SPO-15LM THREAT PROGRAM & TYPE RECOGNITION (MiG-29 RHAW)]
+--------------------------------------------------------------------------------
+spoTypeLetters               // Array: Lamp letters in lamp order (P for the Pi lamp, 3, X, H, F, C)
+spoTypePriorityOrder         // Array: Hardwired type priority row, highest first
+spoTypeProgramName           // string: Installed threat program (stock program)
+spoTypeProgramEntries        // Array: Emitter names covered by each type lamp
+spoTypeRecognizeByPwPrf      // boolean: Type is decided only from pulse width and PRF
+spoTypePwMinNs               // Array: Pulse width lower limit per type (ns)
+spoTypePwMaxNs               // Array: Pulse width upper limit per type (ns)
+spoTypePrfMinHz              // Array: PRF lower limit per type (Hz)
+spoTypePrfMaxHz              // Array: PRF upper limit per type (Hz)
+spoTypeUnknownShowsNoLamp    // boolean: Signal outside the program lights no type lamp
+spoFriendlyInProgram         // boolean: Friendly radars are in the program (normally false)
+spoFriendlyMisidProbability  // number: Chance a friendly radar matches a known threat type
+spoParamOverlapMisidEnabled  // boolean: Emitters with overlapping parameters can be taken for a higher priority type
+spoParamOverlapMisidProbability // number: Chance an out-of-program emitter is shown as a similar type
+spoParamOverlapPriorityRule  // string: Higher priority threat is the one included in the program
+spoPrfJitterBreaksRecognition// boolean: Jitter, stagger or random PRF can defeat the PRF measurement
+spoPrfJitterEmitterFraction  // number: Fraction of emitters with unstable PRF
+spoPrfJitterRecognitionLoss  // number: Chance of no type indication for an unstable PRF emitter
+spoPrfMeasurementNeedsSeparation // boolean: PRF is measured one signal at a time
+spoPrfSeparationRequiredDb   // number: Power separation needed to recognise overlapping pulse signals (dB)
+spoSameAzimuthTwoPulseRule   // string: Two pulse radars in one sector: both recognised only above the separation
+spoSameAzimuthMultiPulseRule // string: Three or more: only the strongest, and only if clear of the rest
+spoTypeXAmbiguousFlash       // boolean: Low-power type X detections flash to show ambiguity
+spoTypeXAmbiguousMaxLevel    // int: Highest power level at which a type X detection is treated as ambiguous
+spoTypePiMeaning             // string: Pulsed radar with CW illuminator in missile guidance mode (launch warning)
+spoTypePiForCwiGuidance      // boolean: Pi shown for a pulsed fire control radar with a CW illuminator in SA guidance
+spoTypePiMisidCwSameAzimuth  // boolean: Two CW radars in one azimuth may read as a single Pi
+spoTypePiInhibitsXC          // boolean: With Pi selected as priority types X and C are not displayed
+spoTypeCMeaning              // string: LPRF fire control radar with CWI disabled, surveillance, other known radars
+spoTypeFMeaning              // string: 4th generation HPRF fighter radar
+spoTypeHMeaning              // string: Strategic SAM search and fire control radar
+spoTypeXMeaning              // string: CW and low power HPRF radars (Hawk CWAR/HPIR)
+spoType3Meaning              // string: AAA, short and medium range SAM fire control radar
+spoRecognitionLatencyMs      // number: Delay from detection to type lamp (ms)
+spoLowPriorityHidesBehindHigh// boolean: Lower priority type can be suppressed by a higher one in the same channel
+spoThreatFileLoaded          // string: Kneeboard threat program identifier
+
+[21. SPO-15LM AZIMUTH CHANNELS, SEARCH/TRACK & PRIORITY]
+--------------------------------------------------------------------------------
+spoAzChannelCountPerSide     // int: Front azimuth channels on each side
+spoAzChannelLabelsDeg        // Array: Lamp labels for front channels (10, 30, 50, 90)
+spoAzChannelEdgesDeg         // Array: Upper edge of each front channel (deg)
+spoAzRearChannelCount        // int: Rear channels per side
+spoAzRearChannelStartDeg     // number: Azimuth where the rear channel begins (deg)
+spoAzProcessingOrder         // Enum: Clockwise_Sequential, Parallel
+spoAzSweepPeriodMs           // number: Time for the processor to visit every channel (ms)
+spoAzResolutionLimitedByAntennaCount // boolean: Azimuth resolution is whatever the antenna sectors give
+spoAzDirectivityVsFrequency  // Curve: Front antenna directivity versus frequency (relative dB)
+spoAzLowFreqMultiSectorEnabled // boolean: Low frequency emitters light several channels
+spoAzLowFreqMultiSectorLevel // int: Power level where neighbouring channels light
+spoAzBlindingLevel           // int: Power level where every channel on that side lights
+spoAzSidelobeFalseTrackEnabled // boolean: High power search signals read as track through their sidelobes
+spoAzSidelobeFalseTrackLevel // int: Power level above which a search signal can read as track
+spoAzSidelobeFalseTrackProb  // number: Chance per sweep of a false track reading
+spoTrackDetectMinMs          // number: Detection length above which a signal is called track (ms)
+spoTrackDetectMaxMs          // number: Upper end of the track-length decision band (ms)
+spoTrackPerChannelLatch      // boolean: Track state belongs to the whole azimuth channel
+spoTrackLatchMinS            // number: Shortest time a channel stays marked tracking (s)
+spoTrackLatchMaxS            // number: Longest time a channel stays marked tracking (s)
+spoTrackLatchOverwrite       // boolean: A second emitter in a tracking channel can inherit the track state
+spoMainThreatMemorySearchMinS// number: Main threat memory in search mode, low (s)
+spoMainThreatMemorySearchMaxS// number: Main threat memory in search mode, high (s)
+spoMainThreatMemoryTrackMinS // number: Main threat memory in track mode, low (s)
+spoMainThreatMemoryTrackMaxS // number: Main threat memory in track mode, high (s)
+spoSearchSwitchPosition      // Enum: On, Off
+spoSearchSwitchFiltersSearch // boolean: Search mode emitters are dropped when the switch is off
+spoPriorityRules             // Array: Ordered priority rules (Table 2)
+spoPriorityPrfThresholdHz    // number: PRF above which an emitter ranks higher (Hz)
+spoPriorityAzRangeDeg        // number: Azimuth half-width of the priority range (deg)
+spoPriorityElRangeDeg        // number: Elevation half-width of the priority range (deg)
+spoPriorityHandoffDelayS     // number: Delay before the main threat changes (s)
+spoMainThreatYellowLights    // boolean: Main threat gets yellow lights above its type and azimuth lamps
+spoNikeLaunchDetectEnabled   // boolean: Nike-Hercules launch from missile command pulse packets (not implemented)
+spoNikeLaunchLightHz         // number: Track light modulation rate on a Nike launch (Hz)
+spoNikeLaunchToneHz          // number: Audio modulation rate on a Nike launch (Hz)
+spoChannelContactCount       // Array: Emitters currently in each channel
+spoChannelTrackLatchTimer    // Array: Remaining latch time per channel (s)
+spoChannelMultiSignalState   // Array: Per channel: Empty, Single, Resolved, Unresolved
+
+[22. SPO-15LM POWER SCALE, ELEVATION & ENGAGEMENT ZONE]
+--------------------------------------------------------------------------------
+spoPowerLevelCount           // int: Segments on the circular power scale
+spoPowerStepDb               // number: Level increment (dB)
+spoPowerThresholdDbm         // number: Level 0 reference (dBm)
+spoPowerPulsedMinLevel       // int: Pulsed signals below this level are filtered
+spoPowerCwMinLevel           // int: Lowest level at which a CW signal is detected
+spoPowerAzSensitivityDbm     // number: Azimuth channel sensitivity (dBm)
+spoPowerSumChannelSensitivityDbm // number: Sum channel sensitivity used for the power level (dBm)
+spoPowerAzOverSumDb          // number: How much more sensitive the azimuth channels are (dB)
+spoPowerLevelMain            // int: Power level of the main threat
+spoPowerEngagementByType     // Array: Level of the lowest-power emitter of each type at weapon range
+spoPowerEngagementFlashHz    // number: Flash rate of the engagement zone lamp (Hz)
+spoPowerEngagementConservative // boolean: Lamp marks the lowest power emitter of the type
+spoPowerEngagementErrorLevels// number: How far real engagement range can differ from the lamp (levels)
+spoPowerEngagementLevel      // int: Level the engagement lamp currently marks
+spoPowerInsideEngagement     // boolean: Main threat is stronger than the engagement lamp level
+spoElevationChannelCount     // int: Elevation channels
+spoElevationMutuallyExclusive// boolean: Only one of B or H can be lit
+spoElevationAntennaEfficiencyDb // number: Elevation antenna loss compared with the azimuth antennas (dB)
+spoElevationMinLevel         // int: Power level before an elevation channel can activate
+spoElevationBorderDeg        // Curve: Border between B and H versus power level
+spoElevationHysteresisDeg    // number: Hysteresis on the border (deg)
+spoElevationUpperLabel       // string: Upper hemisphere lamp
+spoElevationLowerLabel       // string: Lower hemisphere lamp
+spoElevationState            // Enum: None, B, H
+spoElevationMainDeg          // number: True elevation angle of the main threat (deg)
+
+[23. SPO-15LM CW CHANNEL & OWN-RADAR INTERLOCK]
+--------------------------------------------------------------------------------
+spoCwChannelEnabled          // boolean: Separate continuous wave detection circuit
+spoCwAdvantageMinDb          // number: Least sensitivity gain of CW over pulse detection (dB)
+spoCwAdvantageMaxDb          // number: Greatest sensitivity gain (dB)
+spoCwAlwaysTypeX             // boolean: Every CW emitter is shown as type X
+spoCwHprfDetectedAsX         // boolean: HPRF radars first appear as low-power CW
+spoCwXAmbiguousFlashHz       // number: Flash rate of an ambiguous X (Hz)
+spoCwShutdownAfterHprfId     // boolean: CW circuit shuts down when an HPRF emitter is positively identified
+spoCwShutdownHoldS           // number: How long CW detection stays off after the last HPRF identification (s)
+spoCwShutdownActive          // boolean: CW detection currently shut down
+spoCwDetectsAtLevelZero      // boolean: CW detected at power level 0
+spoOwnRadarInterlockEnabled  // boolean: Forward hemisphere disabled when the FCR radiates
+spoOwnRadarDisabledHalfAngleDeg // number: Half-angle of the disabled forward sector (deg)
+spoOwnRadarDisabledChannels  // Array: Channels switched off while the radar radiates
+spoOwnRadarRearActive        // boolean: Rear channels keep working
+spoOwnRadarInterlockLatencyMs// number: Delay between radar on and the forward channels dropping (ms)
+spoOwnRadarInterlockActive   // boolean: Forward channels currently disabled
+spoHprfPositiveIdLevel       // int: Power level for a pulsed identification of an HPRF emitter
+
+[24. SPO-15LM PANEL, LAMPS, AUDIO & SELF-TEST]
+--------------------------------------------------------------------------------
+spoPanelReadyLamp            // boolean: Device ready light
+spoPanelReadyDelayS          // number: Warm-up before the ready light (s)
+spoLampAzMainCount           // int: Numbered main-threat azimuth lamps
+spoLampAzThreatCount         // int: Small green threat azimuth lamps
+spoLampRearIndicatorCount    // int: Rear channel indicators
+spoLampTypeCount             // int: Green type letter lamps
+spoLampTrackRed              // boolean: Red tracking warning lamp lit
+spoLampTrackFlashHz          // number: Track lamp flash rate when flashing (Hz)
+spoLampPowerSegments         // int: Power scale segments
+spoLampSilhouette            // boolean: Own aircraft silhouette
+spoLampMainPositionNI        // boolean: Main threat position light (not implemented)
+spoLampAzMainState           // Array: Main azimuth lamp states, left then right
+spoLampAzThreatState         // Array: Green azimuth lamp states, left then right
+spoLampTypeState             // Array: Type lamp states: Off, On, Flash
+spoLampTypeMainState         // Array: Yellow main type lamp states
+spoLampBrightness            // number: Brightness knob (0.0 to 1.0)
+spoLampBrightnessMinFrac     // number: Dimmest lamp output as a fraction of full
+spoLampTestAllOn             // boolean: All lamps lit during BIT
+spoAudioTrackToneContinuous  // boolean: Continuous high tone while a track is shown
+spoAudioTrackToneHz          // number: Track tone pitch (Hz)
+spoAudioSearchToneEnabled    // boolean: Tone on a new search detection
+spoAudioSoundOff             // boolean: SOUND OFF switch
+spoAudioNikeTone             // boolean: Nike-Hercules 2 Hz tone (not implemented)
+spoBitSwitchPosition         // Enum: Neutral, Manual, Auto
+spoBitDurationS              // number: BIT duration (s)
+spoBitAutoPeriodS            // number: Automatic BIT period (s)
+spoBitFaultsReported         // boolean: BIT reports a failed channel
+spoBitLastResult             // Enum: Pass, Fail, Not_Run
+
 ================================================================================

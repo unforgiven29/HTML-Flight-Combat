@@ -2437,7 +2437,7 @@ function rwrUpdate(dt){
     if(mode==='T'){const guid=missiles.some(m=>m.alive&&(m.sh===j||e.g)&&m.track===P&&(e.g?(m.def.seek!=='IR'&&m.sh&&m.sh.gnd&&m.sh.pos.distanceTo(j.pos)<3500):(m.def.seek==='SARH'&&m.threat)));if(guid&&rc.cap<(e.g?sy.sam:sy.sarh))mode='L';}
     if(window.RWRX){const gm=RWRX.gate(rc,mode,clk,dt,d,e,sy,rc.lkNow);if(!gm){rc.shown=false;continue;}mode=gm;}
     if(!rc.shown){rc.shown=true;rc.newT=clk;if(sy.fam==='W'&&mode==='S')sfx.rwr('new');}
-    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
+    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S'&&sy.fam!=='S15')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
     if(mode==='L')anyL=true;else if(mode==='T')anyT=true;
     RW.list.push({j,d,lk:mode!=='S',gnd:e.g?1:0,mode,a:(rc.a===undefined?a:rc.a)+rc.err,e,age,dEst:d*rc.dErr,idOk:rc.idOk,sym:rc.idOk?e.sym:'U',newT:rc.newT,
       pwr:clamp(20*Math.log10(Math.max(rc.R,1)/Math.max(d,1))/30,0,1),
@@ -2453,7 +2453,8 @@ function rwrUpdate(dt){
   RW.tLaunch-=dt;RW.tLock-=dt;
   if(anyL){if(RW.tLaunch<=0){sfx.rwr('launch');RW.tLaunch=window.RWRX?RWRX.tone('launch',sy.tone==='N'?1.7:1.6):(sy.tone==='N'?1.7:1.6);}}
   else if(anyT&&sy.fam==='W'){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=window.RWRX?RWRX.tone('track',3.4):3.4;}}
-  if(!anyL&&!anyT){RW.tLock=0;}
+  else if(sy.fam==='S15'&&window.RWRX&&RWRX.spoTone&&RWRX.spoTone()){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=.95;}}   // SPO-15LM: continuous high tone while a track is shown
+  if(!anyL&&!anyT&&!(sy.fam==='S15'&&window.RWRX&&RWRX.spoTone&&RWRX.spoTone())){RW.tLock=0;}
 }
 function rwrEvent(){}   // events now come from what the receiver actually hears (rwrUpdate); the missile code still calls this on launch
 const rwrMslSeen=()=>RW.msl.length>0||RW.list.some(t=>t.mode==='L');
@@ -2494,6 +2495,7 @@ function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=pe
   if((isFlogger()||isFishbed())&&P.type!=='MiG-31'){drawSPO10(c,S,th,brg,msl,NOW);return;}
   if(mig){// SPO-15LM (manual fig. 103): numbered main-threat lamps, small green threat lamps, red track light, power ring, type letters
     c.fillStyle='#1b1a17';c.fillRect(0,0,S,S);const test=NOW<sys.rwr.testT||NOW<sys.mig.lamp,bl2=performance.now()%250<125;
+    if(window.RWRX&&RWRX.drawSPO15&&RWRX.spoS){RWRX.drawSPO15(c,S,P,NOW,bl2,performance.now()%500<250);return;}
     const tl=th.filter(t=>sys.rwr.srch||t.mode!=='S'),main=tl.slice().sort((a,b)=>(b.lk-a.lk)||(b.pwr-a.pwr))[0],sec=t=>{const a=t.a*R2D,A=Math.abs(a);return[a<0?0:1,A<20?0:A<40?1:A<70?2:A<110?3:4];};
     const has=(sd,i)=>tl.some(t=>{const q=sec(t);return q[0]===sd&&q[1]===i;}),ms=main?sec(main):null,isMain=(sd,i)=>ms&&ms[0]===sd&&ms[1]===i;
     c.globalAlpha=.3+.7*sys.rwr.brt;c.textAlign='center';c.textBaseline='middle';
