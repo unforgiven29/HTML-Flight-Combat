@@ -67,12 +67,16 @@ S.eval=function(j,a){const w=wfOf(),lam=C/((F.reg.carrierFrequencyGHz||9.7)*1e9)
   // ownship-compensated mainlobe clutter: target in it when its own LOS speed is within the filter, folded by the PRF's ambiguous velocity
   const bw=((F.reg&&F.reg.beamwidthAzDeg)||3.5)*D,psi=Math.acos(cl(vpl/(Vp||1),-1,1)),spread=Vp*bw*Math.sin(psi)*.5;
   const qf=(((F.reg&&F.reg.dopplerFilterQuality)||1)*.2+.8),wMLC=Math.max(w.mlc*(H?1:.32)*qf,spread),wZDF=w.zdf;
-  let ok=0,sumSnr=0,ecl=0,blind=0,scrMin=1e9;const T=prfs.length;
+  let ok=0,sumSnr=0,ecl=0,blind=0,scrMin=1e9;const fk=[];const T=prfs.length;
   const sN=(a.snrRef||1)*(typeof SNR50!=="undefined"?SNR50:20);
   for(let k=0;k<T;k++){const prf=prfs[k]*(1+.03*((Math.floor(performance.now()/1500)+k)%3)),Ru=C/(2*prf),Vamb=lam*prf/2;
     // 1. eclipsing: the return coincides with a transmitted pulse (plus a recovery guard); also the altitude-line gate
     const ph=((R%Ru)/Ru),guard=tau*prf*1.3+.012;const eclipsed=ph<duty+(H?0:guard)||ph>1-.005||Math.abs((R%Ru)-agl)<C*tau/2*1.5&&R>agl*.7&&R<agl*1.6;
     if(eclipsed){ecl++;continue;}
+    if(S.sim&&S.simPRF){const bwR=(radar.beam||3.5*D),sc=S.scan(Math.acos(cl(_b.copy(los).dot(player.fwd(new THREE.Vector3())),-1,1)));
+      const r=S.simPRF({lam,R,los,s:sN,sig:j.ac.rcs||5,vp,rr,agl,sea,bwA:bwR*sc.w,bwE:bwR*sc.w*((w.bwE||1)),sll:w.sll,wMLC,wZDF,vpl},prf,tau,H?64:(N>=64?64:32),H);
+      if(H&&w.hClose&&(rr<w.hClose[0]||rr>w.hClose[1])){blind++;continue;}
+      if(r.blanked){blind++;continue;}fk.push(r.f*sc.g);ok++;scrMin=Math.min(scrMin,r.f>0?1/r.f:1e9);continue;}
     // 2. mainlobe clutter and zero-Doppler filters, with ambiguity folding (blind speeds)
     const dvm=Math.abs(fold(vtl,Vamb)),dvz=Math.abs(fold(rr-vpl*0,Vamb));
     if(dvm<wMLC){blind++;continue;}
@@ -89,7 +93,7 @@ S.eval=function(j,a){const w=wfOf(),lam=C/((F.reg.carrierFrequencyGHz||9.7)*1e9)
     scrMin=Math.min(scrMin,scr);
     // coherent-integration gain relative to a 32-pulse reference, then clutter-limited SNR: 1/s_eff = 1/(s) + 1/SCR
     const gainInt=cl(Math.sqrt(N/32),.6,2.2);ok++;sumSnr+=gainInt/(1+ (sN*gainInt)/Math.max(scr,1e-6));}
-  const det=ok>=(H?Math.min(w.M,2):w.M);const meanF=ok?sumSnr/ok:0;
+  const det=ok>=(H?Math.min(w.M,2):w.M);let meanF=ok?sumSnr/ok:0;if(fk.length){fk.sort((x,y)=>y-x);const M=Math.min(H?Math.min(w.M,2):w.M,fk.length);meanF=fk.slice(0,M).reduce((x,y)=>x+y,0)/M;}
   const f=det?cl(meanF*un(-w.cfar),0,3):0;
   S.stats.n++;if(!det)S.stats[ecl>=blind?'ecl':'blind']++;
   return{f,mode,ok,T,ecl,blind,scr:scrMin,why:det?'':(ecl>=blind?'ECLIPSE':'DOPPLER'),Vamb:lam*prfs[0]/2,wMLC};};

@@ -433,3 +433,9 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Replaces the old fixed eclipse band and smooth-step notch inside snr1. Pulse radars (MiG-21, MiG-23, MiG-25) still use the old logic.
 - F4 overlay SIGNAL block shows mode, eclipsed/blind PRF counts, SCR. Data and sources: docs/radar_waveform_data.md.
 - Headless tests only: beam aspect is blind in MPRF and HPRF, HPRF sees closing targets in the clear and loses tail aspect, MPRF all-aspect but clutter-limited at range.
+
+## v274 — antenna pattern and I/Q CPI simulation (js/sensorsim.js)
+- Antenna: 2-D power pattern from the registry beamwidths (Gaussian main beam, tapered sidelobe envelope with nulls, floor); electronic arrays widen 1/cos(scan) and lose gain cos^1.5.
+- Per non-eclipsed PRF the sim generates complex pulse samples for the target's range gate: ground patches (fine around the beam, coarse all round, every ambiguous range) with sigma0, area, two-way pattern gain and Doppler; Hamming window, FFT, mainlobe-clutter and zero-Doppler filters blank their bins, CA-CFAR around the target bin. Aliasing and blind speeds now come out of the sampling.
+- Result feeds sensorsig as the clutter-limited SNR factor; ~1.7 ms per target evaluation (cached 250 ms).
+- Limits: flat-earth clutter geometry (no terrain shadowing per patch), no noise realisation (expected noise floor), no range sidelobes or pulse compression, target RCS fluctuation not simulated, player radar only.
