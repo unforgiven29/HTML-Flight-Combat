@@ -16,8 +16,6 @@ const F16=(x)=>S(15.06,9.45,1.0,.95,4.9,1.1,40,.47,0,Object.assign({tail:[5.6,2,
 const FLK=(x)=>S(21.9,14.7,1.6,1.0,6.0,1.4,42,.45,.2,Object.assign({tail:[9.9,2.9,1,45,.9],fin:[4.1,3,1.2,45,2,0,1.6],eng:2,nr:.6,inl:'belly',cz:.17},x));
 const FUL=(x)=>S(17.3,12.0,1.4,.85,5.5,1.4,42,.45,.1,Object.assign({tail:[7.8,2.6,1,45,.88],fin:[3.0,2.4,1,48,2,.1,1.3],eng:2,nr:.5,inl:'belly',cz:.2},x));
 const HAR=(x)=>S(13.9,7.7,1.0,1.0,3.6,1.0,35,.45,.6,Object.assign({dih:-.2,tail:[4.2,1.4,.7,35,.9,0,0,-.2],fin:[2.0,2.0,1,45,1],eng:1,nr:.32,inl:'side',cz:.2},x));
-const TOR=(x)=>S(18.7,8.6,1.2,1.0,3.0,1.0,60,.48,.45,Object.assign({tail:[6.8,2.4,1,50,.88,0,0,-.1],fin:[4,3.5,1.4,55,1],eng:2,nr:.45,inl:'side',cz:.2,seats:2,
-  swing:{base:25,piv:[2.0,.45,-.6],pts:[[0,-.9],[5.6,.9],[5.6,1.65],[0,2.15]],th:.12,nav:[5.55,1.25]}},x));
 const SPEC={
   // ----- modern BLUE -----
   'F-15EX':S(19.43,13.05,1.5,.9,6.0,1.7,45,.45,.35,{tail:[8.6,2.6,1,50,.86],fin:[3.0,2.6,1,40,2,.03,1.4],eng:2,nr:.55,inl:'side',cz:.2,seats:2,col:0x5f6870}),
@@ -59,7 +57,6 @@ const SPEC={
   'Harrier GR.3':HAR({col:0x6a7560}),
   'Sea Harrier FRS.1':HAR({L:14.17,col:0x5f6b77}),
   'Buccaneer S.2B':S(19.33,13.41,1.1,1.0,4,2,40,.45,-.1,{tail:[4.3,1.8,1,40,.9,0,1],fin:[3.0,3.2,1.6,50,1],eng:2,nr:.4,inl:'side',cz:.15,seats:2,col:0x5c6a62}),
-  'Tornado F.3':TOR({col:0x8e989c}),
   'JA 37':S(16.4,10.6,1.0,.95,6.5,1,50,.55,0,{tail:0,fin:[3.2,3.5,1,50,1],can:[5.4,2.0,45,.33,.3],eng:1,nr:.55,inl:'side',cz:.17,col:0x6b7a5f}),
   'Mirage 5':S(15.55,8.22,.9,.9,7.3,.5,60,.42,-.1,{tail:0,fin:[3.0,3.4,1,55,1],eng:1,nr:.5,inl:'side',cz:.22,col:0x8f8a70}),
   'Kfir C2':S(15.65,8.22,.9,.9,7.3,.5,60,.42,-.1,{tail:0,fin:[3.0,3.4,1,55,1],can:[3.8,.8,50,.4,.4],eng:1,nr:.5,inl:'side',cz:.22,col:0x9a8a68}),
@@ -75,7 +72,6 @@ const SPEC={
   // ----- more modern -----
   'F-16V':F16({col:0x7d878e}),'F-16E':F16({cft:1,col:0xa69a7c}),'F-16I':F16({cft:1,seats:2,col:0x8f8565}),
   'F-15I':S(19.43,13.05,1.5,.9,6.0,1.7,45,.45,.35,{tail:[8.6,2.6,1,50,.86],fin:[3.0,2.6,1,40,2,.03,1.4],eng:2,nr:.55,inl:'side',cz:.2,seats:2,col:0x8a7a5e}),
-  'Tornado ECR':TOR({L:16.72,col:0x666e66}),
   'Mirage 2000D':S(14.55,9.13,.95,.9,7,.6,58,.42,-.1,{tail:0,fin:[3.0,3.6,1,55,1],eng:1,nr:.5,inl:'side',cz:.2,seats:2,col:0x6a7477}),
   'Sea Harrier FA2':HAR({L:14.17,col:0x6f7880}),'Harrier GR.9':HAR({L:14.36,b:9.25,wr:4,col:0x6a7480}),
   'Tejas Mk1A':S(13.2,8.2,.95,.85,7,.5,58,.42,0,{tail:0,fin:[3.1,3.2,1,50,1],eng:1,nr:.45,inl:'side',cz:.2,col:0x9aa4aa}),

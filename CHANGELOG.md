@@ -1,5 +1,7 @@
 # Changelog
 
+## v293 — Tornado F.3 and ECR now use the real Tornado GR.4 airframe (the procedural stand-ins in jet-models.js were removed; same swing-wing model and stations).
+
 ## v292 — menu redo
 - Hangar: the one-line strip of 75 variant cards is now an aircraft index: search, nation and role filters, jets grouped under their family (F-16 FALCON, SU-27 FLANKER, DASSAULT ...) with the variants listed under it. The family of the selected jet is open; filtering opens every match. Same for the bandit picker (with AUTO). New `js/hangar.js`.
 - New `css/theme.css`: whole menu re-skinned flat and matte (olive-black, brass for selection, signal red for hostile, hairline rules, 2 px corners, no glow or gradients), classification strip along the bottom. The in-flight HUD is untouched.
