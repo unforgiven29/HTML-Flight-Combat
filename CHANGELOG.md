@@ -1,5 +1,11 @@
 # Changelog
 
+## v284 — Every radar has its own transmitter
+- New `js/radarhw.js`: carrier frequency, antenna diameter, peak power, waveform (pulse / pulse-Doppler / PESA / AESA), PRFs, noise figure, losses, bus power and warm-up for every radar in the game (about 100 sets; before, all but 14 shared one generic 9.7 GHz / 5 kW entry). RP-21/22 family corrected to J-band (12.9 GHz).
+- The player's radar registry (beamwidth, link budget, rain loss, chaff, Doppler blind speeds, F4 debug page) now runs on each set's own figures.
+- RWR: each emitter is heard at a range set by its own EIRP (high-peak pulse sets like the Sapfir-25 or Smerch far out, LPI AESAs late). Laser rangers, TV seekers and optical sights no longer show on warners.
+- Jamming: each radar's own band decides whether a pod covers it, and burn-through against a self-screening jammer scales with the radar's average radiated power x gain.
+
 ## v283 — 46 more jets, own airframes for every new jet
 - New `js/more-jets.js`: F-4J, F-4B, F-101B, F-102A, F-105D, F-104G, F-5A, A-6E, A-37B, Hunter F.6, Harrier GR.3, Sea Harrier FRS.1 / FA2, Harrier GR.9, Buccaneer S.2B, Tornado F.3 / ECR, JA 37, Mirage 5, Mirage 2000D, Kfir C2 / Block 60, F-16 Block 70, F-16E, F-16I, F-15I, Tejas Mk 1A, FA-50, M-346FA, F-CK-1; MiG-17F, MiG-21MF, Su-7BMK, Su-15TM, Tu-128, Yak-28P, J-6, Q-5, MiG-29K, MiG-31BM, Su-25SM3, Su-25T, J-11B, J-35, JH-7A, J-7G. Each has its own flight-model numbers, radar (name, range, mechanical / PESA / AESA, track counts), IRST where fitted, gun, ECM, stations and loadouts.
 - New missiles: AIM-4A / 4D, Shafrir 2, Python 3 / 5, Derby, I-Derby ER, Sky Flash, Rb 71, Rb 99, R-98R / T, R-4R / T, PL-2, Tien Chien I / II. New stores: Sea Eagle, ALARM, Brimstone, SPICE 1000, Vikhr.

@@ -100,10 +100,12 @@ window.jamOf=function(tg,rd,rx0){
   const self=base&&base.bt>1&&inBand(tg.ecm&&tg.ecm.fit,tr.f)?base:null;
   const rx=rxOf(rd,rx0);
   if(!rx||(!self&&JAM.n===0))return self;
-  const sig=tg.ac.rcs,K4=BT0*BT0*Math.pow(rd.R0/BT_REF,4)/5,q=sig*K4;
+  const sig=tg.ac.rcs,K4=BT0*BT0*Math.pow(rd.R0/BT_REF,4)/5;let q=sig*K4;
   // the target's own jammer, re-derived from the old burn-through so every registry / hardware modifier upstream is kept
   let Et=0,Ed=0,cT=1;
   if(self){const E0=q/(self.bt*self.bt);cT=aspect(tg,rx.pos);if(self.noise)Et=E0*cT*tech(tr.ag);else Ed=E0*cT;}
+  // v284: the radar's own average radiated power x gain against the old calibration (radarhw.js): stronger sets burn through sooner
+  {const nm=rd===radar?(player&&player.ac&&player.ac.radar?player.ac.radar.name:''):(rd.name||'');if(window.RADAR_HW&&nm)q*=RADAR_HW.btK(nm);}
   // escorts: noise jammers on the target's side (never the radar's own side), weighted by the radar's pattern toward them
   let No=0;
   if(JAM.n>0&&!(rx.side!=null&&tg.side===rx.side)){
