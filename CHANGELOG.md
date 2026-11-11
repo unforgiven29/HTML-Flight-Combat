@@ -427,3 +427,9 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Seekers: SARH illumination memory, CW low-altitude notch, rain dropouts on active heads, gate stealing by DRFM scaled by ccm.
 - Weather/terrain: rain loss by band and radar horizon on ground radars (canSee) and AI fighter radars; AI track delay and pulse-radar clutter.
 - Not verified in live play; headless smoke test only (modes switch, no NaN/errors, rain scaling). GMAP is contact-based, not an image.
+
+## v273 — pulse-Doppler signal processor (js/sensorsig.js)
+- Waveform-level model for the player's PD radar: LPRF/MPRF/HPRF PRF sets, pulse width, duty, stagger, M-of-N, per-PRF range eclipsing, ambiguity folding with real blind speeds (lambda*PRF/2), mainlobe-clutter / zero-Doppler filters, sidelobe clutter summed over ambiguous range cells (SCR), integration gain, CFAR loss.
+- Replaces the old fixed eclipse band and smooth-step notch inside snr1. Pulse radars (MiG-21, MiG-23, MiG-25) still use the old logic.
+- F4 overlay SIGNAL block shows mode, eclipsed/blind PRF counts, SCR. Data and sources: docs/radar_waveform_data.md.
+- Headless tests only: beam aspect is blind in MPRF and HPRF, HPRF sees closing targets in the clear and loses tail aspect, MPRF all-aspect but clutter-limited at range.
