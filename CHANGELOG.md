@@ -1,5 +1,9 @@
 # Changelog
 
+## v277 — Kalman radar tracker and radar missile seeker architectures
+- `sensortrack.js`: Kalman tracker per radar track (constant-velocity, adaptive process noise from normalised innovation), gating (Mahalanobis gate 11.34), association and track swaps for close targets, track quality and confirmation. Tests: 60 m formation swaps, 250 m formation swaps occasionally, 1200 m never; errors bounded (RMS about 80-155 m with the sensor noise model). Velocity-update bug fixed (a 1/dt term blew velocities up).
+- `sensorarh.js`: SARH and ARH seeker architectures (CW conical, CW monopulse, pulse-Doppler SARH, active PD, agile PD with home-on-jam, track-via-missile): acquisition range from dish size, RCS, aspect and rain; per-architecture notch width and memory time; chaff discrimination scaled by architecture and ECCM. Parameters are gameplay estimates, not published data. Load test only; duel test not yet run.
+
 ## v271 — more radar and RWR logic
 - `sensorradar2.js`: look-down clutter by surface (sea with sea-state scaling and spikes, land by slope, snow, desert) and grazing angle, offset by clutter rejection (a 40 degree look-down over land: 152 -> 82 as rejection falls from 70 to 5 dB); target resolution cells (contacts closer than the radar's own range / angle / closure resolution are one blob, so the farther one is not detected separately); scheduler load degrades search frames and track update noise; rain polarisation and clutter-map terms.
 - `rwrlogic.js` (western warners): threat score from mode, range, signal, emitter type, time in track and bearing rate, smoothed so ranks don't flip; priority modes All / Priority_Only / Top_N / Closest / Most_Lethal / Unknown_Only; hand-off delay before the top threat changes; constant-bearing alert; rare false launch alerts.
