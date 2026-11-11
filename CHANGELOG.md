@@ -413,3 +413,10 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - At most two detonations per campaign. The victim's side retaliates 70 % of the time, otherwise (and after the second) both governments call a ceasefire and the campaign ends.
 - Time skips resolve a raid on the averages (about 45 % are stopped).
 - Tested in headless Chrome with the sim stepped by hand: bomb stick accuracy, nuclear sequence from alert to ceasefire, shockwave damage by distance, debrief grading, save/load. Not tested in a live multiplayer room.
+
+## v272 — radar modes, deception jamming, seekers, weather/terrain, AI radars (js/sensorwar.js)
+- U cycles radar modes AA / VS / GMTI / SEA / GMAP (gm* registry values). GMTI/SEA/GMAP paint ground units and ships as contacts; VS favours closing targets.
+- Jamming: RGPO range pull-off, velocity pull, DRFM false targets, cross-eye angle error, chaff bloom clutter, using jam* values.
+- Seekers: SARH illumination memory, CW low-altitude notch, rain dropouts on active heads, gate stealing by DRFM scaled by ccm.
+- Weather/terrain: rain loss by band and radar horizon on ground radars (canSee) and AI fighter radars; AI track delay and pulse-radar clutter.
+- Not verified in live play; headless smoke test only (modes switch, no NaN/errors, rain scaling). GMAP is contact-based, not an image.
