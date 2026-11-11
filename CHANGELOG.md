@@ -2,6 +2,8 @@
 
 ## v294 — Throttled ramjet model: Meteor now holds ~Mach 4 after the booster (thrust throttled to drag, flameout below ~M1.8) via a d.ramjet flag in the missile motor and in the DLZ reach profile. Kh-31P/PD and YJ-91 already used the ARM ramjet flag.
 
+## v296 — Flanker and Fulcrum derivatives (Su-30MKI/MKM, Su-34, J-16, J-15T, J-11B, MiG-35, MiG-29K) drop their procedural airframes and share the existing Flanker / Fulcrum models and stations.
+
 ## v295 — Full parameter model (185 variables, nine groups) for the 48 air-to-ground missiles (agm + arm), same as the A/A set; hang-fire, safe separation, nozzle erosion, battery brown-out, fuze duds, ramjet flame-out and live state; shown on F9 (js/agspec.js).
 
 ## v294b — Air-to-ground ramjet: generic AG missile flight (flyMavs) now has the same ramjet sustainer as the ARM path; Kh-31A and Kh-31AD flagged as ramjets (js/ramjet.js).
