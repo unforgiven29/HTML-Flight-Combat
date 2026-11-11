@@ -1,5 +1,16 @@
 # Changelog
 
+## v297 — Beam propagation: the radar beam is a real object (js/beamtrace.js)
+- Detection is no longer an angular window plus a range formula. In search the antenna's two-way pattern (main lobe and sidelobes, from sensorsim) is sampled along the arc swept each frame, the energy that lands on each aircraft is added up over the whole beam passage and one detection decision is made when the beam has passed, on the integrated SNR. Clipping the edge of the beam, scan rate and dwell length now change the result. A target lit only by sidelobes is blanked.
+- Multipath: two-ray interference over sea and ground (reflection 0.92 sea / 0.45 land, cut by wave height from the wind and by the beam pattern toward the image). Test over calm sea, radar 120 m, target 30 m: the factor swings from -14 dB to +11 dB with range; nothing at altitude (no lobing above about 10 degrees grazing).
+- Terrain: the ray is walked over the real terrain mesh on a 4/3-Earth and the worst first-Fresnel-zone clearance gives a knife-edge diffraction loss (6 dB when grazing, none with about 100 m of clearance at X band) instead of all-or-nothing line of sight.
+- Electronic arrays lose gain and widen off the array normal (js/sensorsim.js scan model), now also in the ESA dwell and revisit cells.
+- The same ray-trace is applied to the AI fighters' radar locks and the SAM / GCI scans, and to the player's STT dwell.
+- F7: beam view. Beam cone (-3 dB width) out to where its axis meets the terrain, a pulse out to every illuminated aircraft and the echo back (time-dilated), orange pulse back from the ground footprint. F4 gets a BEAM block: boresight, ground intercept, per target pattern / multipath / diffraction dB, echo delay and range-ambiguity fold.
+- Calibration: `BEAM.kcal = 2` scales the integrated dwell so published detection ranges hold (per-pass detection vs range, head-on 5 m2 target, F-16: 0.36 old vs 0.32 new at the nominal range, 0.14 vs 0.13 at 1.15x, 0.77 vs 0.56 at 0.85x, 1.0 vs 0.92 at 0.5x). `BEAM.kcal = 1` gives the strict energy-accounted ranges, about 12 % shorter. `BEAM.on = false` restores the old window test everywhere; `BEAM.mp` / `BEAM.df` switch multipath / diffraction.
+- Cost: radar update 0.08 ms per frame with 6 aircraft (0.10 ms before); one propagation trace about 1 microsecond.
+- Not changed: IRST and conical-scan detectors, ACM modes, the F4-style scope drawing (it still paints track files, not raw video), range measurement noise. Parameters are gameplay-level estimates, not published data.
+
 ## v294 — Throttled ramjet model: Meteor now holds ~Mach 4 after the booster (thrust throttled to drag, flameout below ~M1.8) via a d.ramjet flag in the missile motor and in the DLZ reach profile. Kh-31P/PD and YJ-91 already used the ARM ramjet flag.
 
 ## v296 — Flanker and Fulcrum derivatives (Su-30MKI/MKM, Su-34, J-16, J-15T, J-11B, MiG-35, MiG-29K) drop their procedural airframes and share the existing Flanker / Fulcrum models and stations.
