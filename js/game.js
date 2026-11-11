@@ -2339,7 +2339,7 @@ function drawFCR(){const c=fcr,S=360,P=player,mig=isMig(),col=mig?'#8dffb4':MF;i
   else{osb(c,radar.mode==='ACM'?{'30x20':'ACM 20',VERT:'ACM 60',BORE:'BORE'}[radar.acm]||'ACM':radar.mode,60,18,true);osb(c,'A'+radar.azs[radar.ai]/10,180,18);osb(c,radar.barsL[radar.bi]+'B',240,18);osb(c,{AUTO:'AUTO',A:'ULK',B:'DLK'}[radar.prf],300,18);
     osb(c,'▲',18,80);osb(c,String(radar.ranges[radar.ri]),18,115);osb(c,'▼',18,150);osb(c,'FCR',180,S-16,true);osb(c,'SMS',240,S-16);}
   const now=performance.now()/1000,stt=radar.mode==='STT',tws=radar.mode==='TWS';
-  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng)continue;const L=stt&&j===radar.lock;if(stt&&!L||tk.hoj)continue;
+  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng)continue;const L=stt&&j===radar.lock;if(stt&&!L||tk.hoj)continue;if(!stt&&P.ac.pulse&&window.RAWVID&&RAWVID.on&&radar.sensor==='RDR')continue;   // pulse set: the pilot reads the raw video, no track symbols
     if(tws){// TWS track files: extrapolated position, hollow square with a heading line; the bugged track is filled and ringed
       const q=radar.ang(radar.trkPos(j,tk,now)),x=X(q.az),y=Y(q.d),bug=j===radar.bug,age=now-tk.t,rh=(tk.hdg-P.hdg)*D2R;if(q.d>rng||Math.abs(q.az)>62*D2R)continue;
       c.globalAlpha=clamp(1.15-age/7,.3,1);c.strokeStyle=c.fillStyle=bug?MA:col;c.lineWidth=2;
@@ -2352,7 +2352,7 @@ function drawFCR(){const c=fcr,S=360,P=player,mig=isMig(),col=mig?'#8dffb4':MF;i
       c.beginPath();c.arc(x,y,11,0,7);c.stroke();c.textAlign='left';c.fillText(U.kalt(P,tk.alt),x+14,y+14);}}
   if(!mig&&DL.on())dlRdrExtra(c,X,Y,rng,P);
   // jam strobes: a noise jammer outside burn-through is only a bearing, drawn as a hatched line the full height of the scope
-  for(const [j,s] of radar.strobes){if(Math.abs(s.az)>62*D2R)continue;const x=X(s.az);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=MA;c.lineWidth=1.6;
+  for(const [j,s] of radar.strobes){if(P.ac.pulse&&window.RAWVID&&RAWVID.on&&radar.sensor==='RDR')break;if(Math.abs(s.az)>62*D2R)continue;const x=X(s.az);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=MA;c.lineWidth=1.6;
     c.setLineDash([2,3]);c.beginPath();c.moveTo(x,y1);c.lineTo(x,y0);c.stroke();c.setLineDash([]);c.beginPath();for(let k=0;k<8;k++){const yy=y1-(k+.5)*(y1-y0)/8;c.moveTo(x-4,yy);c.lineTo(x+4,yy);}c.stroke();
     c.font='700 12px "B612 Mono",monospace';c.textAlign='center';c.fillText(radar.lock===j&&radar.hoj?'HOJ':'JAM',x,y0+10);c.font=MFONT;c.lineWidth=1;}
   c.globalAlpha=1;

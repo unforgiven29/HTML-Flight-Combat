@@ -57,9 +57,12 @@ function drawRDR(c,P){
     const ty=clamp(ay-radar.antEl*R2D*3.2,CY0+6,CY1-6);c.strokeStyle=G;c.lineWidth=3;c.beginPath();c.moveTo(CX1-14,ty);c.lineTo(CX1-3,ty);c.stroke();}
   // search: bright vertical line at the antenna azimuth
   if(!nar){const x=X(radar.antAz);c.strokeStyle='rgba(141,255,180,.55)';c.lineWidth=3;c.beginPath();c.moveTo(x,CY0);c.lineTo(x,CY1);c.stroke();}
+  // pulse set in search: the raw video (noise, clutter, echoes as the receiver outputs them), no track symbols
+  const rv=!nar&&!stt&&window.RAWVID&&RAWVID.on&&P.ac&&P.ac.pulse&&radar.sensor==='RDR'&&radar.on();
+  if(rv){c.save();c.beginPath();c.rect(CX0,CY0,CX1-CX0,wh);c.clip();c.strokeStyle=GB;flPaint(c,(u,v)=>({x:X(u*flClutter.AZ),y:Y(v*rng)}),1.4,.85);c.restore();}
   // contacts
   const blip=(x,y,a,hot)=>{c.globalAlpha=a;const g=c.createRadialGradient(x,y,0,x,y,9);g.addColorStop(0,hot?'#ffffff':GB);g.addColorStop(1,'rgba(141,255,180,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,9,0,7);c.fill();c.globalAlpha=1;};
-  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng||tk.hoj)continue;if(stt&&j!==L)continue;const age=now-tk.t;
+  for(const [j,tk] of radar.tracks){if(rv)break;if(!j.alive||tk.d>rng||tk.hoj)continue;if(stt&&j!==L)continue;const age=now-tk.t;
     let az=tk.az,d=tk.d;if(locked&&j===L){const q=radar.ang(j.pos);az=q.az;d=q.d;}
     const x=X(az),y=Y(d);if(Math.abs(x-wx)>ww/2)continue;blip(x,y,clamp(1-age/9,.2,1),locked&&j===L);}
   // acquisition bar / range strobe at the cursor range
