@@ -1041,7 +1041,7 @@ class Missile{
         else if(d.seek==='IR'&&!this.track.isDecoy&&(d.ccm||0)<.3&&SUNDIR.y>.03&&los.dot(SUNDIR)>.9945&&Math.random()<dt*(1.6-(d.ccm||0)*4))this.track=null;}
       if(this.track){P=_mP.copy(this.track.pos);Vt=_mVt.copy(this.track.vel);if(!this.track.isDecoy){this.lastP.copy(P);this.lastV.copy(Vt);this.memT=0;}}
       // memory mode: an active radar head that loses the target keeps flying to where it should be for a few seconds, searching as it goes
-      else if(d.seek==='ARH'&&!this.maddog&&(this.memT=(this.memT||0)+dt)<3){this.lastP.addScaledVector(this.lastV,dt);P=_mP.copy(this.lastP);Vt=_mVt.copy(this.lastV);}
+      else if(d.seek==='ARH'&&!this.maddog&&(this.memT=(this.memT||0)+dt)<(d.spec?d.spec.targetMemoryHoldTime:3)){this.lastP.addScaledVector(this.lastV,dt);P=_mP.copy(this.lastP);Vt=_mVt.copy(this.lastV);}
       this.hoj=false;
       if(this.track&&!this.track.isDecoy&&d.seek==='ARH'){const jm=jamOfMsl(this.track,d,this.pos);
         if(jm&&jm.noise&&jm.far){if(d.hoj)this.hoj=true;else{this.track=null;P=null;}}
@@ -1053,7 +1053,7 @@ class Missile{
       if(this.pos.distanceTo(P)<d.pit){this.active=true;this.track=tg.alive&&tg.pos.distanceTo(P)<5000?tg:null;if(tg===player&&this.track)rwrEvent('active');}}
     // terrain masking: a radar seeker that can't see the target over a ridge coasts on memory for 0.5 s, then loses it
     if(P&&this.track&&!this.track.isDecoy&&d.seek!=='IR'){this.maskT=terrLOS(this.pos,P)?0:(this.maskT||0)+dt;
-      if(this.maskT>.5){this.track=null;if(d.seek==='SARH')this.seekLost=true;P=null;this.maskT=0;}}
+      if(this.maskT>(d.spec?d.spec.terrainMaskingSensitivity:.5)){this.track=null;if(d.seek==='SARH')this.seekLost=true;P=null;this.maskT=0;}}
     // multipath: low over the ground, the radar return mixes with its mirror image below the surface, dragging the aim point down and around
     if(P&&d.seek!=='IR'&&(this.active||d.seek==='SARH')){const agl=P.y-groundAt(P.x,P.z),rng=this.pos.distanceTo(P),graze=Math.abs(Math.asin(clamp((this.pos.y-P.y)/Math.max(rng,1),-1,1)));
       const mp=clamp(1-agl/220,0,1)*clamp(1-graze/(14*D2R),0,1);
@@ -1100,12 +1100,12 @@ class Missile{
     const D=qd*ph.S*(mslCd0(ph,M,this.burning)+.75*CN*Math.sin(al))/m;
     const acc=_mac.copy(this.aL).addScaledVector(vd,T/m*(1-.25*tvcUse)-D);acc.y-=G;
     const prev=_mprev.copy(this.pos);this.vel.addScaledVector(acc,dt);this.pos.addScaledVector(this.vel,dt);
-    if(this.t>.6)for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh)||prev.distanceToSquared(j.pos)>1e6)continue;
+    if(this.t>(d.spec?d.spec.armDelayTime:.6))for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh)||prev.distanceToSquared(j.pos)>1e6)continue;
       const dd=segDist(prev,this.pos,j.pos,j.vel,dt);
       // warhead: blast-fragmentation, lethality falls with miss distance
       // contact-fuzed rounds (AIM-4 Falcon) must strike the airframe: the hit radius is the target's own body size, not a proximity shell
       if(d.contact){const hr=Math.max(1.4,.4*Math.sqrt((j.ac&&j.ac.S)||28));if(dd<hr){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,360*rnd(.95,1.1),this.sh,this.type);return;}continue;}
-      if(dd<d.fuse){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,340*(1-.55*dd/d.fuse)*rnd(.9,1.1),this.sh,this.type);return;}}
+      if(dd<d.fuse){if(d.spec){if(mslFuze(this,j,dd))return;continue;}this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,340*(1-.55*dd/d.fuse)*rnd(.9,1.1),this.sh,this.type);return;}}
     if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||(this.t>d.ign+d.burnT&&V<d.stop-60)){this.remove(true);return;}
     this.fxT=(this.fxT||0)+dt;}
   // visuals once per frame: smoke trail (dense on the boost, thin on the sustainer) and the body pointed along its angle of attack

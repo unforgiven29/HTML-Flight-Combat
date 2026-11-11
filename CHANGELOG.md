@@ -1,5 +1,12 @@
 # Changelog
 
+## v266 — Full missile parameter model, per-gun ballistics, WEAPON DATA page
+- New `js/weapons-data.js`: every missile gets the full parameter set (hardware / pre-launch, propulsion, aerodynamics, environment, seeker, signal processing / ECCM, guidance, fuze / warhead, power / limits) as `MSL[type].spec`, with per-round live state in `missile.st`.
+- Wired into flight: rail push vs gas-piston ejection, safe-separation hold, hang-fire on older motors, nozzle erosion, wind on the airframe, transonic buffet, dome-heating noise, IR coolant run-out, battery brown-out, data-driven memory hold and terrain-masking time.
+- Fuzing: arm delay from minimum range, closure-speed gate, fuze misfire with impact backup, damage from real warhead mass; continuous-rod vs blast-frag lethality. Existing fuze radii kept (AIM-4 stays direct-hit only).
+- Guns: real calibre / case, projectile mass, HE fill, muzzle velocity, belt mix, rpm, barrels, spin-up, barrel heat dispersion, recoil, burst limit for every gun in the game (M61A1/A2, GAU-12, GSh-30-1/-2, GSh-6-23/-30, GSh-23L, M39, Mk 12, DEFA 552/553/554, ADEN, BK-27, NR-30, NR-23, N-37, M3 .50). Mach-dependent drag; impact damage from energy + HE; gunsight flies the same rounds.
+- F9 opens the WEAPON DATA page for the selected weapon. Unpublished values (IF, noise floors, actuator torques) are nominal defaults.
+
 ## v265 — F-106A cockpit 1:1 with T.O. 1F-106A-1, no HUD, TSD, crash and FADEC-stall fixes
 - New `js/f106pit.js`: F-106A cockpit after T.O. 1F-106A-1 figure FO-1 (conventional instrument display) with both consoles (left 1-38, right 1-37). Radar scope on top, then ADI, HSI and the Tactical Situation Display down the centre; airspeed-AoA indicator (80-800 kt, rotating 0-100 kt scale, FINAL / MIN SAFE SPD AoA marks), Mach indicator (0.4-2.2, command Mach, striped max-allowable pointer), AAU-19/A altimeter (drums, Kollsman 28.1-31.0, STBY flag), VVI, EPR 1.2-3.4, tach, EGT, fuel flow, fuel quantity with selector, command/target altitude indicator, turn-and-slip, cabin altitude, accelerometer, standby attitude and compass, warning and gear lights.
 - No HUD in the F-106A: the HUD symbology and glass are gone. Only a small fixed optical-sight reticle remains (no data).
