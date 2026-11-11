@@ -250,9 +250,10 @@ function wdpDraw(){if(wdp.hidden||!player)return;const w=game.wsel;let h='<b sty
     if(!D)h+='No gun fitted.';else{const R=g.bullets;h+=`calibre ${D.cal}×${D.cs} mm · ${g.guns>1?g.guns+' guns × ':''}${D.barrels} barrel${D.barrels>1?'s':''} · ${g.rpm} rds/min · drive ${D.drive} · feed ${D.feed} · gun ${D.mass} kg<br>
       spin-up ${D.spin}s · ammo ${g.ammo} · spin ${(g.spin*100|0)}% · barrel heat ${(g.heat*100|0)}% · burst ${g.burst}${D.burst?' / '+D.burst+' limit':''} · recoil ${((g.recoil||0)/1000).toFixed(1)} kN<br><br>BELT:<br>`+
       R.map(r=>`${r.name}: ${(r.mass*1000).toFixed(0)} g · HE ${r.he} g · MV ${r.v} m/s · E₀ ${(.5*r.mass*r.v*r.v/1000).toFixed(0)} kJ · TOF 1 km ≈ ${tof(r,D).toFixed(2)} s`).join('<br>');}}
-  else{const d=MSL[w];if(!d){wdp.innerHTML=h+'No A/A missile selected.';return;}if(!d.spec)d.spec=SPEC(w,d);const s=d.spec,live=missiles.filter(m=>!m.remote&&m.alive&&m.sh===player&&m.type===w).pop(),src=Object.assign({},s,live&&live.st||{});
+  else{const ag=!MSL[w]&&window.AGSPEC&&AGSPEC.def(w),d=MSL[w]||ag;if(!d){wdp.innerHTML=h+'No missile selected.';return;}if(!d.spec)d.spec=SPEC(w,d);const s=d.spec,live=ag?AGSPEC.live(w):missiles.filter(m=>!m.remote&&m.alive&&m.sh===player&&m.type===w).pop(),src=Object.assign({},s,live&&live.st||{});
     h+=`<h3 style="margin:8px 0 4px;color:#ffbf47">${w}${live?' · LIVE ROUND #'+live.id:''}</h3>`;
-    for(const[gn,re]of GRP){h+=`<div style="color:#59ff9f;margin-top:6px">${gn}</div>`;for(const k of Object.keys(s))if(re.test(k))h+=`<div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#86948c">${k}</span><span>${fmt(src[k])}</span></div>`;}}
+    const seen=new Set();for(const[gn,re]of GRP){h+=`<div style="color:#59ff9f;margin-top:6px">${gn}</div>`;for(const k of Object.keys(s))if(re.test(k)){seen.add(k);h+=`<div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#86948c">${k}</span><span>${fmt(src[k])}</span></div>`;}}
+    const rest=Object.keys(s).filter(k=>!seen.has(k)&&k!=='spec');if(rest.length){h+='<div style="color:#59ff9f;margin-top:6px">10 OTHER</div>';for(const k of rest)h+=`<div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#86948c">${k}</span><span>${fmt(src[k])}</span></div>`;}}
   wdp.innerHTML=h;}
 function tof(r,D){let v=r.v,x=0,t=0;const k=r.A/(2*r.mass)*D.i;while(x<1000&&t<5){v-=k*gCd(v/340)*1.225*v*v*.005;x+=v*.005;t+=.005;}return t;}
 addEventListener('keydown',e=>{if(e.code==='F9'){e.preventDefault();wdp.hidden=!wdp.hidden;wdpDraw();}});
