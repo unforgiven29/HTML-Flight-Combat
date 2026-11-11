@@ -1,5 +1,10 @@
 # Changelog
 
+## v290 — Crew personalities
+- New `js/crewvoice.js`: the RIO / WSO / EWO has a nationality (US, Russia, China, Britain, France, Sweden) and a temperament (dry, cocky, nervous, veteran) fixed per airframe, plus a name and callsign. Stock calls (kill, bingo, missile, spike, wave-off, tone, radar, no-lock, ESM) are said in his voice.
+- Missile and spike calls carry context: missile type and seeker, range, seconds to impact; which fighter has you locked and how far.
+- New calls: mission intro, kill streaks, joker fuel, hard G, too low, damage stages, outnumbered, occasional banter when nothing is going on. `CREWV.off = true` restores the stock lines.
+
 ## v289 — Electronic warfare crew, aspect RCS for every radar, no floating ARM box
 - New `js/ewo.js`: the back-seater (EA-18G EWO, Su-34 WSO, every other two-seater with a jammer) runs the EW. ESM emitter calls (EA: bearing + range from the ALQ-218 fix; others: bearing and rough range), tracking warnings, jammer technique picked from the threat (DECM vs lock / radar missile, NOISE to screen the package on the EA-18G, AUTO against search radars), EA-18G cues the HARM at the most dangerous emitter. Shift+5 hands the jammer over / takes it back; pressing 5 keeps it for 25 s; U keeps him off the ARM for 15 s. HUD chip + calls, EW STATION row on the loadout screen.
 - Aspect-dependent RCS now also drives SAM radars, AI fighter radars and the datalink picture (`aspF()` in game.js, curves in stealth.js): beam is the biggest return, nose-on the smallest, stealth classes use their own curves.

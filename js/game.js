@@ -3538,7 +3538,7 @@ const rio={on:true,hold:0,prio:null,acc:0,seen:new Map(),calls:[],last:{},said:n
 function drawRIO(){const P=player;if(!P||!P.ac.rio||!rio.calls.length||mcam.m)return;const now=performance.now()/1000,fs=Math.round(clamp(Math.min(W,H)*.019,11,15));
   hx.save();hx.shadowBlur=0;hx.font=`600 ${fs}px "B612",sans-serif`;hx.textBaseline='middle';hx.textAlign='left';let y=H-(isTouch?190:92);
   for(let i=rio.calls.length-1;i>=0;i--){const c=rio.calls[i],age=now-c.t;if(age>7)continue;const a=clamp(1.5-age/4.7,0,1),w=hx.measureText(c.s).width;
-    hx.globalAlpha=a*.5;hx.fillStyle='#0b0f0d';hx.fillRect(14,y-fs*.8,w+54,fs*1.6);hx.globalAlpha=a;hx.fillStyle='#ffc46a';hx.fillText(P.ac.wso?'WSO':'RIO',22,y);hx.fillStyle='#eef2ec';hx.fillText(c.s,22+fs*2.6,y);y-=fs*1.9;}
+    hx.globalAlpha=a*.5;hx.fillStyle='#0b0f0d';hx.fillRect(14,y-fs*.8,w+54,fs*1.6);hx.globalAlpha=a;hx.fillStyle='#ffc46a';hx.fillText(window.CREWV&&CREWV.label&&!CREWV.off?CREWV.label():P.ac.wso?'WSO':'RIO',22,y);hx.fillStyle='#eef2ec';hx.fillText(c.s,22+fs*2.6,y);y-=fs*1.9;}
   hx.restore();}
 
 // ---- HUD: AN/AVG-12, projected on the windscreen (A/A symbology after the NATOPS and Heatblur F-14 manuals): heading scale on top, pitch ladder,

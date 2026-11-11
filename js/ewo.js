@@ -24,9 +24,9 @@ const EWO=window.EWO={on:true,hold:0,armHold:0,calls:[],last:{},seen:new Map(),e
 const tier=P=>!P||!P.alive||P.remote||!P.ac||!P.ac.rio||!P.ecm?null:(P.type==='EA-18G'?'EA':'STRIKE');
 EWO.tier=tier;
 EWO.active=()=>!!(tier(player)&&EWO.on);
-const say=(s,key,cd=8)=>{const t=nowS();if(key){if((EWO.last[key]||0)>t)return;EWO.last[key]=t+cd;}EWO.calls.push({s,t});if(EWO.calls.length>3)EWO.calls.shift();};
+const say=(s,key,cd=8)=>{if(window.CREWV&&CREWV.rewrite){const r=CREWV.rewrite(s);if(r)s=r;}const t=nowS();if(key){if((EWO.last[key]||0)>t)return;EWO.last[key]=t+cd;}EWO.calls.push({s,t});if(EWO.calls.length>3)EWO.calls.shift();};
 EWO.say=say;
-const who=P=>P.type==='EA-18G'?'EWO':(P.ac.wso?'WSO':'RIO');
+const who=P=>P.type==='EA-18G'?'EWO':(window.CREWV&&CREWV.label?CREWV.label():(P.ac.wso?'WSO':'RIO'));
 const brg=(P,p)=>(Math.atan2(p.x-P.pos.x,-(p.z-P.pos.z))*180/Math.PI+360)%360;
 const b3=b=>String(Math.round(b)%360).padStart(3,'0');
 const hor=(h1,h2)=>4120*(Math.sqrt(Math.max(h1,1))+Math.sqrt(Math.max(h2,1)));
