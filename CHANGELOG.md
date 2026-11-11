@@ -1,5 +1,9 @@
 # Changelog
 
+## v285 — Loadout screen clean-up for the new jets
+- The 70 new jets inherited pylons from their parent airframe that can carry nothing (for example 5L/5R, the 3b/3c and 4b/4c stacks, bay slots on the stealth jets, centreline slots on the Yak-130 / Tu-128 / Tornado F.3). They showed as dead stacked pylons on the loadout drawing and as EMPTY-only cards. They are now removed at registration, so the screen shows only stations that can carry a store.
+- Checked: every default cold-war and modern loadout still maps to a real station, `frontSVG` and station ordering run for all 70 jets, no script errors.
+
 ## v284 — Every radar has its own transmitter
 - New `js/radarhw.js`: carrier frequency, antenna diameter, peak power, waveform (pulse / pulse-Doppler / PESA / AESA), PRFs, noise figure, losses, bus power and warm-up for every radar in the game (about 100 sets; before, all but 14 shared one generic 9.7 GHz / 5 kW entry). RP-21/22 family corrected to J-band (12.9 GHz).
 - The player's radar registry (beamwidth, link budget, rain loss, chaff, Doppler blind speeds, F4 debug page) now runs on each set's own figures.

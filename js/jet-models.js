@@ -153,6 +153,8 @@ function restation(s,st){const L=s.L,b2=s.b/2,W=s.W,H=s.H,x0=W*.8,zW=-L/2+s.wz*L
 let n=0;
 for(const [id,s] of Object.entries(SPEC)){const A=AC[id];if(!A)continue;try{
   const st=restation(s,A.st),p=build(s);p.st=st;
+  // drop pylons that can carry nothing in either era (inherited from the parent airframe) so the loadout screen only shows real stations
+  try{const T=STN[id]||{};for(const k of Object.keys(st))if(!(T[k]&&T[k].length))delete st[k];}catch(e){}
   const prm=Object.assign({},p);A.model=()=>mkJet(prm);A.st=st;A.vst=undefined;A.mdl=id;
   // eye point follows the new canopy
   A.eye=[s.L/2-(s.cz||.2)*s.L-.2,s.H*.95];
