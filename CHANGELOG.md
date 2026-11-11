@@ -1,5 +1,18 @@
 # Changelog
 
+## v287 — Flight-model calibration for the 70 added jets
+- New `js/fmcal.js`: each added jet's clean, half-fuel top speed at 11 km is solved against its published maximum Mach using `acPerf()` (the same drag and thrust code the flight model runs). Reheated jets: the supersonic reheat trim (`ENG_SUP`) is bisected; jets still too fast (dry jets, or trim at its floor) get a wave-drag rise from 90 % of the published Mach; jets still too slow get their wave-drag table scaled down. Reheated jets with no Mach limit get one 0.15 above published.
+- Before: F-101B M3.03, Tornado F.3 M3.10, Tornado ECR M3.18, Yak-28P M2.83, F-104G M2.63, A-10C M1.02, Su-25 M0.99, Harrier GR.3 M1.23, M-346 M1.33 (all too fast); JA 37 M1.31, Mirage 2000 M1.37, Mirage 5 M1.09, Kfir M1.33, F-4B M1.33, F-22 M1.91 (all too slow); F-35A M1.91 (limit is M1.6). After: all 70 within 2 % of published. A-10C flown level at 11 km settles at M0.66.
+- Checked and left alone: empty weights, internal fuel, wing areas, g limits and engine ratings (all within a few % of published), missile masses and seeker cones, radar sets against the game's reference radars, guns and ammunition against published figures.
+- Small fixes: Tornado ECR keeps its BK-27, JF-17 carries 250 rounds.
+
+## v286 — Anti-ship missiles that behave like anti-ship missiles, and an anti-ship mission
+- New `js/antiship.js`. Every `as:1` weapon (AGM-84D Harpoon [new], Kh-35U/D, AM39 Exocet, Rb 04E, Rb 15F, YJ-82, YJ-83K, ASM-2, Sea Eagle, Kh-31A/AD, P-800, BrahMos-A) is no longer a Maverick clone: radar-designated (no TV lock), inertial midcourse to a predicted ship position, own sea-skimming cruise height (5-20 m) and terminal height, high-low profile for BrahMos / Kh-31AD, an active-radar seeker (imaging IR on the ASM-2) that switches on short of the predicted position, sees only inside its acquisition range scaled by ship size, the seeker cone and the radar horizon of a skimmer, and locks the ship nearest the predicted position or the best return in the beam.
+- Ship defences by class (SM-2 / SM-1 / S-300F, Phalanx / AK-630, chaff): supersonic skimmers are much harder to engage, imaging IR ignores chaff, close-in intercept debris can still damage. Ships that die sink.
+- AGM-84D added to the F-16C/V/E/I, F/A-18C/F, F-15E/I/EX and A-6E wing stations. New ANTI-SHIP MISSILES category on the loadout screen, with its own description text; HUD page (target box, range, track state, in-flight count and time to go).
+- New mission ANTI-SHIP · TASK GROUP: two destroyers, a frigate, a cruiser and a missile boat under way 55 km out; the jet gets its best anti-ship load (or is swapped to a Hornet if it has none).
+- 16-shot trials per missile against that group: single subsonic rounds get through 20-50 % of the time, supersonic rounds 55-75 %; a salvo is the answer.
+
 ## v285 — Loadout screen clean-up for the new jets
 - The 70 new jets inherited pylons from their parent airframe that can carry nothing (for example 5L/5R, the 3b/3c and 4b/4c stacks, bay slots on the stealth jets, centreline slots on the Yak-130 / Tu-128 / Tornado F.3). They showed as dead stacked pylons on the loadout drawing and as EMPTY-only cards. They are now removed at registration, so the screen shows only stations that can carry a store.
 - Checked: every default cold-war and modern loadout still maps to a real station, `frontSVG` and station ordering run for all 70 jets, no script errors.
