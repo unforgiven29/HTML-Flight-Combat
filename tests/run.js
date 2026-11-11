@@ -159,6 +159,17 @@ test('perf: radar sweep cost per column','F-4E',async p=>{
     RAWVID.st.cols=0;const t0=window.__pn();run(30*15);const wall=window.__pn()-t0;return{cols:RAWVID.st.cols,ms:wall/Math.max(1,RAWVID.st.cols)};});   // wall time of the whole frame loop per column written
   ok('columns written',r.cols>200,r.cols);ok('< 2 ms of wall time per column written (whole radar update)',r.ms<2,+r.ms.toFixed(3));});
 
+test('mig23_cockpit: every control on the rebuilt MiG-23ML panels steps without error and the radar panel drives the weapon system','MiG-23',async p=>{
+  const r=await p.evaluate(()=>{const c=ck.cur,bad=[];let n=0;
+    const sist=c.ctls.find(d=>/^СИСТ/.test(d.name||'')),izl=c.ctls.find(d=>/^ИЗЛ/.test(d.name||'')),nav=c.ctls.find(d=>/^НАВЕД/.test(d.name||'')),dh=c.ctls.find(d=>/^ΔH/.test(d.name||''));
+    const out={sist:!!sist,izl:!!izl,nav:!!nav,dh:!!dh};
+    for(const d of c.ctls){if(!d.act)continue;n++;for(const dir of[1,-1]){try{d.act(dir);d.state();}catch(e){bad.push((d.name||'?').slice(0,40)+': '+e.message);break;}}}
+    sist.act(1);sist.act(1);sist.act(1);out.mode1=mw();sist.act(1);sist.act(1);out.mode2=mw();   // from РЛ up through Т: wcs follows the selector
+    out.gain=sys.mig.irgain;out.n=n;out.bad=bad;return out;});
+  ok('radar panel controls exist (СИСТ, ИЗЛ, НАВЕД, ΔH)',r.sist&&r.izl&&r.nav&&r.dh,r);
+  ok('no control throws when stepped both ways',r.bad.length===0,r.bad.slice(0,3));
+  ok('СИСТ moves between RAD and IR',r.mode1==='IR'||r.mode2==='IR',{m1:r.mode1,m2:r.mode2});});
+
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

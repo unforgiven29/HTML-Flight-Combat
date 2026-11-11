@@ -1,5 +1,11 @@
 # Changelog
 
+## v309 — MiG-23ML cockpit rebuilt from the reference photos
+- Front panel (game.js, MiG-23ML block) re-laid out from the straight-on photos: left shoulder with the SPO-10 ПРОВЕРКА indicator, the S23ML-24 target-gate panel (СТРОБ, АПХ/ППХ, УСИЛ Т, УСИЛ Р, ΔH, УПР СТРОБ, СБРОС), α / nу dial and the ПОВТ ЗАХОД / ДЕМПФ / КРЕН / КУРС strip; ASP-17ML with its olive plate, ГОДЕН / КОНТРОЛЬ unit and Lazur bar; ГЛАВНЫЙ / ПОДГОТОВКА / КРЫЛ / СЕР. / ВОЗДУХ strip; right shoulder with the N003-34 radar panel (СИСТ БС 3-1 / РЛ / Т I-III / Т φ0 I-II, ПУ, ИЗЛ-ЭКВ-ВЫК, НАВЕД АВТ/РУЧН, МСКЦ/ППС/ЗПС) and a KUS M / V indicator; gauge columns, САУ lamp box, twin lamp matrices and КОНТРОЛЬ panel in photo order. All legends Cyrillic.
+- Wiring: СИСТ drives the weapon system (РЛ and БС to RAD, Т positions to IR); ИЗЛ = radar power; НАВЕД = GCI; СТРОБ, УПР СТРОБ, ΔH, УСИЛ Т / Р use the existing gate, zone, elevation and gain state. СИСТ БС sub-ranges and ПУ are panel-only. ΔH keeps the game's 8 elevation presets, not the 11 on the real dial.
+- Consoles relabelled in Russian and re-grouped (left: САУ-23, Р-832М, emergency tank / all-store jettison, oxygen, intake / nozzle / brake toggles; right: toggle bank, КАНАЛ radio, lighting, power, cabin air). Toggles with no model behind them say "(no effect here)" in the tooltip.
+- tests/run.js: mig23_cockpit steps every control both ways and checks the radar panel. 54/54. Gameplay-level layout, not a drawing-office copy.
+
 ## v307-v308 — Pulse scope cleanup
 - Range marks off by default (RAWVID.rm=false; set true to restore).
 - Pulse-radar scopes draw the raw echo as a single-bin return, not blobs/bars. The lock-select cursor is thin and dim, brightening for 3 s after a slew (F-4E, MiG-23, Flogger).
