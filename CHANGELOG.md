@@ -427,3 +427,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Seekers: SARH illumination memory, CW low-altitude notch, rain dropouts on active heads, gate stealing by DRFM scaled by ccm.
 - Weather/terrain: rain loss by band and radar horizon on ground radars (canSee) and AI fighter radars; AI track delay and pulse-radar clutter.
 - Not verified in live play; headless smoke test only (modes switch, no NaN/errors, rain scaling). GMAP is contact-based, not an image.
+
+## v276 — F-4 radar scope shows the whole scan
+- The pulse-radar clutter grid was fixed at ±30° but the F-4's B-scope spans ±60°, so only the middle of the scan was painted and track marks beyond ±30° were skipped. The grid now follows the radar gimbal (±60° on the APQ-120); the MiG pulse scopes stay at ±30°.
