@@ -2406,11 +2406,11 @@ function rwrUpdate(dt){
   const P=player,sy=P&&P.alive&&sys.rwr.pwr?rwrSysOf(P):null;RW.sy=sy;RW.list=[];RW.msl=[];
   if(!sy){RW.recs.clear();return;}
   if(RW.nm!==sy.nm){RW.nm=sy.nm;RW.recs.clear();sys.rwr.srch=sy.srch0!=null?sy.srch0:1;}
-  RW.clk+=dt;const clk=RW.clk,qi=P.q.clone().invert(),upY=P.up(new V3()).y,mnv=1+1.4*(1-clamp(upY,0,1));   // bearings degrade in a hard bank
+  RW.clk+=dt;if(window.RWRX)RWRX.tick(dt,P,sy,sy.nm);const clk=RW.clk,qi=P.q.clone().invert(),upY=P.up(new V3()).y,mnv=1+1.4*(1-clamp(upY,0,1));   // bearings degrade in a hard bank
   const brg=p=>{const r=p.clone().sub(P.pos).applyQuaternion(qi);return Math.atan2(r.x,-r.z);};
   const gn=()=>(Math.random()+Math.random()+Math.random()+Math.random()-2)*1.73,agl=Math.max(5,P.pos.y-groundAt(P.pos.x,P.pos.z));
   // radar-guided missiles whose seekers are transmitting at me, and how close the warner hears them
-  const mm=[];for(const m of missiles){if(!m.alive||m.track!==P||m.def.seek!=='ARH'||!m.active||!m.threat)continue;const dm=m.pos.distanceTo(P.pos);if(dm<sy.arh)mm.push({m,d:dm});}
+  const mm=[];for(const m of missiles){if(!m.alive||m.track!==P||m.def.seek!=='ARH'||!m.active||!m.threat)continue;const dm=m.pos.distanceTo(P.pos);if(dm<(window.RWRX?RWRX.uplinkRange(sy):sy.arh))mm.push({m,d:dm});}
   let anyL=false,anyT=false;
   for(const j of rwrEmitters(P)){
     const e=rwrEmit(j),d=j.pos.distanceTo(P.pos);let rc=RW.recs.get(j);
@@ -2420,23 +2420,24 @@ function rwrUpdate(dt){
     const a=brg(j.pos),aa=Math.abs(a);
     let R=e.R0*sy.k*(e.pd?sy.pd:1)*(e.aesa?sy.lpi:1)*(sy.rear?(aa>110*D2R?sy.rear:aa>70*D2R?sy.side:1):1);
     if(lk)R*=1.15;else if(!cone)R*=.12;                                        // outside the scan cone only sidelobe leakage reaches the warner
-    if(boost)R=Math.max(d*4,1);
+    if(boost)R=Math.max(d*4,1);else if(window.RWRX)R*=RWRX.rangeMul(j,e,d,a,lk,P);
     let hit=false;
     if(d<R){
       if(clk-(j._rwT===undefined?-9:j._rwT)>.6){j._rwT=clk;const o=e.g?_rwO.copy(j.pos).setY(j.pos.y+4):j.pos;j._rwL=terrLOS(o,P.pos)&&(!e.g||d<4120*(Math.sqrt(8)+Math.sqrt(agl)));}
       if(j._rwL){
         if(!rc){rc={j,e,seen:-99,shown:false,mode:'S',err:gn()*sy.sd*D2R*.6,dErr:Math.exp(.28*gn()),idOk:Math.random()<sy.id,cap:Math.random(),tmr:Math.random()*e.scan,pm:'',newT:-9,R:R};RW.recs.set(j,rc);}
-        if(lk)hit=true;else{rc.tmr-=dt;if(rc.tmr<=0){rc.tmr=e.scan*(.9+.2*Math.random());hit=Math.random()<clamp((R-d)/(R*.12),0,1);}}}}
+        if(lk)hit=true;else{rc.tmr-=dt;if(rc.tmr<=0){rc.tmr=e.scan*(.9+.2*Math.random());hit=Math.random()<clamp((R-d)/(R*.12),0,1)*(window.RWRX?RWRX.pHit(rc,sy):1);}}}}
     if(!rc)continue;
-    if(hit){rc.seen=clk;rc.d=d;rc.R=R;rc.mode=lk?'T':'S';rc.a=a;}
+    if(hit){rc.seen=clk;rc.d=d;rc.R=R;rc.mode=lk?'T':'S';rc.a=a;rc.sl=!lk&&!cone;rc.lkNow=lk;}
     rc.err+=-rc.err*.05*dt+gn()*sy.sd*D2R*.12*mnv*Math.sqrt(dt);                      // bearing error drifts about the truth, wider in a hard turn
     const age=clk-rc.seen,hold=rc.mode==='S'?sy.mem+e.scan*1.6:sy.mem+2.5;
     if(age>hold+sy.mem*2){RW.recs.delete(j);continue;}
     if(age>=hold){rc.shown=false;rc.pm='';continue;}
     let mode=rc.mode;
     if(mode==='T'){const guid=missiles.some(m=>m.alive&&(m.sh===j||e.g)&&m.track===P&&(e.g?(m.def.seek!=='IR'&&m.sh&&m.sh.gnd&&m.sh.pos.distanceTo(j.pos)<3500):(m.def.seek==='SARH'&&m.threat)));if(guid&&rc.cap<(e.g?sy.sam:sy.sarh))mode='L';}
+    if(window.RWRX){const gm=RWRX.gate(rc,mode,clk,dt,d,e,sy,rc.lkNow);if(!gm){rc.shown=false;continue;}mode=gm;}
     if(!rc.shown){rc.shown=true;rc.newT=clk;if(sy.fam==='W'&&mode==='S')sfx.rwr('new');}
-    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4)cmdsRun('chaff');else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
+    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
     if(mode==='L')anyL=true;else if(mode==='T')anyT=true;
     RW.list.push({j,d,lk:mode!=='S',gnd:e.g?1:0,mode,a:(rc.a===undefined?a:rc.a)+rc.err,e,age,dEst:d*rc.dErr,idOk:rc.idOk,sym:rc.idOk?e.sym:'U',newT:rc.newT,
       pwr:clamp(20*Math.log10(Math.max(rc.R,1)/Math.max(d,1))/30,0,1),
@@ -2444,13 +2445,14 @@ function rwrUpdate(dt){
       score:(mode==='L'?3000:mode==='T'?2000:0)+(e.g?(e.R0<30000?160:110):120)+300*clamp(e.R0*sy.k/Math.max(d,1)/4,0,1)});}
   RW.list.sort((x,y)=>y.score-x.score);
   if(sy.fam==='W')for(const x of mm){const m=x.m;if(m._rwE===undefined)m._rwE=gn()*sy.sd*D2R*.8;
-    if(!RW.mseen.has(m)){RW.mseen.add(m);rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4)cmdsRun('chaff');else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}
+    if(!RW.mseen.has(m)){RW.mseen.add(m);rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}
     RW.msl.push({m,d:x.d,a:brg(m.pos)+m._rwE});}
   if(RW.msl.length)anyL=true;
+  if(window.RWRX)RWRX.post(RW.list,sy,P);
   // repeating tones: a fast warble while a launch or active seeker is heard, a slow one while a radar tracks you (the Soviet warners tone once)
   RW.tLaunch-=dt;RW.tLock-=dt;
-  if(anyL){if(RW.tLaunch<=0){sfx.rwr('launch');RW.tLaunch=sy.tone==='N'?1.7:1.6;}}
-  else if(anyT&&sy.fam==='W'){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=3.4;}}
+  if(anyL){if(RW.tLaunch<=0){sfx.rwr('launch');RW.tLaunch=window.RWRX?RWRX.tone('launch',sy.tone==='N'?1.7:1.6):(sy.tone==='N'?1.7:1.6);}}
+  else if(anyT&&sy.fam==='W'){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=window.RWRX?RWRX.tone('track',3.4):3.4;}}
   if(!anyL&&!anyT){RW.tLock=0;}
 }
 function rwrEvent(){}   // events now come from what the receiver actually hears (rwrUpdate); the missile code still calls this on launch

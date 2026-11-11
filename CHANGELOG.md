@@ -1,5 +1,14 @@
 # Changelog
 
+## v269 — RWR realism layer (registry + model)
+- `docs/rwr_registry.txt` (19 sections, 613 variables) -> `js/rwrreg.js` via `scripts/gen-rwr-registry.js`; `js/rwr.js` seeds it per warner (ALR-67/56/69/46/45-50, SPO-15LM, SPO-10) and drives `rwrUpdate()` through six hooks.
+- Detection range now follows a received-power budget: sensitivity, antenna gain by azimuth/elevation, airframe + bank + stores + gear blockage, polarization, radome/cable/installation loss, atmosphere + rain, low-altitude multipath fading, ducting, warmup drift, crystal-video desensitisation. 12 dB less sensitive = 1/4 range; defaults are neutral.
+- Intercept probability falls with own-radar/jammer blanking, processor overload and agility; new emitters need deinterleave time + confirm hits; a track radar counts as a lock only after continuous illumination; guidance uplinks can be missed; IDs need observation time and show as unknown until then.
+- Bearings gain quantisation, bias, jitter, low-altitude multipath, airframe reflection, sidelobe false bearings and amplitude-comparison flips; range-from-power reads sidelobe hits too far; scope and tracker capacity, overload ghosts, operator-mode filters.
+- Faults (lost quadrant / band, degraded sensitivity, wrong bearing) from combat damage and random failure; warmup applies when the warner is switched on mid-flight (a warner already on at spawn starts warm).
+- RWR-triggered chaff/flare programs honour altitude, ground and cooldown inhibits; tone repeat rates come from the registry.
+- About 100 of the 613 variables are read by logic, about 150 more are seeded or live-mirrored; the rest are stored-only.
+
 ## v268 (addendum) — registry variables made live
 - New modules `sensorradar.js`, `sensorirst.js`, `sensorpulse.js`, `sensorsys.js`, `sensorphys1.js`, `sensorphys2.js` cover sections 1-56: values are computed each frame from the sim (geometry, ISA atmosphere, Planck, Friis, INS drift, scheduler load...) and a subset feed back into the sim (track gates and caps, look-down, notch, ESA/radome loss, IR range, receiver losses, thermal derating, EMCON, datalink).
 - `scripts/sensor-coverage.js [--md]` audits which variables are live-written, which change the sim and which are stored-only (`docs/sensor_coverage.md`). Most of the remainder is stored-only.
