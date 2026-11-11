@@ -464,7 +464,7 @@ PLANES.add('su27',{
     // R-77-1 (RVV-SD, izd. 170-1): boat-tail, longer motor, ~80 km on the CWS chart (R-77 = RVV-AE ~60 km)
     MSL['R-77-1']=Object.assign({},R77,{ph:null,mass:190,burn:8.0,acc:102,cd:3.7e-5,loft:.5,ccm:.6,ecc:.7,life:90,aiR:36000,res:.74});
     // R-77M (izd. 180): dual-pulse motor (second pulse lit on the terminal run), new AESA-type seeker, ~115 km
-    MSL['R-77M']=Object.assign({},R77,{ph:null,mass:210,cd:3.4e-5,loft:.62,loftCap:26000,ccm:.78,ecc:.82,trk:.92,life:130,pit:20000,aiR:52000,res:.8,maxG:40,search:16*D2R});
+    MSL['R-77M']=Object.assign({},R77,{ph:null,mass:210,cd:3.4e-5,loft:.62,loftCap:26000,ccm:.78,ecc:.82,trk:.92,life:130,pit:20000,aiR:52000,res:.8,maxG:40,search:16*D2R,p2R:22000});
     // R-37M (izd. 610M, AA-13 Axehead): 510 kg, dual-mode solid motor, very high loft, active seeker ~40 km, HOJ; 150 km on the chart
     MSL['R-37M']=Object.assign({},R77,{ph:null,mass:510,cd:5.4e-5,maxG:20,gimbal:60*D2R,loft:.72,loftCap:36000,ccm:.7,ecc:.8,trk:.82,life:260,pit:30000,search:14*D2R,rmin:5000,res:.6,fuse:18,aiR:90000,aiOff:15*D2R,smoke:.35,stop:300});
     Object.assign(SHAPE,{'R-74M':Object.assign({},SHAPE['R-73']),'R-74M2':{L:2.9,R:.085,f:[[.25,.38,.24],[2.6,.28,.14]]},'R-77-1':Object.assign({},SHAPE['R-77'],{L:3.71}),
@@ -479,8 +479,7 @@ PLANES.add('su27',{
     try{Object.assign(RU_WPN,{'R-74M':'74М','R-74M2':'74М2','R-77-1':'77-1','R-77M':'77М','R-37M':'37М'});}catch(e){}
     Object.assign(SM_ST,{'R-74M':'Р-74М','R-74M2':'Р-74М2','R-77-1':'Р-77-1','R-77M':'Р-77М','R-37M':'Р-37М'});
     ['R-74M','R-74M2','R-77-1','R-77M','R-37M'].forEach(k=>{MODERN_ONLY.add(k);if(!/RCS/.test(WNAME[k]))WNAME[k]+=' · RCS '+MSL[k].rcs+' m² · IR '+MSL[k].irsB;});
-    // dual-pulse: coast between the pulses
-    {const _mm=mslMotor;mslMotor=function(d,tb,r){const p=d.ph;if(!p||!p.gap||tb<=p.tb)return _mm(d,tb,r);if(tb<p.tb+p.gap)return[0,p.m0-p.mdB*p.tb];return _mm(d,tb-p.gap,r);};}
+    // dual-pulse: the coast and the pulse-2 ignition command live in mslMotor / Missile.pulse2 (game.js); the gap above is only the nominal figure for the WEAPON DATA reach profile
 
     // ---------------- airframe ----------------
     const B=AC['Su-27SM'];

@@ -69,7 +69,7 @@ function mawsTick(dt){const P=player;warned.length=0;if(!P||!P.alive||!mawsOn(P)
   const fw=P.fwd(new V3());
   for(const m of missiles){if(!m.alive||m.sh===P)continue;const d=m.pos.distanceTo(P.pos);if(d>f.r)continue;
     const to=m.vel.clone().normalize(),rel=P.pos.clone().sub(m.pos).normalize();if(to.dot(rel)<.6)continue;// not coming at us
-    const burning=m.burning||m.t<((m.def&&m.def.burn)||3)+.5;if(!burning&&d>f.r*.35)continue;// plume detection, or very close
+    const burning=m.burning||(!(m.def&&m.def.ph&&m.def.ph.gap)&&m.t<((m.def&&m.def.burn)||3)+.5);if(!burning&&d>f.r*.35)continue;// plume detection, or very close
     warned.push(m);if(!seen.has(m.id)){seen.set(m.id,now);try{sfx.rwr('launch');}catch(e){}warnT=now+2;}}
   if(warned.length){try{sys.rwr.lampT=now+.6;rwrState.launchT=Math.max(rwrState.launchT,.6);}catch(e){}}
   for(const[id,t]of seen)if(now-t>60)seen.delete(id);}

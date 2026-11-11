@@ -984,7 +984,11 @@ MSL['R-73'].gimbal=60*D2R;MSL['R-73'].aiOff=45*D2R;
 const cdShape=M=>M<.8?1:M<1.1?1+.9*(t=>t*t*(3-2*t))((M-.8)/.3):1.9*Math.pow(1.1/M,.7);
 const mslCd0=(ph,M,burn)=>ph.cd0*cdShape(M)*(burn?1:1+clamp(.2-.04*M,.06,.2));
 // motor state at time tb after ignition: thrust N and mass kg (thrust gains a little as ambient pressure falls)
+let MSLCUR=null;   // the live missile whose motor is being asked (dual-pulse rounds light pulse 2 on command, not on a timer)
 function mslMotor(d,tb,r){const p=d.ph;if(tb<=0)return[0,p.m0];
+  // dual-pulse (R-77M): after pulse 1 the motor coasts with its pulse-2 grain intact; the live missile lights it at m.p2T (terminal run), the
+  // WEAPON DATA reach profile has no missile to ask so it assumes the nominal gap
+  if(p.gap&&tb>=p.tb){const m=MSLCUR,t0=m&&m.def===d?m.p2T:p.tb+p.gap;if(t0==null||tb<t0)return[0,p.m0-p.mdB*p.tb];tb=p.tb+(tb-t0);}
   if(tb<p.tb)return[p.Tb*(1+.08*(1-r/1.225)),p.m0-p.mdB*tb];
   const t2=tb-p.tb,m1=p.m0-p.mdB*p.tb;if(t2<p.ts)return[p.Ts*(1+.08*(1-r/1.225)),m1-p.mdS*t2];return[0,p.mbo];}
 // no-allocation closest approach of a segment against a moving point over one step
@@ -1000,6 +1004,7 @@ function fireMissile(type,sh,tg,stPos){const m=new Missile(type,sh,tg,stPos);if(
 const _Z=new V3(0,0,-1);
 // scratch vectors for the missile step (one step runs at a time)
 const _mv=new V3(),_mr=new V3(),_mvr=new V3(),_mom=new V3(),_mac=new V3(),_mtmp=new V3(),_mbd=new V3(),_mprev=new V3(),_maim=new V3(),_mP=new V3(),_mVt=new V3(),_mrnd=new V3();
+const _p2a=new V3(),_p2b=new V3();
 const rndUnit=o=>{const z=Math.random()*2-1,a=Math.random()*6.2832,s=Math.sqrt(1-z*z);return o.set(s*Math.cos(a),z,s*Math.sin(a));};
 class Missile{
   constructor(type,sh,tg,stPos){
@@ -1013,9 +1018,23 @@ class Missile{
     this.mesh=makeMissileMesh(type);scene.add(this.mesh);missiles.push(this);if(/^AIM-54/.test(type)&&this.mesh.userData.flame)this.mesh.userData.flame.scale.setScalar(1.6);
     if(sh!==player&&d.seek!=='IR'&&tg===player)rwrEvent('launch');
     if(sh===player&&game.mcam==='AUTO'&&!net.on)mcamStart(this);}
+  // Dual-pulse motor (R-77M): pulse 1 boosts the round off the rail, then it coasts with the second pulse held back. The autopilot commands pulse 2
+  // for the terminal run: inside the missile's p2R of the target, or earlier when the coast has bled so much speed that the target would outrun it.
+  // The command has a short igniter delay and never comes before a minimum coast. Ranges are gameplay estimates, not published data.
+  pulse2(tb,V){const ph=this.def.ph;if(this.p2T!=null||tb<ph.tb+1.5)return;
+    const tg=this.track&&this.track.alive&&!this.track.isDecoy?this.track:this.target&&this.target.alive?this.target:null,
+      P=tg?tg.pos:this.lastP,Vt=tg?tg.vel:this.lastV,rel=_p2a.copy(P).sub(this.pos),R=rel.length()||1,vc=-rel.dot(_p2b.copy(Vt).sub(this.vel))/R;
+    const near=!this.maddog&&R<(this.def.p2R||20000)&&vc>-200,bled=V<Math.hypot(Vt.x,Vt.y,Vt.z)*1.1+40;
+    if(near||bled){this.p2T=tb+.35;this.p2Why=near?'NEAR TARGET':'ENERGY';}}
+  pulse2Fx(){const p=this.pos;for(let i=0;i<14;i++)glow.emit(p,_p2a.set(rnd(-4,4),rnd(-4,4),rnd(-4,4)),rnd(.15,.5),2.5,.6,1,.85,.5,1);
+    for(let i=0;i<6;i++)smoke.emit(p,_p2a.set(rnd(-6,6),rnd(-6,6),rnd(-6,6)),rnd(1,2),2,12,.95,.95,.93,.5,.4);
+    if(this.sh===player&&game.active&&!net.on&&SET.calls==='ON')radio(SN[this.type]+' · 2ND PULSE');}
   update(dt){
     const d=this.def,ph=d.ph;this.t+=dt;const V=Math.max(this.vel.length(),1),vd=_mv.copy(this.vel).divideScalar(V);
-    const tb=this.t-d.ign;this.burning=tb>0&&tb<d.burnT;this.sustain=this.burning&&tb>ph.tb;
+    const tb=this.t-d.ign;
+    if(ph.gap){this.pulse2(tb,V);this.burning=tb>0&&(tb<ph.tb||(this.p2T!=null&&tb>=this.p2T&&tb<this.p2T+ph.ts));this.sustain=this.burning&&tb>=ph.tb;
+      if(this.burning&&this.sustain&&!this.p2Lit){this.p2Lit=true;this.pulse2Fx();}}
+    else{this.burning=tb>0&&tb<d.burnT;this.sustain=this.burning&&tb>ph.tb;}
     let P=null,Vt=null;
     if(this.track&&!this.track.alive){const sr=this.track.isDecoy&&this.track.type==='chaff'&&this.track.src;this.track=sr&&sr.alive&&d.seek!=='IR'?sr:null;}
     if(d.seek==='SARH'){const tg=this.target,jm=tg&&!this.seekLost&&tg.alive?jamOfMsl(tg,d,this.pos):null;
@@ -1089,7 +1108,7 @@ class Missile{
     else if(this.maddog&&tb>0)cmd.y+=G;
     cmd.addScaledVector(vd,-cmd.dot(vd));
     // ---- airframe: motor, lift-limited turn, autopilot lag, drag ----
-    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T,m]=mslMotor(d,tb,rr);this.mass=m;this.thrust=T;
+    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T,m]=(MSLCUR=this,mslMotor(d,tb,rr));MSLCUR=null;this.mass=m;this.thrust=T;
     const tvcA=this.burning&&d.tvc?T*d.tvc/m:0;this.tvcOn=tvcA>0;
     const aeroMax=qd*ph.S*ph.cnMax/m,amax=Math.min(d.maxG*G,aeroMax+tvcA);
     if(cmd.lengthSq()>amax*amax)cmd.setLength(amax);
@@ -1106,7 +1125,7 @@ class Missile{
       // contact-fuzed rounds (AIM-4 Falcon) must strike the airframe: the hit radius is the target's own body size, not a proximity shell
       if(d.contact){const hr=Math.max(1.4,.4*Math.sqrt((j.ac&&j.ac.S)||28));if(dd<hr){this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,360*rnd(.95,1.1),this.sh,this.type);return;}continue;}
       if(dd<d.fuse){if(d.spec){if(mslFuze(this,j,dd))return;continue;}this.remove(true,j);j.hitFrom=this.pos.clone();applyHit(j,340*(1-.55*dd/d.fuse)*rnd(.9,1.1),this.sh,this.type);return;}}
-    if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||(this.t>d.ign+d.burnT&&V<d.stop-60)){this.remove(true);return;}
+    if(this.pos.y<groundAt(this.pos.x,this.pos.z)||this.t>d.life||((ph.gap?this.p2T!=null&&tb>this.p2T+ph.ts:this.t>d.ign+d.burnT)&&V<d.stop-60)){this.remove(true);return;}
     this.fxT=(this.fxT||0)+dt;}
   // visuals once per frame: smoke trail (dense on the boost, thin on the sustainer) and the body pointed along its angle of attack
   draw(){if(!this.alive)return;const d=this.def;
