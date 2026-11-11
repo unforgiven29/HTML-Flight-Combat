@@ -105,7 +105,7 @@ S.eval=function(j,a){const w=wfOf(),lam=C/((F.reg.carrierFrequencyGHz||9.7)*1e9)
   if(!s)return 0;
   if(a.el<=-1*D){const vr=Math.abs(j.vel.dot(_b.copy(j.pos).sub(player.pos).normalize())),t=cl((vr-17)/22,0,1),fn=.003+.997*(t*t*(3-2*t));s/=fn;}   // undo the old notch
   const key=j,now=performance.now();let c=S.cache.get(key);
-  if(!c||now-c.t>250){a.snrRef=s;c={t:now,r:S.eval(j,a)};S.cache.set(key,c);if(this.lock===j||this.bug===j||!S.last)S.last=Object.assign({id:j.type||'?',R:a.d},c.r);}
+  if(!c||now-c.t>400){a.snrRef=s;c={t:now,r:S.eval(j,a)};S.cache.set(key,c);if(this.lock===j||this.bug===j||!S.last)S.last=Object.assign({id:j.type||'?',R:a.d},c.r);}
   return s*c.r.f;};}
 
 // F4 overlay lines

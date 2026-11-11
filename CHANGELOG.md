@@ -438,4 +438,8 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Antenna: 2-D power pattern from the registry beamwidths (Gaussian main beam, tapered sidelobe envelope with nulls, floor); electronic arrays widen 1/cos(scan) and lose gain cos^1.5.
 - Per non-eclipsed PRF the sim generates complex pulse samples for the target's range gate: ground patches (fine around the beam, coarse all round, every ambiguous range) with sigma0, area, two-way pattern gain and Doppler; Hamming window, FFT, mainlobe-clutter and zero-Doppler filters blank their bins, CA-CFAR around the target bin. Aliasing and blind speeds now come out of the sampling.
 - Result feeds sensorsig as the clutter-limited SNR factor; ~1.7 ms per target evaluation (cached 250 ms).
-- Limits: flat-earth clutter geometry (no terrain shadowing per patch), no noise realisation (expected noise floor), no range sidelobes or pulse compression, target RCS fluctuation not simulated, player radar only.
+- Noise: complex Gaussian noise is added to every sample, so the CFAR reference and the target peak are real random draws.
+- Target RCS fluctuation: Swerling I (fighters) or III (large targets), drawn independently per PRF look so M-of-N gives frequency diversity.
+- Range sidelobes: radars with phase-coded pulse compression (APG-68(V)5/70/73/79, N019M, Zhuk, Zaslon) leak neighbouring-gate clutter at the code's peak sidelobe level; compression also shrinks the clutter cell. Plain-pulse sets have none.
+- Terrain shadowing: a 120-ray horizon profile (4/3-earth curvature, refreshed every 2.5 s or 1.5 km) hides clutter patches behind nearer terrain and gives each patch its real height, so grazing angle and land/sea come from the terrain.
+- Limits: patches use one terrain height per ray step (no slope-facing), no target glint or engine/propeller modulation, ownship multipath not in the CPI, player radar only.
