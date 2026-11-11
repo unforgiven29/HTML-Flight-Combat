@@ -14,14 +14,18 @@ if(typeof drawFCR==='undefined'||typeof THREE==='undefined')return;
 const N=256,cv=document.createElement('canvas');cv.width=cv.height=N;cv._cwOwn=true;const c2=cv.getContext('2d');
 const K={canvas:cv,t:0,rt:null,buf:null,img:null,cam:null,fov:[9,4.5,2.5]};window.KAIRA=K;
 const isK=()=>!!player&&player.alive&&player.ac&&player.ac.tvScope;
+// TV / laser weapons (Kh-29T, Kh-29TD, KAB-500Kr, Kh-29L, Kh-25ML) have no gimbal of their own on this jet: the seeker follows the Kaira-23 head
+const tvSlave=P=>typeof SNS!=='undefined'&&!!SNS.spi&&!!AGW[game.wsel]&&(AGW[game.wsel].k==='agm'||AGW[game.wsel].k==='lgb');
 function capture(P){
   if(!K.rt){K.rt=new THREE.WebGLRenderTarget(N,N);K.buf=new Uint8Array(N*N*4);K.img=c2.createImageData(N,N);K.cam=new THREE.PerspectiveCamera(9,1,4,90000);}
   const zi=clamp(radar.ai||0,0,2),L=radar.lock&&radar.lock.alive&&radar.mode==='STT'?radar.lock:null,qi=P.q.clone().invert();
-  let dir;
-  if(L)dir=L.pos.clone().sub(P.pos).normalize().applyQuaternion(qi);
-  else{const az=clamp((radar.cur&&radar.cur.az||0),-12*D2R,12*D2R),el=-9*D2R+((radar.cur&&radar.cur.r!=null?radar.cur.r:.5)-.5)*-20*D2R;dir=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el));}
+  let dir;K.slaved=false;
+  if(tvSlave(P)){/* a TV / laser weapon is selected: the seeker is slaved to this head, both look at the sensor point of interest */
+    const e=P.pos.clone().addScaledVector(P.fwd(new V3()),4.5).addScaledVector(P.up(new V3()),-.9);dir=SNS.spi.clone().sub(e).normalize().applyQuaternion(qi);K.slaved=true;}
+  else if(L)dir=L.pos.clone().sub(P.pos).normalize().applyQuaternion(qi);
+  else{const az=clamp((radar.cur&&radar.cur.az||0),-12*D2R,12*D2R),el=-9*D2R+((radar.cur&&radar.cur.r!=null?radar.cur.r:.5)-.5)*20*D2R;/* cursor up = look up */dir=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el));}
   // gimbal limits: +/-12 deg azimuth, -20..+4 deg elevation (head under the nose)
-  const az=clamp(Math.atan2(dir.x,-dir.z),-12*D2R,12*D2R),el=clamp(Math.asin(clamp(dir.y,-1,1)),-20*D2R,4*D2R);K.az=az;K.el=el;K.lock=!!L;
+  const az=clamp(Math.atan2(dir.x,-dir.z),-12*D2R,12*D2R),el=clamp(Math.asin(clamp(dir.y,-1,1)),-20*D2R,4*D2R);K.az=az;K.el=el;K.lock=K.slaved?!!(SNS.mav||SNS.mode==='POINT'):!!L;
   const w=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el)).applyQuaternion(P.q),cam=K.cam;
   cam.fov=K.fov[zi];K.zi=zi;cam.updateProjectionMatrix();cam.position.copy(P.pos).addScaledVector(P.fwd(new V3()),4.5).addScaledVector(P.up(new V3()),-.9);cam.up.set(0,1,0);cam.lookAt(cam.position.clone().add(w));
   const vis=P.mesh.visible;P.mesh.visible=false;const prev=renderer.getRenderTarget();renderer.setRenderTarget(K.rt);renderer.setClearColor(0xb8c4cc,1);renderer.clear(true,true,false);
@@ -39,8 +43,8 @@ function symbols(P){
   const g=K.lock?40:60;[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sy])=>{c2.beginPath();c2.moveTo(cx+sx*g,cy+sy*(g-14));c2.lineTo(cx+sx*g,cy+sy*g);c2.lineTo(cx+sx*(g-14),cy+sy*g);c2.stroke();});
   c2.font='700 13px "B612 Mono",monospace';c2.textBaseline='middle';c2.textAlign='left';c2.fillText('ТВ',8,14);
   c2.textAlign='right';c2.fillText(['ШУ','СУ','УУ'][K.zi||0],N-8,14);
-  const L=K.lock?radar.lock:null,d=L?P.pos.distanceTo(L.pos):0;c2.textAlign='center';
-  c2.fillText(L&&d<9000?(d/1000).toFixed(1)+' КМ':'-.-',cx,N-12);if(L)c2.fillText('ЗАХВАТ',cx,N-28);
+  const L=K.slaved?(SNS.unit||null):(K.lock?radar.lock:null),d=L?P.pos.distanceTo(L.pos):0;c2.textAlign='center';
+  c2.fillText(L&&d<9000?(d/1000).toFixed(1)+' КМ':'-.-',cx,N-12);if(K.lock)c2.fillText('ЗАХВАТ',cx,N-28);if(K.slaved){c2.textAlign='center';c2.fillText('СЛЕЖ',cx,14);c2.textAlign='left';}
   c2.textAlign='left';c2.font='700 11px "B612 Mono",monospace';c2.fillText('АЗ '+(K.az*R2D).toFixed(0).padStart(3,' '),8,N-12);c2.textAlign='right';c2.fillText('УМ '+(K.el*R2D).toFixed(0),N-8,N-12);
   c2.restore();
 }
@@ -50,5 +54,9 @@ function tick(){
   else{try{capture(P);symbols(P);}catch(e){if(!K._w){K._w=1;console.warn('[kaira]',e);}}}
   if(cv._cwTex)cv._cwTex.needsUpdate=true;
 }
+// the weapon seeker sits where the head sits and cannot look further than the head can
+try{const _e=SNS.eye.bind(SNS),_l=SNS.lim.bind(SNS);
+  SNS.eye=function(P){return P&&P.ac&&P.ac.tvScope?P.pos.clone().addScaledVector(P.fwd(new V3()),4.5).addScaledVector(P.up(new V3()),-.9):_e(P);};
+  SNS.lim=function(){return player&&player.ac&&player.ac.tvScope?20*D2R:_l();};}catch(e){console.warn('[kaira] slave',e);}
 {const _f=drawFCR;drawFCR=function(){tick();return _f.apply(this,arguments);};}
 })();
