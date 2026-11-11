@@ -25,7 +25,7 @@
 if(typeof radar==='undefined'||typeof flPaint!=='function'||typeof flClutterSweep!=='function'||typeof flClutter==='undefined')return;
 const D=Math.PI/180,C=299792458,RE0=6371000;let RE=RE0*4/3;const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const S=window.SENSOR_SIG||{},F=window.SENSOR_FUSE||{};
-const RV=window.RAWVID={on:true,clut:true,rain:true,cu:true,gnd:true,chaff:true,det:true,prop:true,rcv:true,crt:true,side:true,bank:true,lock:true,jam:true,tgt:true,noise:true,mti:true,prf:0,tau:1.0e-6,tph:2.2,thr:2.5,span:30,
+const RV=window.RAWVID={on:true,clut:true,rain:true,cu:true,gnd:true,chaff:true,det:true,prop:true,rcv:true,crt:true,side:true,bank:true,lock:true,jam:true,tgt:true,noise:true,mti:true,jem:true,prf:0,tau:1.0e-6,tph:2.2,thr:2.5,span:30,
   st:{cols:0,ms:0,tgt:0,last:0,err:null,sl:0,fold:0,lk:0}};
 const nR=192;let nA=0,V=null,T=null,AZ=0,RNG=0,BWk=0;RV.dump=()=>({V:V,T:T,nA:nA,nR:nR,AZ:AZ,RNG:RNG});
 const clr=new Float32Array(nR),rainA=new Float32Array(nR);
@@ -34,14 +34,46 @@ const ex=()=>-Math.log(1-Math.random());
 const nz=()=>(ex()+ex()+ex()+ex())*.25;                     // video integrator: a few pulses per beam passage are averaged, so the grass is finer and an echo stands out                    // unit-mean exponential: noise and Rayleigh power fluctuation
 const pat1=(dAz,dEl,bwA,bwE,sll)=>S.pattern?S.pattern(dAz,dEl,bwA,bwE,sll):Math.exp(-2.7726*((dAz/bwA)*(dAz/bwA)+(dEl/bwE)*(dEl/bwE)));
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-function ant(){const bw=radar.beam||3.3*D,bwE=radar.bmV?radar.bmV():bw,w=S.wfOf?S.wfOf():null;return{bwA:bw,bwE:bwE,sll:(w&&w.sll)||-21};}
+function ant(){const bw=radar.beam||3.3*D,bwE=radar.bmV?radar.bmV():bw,w=S.wfOf?S.wfOf():null;const sll=(w&&w.sll)||-21;return{bwA:bw,bwE:bwE,sll:sll,per:S.period?S.period(sll):1};}
 function gainOf(){const P=player,pit=P&&P.ac&&P.ac.pit;return(pit==='flogger'||pit==='foxbat'||pit==='fishbed')?sys.mig.fgain:(sys.fcr&&sys.fcr.gain!=null?sys.fcr.gain:.6);}
 function setup(){if(typeof flFit==='function')flFit();const az=flClutter.AZ,rng=radar.rngM,bw=radar.beam||3.3*D,n=cl(Math.round(2*az/(bw*.25)),64,420);
   if(n!==nA||Math.abs(az-AZ)>1e-6||rng!==RNG){nA=n;AZ=az;RNG=rng;V=new Float32Array(nA*nR);T=new Float32Array(nA*nR);}}
 function windMs(){let U=0;try{U=(WNDP[ENV.wind]||0)*.5144*(ENV.wx==='STORM'?1.5:ENV.wx==='OVERCAST'?1.15:1);}catch(e){}return U;}
 // patchy rain: value noise on a 6 km grid, drifting slowly with the wind
-function rainField(x,z,t){const g=6000,u=(x+t*6)/g,v=(z+t*3)/g,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,s=q=>q*q*(3-2*q),
+function rainField(x,z,t){if(window.WXC)return WXC.at(x,z,t);const g=6000,u=(x+t*6)/g,v=(z+t*3)/g,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,s=q=>q*q*(3-2*q),
   a=hash(i,j),b=hash(i+1,j),c=hash(i,j+1),d=hash(i+1,j+1),n=a+(b-a)*s(fu)+(c-a)*s(fv)+(a-b-c+d)*s(fu)*s(fv);return cl((n-.42)*2.2,0,1);}
+
+/* ---------- target RCS fluctuation (Swerling I) tied to aspect and time ----------
+   The echo is the power of a complex Gaussian amplitude. It is kept while the aspect seen by the radar barely changes and the target holds course, and is
+   re-drawn gradually as the target turns against the line of sight (decorrelation angle about lambda / (2 L), L = 15 m) or as time passes (engine and airframe
+   vibration, about 2.5 s). So a steady head-on closure fades and builds slowly, a manoeuvring target scintillates. */
+const _fa=new THREE.Vector3(),_fq=new THREE.Quaternion(),gn=()=>{let u=0,v=0;while(u<1e-9)u=Math.random();v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)*Math.SQRT1_2;};
+function fluct(st,j,toMe,now,lam){
+  if(st.ar===undefined){st.ar=gn();st.ai=gn();st.t=now;st.asp=null;}
+  let asp=null;if(j.q&&!j.gnd){_fa.copy(toMe).applyQuaternion(_fq.copy(j.q).invert());asp=_fa;}
+  let dth=0;if(asp&&st.asp)dth=Math.acos(Math.max(-1,Math.min(1,asp.dot(st.asp))));if(asp){st.asp=st.asp||new THREE.Vector3();st.asp.copy(asp);}
+  const dt=Math.max(0,now-st.t),rho=Math.exp(-dt/2.5)*Math.exp(-dth/(lam/30));
+  if(rho<1){const q=Math.sqrt(1-rho*rho);st.ar=rho*st.ar+q*gn();st.ai=rho*st.ai+q*gn();}
+  st.t=now;st.f=st.ar*st.ar+st.ai*st.ai;return st.f;}
+/* jet engine modulation: compressor / fan blades seen down the intake or the nozzle chop the echo; the PRF samples it far below the blade rate, so it shows as a pulse-to-pulse flicker */
+function jemDepth(j,c){if(j.gnd||j.chaff)return 0;const nose=Math.max(0,Math.abs(c)-.7)/.3,thr=Math.max(.3,(j.n!=null?j.n:.8)),ab=j.ab||0;return .35*nose*Math.min(1,thr)*(1-.4*ab);}
+
+RV.fluct=fluct;RV.jemDepth=jemDepth;
+/* ---------- sweep time base and range-mark generator ----------
+   The range sweep is a ramp: it starts slowly while the ramp circuit settles and its slope drifts with temperature, so the displayed range u(x) is not exactly the
+   true fraction x. The crystal range marks are written through the same time base, so they and the echoes stay consistent with each other but not with the fixed
+   graticule: a scope read against the graticule is off by 1 to 2 %. Pulse-set range error follows pulse length and signal-to-noise. */
+const NL={g:0,d:.015,tau:.035,t:-9,inv:new Float32Array(nR),mk:[],tmp:new Float32Array(nR)};
+const uOf=x=>x*(1+NL.g)-NL.d*(1-Math.exp(-x/NL.tau));
+RV.warpU=uOf;RV.nlOn=true;RV.rm=true;RV.rn=true;
+function nlSetup(now,RNGm){const tb=Math.floor(now/4);if(tb===NL.t&&NL.R===RNGm)return;NL.t=tb;NL.R=RNGm;NL.g=.012*Math.sin(now/38+1.3);
+  for(let d=0;d<nR;d++){const want=(d+.5)/nR;let lo=0,hi=1.2;for(let i=0;i<18;i++){const m=(lo+hi)/2;if(uOf(m)<want)lo=m;else hi=m;}NL.inv[d]=(lo+hi)/2*nR-.5;}
+  const mi=isMigK()?1000:1852,nice=[1,2,5,10,20,25,50,100],raw=RNGm/mi/5;let st=nice[0];for(const v of nice)if(v<=raw*1.2)st=v;st*=mi;NL.mk.length=0;
+  for(let k=1;k*st<RNGm;k++)NL.mk.push({i:Math.round(uOf(k*st/RNGm)*nR-.5),major:k%5===0});}
+const isMigK=()=>typeof isMig==='function'&&isMig();
+function warpRow(row){if(!RV.nlOn)return;const t=NL.tmp;for(let d=0;d<nR;d++){const x=NL.inv[d],i=Math.floor(x),f=x-i;t[d]=i<0?row[0]:i>=nR-1?row[nR-1]:row[i]*(1-f)+row[i+1]*f;}for(let d=0;d<nR;d++)row[d]=t[d];}
+function rangeMarks(row){if(!RV.rm)return;for(const m of NL.mk){for(let k=0;k<2;k++){const i=m.i+k;if(i>=0&&i<nR)row[i]+=(m.major?900:420)*(k?.6:1);}}}
+RV.rngSig=function(snr,d){const r0=C*RV.tau/2/Math.sqrt(2*Math.max(snr,1));return Math.sqrt(r0*r0+Math.pow(.0015*d,2)+100);};
 
 /* ---------- range folding: a pulse set cannot tell an echo from this pulse from one of the pulse before (second-time-around) ---------- */
 function prfOf(){const r=player&&player.ac&&player.ac.radar,p=r&&r.prf;return RV.prf||(p&&p<6000?p:1200);}
@@ -72,7 +104,7 @@ function addTarget(j,P,now,stab,lam,ru){
   const J=j.gnd?null:radar.jam(j);let mt=1;
   if(RV.mti&&sys.mig&&sys.mig.mti){const los=toMe.clone().negate(),vr=(j.vel||_gv.set(0,0,0)).clone().sub(P.vel).dot(los),vb=lam*2000/2;mt=Math.pow(Math.sin(Math.PI*vr/vb),2)*.9+.1;if(j.chaff)mt=.12;}
   const jn=J&&J.noise&&!J.esc?Math.max(J.bt||1,1):0;
-  tg.push({j:j,a:a,ra:ra,re:re,d:a.d,dS:dS,fold:a.d>=ru,S:SNR50*Math.pow(Rt/a.d,4),Rt:Rt,st:st,mt:mt,pf:window.BEAM&&!j.chaff?BEAM.k(j,a):1,jn:jn,Sbt:jn?SNR50*Math.pow(Rt/jn,4):0,
+  tg.push({toMe:toMe,lam:lam,jem:RV.jem?jemDepth(j,c):0,j:j,a:a,ra:ra,re:re,d:a.d,dS:dS,fold:a.d>=ru,S:SNR50*Math.pow(Rt/a.d,4),Rt:Rt,st:st,mt:mt,pf:window.BEAM&&!j.chaff?BEAM.k(j,a):1,jn:jn,Sbt:jn?SNR50*Math.pow(Rt/jn,4):0,
     att:pathAtt(P,j.pos,now),ext:j.chaff?Math.max(1,Math.round((20+15*j.age)*2/(RNG/nR))):1,chaff:!!j.chaff});}
 function targets(now,P){tg.length=0;tgNow=now;if(!RV.tgt&&!RV.jam)return;
   const stab=radar.gl.stab,lam=C/(((F.reg&&F.reg.carrierFrequencyGHz)||9.7)*1e9),ru=Ru();
@@ -95,18 +127,54 @@ function cuNear(P,sx,sz,range){cuList.length=0;if(!RV.cu||!ENV||!(ENV.rain>.03))
     if(s<-rad||s>range+rad||q>rad*2.2)continue;
     const b0=c.y+base;cuList.push({s:s,q:q,rad:rad,b0:b0,top:b0+1200+c.h*(2000+4500*ENV.rain),I:.5+.5*hash(c.i,5)});}}
 
-/* ---------- land cover from the terrain itself (the heightfield is all the game has): towns, forest, farmland, bare rock ---------- */
-function landTex(x,z,h,sl){let k=.35+1.9*hash(Math.floor(x/1400),Math.floor(z/1400)),as=Math.abs(sl);
-  if(h<350&&as<.08&&hash(Math.floor(x/4500)+91,Math.floor(z/4500)-37)>.93)k*=5;                         // a town: corner reflectors, +7 dB
-  else if(h>=350&&h<1500&&as<.35&&hash(Math.floor(x/9000)+5,Math.floor(z/9000)+8)>.45)k*=1.5;       // forest canopy
-  else if(h<350)k*=.55;                                                                                 // farmland and plains
-  else if(h>2300||as>.5)k*=1.25;                                                                        // bare rock, steep faces
-  return k;}
+/* ---------- cumulus on an infrared path ----------
+   The drawn cumulus clusters (the same 300 the sky uses, first ENV.P.cu of them) are upright ellipsoids from the cloud base to a top that grows with the rain
+   level. A ray through them is cut by water droplets (about 30 per km at 3-5 microns and at 8-12 microns), so a chord of a few hundred metres is opaque. Returns
+   the transmission 0..1 between a and b (world points). */
+RV.cuIR=function(a,b){const E=typeof ENV!=='undefined'?ENV:null;if(!RV.cu||!E||!E.P||!(E.P.cu>0))return 1;if(!cuAll)cuInit();
+  const nvis=Math.min(E.P.cu,cuAll.length),base=E.P.base||0,dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz);if(L<1)return 1;
+  let chord=0;const N=Math.min(48,Math.max(8,Math.ceil(L/700))),ds=L/N;
+  for(let i=0;i<nvis;i++){const c=cuAll[i],rad=c.w*1.6,b0=c.y+base,top=b0+1200+c.h*(2000+4500*(E.rain||0)),ym=(b0+top)/2,hh=(top-b0)/2;
+    const t=Math.max(0,Math.min(1,((c.x-a.x)*dx+(c.z-a.z)*dz)/((dx*dx+dz*dz)||1))),px=a.x+dx*t-c.x,pz=a.z+dz*t-c.z;if(px*px+pz*pz>rad*rad*1.1)continue;
+    if(Math.max(a.y,b.y)<b0||Math.min(a.y,b.y)>top)continue;
+    for(let k=0;k<N;k++){const f=(k+.5)/N,x=a.x+dx*f-c.x,z=a.z+dz*f-c.z,y=(a.y+dy*f-ym)/hh;if((x*x+z*z)/(rad*rad)+y*y<1)chord+=ds;}}
+  return chord>0?Math.max(.01,Math.exp(-30*chord/1000)):1;};
 
+/* ---------- land cover from the terrain itself (the heightfield is all the game has): towns, forest, farmland, bare rock ---------- */
+/* Land reflectivity from what the game really draws: the same biome bands, field patchwork, rock on slopes, snow line and winter cover as the terrain shader, plus the
+   airfield pavement and its real buildings (window.WREFL). There are no towns or forests in this world, so none is invented. Multiplies the base sigma-zero. */
+const fr=q=>q-Math.floor(q),sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+const h21=(x,y)=>{x=fr(x*123.34);y=fr(y*456.21);const d=x*(x+45.32)+y*(y+45.32);x+=d;y+=d;return fr(x*y);};
+const vn=(x,y)=>{const i=Math.floor(x),j=Math.floor(y);let fx=x-i,fy=y-j;fx=fx*fx*(3-2*fx);fy=fy*fy*(3-2*fy);const a=h21(i,j),b=h21(i+1,j),c=h21(i,j+1),d=h21(i+1,j+1);return a+(b-a)*fx+((c-a)+((a-b-c+d)*fx))*fy;};
+function reflK(x,z){const W=window.WREFL;if(!W||typeof AF==='undefined'||Math.abs(x-AF.x)>1200||Math.abs(z-AF.z)>2200)return 1;let k=1;for(let i=0;i<W.length;i++){const r=W[i],dx=x-r.x,dz=z-r.z;if(dx*dx+dz*dz<r.r*r.r*1.4)k=Math.max(k,r.k);}return k;}
+function landTex(x,z,h,sl){const up=1/Math.sqrt(1+sl*sl),TU=typeof TERRU!=='undefined'?TERRU:null,win=TU?TU.uWin.value:0,snowA=TU?TU.uSnowA.value:1800;
+  if(typeof afWeight==='function'&&afWeight(x,z)>.6){return (typeof onRwy==='function'&&onRwy(x,z)?.1:.18)*reflK(x,z);}      // concrete and short grass inside the airfield: smooth, almost no backscatter
+  let k=h<22?.45:.6;                                                                                                   // sand, then ordinary ground
+  const low=sm(26,70,h)*sm(760,420,h)*.55;
+  if(low>.01){const n3=vn(x/1300,z/1300),f=h21(Math.floor(x/380+n3*.8),Math.floor(z/290+n3*.5)),fk=f<.25?.7:f<.45?.9:f<.6?1.25:f<.7?.5:.6;k+=(fk-k)*low*(1-win*.6);}   // stubble, grain, green crop, ploughed
+  const rock=sm(.9,.74,up)*sm(60,220,h)*(h<=2050?1:0)*.85;if(rock>0)k+=(1.7-k)*rock;                                    // bare rock on steep faces
+  const snow=sm(snowA,snowA+350,h+vn(x/400,z/400)*250)*sm(.55,.8,up);if(snow>0)k+=(.5-k)*snow;                         // dry snow is a poor scatterer
+  if(win>0&&h>=8)k*=1-.35*win;
+  return k*reflK(x,z);}
+
+/* ---------- MTI clutter residue (two-pulse canceller with clutter-lock) ----------
+   The canceller passes a fraction 0.5*(1 - cos(2*pi*f0*T)*exp(-2*(pi*sigF*T)^2)) of clutter power, f0 = mean Doppler left after the radar tunes out its own motion
+   (0.5 m/s plus 0.5 % of its own speed), sigF = spectral width from the platform's motion across the beam (about 0.425*V*sin(angle)*beamwidth: nil dead ahead, widest abeam), the wind-driven
+   motion of the scatterers themselves, and for rain the wind carrying it along the beam. Replaces the old flat -11 dB. */
+const TPRF=1/2000;
+function mtiRes(P,A){const lam=C/(((window.SENSOR_FUSE&&SENSOR_FUSE.reg&&SENSOR_FUSE.reg.carrierFrequencyGHz)||9.7)*1e9),v=Math.max(P.vel.length(),1),W={x:0,z:0,y:0};let wOk=false;
+  return function(dx,dz,sig,rainy){const dh=Math.hypot(dx,dz)||1,ux=dx/dh,uz=dz/dh,c=Math.max(-1,Math.min(1,(P.vel.x*ux+P.vel.z*uz)/v)),sn=Math.sqrt(1-c*c);
+    let vm=0;if(rainy&&typeof ENV!=='undefined'){ENV.windAt(1500,W);vm=W.x*ux+W.z*uz;}
+    const sp=.425*v*sn*A.bwA,sg=Math.sqrt(sp*sp+sig*sig),sF=2*sg/lam,f0=2*(.5+.005*v*c+vm)/lam;
+    return Math.max(.004,.5*(1-Math.cos(2*Math.PI*f0*TPRF)*Math.exp(-2*Math.pow(Math.PI*sF*TPRF,2))));};}
+
+RV.mtiRes=mtiRes;
 /* ---------- ground clutter along one ray, in the antenna frame (bank and pitch included for a non-stabilised antenna) ---------- */
 const _v=new THREE.Vector3(),_b=new THREE.Vector3(),QI=new THREE.Quaternion(),QF=new THREE.Quaternion(),_Y=new THREE.Vector3(0,1,0);
 const seaA=new Float32Array(nR),mC=new Float32Array(nR),mS=new Float32Array(nR),sC=new Float32Array(nR),sS=new Float32Array(nR);let wC=clr,wS=seaA,cc=0;
-const OFFS=[[1.6,1.2,1],[3.2,2,1],[6.5,4,1],[13,8,2],[26,16,2],[50,30,3]];        // sidelobe rays: offset, width (beamwidths), range stride
+const offsFor=per=>[[1.5*per,.7*per,1],[2.5*per,.8*per,1],[3.5*per,.9*per,1],[6.2,3.2,1],[12,7,2],[24,14,2],[48,28,3]];   // sidelobe rays: peaks of this set's pattern first, then wider and wider offsets
+let OFFS=offsFor(1);
+RV.land=landTex;
 function groundRay(X,hw,wid,fold,stride){
   const P=X.P,A=X.A,sx=Math.sin(hw),sz=-Math.cos(hw),y=P.pos.y,px=P.pos.x,pz=P.pos.z,bin=X.bin,Rf=Ru(),lim=fold?Math.min(Rf+RNG,3*Rf):RNG;
   let maxE=-2,prevH=X.h0,prevG=0,hh=Math.max(0,X.h0),R=bin*.5,n=0;
@@ -122,7 +190,7 @@ function groundRay(X,hw,wid,fold,stride){
                 else{const tx=landTex(px+sx*g,pz+sz*g,hh,slope);s0=.0079*tx*Math.sin(Math.min(psi,1.5));}
                 if(psi>1.2)s0*=1+(sea?800:300)*Math.pow((psi-1.2)/.37,2);                                   // near-vertical: specular return, the altitude line
                 s0=Math.min(s0,40);
-                const v=X.Su*s0*R*wid*X.dR/Math.max(Math.cos(Math.min(psi,1.45)),.2)/(R*R*R*R)*g2*X.wex*rcvF(R),ir=Math.floor(Rd/bin),arr=sea?wS:wC;
+                const v=X.Su*s0*R*wid*X.dR/Math.max(Math.cos(Math.min(psi,1.45)),.2)/(R*R*R*R)*g2*(X.mr?X.mr(sx,sz,sea?.4+.06*X.U:.05+.03*X.U,false):X.wex)*rcvF(R),ir=Math.floor(Rd/bin),arr=sea?wS:wC;
                 for(let k=0;k<(R<RNG?stride:1);k++){const j=ir+k;if(j>=0&&j<nR)arr[j]+=v;}
                 if(R>=RNG)RV.st.fold++;}}}
           prevH=th;prevG=g;}
@@ -137,7 +205,7 @@ function column(X,az,now,fresh){
   const hwb=Math.atan2(_b.x,-_b.z),elw=Math.asin(cl(_b.y,-1,1));
   if(RV.clut){                      // the beam is oversampled four times, so the terrain is traced on every second column and the sidelobe rays on every fourth; the columns in between reuse them
     if(fresh||cc%2===0||!X.warm){wC=mC;wS=mS;mC.fill(0);mS.fill(0);groundRay(X,hwb,A.bwA,true,1);}
-    if(RV.side&&(fresh||cc%4===0||!X.warm)){wC=sC;wS=sS;sC.fill(0);sS.fill(0);for(const o of OFFS)for(const sg of[-1,1]){if(o[0]*A.bwA>Math.PI)continue;groundRay(X,hwb+sg*o[0]*A.bwA,o[1]*A.bwA,false,o[2]);RV.st.sl++;}}
+    if(RV.side&&(fresh||cc%4===0||!X.warm)){if(OFFS.per!==A.per){OFFS=offsFor(A.per);OFFS.per=A.per;}wC=sC;wS=sS;sC.fill(0);sS.fill(0);for(const o of OFFS)for(const sg of[-1,1]){if(o[0]*A.bwA>Math.PI)continue;groundRay(X,hwb+sg*o[0]*A.bwA,o[1]*A.bwA,false,o[2]);RV.st.sl++;}}
     else if(!RV.side){sC.fill(0);sS.fill(0);}
     wC=clr;wS=seaA;for(let i=0;i<nR;i++){clr[i]=mC[i]+sC[i];seaA[i]=mS[i]+sS[i];}X.warm=true;}
   const rainOn=RV.rain&&ENV&&ENV.rain>.04,top=rainOn?(ENV.P&&ENV.P.strat>0?ENV.P.alt+ENV.P.th:3600):0,sx=Math.sin(hwb),sz=-Math.cos(hwb),ceh=Math.cos(elw),y=P.pos.y,hv=A.bwE*.5;
@@ -146,7 +214,7 @@ function column(X,az,now,fresh){
     if(rainOn&&yb<top&&yb>-50){const I=ENV.rain*rainField(P.pos.x+sx*Rg,P.pos.z+sz*Rg,now);if(I>.03){r+=.25*SNR50*Math.pow(radar.R0/R,2)*Math.pow(I,1.4);mm=Math.max(mm,I*50);}}
     for(const c of cuList){const ds=Rg-c.s,r2=(ds*ds+c.q*c.q)/(c.rad*c.rad);if(r2>6)continue;const h=Math.max(R*hv,150),ov=cl((Math.min(c.top,yb+h)-Math.max(c.b0,yb-h))/(2*h),0,1);
       if(ov>0){r+=.9*SNR50*Math.pow(radar.R0/R,2)*Math.pow(c.I,1.4)*Math.exp(-r2)*ov;mm=Math.max(mm,c.I*Math.exp(-r2)*ov*50);}}
-    rainA[ir]=r*X.wex*cum*rcvF(R);attC[ir]=cum;
+    rainA[ir]=r*(X.mr?X.mr(sx,sz,1.5,true):X.wex)*cum*rcvF(R);attC[ir]=cum;
     if(mm>0&&RV.prop)cum*=Math.pow(10,-2*alphaDB(mm)*(X.bin*ceh/1000)/10);}                       // two-way loss through the cell: everything behind it is dimmer
   if(RV.prop)for(let ir=0;ir<nR;ir++){clr[ir]*=attC[ir];seaA[ir]*=attC[ir];}
 }
@@ -155,7 +223,7 @@ function column(X,az,now,fresh){
 function mkX(now,P){setup();const A=ant(),f=P.fwd(_f),h0=Math.atan2(f.x,-f.z),stab=radar.gl.stab,mti=!!(sys.mig&&sys.mig.mti&&RV.mti),bin=RNG/nR;
   RE=RE0*ductK(P);
   if(stab||!RV.bank)QI.setFromAxisAngle(_Y,h0);else QI.copy(P.q).invert();QF.copy(QI).invert();           // a stabilised antenna keeps the horizon (yaw only), a fixed one rolls and pitches with the aircraft
-  return{P:P,A:A,bin:bin,dR:C*RV.tau/2,Su:SNR50*Math.pow(radar.R0,4)/5,U:windMs(),wex:mti?.08:1,h0:terrMesh(P.pos.x,P.pos.z),az:0};}
+  return{P:P,A:A,bin:bin,dR:C*RV.tau/2,Su:SNR50*Math.pow(radar.R0,4)/5,U:windMs(),wex:mti?.08:1,mr:mti?mtiRes(P,A):null,h0:terrMesh(P.pos.x,P.pos.z),az:0};}
 
 /* ---------- sweep: write every column the antenna crossed since the last call ---------- */
 RV.sweep=function(a0,a1,now){
@@ -170,14 +238,15 @@ RV.sweep=function(a0,a1,now){
     for(const q of tg){
       let dA=wrap(q.ra-az);const ce=Math.cos(q.re),p=pat1(dA*ce,q.re-radar.antEl,A.bwA,A.bwE,A.sll);
       if(q.jn&&RV.jam){const Jp=q.Sbt*Math.pow(q.jn/Math.max(q.d,200),2)*p;if(Jp>.05)for(let ir=0;ir<nR;ir++)row[ir]+=Jp*ex();}
-      if(!RV.tgt)continue;const g2=p*p;if(g2<2e-4)continue;if(g2>.05){if(now-q.st.t>1.0)q.st.f=ex();q.st.t=now;}
+      if(!RV.tgt)continue;const g2=p*p;if(g2<2e-4)continue;if(g2>.05)fluct(q.st,q.j,q.toMe,now,q.lam);
       const ir0=Math.floor(q.dS/bin);if(ir0<0||ir0>=nR)continue;
-      const mag=RV.rcv?Math.max(.3,1+.22*(Math.random()+Math.random()+Math.random()-1.5)):1;                          // magnetron frequency pulling: the echo sparkles pulse to pulse
+      const mag=(RV.rcv?Math.max(.3,1+.22*(Math.random()+Math.random()+Math.random()-1.5)):1)*(1+q.jem*Math.cos(6.2832*Math.random()));                          // magnetron frequency pulling: the echo sparkles pulse to pulse
       const pw=q.S*g2*q.pf*q.st.f*q.mt*q.att*rcvF(q.dS)*mag;if(pw<.05)continue;
       const sp=Math.max(spread,q.ext);for(let k=0;k<sp;k++){const ir=ir0+k-(q.chaff?sp>>1:0);if(ir<0)continue;if(ir>=nR)break;row[ir]+=pw*(k&&!q.chaff?.55:1)*(q.chaff?.55+.45*ex():1);}
       if(g2>.1)RV.st.tgt++;}
     if(RV.rcv){                                                                              // AGC: a very strong return desensitises the receiver for the next few cells, and the IF stage saturates
       for(let ir=0;ir<nR;ir++){let v=row[ir];if(v>3e4){const f=.45;if(ir+1<nR)row[ir+1]*=f;if(ir+2<nR)row[ir+2]*=.7;v=3e4+(v-3e4)*.15;}row[ir]=Math.min(v,1e5);}}
+    nlSetup(now,RNG);warpRow(row);rangeMarks(row);
     for(let ir=0;ir<nR;ir++){V[base+ir]=row[ir];T[base+ir]=now;}
     RV.st.cols++;}
   RV.st.ms+=performance.now()-t0;};
@@ -258,7 +327,7 @@ RV.lockPaint=function(c,x0,y0,x1,y1,col){
   const now=performance.now()/1000,a=radar.ang(j.pos),A=ant(),toMe=P.pos.clone().sub(j.pos).normalize(),cs=j.gnd?1:j.fwd(new THREE.Vector3()).dot(toMe);
   const Rt=radar.R0*Math.pow((j.ac.rcs||5)/5,.25)*(.62+.38*Math.max(0,cs)),S0=SNR50*Math.pow(Rt/a.d,4)*(window.BEAM?BEAM.k(j,a):1);
   const nutF=30,sq=.3*A.bwA,N=4,w=x1-x0,h=y1-y0,gate=1500,bins=96,st=j._rv||(j._rv={f:ex(),t:-9});
-  if(now-st.t>1.0){st.f=ex();}st.t=now;
+  fluct(st,j,P.pos.clone().sub(j.pos).normalize(),now,C/(((F.reg&&F.reg.carrierFrequencyGHz)||9.7)*1e9));
   c.save();c.beginPath();c.rect(x0,y0,w,h);c.clip();c.strokeStyle=col;c.fillStyle=col;c.lineWidth=1;c.globalAlpha=.35;c.strokeRect(x0+.5,y0+.5,w-1,h-1);
   const tr=[];let pk=0;
   const sweepRow=()=>{const row=new Float32Array(bins),ph=2*Math.PI*nutF*now,oa=(a.az-radar.antAz)*Math.cos(a.el)-sq*Math.cos(ph),oe=(a.el-radar.antEl)-sq*Math.sin(ph),pt=pat1(oa,oe,A.bwA,A.bwE,A.sll),pw=S0*pt*pt*st.f,ctr=bins/2;

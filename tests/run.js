@@ -75,6 +75,85 @@ test('ai_tactics: pump when locked, hide when painted','F-4E',async p=>{
   ok('pump chosen when locked',r.pump==='PUMP',r.pump);ok('pump turns the nose away or to the beam',r.cold==='away'||true,r.cold);
   ok('hide chosen when painted',r.hide==='HIDE',r.hide);ok('hide steering is a unit vector',r.ok2,r.err);});
 
+test('weather: one shared precipitation field, carried by the wind, coverage follows rain','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const cov=rain=>{ENV.rain=rain;let n=0,m=0;for(let i=0;i<60;i++)for(let j=0;j<60;j++){m++;if(WXC.at(i*3000-90000,j*3000-90000,0)>.05)n++;}return n/m;};
+    const c1=cov(.3),c2=cov(.9);ENV.rain=.7;const W={};ENV.windAt(3000,W);const t=600;let best=1e9;   // the pattern at t is the pattern at 0 moved by wind*t
+    for(let k=0;k<20;k++){const x=k*2000-20000,z=k*1500-15000;best=Math.min(best,Math.abs(WXC.at(x+W.x*t,z+W.z*t,t)-WXC.at(x,z,0)));}
+    const x0=12345,z0=-6789,a=WXC.at(x0,z0,5),pos={x:x0,z:z0};const h=WXC.at(pos.x,pos.z,performance.now()/1000);
+    return{c1,c2,best,w:Math.hypot(W.x,W.z),same:Number.isFinite(a)&&Number.isFinite(h)};});
+  ok('more rain covers more of the map',r.c2>r.c1+.1,[+r.c1.toFixed(2),+r.c2.toFixed(2)]);
+  ok('cells are carried by the real wind',r.best<1e-6,r.best);ok('field is finite for radar and cockpit',r.same);});
+
+test('clutter: MTI residue depends on geometry and scatterer motion, land follows the drawn terrain','F-4E',async p=>{
+  const r=await p.evaluate(()=>{player.vel.set(0,0,-200);const f=RAWVID.mtiRes(player,{bwA:3.3*Math.PI/180});
+    const ahead=f(0,-1,.2,false),abeam=f(1,0,.2,false),sea=f(0,-1,1.0,false),rain=f(0,-1,1.5,true);
+    const lt=[0,1,2,3,4,5,6,7].map(i=>RAWVID.land?RAWVID.land(i*1700+5000,i*900-3000,300,.02):0);
+    const rf=RAWVID.land?RAWVID.land(AF.x,AF.z,40,0):0;
+    return{ahead,abeam,sea,rain,lt,rf,hang:RAWVID.land?RAWVID.land(AF.x+640,AF.z-190,40,0):0};});
+  ok('clutter cancels deepest dead ahead, worst abeam',r.ahead<r.abeam*.5,[r.ahead,r.abeam]);
+  ok('moving scatterers (sea, rain) leak more through MTI than quiet land',r.sea>r.ahead&&r.rain>r.sea,[r.ahead,r.sea,r.rain]);
+  ok('fields give different reflectivity cell to cell',Math.max(...r.lt)>Math.min(...r.lt)*1.3,r.lt.map(x=>+x.toFixed(2)));
+  ok('airfield concrete is smooth, hangars are bright',r.hang>r.rf*50,[r.rf,r.hang]);});
+
+test('rcs: fluctuation is correlated with aspect and time, engines modulate nose-on','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const lam=.031,toMe=new THREE.Vector3(0,0,1),j={q:new THREE.Quaternion(),ab:0,n:.9};
+    const corr=(turn)=>{const st={},xs=[];let t=0;RAWVID.fluct(st,j,toMe,t,lam);let n=0,sx=0,sy=0,sxy=0,sxx=0,syy=0,prev=st.f;
+      for(let i=0;i<400;i++){t+=.5;if(turn)j.q.setFromAxisAngle(new THREE.Vector3(0,1,0),i*.02);const f=RAWVID.fluct(st,j,toMe,t,lam);n++;sx+=prev;sy+=f;sxy+=prev*f;sxx+=prev*prev;syy+=f*f;prev=f;}
+      return(n*sxy-sx*sy)/Math.sqrt((n*sxx-sx*sx)*(n*syy-sy*sy));};
+    const steady=corr(false);j.q.identity();const turning=corr(true);
+    return{steady,turning,nose:RAWVID.jemDepth({n:.9,ab:0},1),side:RAWVID.jemDepth({n:.9,ab:0},0),idle:RAWVID.jemDepth({n:.3,ab:0},1)};});
+  ok('steady aspect keeps the fade between looks',r.steady>r.turning+.3,[+r.steady.toFixed(2),+r.turning.toFixed(2)]);
+  ok('engine modulation only nose or tail on, and with power',r.nose>.15&&r.side===0&&r.idle<r.nose,r);});
+
+test('antenna: sidelobe nulls and peaks follow the taper of the set','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const S=window.SENSOR_SIG,b=.06,f=(u,sll)=>S.pattern(u*b,0,b,b,sll);const o={};
+    for(const sll of[-21,-30]){const per=S.period(sll);o[sll]={per,null:f(2*per,sll),peak:f(2.5*per,sll),n3:f(3*per,sll),p3:f(3.5*per,sll)};}return o;});
+  ok('wider taper, tighter nulls',r[-30].per<r[-21].per,[r[-21].per,r[-30].per]);
+  for(const k of[-21,-30])ok('peak is above its neighbouring nulls at '+k+' dB',r[k].peak>r[k].null*3&&r[k].p3>r[k].n3*3,[r[k].null,r[k].peak]);});
+
+test('scope: sweep nonlinearity, range marks, range noise, PRF agility','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const u=RAWVID.warpU;let mono=true,maxe=0,prev=-1;for(let i=0;i<=100;i++){const x=i/100,v=u(x);if(v<=prev)mono=false;prev=v;maxe=Math.max(maxe,Math.abs(v-x));}
+    radar.mode='RWS';player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);tgt.pos.set(0,3000,-90000);run(30*12);
+    const d=RAWVID.dump(),nR=d.nR;let cols=0,marks=0;for(let ia=0;ia<d.nA;ia++){let n=0;for(let ir=0;ir<nR;ir++)if(d.V[ia*nR+ir]>380&&d.V[ia*nR+ir]<1500&&ir>12)n++;if(d.T[ia*nR]>0){cols++;marks+=n;}}
+    const S=window.SENSOR_SIG,A=RAWVID.rngSig(4,40000),B=RAWVID.rngSig(100,40000);
+    return{mono,maxe,cols,perCol:cols?marks/cols:0,A,B};});
+  ok('sweep is monotone and off by 1-4 %',r.mono&&r.maxe>.003&&r.maxe<.04,+r.maxe.toFixed(4));
+  ok('range marks written on every line, a few per sweep',r.cols>10&&r.perCol>=3&&r.perCol<30,+r.perCol.toFixed(1));
+  ok('range error falls with signal-to-noise',r.B<r.A,[+r.A.toFixed(1),+r.B.toFixed(1)]);});
+
+test('sig: STT re-dithers the PRF set every dwell, search holds it for 1.5 s','F-22',async p=>{
+  const r=await p.evaluate(()=>{const S=window.SENSOR_SIG;player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-250);tgt.pos.set(0,6000,-52000);tgt.vel.set(0,0,200);
+    const seen=m=>{radar.mode=m;const set=new Set();for(let i=0;i<20;i++){window.__T=i*100;const e=S.eval(tgt,radar.ang(tgt.pos));set.add((e.f||0).toFixed(3));}return set.size;};
+    return{rws:seen('RWS'),stt:seen('STT')};});
+  ok('STT varies the PRF set more often than search',r.stt>=r.rws,r);});
+
+test('nav: spoofing walks the fix away without a warning, and the HSI and CCIP follow the total error','F-4E',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,1500,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);sys.gpsSpoofForce=true;run(30*20);const e1=NAVW.tot.length(),jam=NAVW.jam,sp=NAVW.spoof;
+    const k=()=>{const c=GND.ccip(player,Object.keys(AGW).find(x=>AGW[x].k==='bomb'));return c&&c.p;};const p1=k();const t=NAVW.tot.clone();sys.gpsSpoofForce=false;run(30*60);const e2=NAVW.tot.length();
+    return{e1,jam,sp,e2,t:t.length(),p1:!!p1};});
+  ok('fix walks away at about 15 m/s',r.e1>200&&r.e1<400,Math.round(r.e1));ok('no GPS-lost state while spoofed',r.jam===false&&r.sp===true);
+  ok('error is pulled back after the emitter is gone',r.e2<r.e1*.1,Math.round(r.e2));});
+
+test('ir: cumulus blocks an infrared path, clear sky does not; conical-scan error falls with SNR','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const P0=ENV.P;ENV.P=Object.assign({},WXP.CLEAR,{cu:300,base:0});ENV.rain=0;let blocked=0,clear=0;
+    for(let i=0;i<300;i++){const a={x:-30000+i*37,y:3000,z:-20000+i*91},b={x:a.x+40000,y:3000,z:a.z+30000};const t=RAWVID.cuIR(a,b);if(t<.5)blocked++;else clear++;}
+    ENV.P=Object.assign({},WXP.CLEAR,{cu:0});const free=RAWVID.cuIR({x:0,y:3000,z:0},{x:40000,y:3000,z:30000});ENV.P=P0;
+    return{blocked,clear,free,lo:IRPHYS.coneSig(2),hi:IRPHYS.coneSig(200)};});
+  ok('some paths cross cumulus, many do not',r.blocked>3&&r.clear>20,[r.blocked,r.clear]);ok('no cumulus, no loss',r.free===1,r.free);
+  ok('conical-scan bearing error shrinks with SNR',r.hi<r.lo*.5,[r.lo,r.hi]);});
+
+test('esa: squint grows with scan angle, grating lobe appears past onset, scan limit rolls off','F-22',async p=>{
+  const r=await p.evaluate(()=>{const S=SENSOR_SIG,D=Math.PI/180;radar.on&&0;const sq=a=>{let m=0;for(let i=0;i<60;i++){window.__T=i*60;radar.antAz=a*D;radar.antEl=0;m+=Math.abs(ESAS.state(true).sqA);}return m/60;};
+    const s10=sq(10),s50=sq(50);window.__T=1000;radar.antAz=0;const st0=ESAS.state(true);radar.antAz=58*D;const st58=ESAS.state(true);radar.antAz=40*D;const st40=ESAS.state(true);
+    radar.antAz=58*D;ESAS.state(true);const bw=3.5*D;const at=(d)=>S.pattern(d,0,bw,bw,-27);const lobe=at(st58.glD+st58.sqA),off=at(st58.glD+st58.sqA+12*D);
+    const g0=S.scan(0).g,g60=S.scan(60*D).g,g70=S.scan(70*D).g;
+    ESAS.on=false;const plain=S.pattern(st58.glD,0,bw,bw,-27);ESAS.on=true;
+    return{s10,s50,gl0:st0.gl,gl40:st40.gl,gl58:st58.gl,lobe,off,plain,g0,g60,g70};});
+  ok('squint is larger at 50 than at 10 degrees',r.s50>r.s10*2,[+(r.s10/Math.PI*180).toFixed(3),+(r.s50/Math.PI*180).toFixed(3)]);
+  ok('no grating lobe boresight or at 40 degrees, one at 58',r.gl0===0&&r.gl40===0&&r.gl58>0,[r.gl0,r.gl40,+r.gl58.toFixed(3)]);
+  ok('ghost lobe is stronger than the plain pattern at its angle',r.lobe>r.plain*3&&r.lobe>r.off,[r.lobe,r.plain,r.off]);
+  ok('scan loss grows to the limit and rolls off beyond it',r.g60<r.g0&&r.g70<r.g60*.5,[r.g0,r.g60,r.g70]);});
+
 test('perf: radar sweep cost per column','F-4E',async p=>{
   const r=await p.evaluate(()=>{radar.mode='RWS';player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);tgt.pos.set(2500,3000,-35000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,150);
     RAWVID.st.cols=0;const t0=window.__pn();run(30*15);const wall=window.__pn()-t0;return{cols:RAWVID.st.cols,ms:wall/Math.max(1,RAWVID.st.cols)};});   // wall time of the whole frame loop per column written

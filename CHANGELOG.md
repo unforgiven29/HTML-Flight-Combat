@@ -1,5 +1,39 @@
 # Changelog
 
+## v306 — Electronic beam steering (js/esasteer.js, window.ESAS)
+- PESA / AESA sets only; mechanical sets unchanged. The registry already held the array numbers (spacing, phase-shifter bits, time-delay units, agility, steering limit, blind angle) but nothing read them.
+- Beam squint: phase-shifter steering points at sin(theta) proportional to f0/f, so each frequency hop moves the beam by tan(theta) x df/f (agile PESA 3.5 %, agile AESA 1.5 %, 0.6 % not agile, a tenth with time-delay units). About 0.5 deg average at 50 deg scan on an agile AESA.
+- Grating lobes: a second full beam appears once sin(scan) >= 1/d - 1 (about 55 deg at 0.55 lambda), weighted by the element pattern, so faint at first and growing toward the 60 deg limit. Targets in it are seen as if in the main beam.
+- Phase-shifter quantisation rounds the beam position to bw / 2^bits.
+- Scan loss exponent from the registry, a dip at the blind angle, a roll-off past the steering limit (S.scan replaced for electronic sets).
+- Limits: a detection through the grating lobe is reported at its true bearing, not at the main-beam bearing a real set would assign; squint does not bias the angle measurement.
+- Tests: 51 checks. Gameplay-level estimates, not published data.
+
+## v305 — Scope timebase, range noise, PRF agility, spoofing, nav error in steering, IR path
+- Sweep nonlinearity (rawvideo.js): the range ramp starts slowly and its slope drifts with time (about 1 to 2 % off), so the scope reads off against the fixed graticule. RAWVID.nlOn / RAWVID.warpU.
+- Range-mark generator: crystal marks (every 1, 2, 5, 10 ... km or nm to give about five per scale, every fifth brighter) are written through the same time base as the echoes. RAWVID.rm.
+- Pulse-set range noise: measured range error is now pulse length / sqrt(2 SNR) plus a calibration and a gate term instead of the flat 120 m + 0.4 %. RAWVID.rn, RAWVID.rngSig.
+- PRF-agile STT (sensorsig.js): in a lock the PRF set is re-dithered every 0.1 s (up to 8 %), in search every 1.5 s, so eclipsing and blind speeds do not stay on one range or closing speed. S.agileStt.
+- GPS spoofing (navphys.js): a hostile long-range emitter inside 20 km, or sys.gpsSpoofForce, walks the fix away at 15 m/s with no GPS-lost warning, then pulls it back. NAVW.tot is INS plus spoof.
+- NAVW.tot now reaches the HSI distance, bearing and course arrow, the waypoint block on the Su/MiG HDD, and the CCIP. A ground point held by the pod in nav coordinates drifts with the error; one tracked in the video does not.
+- Conical-scan IRST: bearing error follows the nutation modulation and falls with signal-to-noise (floor 0.04 deg) instead of a fixed 0.2 deg. IRPHYS.coneSig.
+- Cumulus IR occlusion: the drawn cumulus clusters are ellipsoids that cut an infrared path (about 30 per km), so a chord of a few hundred metres is opaque. RAWVID.cuIR, used by irstphys.
+- Tests: 47 checks. Gameplay-level estimates, not published data.
+
+## v304 — Radar clutter, targets and antenna from the world and from physics
+- Land clutter reads what the game draws (js/rawvideo.js landTex): the terrain shader's biome bands, field patchwork (same hash), rock on slopes, snow line and winter cover, plus airfield pavement and its real buildings (window.WREFL, registered when the airfield is built). The invented towns and forests are gone; this world has none.
+- Clutter Doppler: MTI no longer applies a flat -11 dB. A two-pulse canceller with clutter-lock passes a fraction set by the spectral width (platform motion across the beam: nil dead ahead, widest abeam; wind-driven sea and land; rain carried by the wind). Clutter now cancels best on the nose and leaks abeam, and sea and rain leak more than land.
+- Target RCS: Swerling I fluctuation is correlated in aspect (decorrelation about lambda / 2L) and time (2.5 s) instead of a 1 s timer, so a steady head-on closure fades slowly and a manoeuvring target scintillates. Jet engine modulation flickers nose- and tail-on echoes with power setting.
+- Antenna: sidelobe null spacing follows the set's taper (S.period); the old ripple had its peaks where the first null belongs. Sidelobe rays are placed on this set's own lobe peaks.
+- Roll retrace: the cached columns live only inside one sweep call (one frame), so the terrain is re-traced every frame at the current attitude.
+- Tests: 37 checks. Cost about 0.58 ms per column written (headless software GL, real clock). Gameplay-level estimates, not published data.
+
+## v303 — One shared precipitation field (js/wxcells.js, window.WXC)
+- Radar rain and the cockpit rain overlay now read the same world-fixed cells, so a storm on the scope is a storm outside; flying out of a cell stops the rain. Before, radar rain was a made-up noise drifting at a fixed 6 / 3 m/s and the cockpit rain was a single global value.
+- Cells are carried by the real wind at 3000 m (ENV.windAt), coverage follows ENV.rain (about 15% of the map at the rainy preset, about 70% in a storm).
+- New test: coverage grows with rain, the pattern moves with wind x time. 28 checks pass.
+- Not done yet in this step: terrain / building clutter from real world objects, clutter Doppler, target RCS correlation. Gameplay-level estimates, not published data.
+
 ## v302 — Navigation errors, AI terrain / pump tactics, regression tests, video cost fix
 - js/navphys.js (NAVW): GPS jammers (hostile ground emitters, T.gpsj override) deny GPS inside a radius; the INS error then grows at the aircraft's drift rate (0.8 nm/h) and decays when GPS returns. Flash 'GPS LOST · INS' / 'GPS RECOVERED'. The error shifts the player's CCIP impact point. Not done: spoofing, and the error in waypoint / HSI / SNS designations.
 - js/aiphys.js tactics: after a lock the AI PUMPs (turns cold or to the beam, 4-6.5 s) and after being painted it HIDEs behind terrain (tests 7 km ahead candidates with terrLOS, floor lowered to 230-420 m).

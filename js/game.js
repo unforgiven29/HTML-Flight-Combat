@@ -7,6 +7,7 @@ window.ENGSYS=window.ENGSYS||{on:false,v:(P,k,i,fb)=>fb,lamp:()=>false};   // re
 const _$c=new Map();
 const $=s=>{if(s.charCodeAt(0)===35&&/^#[\w-]+$/.test(s)){let e=_$c.get(s);if(e&&e.isConnected)return e;e=document.querySelector(s);if(e)_$c.set(s,e);else _$c.delete(s);return e;}return document.querySelector(s);};
 // DOM write guards: only touch the style when the value actually changes, and take fully transparent overlays out of compositing
+const _nt=()=>window.NAVW&&NAVW.on&&NAVW.tot||{x:0,z:0};
 const setOp=(el,v)=>{if(!el)return;v=+v||0;if(el._op===v)return;el._op=v;el.style.opacity=v;const h=v<=0;if(el._oh!==h){el._oh=h;el.style.visibility=h?'hidden':'';}};
 const setSty=(el,k,v)=>{if(!el)return;const c=el._sc||(el._sc={});if(c[k]===v)return;c[k]=v;el.style[k]=v;};
 const G=9.81,KT=1.943844,FT=3.28084,NM=1852,D2R=Math.PI/180,R2D=180/Math.PI;
@@ -199,12 +200,12 @@ const AFX=(()=>{
   flatBox(360,780,AF.x+370,AF.z+60,conc,.1);
   // buildings
   const wall=lam(0x9a9d94),roof=lam(0x62686b),glass=new THREE.MeshLambertMaterial({color:0x2c4455,emissive:0x0a1218});
-  const box=(w,h,d,x,z,m,yy=0)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,Y+h/2+yy,z);G0.add(b);return b;};
+  const box=(w,h,d,x,z,m,yy=0)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,Y+h/2+yy,z);G0.add(b);(window.WREFL=window.WREFL||[]).push({x:x,z:z,r:Math.max(w,d)*.6+4,k:(w*d*h>3000?30:12)});return b;};
   for(let i=0;i<3;i++){const z=AF.z-190+i*115;box(34,12,48,AF.x+640,z,wall);
     const rr=new THREE.Mesh(new THREE.CylinderGeometry(17,17,48,16,1,false,Math.PI/2,Math.PI),roof);rr.rotation.x=Math.PI/2;rr.scale.set(1,1,.55);rr.position.set(AF.x+640,Y+12,z);G0.add(rr);
     box(.5,9,26,AF.x+622.7,z,new THREE.MeshLambertMaterial({color:0x40464a}));}
   box(9,16,9,AF.x+200,AF.z-330,wall);box(12,5,12,AF.x+200,AF.z-330,glass,16);box(14,.8,14,AF.x+200,AF.z-330,roof,21);
-  for(let i=0;i<3;i++){const t=new THREE.Mesh(new THREE.CylinderGeometry(9,9,10,20),wall);t.position.set(AF.x+690,Y+5,AF.z+300+i*24);G0.add(t);}
+  for(let i=0;i<3;i++){const t=new THREE.Mesh(new THREE.CylinderGeometry(9,9,10,20),wall);t.position.set(AF.x+690,Y+5,AF.z+300+i*24);G0.add(t);(window.WREFL=window.WREFL||[]).push({x:AF.x+690,z:AF.z+300+i*24,r:12,k:25});}
   // windsock
   const wsPole=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,9,6),new THREE.MeshLambertMaterial({color:0xcfcfcf}));wsPole.position.set(AF.x-70,Y+4.5,AF.z+1180);G0.add(wsPole);
   const wsGrp=new THREE.Group();wsGrp.position.set(AF.x-70,Y+9,AF.z+1180);G0.add(wsGrp);
@@ -1477,7 +1478,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       else{const vr=Math.abs(j.vel.dot(_rl.copy(j.pos).sub(player.pos).normalize()));s*=.003+.997*(t=>t*t*(3-2*t))(clamp((vr-17)/22,0,1));}}
     const J=this.jam(j);if(J&&J.noise&&a.d>J.bt)s=0;return s;},
   // measured position: range error along the line of sight, angle error (beamwidth over the root of 2·SNR) across it
-  meas(j,a,snr,out){const sa=(this.spin()?CONE_ERR:this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006)*this.kAng,sr=(player.ac.pulse?120+.004*a.d:25+.0025*a.d)*this.kRng,los=_rl.copy(j.pos).sub(player.pos).normalize();
+  meas(j,a,snr,out){const sa=(this.spin()?(window.IRPHYS&&IRPHYS.on?IRPHYS.coneSig(snr):CONE_ERR):this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006)*this.kAng,sr=(player.ac.pulse?(window.RAWVID&&RAWVID.on&&RAWVID.rn?RAWVID.rngSig(snr,a.d):120+.004*a.d):25+.0025*a.d)*this.kRng,los=_rl.copy(j.pos).sub(player.pos).normalize();
     _rp1.set(-los.z,0,los.x);if(_rp1.lengthSq()<1e-6)_rp1.set(1,0,0);_rp1.normalize();_rp2.copy(los).cross(_rp1);
     return out.copy(j.pos).addScaledVector(los,gauss()*sr).addScaledVector(_rp1,gauss()*sa*a.d).addScaledVector(_rp2,gauss()*sa*a.d);},
   // a track file: alpha-beta filter on the hits; the first hit seeds the velocity from the Doppler range rate only
@@ -7468,7 +7469,7 @@ const RP=Array.from({length:380},()=>({x:Math.random(),y:Math.random(),s:.5+Math
 let rainOn=false;
 function uiRain(dt,P,live){
   const act=game.active&&$('#menu').hidden&&P;let k=0;
-  if(act&&ENV.rain>0){const top=ENV.P.strat>0?ENV.P.alt+ENV.P.th:3600;k=ENV.rain*clamp((top-camera.position.y)/1500,0,1);}
+  if(act&&ENV.rain>0){const top=ENV.P.strat>0?ENV.P.alt+ENV.P.th:3600;k=ENV.rain*(window.WXC?WXC.here(camera.position):1)*clamp((top-camera.position.y)/1500,0,1);}
   setOp(lfEl,act&&ENV.fl>.01?Math.min(.5,ENV.fl*.55):0);
   if(k<.02){if(rainOn){rainX.clearRect(0,0,rainC.width,rainC.height);rainOn=false;}return k;}
   rainOn=true;const W=Math.round(innerWidth*.6),H=Math.round(innerHeight*.6),cx=W/2,cy=H*.46,ck=view==='cockpit';
@@ -11318,13 +11319,13 @@ SM_PAGE.VSD=function(c,x0,y0,x1,y1){const P=player,W=x1-x0,H=y1-y0,en=SET.hudlan
   dial(X(.66),dy,dr,(cx,cy,r)=>{const hd=P.hdg||0;c.save();c.translate(cx,cy);c.rotate(-hd*D2R);
     for(let i=0;i<72;i++){const a=i*5*D2R,big=!(i%6);c.strokeStyle='#111';c.lineWidth=1;c.beginPath();c.moveTo(Math.sin(a)*r*.98,-Math.cos(a)*r*.98);c.lineTo(Math.sin(a)*r*(big?.82:.9),-Math.cos(a)*r*(big?.82:.9));c.stroke();
       if(big){c.save();c.rotate(a);F(String(i/2),0,-r*.68,8,'#111');c.restore();}}
-    const bg=Math.atan2(-P.pos.x,P.pos.z);c.rotate(bg);c.strokeStyle='#d8a020';c.lineWidth=2.5;c.beginPath();c.moveTo(0,r*.6);c.lineTo(0,-r*.6);c.moveTo(-5,-r*.48);c.lineTo(0,-r*.6);c.lineTo(5,-r*.48);c.stroke();c.restore();
+    const bg=Math.atan2(-(P.pos.x+_nt().x),P.pos.z+_nt().z);c.rotate(bg);c.strokeStyle='#d8a020';c.lineWidth=2.5;c.beginPath();c.moveTo(0,r*.6);c.lineTo(0,-r*.6);c.moveTo(-5,-r*.48);c.lineTo(0,-r*.6);c.lineTo(5,-r*.48);c.stroke();c.restore();
     c.fillStyle='#111';c.beginPath();c.moveTo(cx,cy-r-1);c.lineTo(cx-5,cy-r-9);c.lineTo(cx+5,cy-r-9);c.fill();c.fillStyle='#d23a2a';c.beginPath();c.arc(cx,cy,3,0,7);c.fill();});
   // heading box, baro, WPT
   {const hd=Math.round(((P.hdg%360)+360)%360);bx(X(.66)-W*.055,dy-dr-11*u,W*.11,String(hd).padStart(3,'0'),'center');}
   // altimeter / HSI side readouts (right column)
   F('757.6 '+L('мм','mm'),x1-4,Y(.66),9,'#fff','right');F('1010.0 '+L('мб','mb'),x1-4,Y(.71),9,'#fff','right');
-  F(L('ППМ 0','WPT 0'),x1-4,Y(.78),9,'#fff','right');F((Math.hypot(P.pos.x,P.pos.z)/1000).toFixed(1)+L(' КМ',' KM'),x1-4,Y(.83),10,'#fff','right');
+  F(L('ППМ 0','WPT 0'),x1-4,Y(.78),9,'#fff','right');F((Math.hypot(P.pos.x+_nt().x,P.pos.z+_nt().z)/1000).toFixed(1)+L(' КМ',' KM'),x1-4,Y(.83),10,'#fff','right');
   // bottom rows: N2 of both engines and fuel; local time
   {const d=new Date(),z=n=>String(n).padStart(2,'0'),r1=Y(.925),r2=Y(.98),n2=clamp((P.n||0)*100,0,110);
     F('N2,%',X(.03),r1,8,'#fff','left');bx(X(.14),r1,W*.09,n2.toFixed(1));bx(X(.24),r1,W*.09,n2.toFixed(1));
@@ -11522,13 +11523,13 @@ SM_PAGE.NAV=function(c,x0,y0,x1,y1){const P=player,en=EN(),W=x1-x0,H=y1-y0,fs=Ma
     if(d%30===0)F(c,String(d/10),cx+Math.sin(a)*(R+fs*1.25),cy-Math.cos(a)*(R+fs*1.25),fs,G,'center');}
   {const bw=fs*2.8;c.strokeStyle=G;c.strokeRect(cx-bw/2,cy-R-fs*3.2,bw,fs*1.5);F(c,String(Math.round(hd)).padStart(3,'0'),cx,cy-R-fs*2.45,fs,G,'center');c.beginPath();c.moveTo(cx,cy-R-fs*1.7);c.lineTo(cx,cy-R);c.stroke();}
   // bearing to the first waypoint: orange arrow on the rose
-  {const w=wp[SNS.spi?1:0],b=Math.atan2(w.x-P.pos.x,-(w.z-P.pos.z))-h,ax=cx+Math.sin(b)*(R-12),ay=cy-Math.cos(b)*(R-12);c.save();c.translate(ax,ay);c.rotate(b);c.strokeStyle='#ff9a3a';c.lineWidth=2;c.beginPath();c.moveTo(0,-8);c.lineTo(6,0);c.lineTo(2,0);c.lineTo(2,8);c.lineTo(-2,8);c.lineTo(-2,0);c.lineTo(-6,0);c.closePath();c.stroke();c.restore();}
+  {const w=wp[SNS.spi?1:0],b=Math.atan2(w.x-P.pos.x-_nt().x,-(w.z-P.pos.z-_nt().z))-h,ax=cx+Math.sin(b)*(R-12),ay=cy-Math.cos(b)*(R-12);c.save();c.translate(ax,ay);c.rotate(b);c.strokeStyle='#ff9a3a';c.lineWidth=2;c.beginPath();c.moveTo(0,-8);c.lineTo(6,0);c.lineTo(2,0);c.lineTo(2,8);c.lineTo(-2,8);c.lineTo(-2,0);c.lineTo(-6,0);c.closePath();c.stroke();c.restore();}
   // own aircraft
   c.strokeStyle=G;c.lineWidth=1.8;c.beginPath();c.arc(cx,cy+5,5,0,7);c.moveTo(cx,cy);c.lineTo(cx,cy-14);c.stroke();
   // data blocks
-  const gs=Math.hypot(P.vel.x,P.vel.z)*3.6,ias=(P.cas||0)*1.852,tas=P.vel.length()*3.6,d=new Date(),z=n=>String(n).padStart(2,'0'),w0=wp[SNS.spi?1:0],dw=Math.hypot(w0.x-P.pos.x,w0.z-P.pos.z)/1000;
+  const gs=Math.hypot(P.vel.x,P.vel.z)*3.6,ias=(P.cas||0)*1.852,tas=P.vel.length()*3.6,d=new Date(),z=n=>String(n).padStart(2,'0'),w0=wp[SNS.spi?1:0],dw=Math.hypot(w0.x-P.pos.x-_nt().x,w0.z-P.pos.z-_nt().z)/1000;
   [['W',Math.round(gs)],[en?'Vias':'Vпр',Math.round(ias)],[en?'Vt':'Vи',Math.round(tas)],['M',(P.mach||0).toFixed(2)]].forEach(([a,b],i)=>F(c,a+'  '+b,x0+6,y0+fs*1.1+i*fs*1.3,fs+1));
-  [['H',String(Math.round(P.pos.y))],['T',z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds())],[en?'Drem':'Дос',dw.toFixed(1)+(en?'km':'км')],['Zk',((Math.sin((Math.atan2(w0.x-P.pos.x,-(w0.z-P.pos.z))-h))*dw)).toFixed(1)+(en?'km':'км')]].forEach(([a,b],i)=>F(c,a+'  '+b,x1-6,y0+fs*1.1+i*fs*1.3,fs+1,G,'right'));
+  [['H',String(Math.round(P.pos.y))],['T',z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds())],[en?'Drem':'Дос',dw.toFixed(1)+(en?'km':'км')],['Zk',((Math.sin((Math.atan2(w0.x-P.pos.x-_nt().x,-(w0.z-P.pos.z-_nt().z))-h))*dw)).toFixed(1)+(en?'km':'км')]].forEach(([a,b],i)=>F(c,a+'  '+b,x1-6,y0+fs*1.1+i*fs*1.3,fs+1,G,'right'));
   F(c,'M'+Rkm,x0+W*.22,y1-fs*.9,fs+5,G,'center');F(c,(en?'WPT':'ППМ')+(SNS.spi?2:1)+'  '+w0.n,cx,y1-fs*.9,fs-1,'#e8ece8','center');
   F(c,(en?'N ':'С ')+dms(43.5-P.pos.z/111000),x1-6,y1-fs*2.2,fs,G,'right');F(c,(en?'E ':'В ')+dms(41.2+P.pos.x/80000),x1-6,y1-fs*.9,fs,G,'right');};
 // ---------------- ПУМ / ПДВ ----------------

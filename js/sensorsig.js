@@ -55,6 +55,7 @@ const _a=new THREE.Vector3(),_b=new THREE.Vector3();
 const gAt=(x,z)=>typeof groundAt==='function'?groundAt(x,z):0;
 
 // evaluate one target: returns {f:SNR multiplier, why, ...}
+S.agileStt=true;   // in a lock the PRF set is re-dithered every dwell (0.1 s, up to 8 %), so eclipsing and blind speeds do not persist on one range or closing speed
 S.eval=function(j,a){const w=wfOf(),lam=C/((F.reg.carrierFrequencyGHz||9.7)*1e9);
   const los=_a.copy(j.pos).sub(player.pos);const R=los.length();los.divideScalar(R||1);
   const vp=player.vel,vt=j.vel,vpl=vp.dot(los),vtl=vt.dot(los),rr=vpl-vtl,Vp=vp.length();
@@ -69,7 +70,7 @@ S.eval=function(j,a){const w=wfOf(),lam=C/((F.reg.carrierFrequencyGHz||9.7)*1e9)
   const qf=(((F.reg&&F.reg.dopplerFilterQuality)||1)*.2+.8),wMLC=Math.max(w.mlc*(H?1:.32)*qf,spread),wZDF=w.zdf;
   let ok=0,sumSnr=0,ecl=0,blind=0,scrMin=1e9;const fk=[];const T=prfs.length;
   const sN=(a.snrRef||1)*(typeof SNR50!=="undefined"?SNR50:20);
-  for(let k=0;k<T;k++){const prf=prfs[k]*(1+.03*((Math.floor(performance.now()/1500)+k)%3)),Ru=C/(2*prf),Vamb=lam*prf/2;
+  for(let k=0;k<T;k++){const prf=prfs[k]*(1+(S.agileStt&&radar.mode==='STT'?.013*((Math.floor(performance.now()/100)*5+k*3)%7):.03*((Math.floor(performance.now()/1500)+k)%3))),Ru=C/(2*prf),Vamb=lam*prf/2;
     // 1. eclipsing: the return coincides with a transmitted pulse (plus a recovery guard); also the altitude-line gate
     const ph=((R%Ru)/Ru),guard=tau*prf*1.3+.012;const eclipsed=ph<duty+(H?0:guard)||ph>1-.005||Math.abs((R%Ru)-agl)<C*tau/2*1.5&&R>agl*.7&&R<agl*1.6;
     if(eclipsed){ecl++;continue;}
