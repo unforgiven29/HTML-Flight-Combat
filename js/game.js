@@ -1320,9 +1320,11 @@ function jettisonAll(){const P=player;if(!P||!P.alive)return;let any=false;
 // terrain is sampled: cells inside the main lobe light up strongly (brighter on slopes facing the radar), cells hidden behind a ridge are
 // shadowed, and the sidelobes leave the "altitude line" at the slant range straight down. MTI knocks the clutter down by ~20 dB.
 const flClutter={nA:48,nR:64,v:new Float32Array(48*64),t:new Float32Array(48*64),rng:0,AZ:30*D2R};
+// the pulse-radar clutter grid spans the scope: ±30° on the MiG scopes, the full gimbal (±60° on the F-4's APQ-120) on the B-scope; a fixed ±30° left the outer half of the F-4 picture empty and hid contacts beyond 30°
+function flFit(){const c=flClutter,want=(player&&!isMig()&&radar.gl&&radar.gl.az?radar.gl.az:30)*D2R;if(Math.abs(c.AZ-want)<1e-6)return;c.AZ=want;c.nA=Math.max(48,Math.round(48*want/(30*D2R)));c.v=new Float32Array(c.nA*c.nR);c.t=new Float32Array(c.nA*c.nR);c.rng=0;}
 function flCell(az,d){const c=flClutter,ia=Math.floor((az/c.AZ*.5+.5)*c.nA),ir=Math.floor(d/Math.max(c.rng,1)*c.nR);return ia<0||ia>=c.nA||ir<0||ir>=c.nR?-1:ia*c.nR+ir;}
 function flClutterAt(az,d){const i=flCell(az,d);if(i<0)return 0;const age=performance.now()/1000-flClutter.t[i];return age<4?flClutter.v[i]:0;}
-function flClutterSweep(a0,a1){const c=flClutter,P=player;if(!P)return;const rng=radar.rngM;if(c.rng!==rng){c.rng=rng;c.v.fill(0);c.t.fill(0);}
+function flClutterSweep(a0,a1){flFit();const c=flClutter,P=player;if(!P)return;const rng=radar.rngM;if(c.rng!==rng){c.rng=rng;c.v.fill(0);c.t.fill(0);}
   const lo=Math.min(a0,a1),hi=Math.max(a0,a1),i0=Math.max(0,Math.floor((lo/c.AZ*.5+.5)*c.nA)),i1=Math.min(c.nA-1,Math.floor((hi/c.AZ*.5+.5)*c.nA));
   const f=P.fwd(new V3()),h0=Math.atan2(f.x,-f.z),now=performance.now()/1000,y=P.pos.y,agl=y-groundAt(P.pos.x,P.pos.z),bw=radar.beam*1.1,el=radar.antEl,mti=sys.mig.mti?.1:1;
   for(let ia=i0;ia<=i1;ia++){const az=((ia+.5)/c.nA*2-1)*c.AZ,hw=h0+az,sx=Math.sin(hw),sz=-Math.cos(hw);let maxE=-2,prevE=-2;
@@ -2006,7 +2008,7 @@ function jamPaint(c,m,base){const now=performance.now()/1000;c.save();c.lineCap=
   for(const [j,s] of radar.strobes){const u=s.az/flClutter.AZ;if(Math.abs(u)>1)continue;c.globalAlpha=base*clamp(1-(now-s.t)/4.5,.2,1)*.85;c.lineWidth=2;c.beginPath();
     for(let k=0;k<46;k++){const v=k/46,w=(Math.random()-.5)*.09,a=m(u+w-.03,v),b=m(u+w+.03,v);if(a&&b){c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);}}c.stroke();}
   c.restore();}
-function flPaint(c,m,px,base){const C=flClutter,now=performance.now()/1000,g=sys.mig.fgain,rng=radar.rngM;
+function flPaint(c,m,px,base){flFit();const C=flClutter,now=performance.now()/1000,g=sys.mig.fgain,rng=radar.rngM;
   if(C.rng!==rng)return;const du=1.25/C.nA,lv=[[],[],[],[]];
   for(let ia=0;ia<C.nA;ia++)for(let ir=0;ir<C.nR;ir++){const i=ia*C.nR+ir,age=now-C.t[i];if(age>3.2)continue;
     const I=C.v[i]*Math.exp(-age/1.4)*(.35+g*1.3);if(I<.16-g*.08)continue;
@@ -2794,7 +2796,7 @@ class GroundEcho{constructor(p){this.pos=p;this.vel=new V3();this.alive=true;thi
   this.hdg=0;this.thr=0;this.ab=0;this.callsign='';this.hp=1e9;this.q=new Q4();this.seen=performance.now()/1000;}
   fwd(o){return o.set(0,0,-1);}right(o){return o.set(1,0,0);}up(o){return o.set(0,1,0);}}
 const GROUND={list:[]};
-function ghostSweep(a0,a1,now){const P=player,c=flClutter;if(!P||radar.sensor!=='RDR'||c.rng!==radar.rngM)return;
+function ghostSweep(a0,a1,now){flFit();const P=player,c=flClutter;if(!P||radar.sensor!=='RDR'||c.rng!==radar.rngM)return;
   const lo=Math.min(a0,a1),hi=Math.max(a0,a1),i0=Math.max(0,Math.floor((lo/c.AZ*.5+.5)*c.nA)),i1=Math.min(c.nA-1,Math.floor((hi/c.AZ*.5+.5)*c.nA)),f=P.fwd(new V3()),h0=Math.atan2(f.x,-f.z),rng=radar.rngM;
   const L=GROUND.list;for(let i=L.length-1;i>=0;i--){const g=L[i];if(!g.alive||now-g.seen>9){g.alive=false;L.splice(i,1);}}
   for(let ia=i0;ia<=i1;ia++)for(let ir=3;ir<c.nR;ir++){const k=ia*c.nR+ir,v=c.v[k];if(v<1.2||now-c.t[k]>.5)continue;
