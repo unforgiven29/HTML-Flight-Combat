@@ -25,12 +25,13 @@
 if(typeof radar==='undefined'||typeof flPaint!=='function'||typeof flClutterSweep!=='function'||typeof flClutter==='undefined')return;
 const D=Math.PI/180,C=299792458,RE=6371000*4/3,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const S=window.SENSOR_SIG||{},F=window.SENSOR_FUSE||{};
-const RV=window.RAWVID={on:true,clut:true,rain:true,jam:true,tgt:true,noise:true,mti:true,tau:1.0e-6,tph:2.2,thr:3,span:30,
+const RV=window.RAWVID={on:true,clut:true,rain:true,jam:true,tgt:true,noise:true,mti:true,tau:1.0e-6,tph:2.2,thr:2.5,span:30,
   st:{cols:0,ms:0,tgt:0,last:0,err:null}};
 const nR=192;let nA=0,V=null,T=null,AZ=0,RNG=0,BWk=0;RV.dump=()=>({V:V,T:T,nA:nA,nR:nR,AZ:AZ,RNG:RNG});
 const clr=new Float32Array(nR),rainA=new Float32Array(nR);
 const _f=new THREE.Vector3();
-const ex=()=>-Math.log(1-Math.random());                    // unit-mean exponential: noise and Rayleigh power fluctuation
+const ex=()=>-Math.log(1-Math.random());
+const nz=()=>(ex()+ex()+ex()+ex())*.25;                     // video integrator: a few pulses per beam passage are averaged, so the grass is finer and an echo stands out                    // unit-mean exponential: noise and Rayleigh power fluctuation
 const pat1=(dAz,dEl,bwA,bwE,sll)=>S.pattern?S.pattern(dAz,dEl,bwA,bwE,sll):Math.exp(-2.7726*((dAz/bwA)*(dAz/bwA)+(dEl/bwE)*(dEl/bwE)));
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 function ant(){const bw=radar.beam||3.3*D,bwE=radar.bmV?radar.bmV():bw,w=S.wfOf?S.wfOf():null;return{bwA:bw,bwE:bwE,sll:(w&&w.sll)||-21};}
@@ -43,7 +44,7 @@ function rainField(x,z,t){const g=6000,u=(x+t*6)/g,v=(z+t*3)/g,i=Math.floor(u),j
   a=hash(i,j),b=hash(i+1,j),c=hash(i,j+1),d=hash(i+1,j+1),n=a+(b-a)*s(fu)+(c-a)*s(fv)+(a-b-c+d)*s(fu)*s(fv);return cl((n-.42)*2.2,0,1);}
 
 /* ---------- targets seen this frame (shared by every column written in the frame) ---------- */
-const tg=[];
+const tg=[];RV.tgl=tg;
 function targets(now,P){tg.length=0;if(!RV.tgt&&!RV.jam)return;
   const stab=radar.gl.stab,lam=C/(((F.reg&&F.reg.carrierFrequencyGHz)||9.7)*1e9);
   for(const j of jets){if(j===P||!j.alive||(window.IFF&&IFF.hide&&IFF.hide(j)))continue;
@@ -51,7 +52,7 @@ function targets(now,P){tg.length=0;if(!RV.tgt&&!RV.jam)return;
     const toMe=P.pos.clone().sub(j.pos).normalize(),c=j.fwd(new THREE.Vector3()).dot(toMe);
     const Rt=radar.R0*Math.pow((j.ac.rcs||5)/5,.25)*(.62+.38*Math.max(0,c));            // same RCS / aspect law as the detector
     const ra=stab?a.az:(a.baz!=null?a.baz:a.az),re=stab?a.el:(a.bel!=null?a.bel:a.el);
-    let st=j._rv;if(!st){st={f:1,t:-9};j._rv=st;}if(now-st.t>1.0)st.f=ex();st.t=now;       // Swerling I: one draw per beam passage
+    let st=j._rv;if(!st){st={f:ex(),t:-9};j._rv=st;}                                           // Swerling I: one draw per beam passage (refreshed below when the beam is on it)
     const J=radar.jam(j);let mt=1;
     if(RV.mti&&sys.mig&&sys.mig.mti){const los=toMe.clone().negate(),vr=j.vel.clone().sub(P.vel).dot(los),vb=lam*2000/2;mt=Math.pow(Math.sin(Math.PI*vr/vb),2)*.9+.1;}
     const jn=J&&J.noise&&!J.esc?Math.max(J.bt||1,1):0;
@@ -90,16 +91,16 @@ RV.sweep=function(a0,a1,now){
   const P=player;if(!RV.on||!P||!P.alive||!P.ac||!P.ac.pulse||radar.sensor!=='RDR'||!radar.on())return;
   const t0=performance.now();setup();const lo=Math.min(a0,a1),hi=Math.max(a0,a1),i0=cl(Math.floor((lo/AZ*.5+.5)*nA),0,nA-1),i1=cl(Math.floor((hi/AZ*.5+.5)*nA),0,nA-1);
   const A=ant(),f=P.fwd(_f),h0=Math.atan2(f.x,-f.z),stab=radar.gl.stab,elH=radar.antEl+(stab?0:Math.asin(cl(f.y,-1,1))),tau=RV.tau,mti=!!(sys.mig&&sys.mig.mti&&RV.mti),bin=RNG/nR;
-  targets(now,P);const spread=Math.max(1,Math.round(C*tau/2/bin));
+  targets(now,P);const spread=Math.max(2,Math.round(C*tau/2/bin));
   for(let ia=i0;ia<=i1;ia++){const az=((ia+.5)/nA*2-1)*AZ;column(ia,az,now,P,A,elH,h0,tau,mti);
     const base=ia*nR,row=new Float32Array(nR);
-    for(let ir=0;ir<nR;ir++){let v=RV.noise?ex():.2;if(clr[ir]>0)v+=clr[ir]*ex();if(rainA[ir]>0)v+=rainA[ir]*ex();row[ir]=v;}
+    for(let ir=0;ir<nR;ir++){let v=RV.noise?nz():.2;if(clr[ir]>0)v+=clr[ir]*nz();if(rainA[ir]>0)v+=rainA[ir]*nz();row[ir]=v;}
     if(RV.clut){                                                                            // main bang: transmitter leakage and recovery
       for(let ir=0;ir<nR;ir++){const R=(ir+.5)*bin;if(R>2500)break;row[ir]+=1.5e3*Math.exp(-R/230);}}
     for(const q of tg){
       let dA=wrap(q.ra-az);const ce=Math.cos(q.re),p=pat1(dA*ce,q.re-radar.antEl,A.bwA,A.bwE,A.sll);
       if(q.jn&&RV.jam){const Jp=q.Sbt*Math.pow(q.jn/Math.max(q.d,200),2)*p;if(Jp>.05)for(let ir=0;ir<nR;ir++)row[ir]+=Jp*ex();}
-      if(!RV.tgt)continue;const g2=p*p;if(g2<2e-4)continue;
+      if(!RV.tgt)continue;const g2=p*p;if(g2<2e-4)continue;if(g2>.05){if(now-q.st.t>1.0)q.st.f=ex();q.st.t=now;}
       const ir0=Math.floor(q.d/bin);if(ir0<0||ir0>=nR)continue;
       const pw=q.S*g2*q.pf*q.st.f*q.mt;if(pw<.05)continue;
       for(let k=0;k<spread;k++){const ir=ir0+k;if(ir>=nR)break;row[ir]+=pw*(k?.55:1);}
@@ -113,7 +114,7 @@ let cv=null,cx=null,img=null,cW=0,cH=0;
 function rgbOf(s){if(typeof s!=='string')return[141,255,180];let m=/^#([0-9a-f]{6})$/i.exec(s.trim());if(m){const n=parseInt(m[1],16);return[n>>16&255,n>>8&255,n&255];}
   m=/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(s.trim());if(m)return[parseInt(m[1],16)*17,parseInt(m[2],16)*17,parseInt(m[3],16)*17];
   m=/rgba?\(\s*(\d+)[ ,]+(\d+)[ ,]+(\d+)/.exec(s);return m?[+m[1],+m[2],+m[3]]:[141,255,180];}
-RV.bright=function(v,GdB){const dB=10*Math.log10(Math.max(v,1e-3))+GdB-RV.thr;return cl(dB/RV.span,0,1);};
+RV.bright=function(v,GdB){const dB=10*Math.log10(Math.max(v,1e-3))+GdB-RV.thr;return Math.pow(cl(dB/RV.span,0,1),.7);};
 RV.paint=function(c,m,px,base){
   if(!V||RNG!==radar.rngM||Math.abs(AZ-flClutter.AZ)>1e-6)return;
   const now=performance.now()/1000,GdB=(gainOf()-.5)*18,col=rgbOf(c.strokeStyle),tph=RV.tph;
@@ -128,7 +129,7 @@ RV.paint=function(c,m,px,base){
       id[p]=col[0];id[p+1]=col[1];id[p+2]=col[2];id[p+3]=Math.round(clamp(I*1.25,0,1)*255);}
     cx.putImageData(img,0,0);
     const sv=c.globalAlpha,sw=p11.x-p00.x,sh=p00.y-p11.y,cs=c.globalCompositeOperation;c.globalAlpha=base;c.imageSmoothingEnabled=true;c.drawImage(cv,p00.x,p11.y,sw,sh);
-    c.globalCompositeOperation='lighter';c.globalAlpha=base*.55;c.drawImage(cv,p00.x-.9,p11.y-1.1,sw+1.8,sh+2.2);   // spot bloom: a one-bin echo is still a visible dash on the tube
+    c.globalCompositeOperation='lighter';c.globalAlpha=base*.9;c.drawImage(cv,p00.x-1.2,p11.y-1.6,sw+2.4,sh+3.2);   // spot bloom: a one-bin echo is still a visible dash on the tube
     c.globalCompositeOperation=cs;c.globalAlpha=sv;
     return;}
   // non-affine mapping (HUD repeater): short horizontal strokes, only for cells bright enough to matter
