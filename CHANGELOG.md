@@ -1,5 +1,10 @@
 # Changelog
 
+## v289 — Electronic warfare crew, aspect RCS for every radar, no floating ARM box
+- New `js/ewo.js`: the back-seater (EA-18G EWO, Su-34 WSO, every other two-seater with a jammer) runs the EW. ESM emitter calls (EA: bearing + range from the ALQ-218 fix; others: bearing and rough range), tracking warnings, jammer technique picked from the threat (DECM vs lock / radar missile, NOISE to screen the package on the EA-18G, AUTO against search radars), EA-18G cues the HARM at the most dangerous emitter. Shift+5 hands the jammer over / takes it back; pressing 5 keeps it for 25 s; U keeps him off the ARM for 15 s. HUD chip + calls, EW STATION row on the loadout screen.
+- Aspect-dependent RCS now also drives SAM radars, AI fighter radars and the datalink picture (`aspF()` in game.js, curves in stealth.js): beam is the biggest return, nose-on the smallest, stealth classes use their own curves.
+- Removed the floating ARM targeting box from all jets; ARM is controlled from the HUD (ARM.hud) and the MFD / DDI HAD pages.
+
 ## v288 — Stealth
 - New `js/stealth.js`. Classes: VLO (F-22, F-35A, J-20, J-35), LO (Su-57), REDUCED (F/A-18E/F, EA-18G, F-15EX, Rafale, Typhoon, Gripen C/E, KF-21, J-10C, MiG-35, F-2A).
 - Player radar uses each class's own aspect curve (nose-on lowest, beam/tail spikes, top/bottom); 4th-gen RAM cuts beam and tail returns ~40 %.

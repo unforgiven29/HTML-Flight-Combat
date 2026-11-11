@@ -594,6 +594,8 @@ const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s
 // Deception needs far less J/S than noise, but the true skin echo beats it inside roughly half the noise burn-through range.
 // the Su-27's L-005S is a pair of wingtip pods: one pod radiates half the power
 const jpOf=(tg,f)=>f.tips?f.jp*Math.max(.05,((tg.load['1']==='L-005S')+(tg.load['10']==='L-005S'))/2):f.jp;
+// aspect factor on detection range (replaces .62+.38*hot): hot = cos of the angle off the target's nose seen from the radar; stealth.js swaps in the real aspect curve
+function aspF(t,hot,los){return .62+.38*Math.max(0,hot);}
 function jamOf(tg,rd){const e=tg.ecm;if(!e||!e.on||!rd)return null;const f=e.fit,r=rd.R0/BT_REF,bt=BT0*r*r*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(jpOf(tg,f)),ecc=rd.ecc==null?.5:rd.ecc;
   return{noise:e.tech==='NOISE',dec:e.tech==='DECM',bt,btD:bt*.45,rate:f.dec*(1-ecc)*.28};}
 // A missile seeker is only a few km away but has a small aperture and little power: its burn-through is short, and shorter again against deception.
@@ -796,7 +798,7 @@ class AI{
     const rel=tOK?t.pos.clone().sub(j.pos):f.clone(),dist=rel.length(),los=rel.clone().divideScalar(dist||1);
     const off=Math.acos(clamp(f.dot(los),-1,1));
     // own radar: range set by the target's RCS and aspect, defeated by the beam/notch in look-down
-    if(tOK){const hot=t.fwd(new V3()).dot(los.clone().negate()),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(t.ac.rcs/5,.25)*(.62+.38*Math.max(0,hot));
+    if(tOK){const hot=t.fwd(new V3()).dot(los.clone().negate()),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(t.ac.rcs/5,.25)*aspF(t,hot,los);
       if(Math.abs(t.vel.dot(los))<30&&t.pos.y<j.pos.y-300&&Math.random()<dt*.6)this.notchT=2.5;this.notchT-=dt;
       // the target's jammer: noise hides it beyond burn-through (the radar can still home on the noise itself), deception walks the range gate off a track
       const Jt=jamOf(t,j.ac.radar,j),noiseFar=!!(Jt&&Jt.noise&&dist>Jt.bt),geo=off<60*D2R&&terrLOS(j.pos,t.pos);this.jamT=(this.jamT||0)-dt;
@@ -2602,7 +2604,7 @@ const DL={seen:new Map(),acc:0,
   // would F's radar have this bandit?
   sees(F,e){const rd=F.ac.radar;if(!rd)return false;const rel=_dlv1.copy(e.pos).sub(F.pos),d=rel.length();if(d>rd.R0*1.5)return false;
     const los=_dlv2.copy(rel).divideScalar(Math.max(d,1));if(Math.acos(clamp(F.fwd(_dlv3).dot(los),-1,1))>(rd.awg?65:60)*D2R)return false;
-    const c=Math.max(0,-e.fwd(_dlv3).dot(los));let R=rd.R0*Math.pow(e.ac.rcs/5,.25)*(.62+.38*c);const el=Math.asin(clamp(los.y,-1,1));if(el<-2*D2R)R*=.8;if(d>R)return false;
+    const c=-e.fwd(_dlv3).dot(los);let R=rd.R0*Math.pow(e.ac.rcs/5,.25)*aspF(e,c,los);const el=Math.asin(clamp(los.y,-1,1));if(el<-2*D2R)R*=.8;if(d>R)return false;
     if(el<-1*D2R&&Math.abs(_dlv3.copy(e.vel).sub(F.vel).dot(los))<28)return false;
     const J=jamOf(e,rd,F);if(J&&J.noise&&d>J.bt)return false;
     return terrLOS(F.pos,e.pos);},
@@ -7133,7 +7135,7 @@ const GCI={run:false,S:[null,null],bull:null,sites:[],G:[],gid:0,opened:false,t0
       const rel=_g1.copy(e.pos).sub(rp),d=rel.length(),los=_g2.copy(rel).divideScalar(d||1),had=S.pic.get(e);let ok=false;
       const agl=e.pos.y-groundAt(e.pos.x,e.pos.z),hor=4120*(Math.sqrt(Math.max(air?rp.y:a.T.ant||20,1))+Math.sqrt(Math.max(agl,1)));
       if(d<hor){const hot=Math.max(0,e.fwd(_g3).dot(_g4.copy(los).negate())),rv=_g5.copy(e.vel);if(air)rv.sub(a.jet.vel);const radial=Math.abs(rv.dot(los));
-        let R=a.T.R0*Math.pow(e.ac.rcs/5,.25)*(.62+.38*hot);if(air&&agl<400)R*=.6;
+        let R=a.T.R0*Math.pow(e.ac.rcs/5,.25)*aspF(e,e.fwd(_g3).dot(_g4),los);if(air&&agl<400)R*=.6;
         const J=jamOf(e,{R0:a.T.R0,ecc:.45,name:a.ty},{pos:rp,side:S.side,key:a}),noise=!!(J&&J.noise&&d>J.bt);if(noise)e._gjam=now;
         if(d<R&&radial>28&&!noise&&terrLOS(rp,e.pos)){const snr=SNR50*Math.pow(R/Math.max(d,1),4);ok=had?Math.random()<pdOf(snr*8):Math.random()<pdOf(snr);
           if(ok&&J&&J.dec&&d>J.btD&&Math.random()<.4)ok=false;}}   // deception walks the range gate off the track
@@ -7141,7 +7143,7 @@ const GCI={run:false,S:[null,null],bull:null,sites:[],G:[],gid:0,opened:false,t0
         S.pic.set(e,{j:e,pos:e.pos.clone().add(new V3(rnd(-300,300),rnd(-ne,ne),rnd(-300,300))),vel:e.vel.clone(),hdg:e.hdg,t:now,src:a.k,by:a,first:had?had.first:now});}}},
   // what a Russian AI fighter knows: its own radar first (with a few seconds of memory), then the picture. Returns 'own', 'gci' or null.
   knows(ai,x){const j=ai.j,now=nowS(),rel=_g1.copy(x.pos).sub(j.pos),d=rel.length(),los=_g2.copy(rel).divideScalar(d||1),off=Math.acos(clamp(j.fwd(_g3).dot(los),-1,1));
-    if(off<70*D2R){const hot=Math.max(0,x.fwd(_g4).dot(_g5.copy(los).negate())),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(x.ac.rcs/5,.25)*(.62+.38*hot),
+    if(off<70*D2R){const hot=Math.max(0,x.fwd(_g4).dot(_g5.copy(los).negate())),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(x.ac.rcs/5,.25)*aspF(x,x.fwd(_g4).dot(_g5),los),
         J=jamOf(x,j.ac.radar,j),far=!!(J&&J.noise&&d>J.bt);
       if((far?d<R*1.5:d<R)&&terrLOS(j.pos,x.pos)){ai.kn.set(x,now);return'own';}}
     const k=ai.kn.get(x);if(k&&now-k<6)return'own';
@@ -10191,7 +10193,7 @@ const ARM={mode:'HAS',sel:null,list:[],known:new Map(),brief:[],scanT:0,box:null
     hx.restore();},
   // ---- the HAS / HAD / POS page ----
   mount(){if(this.box)return;const b=document.createElement('div');b.id='armBox';b.innerHTML='<canvas width="320" height="320"></canvas>';document.getElementById('view').appendChild(b);this.box=b;this.cv=b.querySelector('canvas');},
-  render(){const P=player,on=!!(game.active&&$('#menu').hidden&&P&&P.alive&&this.w()&&P.type!=='F-4E'&&!(view==='cockpit'&&window.ARM_PAGE&&ARM_PAGE()));this.mount();
+  render(){/* v289: no floating ARM box on any jet; ARM control is on the HUD (ARM.hud) and the MFD / DDI HAD pages */const on=false;if(this.box&&this.shown){this.box.style.display='none';this.shown=false;}if(!on)return;const P=player;this.mount();
     if(!on){if(this.shown){this.box.style.display='none';this.shown=false;}return;}
     if(!this.shown){this.box.style.display='block';this.shown=true;this.shownV=(this.shownV|0)+1;}
     this.draw(this.cv.getContext('2d'));},

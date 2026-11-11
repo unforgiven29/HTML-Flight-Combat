@@ -58,6 +58,16 @@ const spec=j=>j&&STEALTH[j.type];
   if(real)return R*Math.pow(kNew/NOSE(c,s),.25);
   return R/old*Math.pow(kNew,.25)*tail;};}
 
+/* ---- every other radar (SAM, AI fighters, wingman datalink): range factor from the same aspect curves ----
+   hot = cos of the angle off the target's nose seen from the radar, los = unit vector radar -> target. Replaces the old (.62+.38*hot),
+   which made the beam LESS visible than the nose; the beam is the biggest return on any jet. Stealth classes use their own curve,
+   everybody else the generic one (realism.js NOSE_RCS). Range goes with RCS^0.25, so the factor is kNew^0.25. */
+const kOf=(t,c,s)=>{const S=spec(t);if(!S)return NOSE(c,s);const th=Math.acos(cl(c,-1,1))/D;
+  if(S.cls.asp){let m=curve(S.cls.asp,th);if(S.beam&&th>60&&th<120)m*=1+(S.beam/12-1)*sm(1-Math.abs(th-90)/30);return m*(1+S.cls.el*s);}
+  return NOSE(c,s)*(1-(1-curve(S.cls.red,th))*(S.k||1));};
+aspF=function(t,hot,los){const RZ=window.REALISM;if(!t||!t.up||!los||(RZ&&(!RZ.on||!RZ.rcs)))return .62+.38*Math.max(0,hot);
+  const c=cl(hot,-1,1),s=Math.abs(t.up(new V3()).dot(los));return Math.pow(kOf(t,c,s),.25)*(.85+.15*Math.max(0,c));};
+
 /* ---- internal bays ---- */
 const isBay=(j,k)=>{const S=spec(j);return !!(S&&S.bay&&S.bay.includes(String(k)));};
 const baseSt=Jet.prototype.storeRcs;
