@@ -90,15 +90,15 @@ function drawPhScope(P){const c=phScopeC.getContext('2d'),S=360,FB_=P.ac.pit==='
   c.textAlign='left';c.font='700 12px "B612 Mono",monospace';for(let i=1;i<=4;i++)c.fillText(String(Math.round(rng/(P.ac.units==='met'?1000:NM)*i/4)),x0+4,y1-(y1-y0)*i/4-7);
   if(radar.mode==='RWS'){const W=Math.min(radar.azs[radar.ai]*D2R,gim,9);c.setLineDash([4,6]);[radar.scanC-W,radar.scanC+W].forEach(a=>{const x=X(a);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y1);c.stroke();});c.setLineDash([]);}
   // the APQ-120 is a pulse radar: raw video, ground clutter in look-down and smeared echoes, painted by the same routine as the other pulse sets
-  if(P.ac.pulse&&radar.mode==='RWS'){c.strokeStyle=col;c.fillStyle=col;flPaint(c,(u,v)=>({x:X(u*flClutter.AZ),y:Y(v*rng)}),1.4,.9);c.globalAlpha=1;c.fillStyle=col;}
-  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng)continue;const Lk=stt&&j===radar.lock;if(stt&&!Lk||tk.hoj)continue;
+  if(P.ac.pulse&&!stt){c.strokeStyle=col;c.fillStyle=col;flPaint(c,(u,v)=>({x:X(u*flClutter.AZ),y:Y(v*rng)}),1.4,.9);c.globalAlpha=1;c.fillStyle=col;}
+  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng)continue;const Lk=stt&&j===radar.lock;if(stt&&!Lk||tk.hoj)continue;if(!Lk&&P.ac.pulse&&window.RAWVID&&RAWVID.on)continue;
     const x=X(tk.az),y=Y(tk.d);c.globalAlpha=Lk?1:clamp(1-(now-tk.t)/10,.15,1);c.fillStyle=Lk?'#ffffff':col;
     {// raw video: a fat, smeared echo built from a few short range-sweep dashes that shimmer, the same for an aircraft and for a hard ground return
       const sd=Math.floor(now*6),k0=Math.floor(x*.37)+Math.floor(y*.53),st=clamp((tk.snr||5)/9,.55,1.2),a0=c.globalAlpha;c.strokeStyle=Lk?'#ffffff':col;c.lineCap='round';
       for(let q=-1;q<=1;q++){const h1=hash(k0+q*7,sd+q),h2=hash(k0*3+q,sd*5+q),w=(3.2+h1*3.4)*st,yy=y+q*2.6+(h2-.5)*1.6;c.globalAlpha=a0*(q?.62:.95)*(.75+.25*h2);c.lineWidth=2.6+st;
         c.beginPath();c.moveTo(x-w+(h2-.5)*3,yy);c.lineTo(x+w+(h1-.5)*3,yy);c.stroke();}c.globalAlpha=a0;c.lineCap='butt';}
     if(Lk){c.strokeStyle='#ffffff';c.lineWidth=1.5;c.strokeRect(x-12,y-12,24,24);c.textAlign='left';c.font='700 12px "B612 Mono",monospace';c.fillText(U.kalt(P,tk.alt),x+15,y+15);}}
-  c.globalAlpha=1;
+  c.globalAlpha=1;if(stt&&P.ac.pulse&&window.RAWVID&&RAWVID.lockPaint){c.strokeStyle=c.fillStyle=col;RAWVID.lockPaint(c,x0+4,y0+4,x1-4,y0+118,col);c.globalAlpha=1;}
   for(const [j,s] of radar.strobes){if(Math.abs(s.az)>62*D2R)continue;const x=X(s.az);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=col;c.lineWidth=1.4;c.setLineDash([2,3]);c.beginPath();c.moveTo(x,y1);c.lineTo(x,y0);c.stroke();c.setLineDash([]);}
   c.globalAlpha=1;c.fillStyle=col;c.strokeStyle=col;c.fillRect(X(radar.antAz)-1,y1+3,2,9);
   if(!stt){const cx=X(radar.cur.az),cy=y1-radar.cur.r*(y1-y0);c.lineWidth=2;c.beginPath();c.moveTo(cx-5,cy-10);c.lineTo(cx-5,cy+10);c.moveTo(cx+5,cy-10);c.lineTo(cx+5,cy+10);c.stroke();}

@@ -802,7 +802,7 @@ class AI{
       if(Math.abs(t.vel.dot(los))<30&&t.pos.y<j.pos.y-300&&Math.random()<dt*.6)this.notchT=2.5;this.notchT-=dt;
       // the target's jammer: noise hides it beyond burn-through (the radar can still home on the noise itself), deception walks the range gate off a track
       const Jt=jamOf(t,j.ac.radar,j),noiseFar=!!(Jt&&Jt.noise&&dist>Jt.bt),geo=off<60*D2R&&terrLOS(j.pos,t.pos);this.jamT=(this.jamT||0)-dt;
-      const snr=SNR50*Math.pow(R/Math.max(dist,1),4)*(window.BEAM?BEAM.pj(j,t,.031,3.5):1);
+      const snr=SNR50*Math.pow(R/Math.max(dist,1),4)*(window.BEAM?BEAM.pj(j,t,.031,3.5):1)*(window.AIP?AIP.k(j,j.pos,t,j.ac.radar.R0*(j.rdrK||1)):1);
       this.radarLock=geo&&this.notchT<=0&&!noiseFar&&this.jamT<=0&&(this.radarLock?!(Math.random()<dt*1.5*Math.pow(1-pdOf(snr*8),2)):Math.random()<dt*2*pdOf(snr));
       this.hojLock=geo&&noiseFar&&dist<R*1.5;
       if(Jt&&Jt.dec&&this.radarLock&&dist>Jt.btD){this.pull=(this.pull||0)+dt*Jt.rate*(Math.random()<dt*.5*(j.ac.radar.ecc||.5)?-2:1);
@@ -871,9 +871,9 @@ class AI{
       if(this.sk===2&&dist<3000&&this.cmCd<=0&&t.fwd(_ai6).dot(los.clone().negate())>.92&&f.dot(los)<-.3){j.dispense('flare');this.cmCd=rnd(1.2,2);}
     }else if(this.friend){this.form(dir,dt,j,f);}else if(this.gciOn&&GCI.run&&GCI.bull){GCI.search(this,dir,j,f);}else{dir.copy(f).setY(0).normalize();j.thr=.7;j.trigger=false;}
     let clr=1e9;for(const s of [0,2,4,6,9]){const x=j.pos.x+j.vel.x*s,z=j.pos.z+j.vel.z*s,y=j.pos.y+j.vel.y*s;clr=Math.min(clr,y-groundAt(x,z));}
-    {const fl=this.friend?420:this.phase==='NOTCH'||this.phase==='DRAG'?450:1600;if(agl<fl)dir.y=Math.max(dir.y,lerp(.6,0,agl/fl));}
+    {const fl=this.friend||this.tac==='HIDE'?420:this.phase==='NOTCH'||this.phase==='DRAG'?450:1600;if(agl<fl)dir.y=Math.max(dir.y,lerp(.6,0,agl/fl));}
     this.steer(dir);if(this.pullCap!=null&&!thr)j.ctl.p=Math.min(j.ctl.p,this.pullCap);
-    if(clr<(this.friend?230:800)){j.ctl.r=clamp(-j.bank*2,-1,1);j.ctl.p=Math.abs(j.bank)<1.3?1:.1;j.ctl.y=0;j.thr=1;j.trigger=false;}}
+    if(clr<(this.friend||this.tac==='HIDE'?230:800)){j.ctl.r=clamp(-j.bank*2,-1,1);j.ctl.p=Math.abs(j.bank)<1.3?1:.1;j.ctl.y=0;j.thr=1;j.trigger=false;}}
   // test-range target: flies its racetrack at a fixed speed, never shoots, never dispenses, never reacts to missiles or the player
   dumbFly(dt){const j=this.j,R=this.route,f=j.fwd(new V3());let wp=R[this.wi%R.length];
     if((wp.x-j.pos.x)**2+(wp.z-j.pos.z)**2<9e6){this.wi++;wp=R[this.wi%R.length];}
@@ -1064,6 +1064,7 @@ class Missile{
         if(vd.dot(los)<Math.cos(d.gimbal))this.track=null;
         // pulse-Doppler seeker: a beaming target below the missile sits in the main-lobe clutter notch
         else if(d.seek==='ARH'&&!this.track.isDecoy&&Math.abs(this.track.vel.dot(los))<40&&this.track.pos.y<this.pos.y-300&&Math.random()<dt*.5)this.track=null;
+        else if(d.seek==='ARH'&&window.AIP&&AIP.seeker(this,d,this.track,dt))this.track=null;   // clutter / rain / a chaff cloud in the seeker's cell
         else if(d.seek==='IR'&&!this.track.isDecoy&&dd>irLockRange(d,this.track,this.pos)*1.25)this.track=null;
         // an uncooled or early IR head looking within a few degrees of the sun is blinded by it
         else if(d.seek==='IR'&&!this.track.isDecoy&&(d.ccm||0)<.3&&SUNDIR.y>.03&&los.dot(SUNDIR)>.9945&&Math.random()<dt*(1.6-(d.ccm||0)*4))this.track=null;}
@@ -1303,7 +1304,7 @@ const GINST={tpl:new Map(),recs:[],_m:new THREE.Matrix4(),_c:new THREE.Color(),_
 // cockpit switch positions; the panels read and write these, the sim reads them
 const sys={hud:{brt:.85,fpm:0,scales:1,vel:0,day:0,ws:4,ret:0,filter:0,cam:0},rwr:{pwr:1,pri:1,unk:0,hand:0,testT:0,lampT:0,srch:1,brt:.85},
   cm:{mode:2,prog:0,ch:1,fl:1,q:[],t:0,iv:.2},fcr:{gain:.5,sym:1,int:.85,con:.6},hsi:{hdg:0,crs:0},fuelSel:0,caut:{ack:false,was:false},
-  au:{msl:.7,thr:.8,master:1},lt:{flood:.6,inst:1},mig:{mti:0,fgain:.6,lamp:0,setka:.9,wcs:2,rmode:1,dh:3,zone:1,span:2,salvo:1,prep:1,irgain:.7,hudm:0,test:0,filter:0,hdd:.85,stores:1,cmprog:1,
+  au:{msl:.7,thr:.8,master:1},stc:{depth:0},lt:{flood:.6,inst:1},mig:{mti:0,fgain:.6,lamp:0,setka:.9,wcs:2,rmode:1,dh:3,zone:1,span:2,salvo:1,prep:1,irgain:.7,hudm:0,test:0,filter:0,hdd:.85,stores:1,cmprog:1,
     twf:0,aj:1,opt:{az:0,el:-2*D2R},ap:{damper:1,rec:0,alt:0,att:0,app:0,miss:0,th:0,tp:0,tb:0},pus:{coop:1,ag:0,expl:1,cmd:0,lock:0},ll:2,gear:1,trim:1}};
 sys.v={gear:0,gearT:0,hook:0,skid:1,cat:0,uch:1,lampT:0,roll:1,ralt:0,imode:2};
 // MiG-29 (9.12) weapon control system, per the DCS MiG-29A manual
@@ -1541,7 +1542,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       const J=this.jam(L);this.hoj=!!(J&&J.noise&&a.d>J.bt);
       if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>this.lostG){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
       else{if(L.isGhost){L._life=(L._life==null?2+Math.random()*7:L._life)-dt;if(L._life<=0){L.alive=false;this.drop('LOST');return;}}this.sttAcc=(this.sttAcc||0)+dt;let lost=false;
-        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a,window.BEAM?BEAM.k(L,a):1)*8);if(ok)this.lostT=0;else{this.lostT+=.1;if(this.lostT>this.lostG){lost=true;break;}}}
+        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a,window.BEAM?BEAM.k(L,a):1)*8);if(ok)this.lostT=0;else{this.lostT+=.1*(this.notch(L,a)?1:.35);if(this.lostT>this.lostG){lost=true;break;}}}   // a dropout from range eclipsing or a Doppler blind speed is coasted through (track memory about 3 s) and the PRF set moves on; a real notch still breaks it at the old rate
         if(lost){this.drop(this.notch(L,a)?'NOTCH':'LOST');return;}}
       // deception: the range / velocity gate is walked off the echo, the displayed range creeps away, and when the jammer lets go the track breaks
       if(J&&J.dec&&a.d>J.btD){this.pull=Math.max(0,this.pull+dt*J.rate*(Math.random()<dt*.5*this.ecc?-2:1));this.rngErr=this.pull*this.pull*2600;
@@ -2121,7 +2122,8 @@ function drawFlogScope(c,S){const P=player;const FX=!!P&&P.ac.pit==='foxbat';c.s
   c.globalAlpha=b;c.lineWidth=2;
   if(radar.mode==='RWS'&&radar.on()){const p=m(radar.cur.az/(30*D2R),radar.sensor==='IRST'?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);[-7,7].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-12);c.lineTo(p.x+d,p.y+12);c.stroke();});
     const an=m(radar.antAz/(30*D2R),0).x;c.beginPath();c.moveTo(an,y0+4);c.lineTo(an,y0+16);c.stroke();}
-  if(radar.mode==='STT'&&radar.lock){const a=radar.ang(radar.lock.pos),p=m(clamp(a.az/(30*D2R),-1,1),clamp(a.d/radar.rngM,0,1));c.strokeRect(p.x-10,p.y-8,20,16);c.textAlign='center';c.fillText('LOCK',S/2,y0+20);}
+  if(radar.mode==='STT'&&radar.lock){const a=radar.ang(radar.lock.pos),p=m(clamp(a.az/(30*D2R),-1,1),clamp(a.d/radar.rngM,0,1));c.strokeRect(p.x-10,p.y-8,20,16);c.textAlign='center';c.fillText('LOCK',S/2,y0+20);
+    if(window.RAWVID&&RAWVID.lockPaint){c.globalAlpha=b;RAWVID.lockPaint(c,x0+6,y1+6,x1-6,y1+120,FX?'#ffb347':'#62ffa8');}}   // conical-scan lock video: range-gated A-scope and nutation envelope
   c.textAlign='left';if(sys.mig.mti)c.fillText('MTI',x0+4,y1+14);
   if(!radar.on()){c.textAlign='center';c.font='700 22px "B612 Mono",monospace';c.fillText(radar.power==='OFF'?'OFF':radar.warm>0?'WARMUP '+Math.ceil(radar.warm):'DUMMY',S/2,S/2);}
   c.restore();c.fillStyle='rgba(2,10,5,.22)';for(let y=0;y<S;y+=3)c.fillRect(0,y,S,1);}
@@ -4445,6 +4447,7 @@ function buildCockpit(kind){
     lamp(pp,PXm(650),PYm(605),.02,.046,'IN\nRANGE',0x46ff6a,()=>radar.mode==='STT'&&!!radar.lock&&!radar.noRng,.074);
     dial(pp,PXm(605),PYm(745),.014,'SCOPE · BRIGHTNESS',{cont:1,get:()=>sys.fcr.int,set:v=>sys.fcr.int=v},.07);tag(pp,PXm(605),PYm(745)-.025,.03,.009,'BRT',18,.074);
     dial(pp,PXm(680),PYm(745),.014,'SCOPE · CONTRAST',{cont:1,get:()=>sys.fcr.con,set:v=>sys.fcr.con=v},.07);tag(pp,PXm(680),PYm(745)-.025,.036,.009,'CONTR',18,.074);
+    dial(pp,PXm(755),PYm(745),.014,'SCOPE · STC sensitivity time control: cuts receiver gain at short range (40 log R) to tame near ground clutter; too much hides close targets',{cont:1,get:()=>sys.stc.depth,set:v=>sys.stc.depth=v},.07);tag(pp,PXm(755),PYm(745)-.025,.03,.009,'STC',18,.074);
     // right of the scope: reticle depression counter, mode selector, button block
     liveWin(pp,phRetC,PXm(960),PYm(570),.034,.014,.07);tag(pp,PXm(960),PYm(570)+.015,.03,.008,'MILS',14,.074);
     dial(pp,PXm(1010),PYm(580),.008,'SIGHT · RETICLE DEPRESSION (no effect here)',{cont:1,get:()=>V.rdep??0,set:v=>V.rdep=v,label:v=>Math.round(v*245)+' mil'},.07);
@@ -5471,10 +5474,11 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
       plate(fg,-.45,.083,.06,.01,120,(c,w,h)=>{c.fillStyle='#1b1e20';c.fillRect(0,0,w,h);lt(c,'TEST',w/2,h/2,13);},.02);
       {const g=new THREE.Group();g.position.set(-.35,.14,.045);g.rotation.set(.05,.3,0);fg.add(g);
         const pc=plate(g,0,0,.13,.12,260,(c,w,h)=>{pnlB(c,w,h);lt(c,'GAIN IR',50,22,11);lt(c,'EL',130,22,11);knl(c,180,64,16,MDH.map(String),'',-2.4,2.4);lt(c,'CTRL',150,110,11);
-            lt(c,'GAIN R',54,120,11);lt(c,'RAD',210,120,11);lt(c,'PPH',36,200,10);lt(c,'RESET',150,214,11);},.006);
+            lt(c,'GAIN R',54,120,11);lt(c,'RAD',210,120,11);lt(c,'STC',240,232,10);lt(c,'PPH',36,200,10);lt(c,'RESET',150,214,11);},.006);
         let[x,y]=pc(50,60);dial(g,x,y,.009,'GAIN IR · TP-23M IRST gain (more gain: more range, more noise)',{cont:1,get:()=>sys.mig.irgain,set:v=>sys.mig.irgain=v},.012);
         [x,y]=pc(180,64);dial(g,x,y,.011,'EL · antenna elevation as target height difference',{n:8,get:()=>sys.mig.dh,set:v=>sys.mig.dh=v,label:v=>(MDH[v]>0?'+':'')+MDH[v]+' km',a0:-2.4,a1:2.4},.012);
         [x,y]=pc(54,160);dial(g,x,y,.009,'GAIN R · Sapfir-23ML receiver gain (more gain: more range, more clutter and noise)',{cont:1,get:()=>sys.mig.fgain,set:v=>sys.mig.fgain=v},.012);
+        [x,y]=pc(240,200);dial(g,x,y,.009,'STC · sensitivity time control: cuts receiver gain at short range (40 log R) so near ground clutter stops blooming the scope; too much blinds you to close targets',{cont:1,get:()=>sys.stc.depth,set:v=>sys.stc.depth=v},.012);
         [x,y]=pc(210,160);lever(g,x,y,['RAD · radiating','DUMMY · dummy load','OFF · off'],'RAD · radar emission',PWR.get,PWR.set,.012);
         [x,y]=pc(150,180);pbtn(g,x,y,.016,.012,'RESET · break lock',()=>{if(radar.mode==='STT')radar.drop();},{col:0x8a2a12,z:.012});
         [x,y]=pc(100,200);lever(g,x,y,['L · left','CTR','R · right'],'ZONE · radar azimuth zone',()=>sys.mig.zone,v=>sys.mig.zone=v,.012);}
@@ -7138,17 +7142,17 @@ const GCI={run:false,S:[null,null],bull:null,sites:[],G:[],gid:0,opened:false,t0
   scan(S,a,now){const air=a.k==='awacs',rp=air?a.jet.pos:a.pos;
     for(const e of jets){if(!e.alive||e.side===S.side||e.gciA||e.remote)continue;
       const rel=_g1.copy(e.pos).sub(rp),d=rel.length(),los=_g2.copy(rel).divideScalar(d||1),had=S.pic.get(e);let ok=false;
-      const agl=e.pos.y-groundAt(e.pos.x,e.pos.z),hor=4120*(Math.sqrt(Math.max(air?rp.y:a.T.ant||20,1))+Math.sqrt(Math.max(agl,1)));
+      const agl=e.pos.y-groundAt(e.pos.x,e.pos.z),hor=4120*(Math.sqrt(Math.max(air?rp.y:a.T.ant||20,1))+Math.sqrt(Math.max(agl,1)))*(window.AIP?AIP.horMul(rp):1);
       if(d<hor){const hot=Math.max(0,e.fwd(_g3).dot(_g4.copy(los).negate())),rv=_g5.copy(e.vel);if(air)rv.sub(a.jet.vel);const radial=Math.abs(rv.dot(los));
-        let R=a.T.R0*Math.pow(e.ac.rcs/5,.25)*aspF(e,e.fwd(_g3).dot(_g4),los);if(air&&agl<400)R*=.6;
+        let R=a.T.R0*Math.pow(e.ac.rcs/5,.25)*aspF(e,e.fwd(_g3).dot(_g4),los)*(window.AIP?AIP.bandR(e,a):1);if(air&&agl<400)R*=.6;
         const J=jamOf(e,{R0:a.T.R0,ecc:.45,name:a.ty},{pos:rp,side:S.side,key:a}),noise=!!(J&&J.noise&&d>J.bt);if(noise)e._gjam=now;
-        if(d<R&&radial>28&&!noise&&terrLOS(rp,e.pos)){const snr=SNR50*Math.pow(R/Math.max(d,1),4)*(window.BEAM?BEAM.pv(rp,e,.1,3.5):1);ok=had?Math.random()<pdOf(snr*8):Math.random()<pdOf(snr);
+        if(d<R&&radial>28&&!noise&&terrLOS(rp,e.pos)){const snr=SNR50*Math.pow(R/Math.max(d,1),4)*(window.BEAM?BEAM.pv(rp,e,.1,3.5):1)*(window.AIP?AIP.k(a,rp,e,a.T.R0):1);ok=had?Math.random()<pdOf(snr*8):Math.random()<pdOf(snr);
           if(ok&&J&&J.dec&&d>J.btD&&Math.random()<.4)ok=false;}}   // deception walks the range gate off the track
       if(ok){const ne=a.T.hf?150:1200;
         S.pic.set(e,{j:e,pos:e.pos.clone().add(new V3(rnd(-300,300),rnd(-ne,ne),rnd(-300,300))),vel:e.vel.clone(),hdg:e.hdg,t:now,src:a.k,by:a,first:had?had.first:now});}}},
   // what a Russian AI fighter knows: its own radar first (with a few seconds of memory), then the picture. Returns 'own', 'gci' or null.
   knows(ai,x){const j=ai.j,now=nowS(),rel=_g1.copy(x.pos).sub(j.pos),d=rel.length(),los=_g2.copy(rel).divideScalar(d||1),off=Math.acos(clamp(j.fwd(_g3).dot(los),-1,1));
-    if(off<70*D2R){const hot=Math.max(0,x.fwd(_g4).dot(_g5.copy(los).negate())),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(x.ac.rcs/5,.25)*aspF(x,x.fwd(_g4).dot(_g5),los),
+    if(off<70*D2R){const hot=Math.max(0,x.fwd(_g4).dot(_g5.copy(los).negate())),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(x.ac.rcs/5,.25)*aspF(x,x.fwd(_g4).dot(_g5),los)*(window.AIP?Math.pow(AIP.k(j,j.pos,x,j.ac.radar.R0*(j.rdrK||1)),.25):1),
         J=jamOf(x,j.ac.radar,j),far=!!(J&&J.noise&&d>J.bt);
       if((far?d<R*1.5:d<R)&&terrLOS(j.pos,x.pos)){ai.kn.set(x,now);return'own';}}
     const k=ai.kn.get(x);if(k&&now-k<6)return'own';
@@ -7696,7 +7700,7 @@ const GND={units:[],bombs:[],rkts:[],sites:[],zsus:[],kills:0,targets:0,
   check(){if(game.over||!this.targets)return;const left=this.units.filter(u=>u.T.tgt&&u.alive).length;
     if(left===0){game.over=true;game.result='TARGETS DESTROYED';game.endT=6;setTimeout(()=>flash('ALL TARGETS DESTROYED · RTB',4000),1500);}},
   // what an emitter can see: line of sight, clutter floor, and its own range against this target's RCS
-  canSee(u,P,R0,floor){if(!P.alive)return false;const d=u.pos.distanceTo(P.pos);if(d>R0*Math.pow(Math.max(.5,P.ac.rcs)/6,.25))return false;
+  canSee(u,P,R0,floor){if(!P.alive)return false;const d=u.pos.distanceTo(P.pos);if(d>R0*Math.pow(Math.max(.5,P.ac.rcs)/6,.25)*(window.AIP?Math.pow(AIP.k(u,u.pos,P,R0),.25):1))return false;
     const agl=P.pos.y-groundAt(P.pos.x,P.pos.z);if(agl<floor)return false;
     return terrLOS(_gwA.copy(u.pos).setY(u.pos.y+4),P.pos);},
   /* ---- 2K12 Kub battery: search -> acquire (reaction time) -> CW illumination -> two-round salvo ---- */
