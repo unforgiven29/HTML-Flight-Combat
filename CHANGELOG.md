@@ -443,3 +443,9 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Range sidelobes: radars with phase-coded pulse compression (APG-68(V)5/70/73/79, N019M, Zhuk, Zaslon) leak neighbouring-gate clutter at the code's peak sidelobe level; compression also shrinks the clutter cell. Plain-pulse sets have none.
 - Terrain shadowing: a 120-ray horizon profile (4/3-earth curvature, refreshed every 2.5 s or 1.5 km) hides clutter patches behind nearer terrain and gives each patch its real height, so grazing angle and land/sea come from the terrain.
 - Limits: patches use one terrain height per ray step (no slope-facing), no target glint or engine/propeller modulation, ownship multipath not in the CPI, player radar only.
+
+## v275 — IR seeker architectures and IRCCM (js/sensorir.js)
+- Every IR missile maps to a seeker architecture: spin-scan (AIM-9B, R-3S, R-40TD), cooled conical (AIM-9D/E/G/J, R-24T, R-13M), conical + rate logic (AIM-9L/P, R-60M), two-band conical/rosette (AIM-9M, R-73, R-27T/ET), imaging IR focal-plane array (AIM-9X, AGM-65G).
+- IRCCM as hazard rates while the head is on a flare: spectral (reduced by spectrally matched modern flares), kinematic (flare separation velocity), intensity (burn-out / rise), spatial (imaging heads resolve the silhouette inside 7 km and reject point-source flares). Imaging heads hold a pre-launch template at release.
+- Extra seeker physics: flare bloom on imaging arrays, sun / cloud-edge / ground clutter transfer scaled by architecture, rain and cloud scaling of lock range (less for two-band heads), plume aim-point bias for non-imaging heads (imaging aims at the airframe centroid), per-missile state `m.irx` in the F4 overlay.
+- Headless duel test (modern-era flares every 0.35 s, 3.5 km tail shot, 14 trials each): AIM-9B 0/14, AIM-9L 5/14, AIM-9M 9/14, R-73 8/14, AIM-9X 14/14. All thresholds and rates are estimates, not published data.
