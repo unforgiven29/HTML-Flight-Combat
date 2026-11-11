@@ -5423,126 +5423,191 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
           c.fillStyle=lmp?'#ffd040':has?(on?'#ffb020':'#46d66a'):'#1c2420';c.fillRect(x-7,18,14,22);
           c.fillStyle=lmp||has?'#e8f0e0':'#2a322e';c.fillRect(x-5,52,10,6);c.fillStyle='#8a948e';c.font='700 13px sans-serif';c.textAlign='center';c.fillText(k,x,80);});
         const tr=Math.abs(P.bank)<.05;trimL.forEach((m,i)=>m.material.color.setHex(lmp||(i===1?tr:true)?0x46ff6a:0x14301a));};}
-    // ================= MiG-23ML, after a photo of a preserved 23ML front panel =================
-    // No head-down display: top centre is the ASP-17ML sight / radar control unit (grille, light-grey mode selector plate, GO / CHECK
-    // boxes), with a turquoise strip below it carrying MASTER (master) and the preparation toggles. Upper left: SPO-10 indicator with its
-    // TEST test, the black radar control panel (GAIN, EL, CTRL, RESET) and the big AOA AoA / G dial. Left: IAS, altimeter, EGT, the KPP ADI
-    // over the NPP HSI. Right: clock, KUS M/V, tachometer, warning lamp blocks, radio altimeter, VVI, fuel, the black weapons panel up top
-    // and the CHECK missile panel low on the right. Wing-sweep handle on the left wall ahead of the throttle.
+    // ================= MiG-23ML front panel, rebuilt from the straight-on cockpit photos of the preserved jets (JetPhotos / the Cyrillic export-free layout) =================
+    // Layout (left to right, as the pilot sees it):
+    //   left shoulder  : round ПРОВЕРКА SPO-10 indicator with its red lens; black S23ML-24 target-gate panel (СТРОБ, АПХ/ППХ, УСИЛ Т, УСИЛ Р, ΔH selector, УПР СТРОБ stick, СБРОС);
+    //                    α / nу dial; ПОВТ ЗАХОД / ДЕМПФ / КРЕН ЗАДАН 45° / КУРС ЗАДАН АВТОМ strip
+    //   centre         : ASP-17ML sight (hood, olive control plate, lower black unit with ГОДЕН / КОНТРОЛЬ, ЛАМПА / РЕЗЕРВ, АСП / РП, НОЧЬ / ДЕНЬ) and the Lazur lamp bar,
+    //                    under it the turquoise strip ГЛАВНЫЙ / ПОДГОТОВКА / КРЫЛ / СЕР. / ВОЗДУХ
+    //   right shoulder : hydraulic dial, KUS M / V indicator, black N003-34 radar panel (СИСТ selector БС 3-1 / РЛ / Т I-III / Т φ0 I-II, ПУ, ИЗЛ, НАВЕД, МСКЦ / ППС / ЗПС)
+    //   left column    : KUS-1900 (СКОРОСТЬ), VD-20 altimeter, Mach meter; САУ lamp box beside them; KPP attitude over the NPP HSI
+    //   right column   : tachometer (ОБОРОТЫ), twin lamp matrices with ДЕНЬ / НОЧЬ, КАНАЛ radio panel, EGT, radio altimeter (ВЫСОТА), vertical speed
+    // Pixel positions are taken from the 1600 px wide photo; K converts them to metres (about 1 mm per pixel).
     {const fg=new THREE.Group();fg.position.copy(pnl.position);fg.rotation.copy(pnl.rotation);root.add(fg);out.flOnly=[fg];
-      add(sbox(1.0,.44,.03),panelM,0,0,0,fg);
-      const sb=(x,y,w,h)=>add(rbox(w,h,.012,.004),panelM,x,y,.014,fg);
-      const blk=(x,y,w,h,par=fg,z=.02)=>add(rbox(w,h,.022,.005),black,x,y,z,par);
+      const K=.00098,PX=p=>(p-850)*K,PY=p=>(690-p)*K;
+      const gx=(g,px)=>(px-g.cx)*K,gy=(g,py)=>(g.cy-py)*K;
+      // a sub-board: group at a photo pixel, optionally turned toward the pilot; returns helpers that take photo pixels
+      const SG=(cx,cy,ry=0,rx=0,z=.0)=>{const g=new THREE.Group();g.position.set(PX(cx),PY(cy),z);g.rotation.set(rx,ry,0);fg.add(g);g.cx=cx;g.cy=cy;g.X=p=>gx(g,p);g.Y=p=>gy(g,p);return g;};
+      const blk=(par,x,y,w,h,z=.02)=>add(rbox(w,h,.022,.005),black,x,y,z,par);
       const pgT=(c,w,h,t)=>{c.fillStyle='#46a7a3';c.fillRect(0,0,w,h);c.strokeStyle='#2c6e6b';c.lineWidth=3;c.strokeRect(1.5,1.5,w-3,h-3);if(t)lt(c,t,w/2,14,11,'#f2f4ee');};
       const pnlB=(c,w,h)=>{c.fillStyle='#1b1e20';c.fillRect(0,0,w,h);c.strokeStyle='#3a4246';c.lineWidth=3;c.strokeRect(1.5,1.5,w-3,h-3);
         [[8,8],[w-8,8],[8,h-8],[w-8,h-8]].forEach(([x,y])=>{c.fillStyle='#555';c.beginPath();c.arc(x,y,3,0,7);c.fill();});};
-      // raised sub-boards like the jet: left flight block, right engine / lamp block
-      sb(-.29,-.03,.2,.33);sb(.24,-.03,.22,.33);
-      // ---- centre: ASP-17ML / radar control unit (no screen) ----
-      {const g=new THREE.Group();g.position.set(0,.09,.03);g.rotation.set(.1,0,0);fg.add(g);const dg=L(0x2a2e31);
-        add(rbox(.25,.22,.06,.01),dg,0,0,0,g);
-        // Lazur command lamp bar across the top of the sight unit
-        add(rbox(.23,.035,.02,.004),L(0x3a3f43),0,.095,.032,g);out.flLaz=mk(768,80);
-        {const lz=face(out.flLaz,new THREE.PlaneGeometry(.222,.026),0,.095,.0425,g);reg([lz],{name:'LAZUR · command bar: ППС frontal intercept · 100/60/36 km · Ф afterburner · < I > heading · ! new task · Г 30° pop-up/dive · Т abort, RTB · ПД target jamming · К datalink BIT',state:()=>LAZ.filter((_,i)=>GCI.lamps(player)[i]).join(' ')||'dark'});}
-        // light-grey mode selector plate with its handle
-        {const pc=plate(g,0,.035,.13,.075,260,(c,w,h)=>{c.fillStyle='#bfc4b8';c.fillRect(0,0,w,h);c.strokeStyle='#5a5f58';c.lineWidth=4;c.strokeRect(2,2,w-4,h-4);
-            [['PV',70,24],['MAN',130,22],['NSI',196,24],['L',44,62],['RM',214,62],['OB',70,124],['MAN',130,128],['PB',196,124]].forEach(([t,x,y])=>{c.fillStyle='#1c1d1a';c.fillRect(x-18,y-10,36,20);lt(c,t,x,y,12,'#e9ece6');});},.031);
-          const[x,y]=pc(130,75);dial(g,x,y,.012,'ASP-17ML · sight / weapon mode',{n:8,get:()=>sys.mig.wcs,set:migWCS,label:v=>MWCS[v]+' · '+['loft bombing (not modelled)','navigation','radar search / attack','TP-23M IR search','close combat','— (no helmet sight on the 23ML)','fixed sight, manual','missile seeker boresight'][v],a0:-2.6,a1:2.6},.032);}
-        // lower boxes: lamp / reserve, GO / CHECK with test buttons
-        add(rbox(.08,.06,.03,.006),black,-.07,-.06,.02,g);add(rbox(.1,.06,.03,.006),black,.065,-.06,.02,g);
-        add(rbox(.04,.05,.02,.004),L(0x4a4f52),0,-.07,.02,g);
-        plate(g,.065,-.045,.09,.016,180,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);lt(c,'GO',48,h/2,15);lt(c,'CHECK',130,h/2,15);},.036);
-        pbtn(g,.04,-.07,.012,.012,'GO · sight self-test',()=>{sys.mig.test=now()+3;},{col:0x2a6a30,z:.032,lit:()=>now()<sys.mig.test?0x1c6a2c:0});
-        pbtn(g,.09,-.07,.012,.012,'CHECK · lamp test',()=>{sys.mig.lamp=now()+2.5;},{col:0xd8d8cc,z:.032});
-        plate(g,-.07,-.045,.07,.016,140,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);lt(c,'LAMP',40,h/2,14);lt(c,'RESERVE',104,h/2,14);},.036);
-        dial(g,-.09,-.072,.008,'BRT · sight brightness',{cont:1,get:()=>sys.mig.setka,set:v=>sys.mig.setka=v},.032);
-        lever(g,-.05,-.072,['DAY · day','NIGHT · night'],'DAY / NIGHT · sight filter',()=>sys.mig.hudm===1?1:0,v=>sys.mig.hudm=v,.032);}
-      // turquoise strip under the sight: MASTER master and the preparation toggles
-      {const pc=plate(fg,0,-.06,.25,.05,500,(c,w,h)=>{pgT(c,w,h);c.strokeStyle='#c8281c';c.lineWidth=3;c.strokeRect(10,8,60,84);lt(c,'MASTER',40,18,11,'#fff');lt(c,'OFF',40,84,9,'#fff');
-          [['PREP',120],['WING',200],['SALVO',270],['MTI',340],['COOP',420],['GUID',474]].forEach(([t,x])=>lt(c,t,x,18,11,'#fff'));lt(c,'SINGLE',270,84,9,'#fff');lt(c,'OFF',420,84,9,'#fff');},.02);
-        let[x,y]=pc(40,52);lever(fg,x,y,['ON · ARM','OFF · SAFE'],'MASTER · MASTER ARM',()=>game.armPos===0?0:1,v=>setArm(v?1:0),.026);
-        [x,y]=pc(120,52);lever(fg,x,y,['AUTO','MAN'],'PREP · missile preparation',()=>sys.mig.prep,v=>sys.mig.prep=v,.026);
-        [x,y]=pc(200,52);pbtn(fg,x,y,.01,.01,'WING · wing sweep: step the handle aft (, forward / . aft on the keyboard)',()=>sweepStep(1),{col:0x8a8f92,z:.026,state:()=>player&&player.ac.swing?player.sweepCmd+'°':''});
-        [x,y]=pc(270,52);lever(fg,x,y,['SALVO · pair','SINGLE · single'],'SALVO / SINGLE · release mode',()=>sys.mig.salvo,v=>sys.mig.salvo=v,.026);
-        [x,y]=pc(340,52);lever(fg,x,y,['ON · MTI on: clutter cancelled, shorter range, slow targets lost','OFF · raw pulse video'],'MTI · moving target selection',()=>sys.mig.mti?0:1,v=>{sys.mig.mti=v?0:1;flClutter.v.fill(0);},.026);
-        [x,y]=pc(420,52);lever(fg,x,y,['ON · radar and IRST work together, handing the lock to each other','OFF'],'COOP · radar and IRST as one sensor',()=>sys.mig.pus.coop,v=>sys.mig.pus.coop=v,.026);
-        [x,y]=pc(474,52);lever(fg,x,y,['ON · GCI steering and radar slaving','OFF'],'GUID · ground-controlled intercept',()=>sys.mig.guid?0:1,v=>GCI.setGuid(v===0),.026);}
-      plate(fg,0,-.115,.06,.045,120,(c,w,h)=>{c.fillStyle='#e6e8e2';c.fillRect(0,0,w,h);c.fillStyle='#555';for(let i=0;i<5;i++)c.fillRect(12,14+i*14,w-24,3);},.016);
-      // ---- upper left: SPO-10 indicator, radar control panel, AOA ----
-      blk(-.45,.15,.075,.075);add(new THREE.CylinderGeometry(.034,.034,.02,24),L(0x8a1a12),-.45,.15,.025,fg,Math.PI/2);
-      out.faces.push(face(rwrC,new THREE.CircleGeometry(.03,32),-.45,.15,.0365,fg).material);
-      pbtn(fg,-.45,.098,.02,.01,'TEST · SPO-10 test',()=>{sys.rwr.testT=now()+3;},{col:0xd8d8cc,z:.02});
-      plate(fg,-.45,.083,.06,.01,120,(c,w,h)=>{c.fillStyle='#1b1e20';c.fillRect(0,0,w,h);lt(c,'TEST',w/2,h/2,13);},.02);
-      {const g=new THREE.Group();g.position.set(-.35,.14,.045);g.rotation.set(.05,.3,0);fg.add(g);
-        const pc=plate(g,0,0,.13,.12,260,(c,w,h)=>{pnlB(c,w,h);lt(c,'GAIN IR',50,22,11);lt(c,'EL',130,22,11);knl(c,180,64,16,MDH.map(String),'',-2.4,2.4);lt(c,'CTRL',150,110,11);
-            lt(c,'GAIN R',54,120,11);lt(c,'RAD',210,120,11);lt(c,'STC',240,232,10);lt(c,'PPH',36,200,10);lt(c,'RESET',150,214,11);},.006);
-        let[x,y]=pc(50,60);dial(g,x,y,.009,'GAIN IR · TP-23M IRST gain (more gain: more range, more noise)',{cont:1,get:()=>sys.mig.irgain,set:v=>sys.mig.irgain=v},.012);
-        [x,y]=pc(180,64);dial(g,x,y,.011,'EL · antenna elevation as target height difference',{n:8,get:()=>sys.mig.dh,set:v=>sys.mig.dh=v,label:v=>(MDH[v]>0?'+':'')+MDH[v]+' km',a0:-2.4,a1:2.4},.012);
-        [x,y]=pc(54,160);dial(g,x,y,.009,'GAIN R · Sapfir-23ML receiver gain (more gain: more range, more clutter and noise)',{cont:1,get:()=>sys.mig.fgain,set:v=>sys.mig.fgain=v},.012);
-        [x,y]=pc(240,200);dial(g,x,y,.009,'STC · sensitivity time control: cuts receiver gain at short range (40 log R) so near ground clutter stops blooming the scope; too much blinds you to close targets',{cont:1,get:()=>sys.stc.depth,set:v=>sys.stc.depth=v},.012);
-        [x,y]=pc(210,160);lever(g,x,y,['RAD · radiating','DUMMY · dummy load','OFF · off'],'RAD · radar emission',PWR.get,PWR.set,.012);
-        [x,y]=pc(150,180);pbtn(g,x,y,.016,.012,'RESET · break lock',()=>{if(radar.mode==='STT')radar.drop();},{col:0x8a2a12,z:.012});
-        [x,y]=pc(100,200);lever(g,x,y,['L · left','CTR','R · right'],'ZONE · radar azimuth zone',()=>sys.mig.zone,v=>sys.mig.zone=v,.012);}
-      round(MG.aoa,.048,-.205,.13,fg);
-      add(new THREE.CylinderGeometry(.012,.012,.012,16),black,-.13,.2,.02,fg,Math.PI/2);out.warn3=add(new THREE.CircleGeometry(.0088,16),lampM(0x3a1208),-.13,.2,.0265,fg);
+      const W='#eef0ea',Wd='#c9ccc4',Y='#ffd040';
+      // ---- panel bodies: main board, the two angled shoulders, the sight housing ----
+      add(sbox(.80,.44,.03),panelM,PX(850),PY(830),0,fg);
+      const gL=SG(565,498,0),gR=SG(1140,520,0);
+      add(sbox(.27,.24,.03),panelM,0,0,0,gL);add(sbox(.245,.2,.03),panelM,0,0,0,gR);
+      add(rbox(.3,.23,.06,.01),L(0x23272a),PX(865),PY(510),.02,fg);
+      // ============================ LEFT SHOULDER ============================
+      // SPO-10 indicator: round black bezel with the aircraft-silhouette lamps, ПРОВЕРКА ring below it, red irradiation lens above it
+      {const sx=PX(400),sy=PY(488);add(new THREE.CylinderGeometry(.036,.038,.03,32),black,sx,sy,.03,fg,Math.PI/2);
+        out.faces.push(face(rwrC,new THREE.CircleGeometry(.029,32),sx,sy,.0455,fg).material);
+        add(new THREE.CylinderGeometry(.015,.017,.016,20),L(0x8a1a12),PX(450),PY(437),.032,fg,Math.PI/2);
+        plate(fg,sx,PY(535),.06,.012,160,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);lt(c,'ПРОВЕРКА',w/2,h/2,17);},.022);
+        pbtn(fg,sx+.04,PY(528),.012,.012,'ПРОВЕРКА · SPO-10 test',()=>{sys.rwr.testT=now()+3;},{col:0xd8d8cc,z:.026});}
+      // black S23ML-24 target-gate panel (crop 435 x 398)
+      {const w=.152,h=.14,cx=PX(503),cy=PY(528),cw=435,pc=plate(fg,cx,cy,w,h,cw,(c,W2,H2)=>{pnlB(c,W2,H2);
+          lt(c,'СТРОБ',58,218,15);lt(c,'ВЫК',46,318,13);lt(c,'АПХ',120,248,13);lt(c,'ППХ',128,362,13);lt(c,'УСИЛ Т',158,150,15);lt(c,'УСИЛ Р',200,262,15);
+          lt(c,'ΔH',250,92,16);MDH.forEach((v,i)=>{const a=-1.9+i*3.8/7;lt(c,(v>0?'+':'')+v,330+Math.sin(a)*66,112-Math.cos(a)*66,11);});
+          lt(c,'УПР СТРОБ',322,196,14);c.strokeStyle=W;c.lineWidth=2;c.beginPath();c.arc(322,290,66,0,7);c.stroke();lt(c,'СБРОС',212,362,13);},.021);
+        let[x,y]=pc(60,268);lever(fg,x,y,['СТРОБ · target-selection pulses for the radar (scan narrows to the gate)','ВЫК · off'],'СТРОБ / ВЫК · gate pulses',()=>sys.mig.strob?0:1,v=>sys.mig.strob=v?0:1,.03);
+        [x,y]=pc(116,305);lever(fg,x,y,['АПХ','ППХ'],'АПХ / ППХ · N003E cooling (no effect here)',()=>sys.mig.apx?1:0,v=>sys.mig.apx=v,.03);
+        [x,y]=pc(158,190);dial(fg,x,y,.011,'УСИЛ Т · TP-26Sh IRST video gain (more gain: more range, more noise)',{cont:1,get:()=>sys.mig.irgain,set:v=>sys.mig.irgain=v,a0:-2.2,a1:2.2},.03);
+        [x,y]=pc(206,300);dial(fg,x,y,.011,'УСИЛ Р · Sapfir-23ML receiver gain (more gain: more range, more clutter and noise)',{cont:1,get:()=>sys.mig.fgain,set:v=>sys.mig.fgain=v,a0:-2.2,a1:2.2},.03);
+        [x,y]=pc(330,112);dial(fg,x,y,.012,'ΔH · antenna elevation as target height difference',{n:8,get:()=>sys.mig.dh,set:v=>sys.mig.dh=v,label:v=>(MDH[v]>0?'+':'')+MDH[v]+' km',a0:-1.9,a1:1.9},.03);
+        [x,y]=pc(322,290);dial(fg,x,y,.016,'УПР СТРОБ · scan zone L / CTR / R (stick)',{n:3,get:()=>sys.mig.zone,set:v=>sys.mig.zone=v,label:v=>['L · left','CTR','R · right'][v],a0:-.7,a1:.7},.03);
+        [x,y]=pc(236,356);pbtn(fg,x,y,.016,.01,'СБРОС · break lock (radar and IRST)',()=>{if(radar.mode==='STT')radar.drop();},{col:0x8a8f92,z:.026});}
+      // α / nу dial, КОНТР УУАП test lens and the red warning lamp on top of it
+      round(MG.aoa,.054,PX(632),PY(487),fg);
+      add(new THREE.CylinderGeometry(.016,.018,.012,22),black,PX(642),PY(398),.03,fg,Math.PI/2);
+      plate(fg,PX(642),PY(372),.04,.011,120,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);lt(c,'КОНТР УУАП',w/2,h/2,14);},.022);
+      pbtn(fg,PX(642),PY(398),.014,.014,'КОНТР УУАП · warning-lamp test',()=>{sys.mig.lamp=now()+2.5;},{col:0x2a2d30,z:.03});
+      add(new THREE.CylinderGeometry(.018,.018,.016,24),L(0x8a1a12),PX(673),PY(405),.03,fg,Math.PI/2);out.warn3=add(new THREE.CircleGeometry(.0135,20),lampM(0x3a1208),PX(673),PY(405),.0385,fg);
       reg([out.warn3],{name:'WARNING · MASTER CAUTION lamp-button',state:()=>sys.caut.was?(sys.caut.ack?'acknowledged':'WARNING'):'clear',act:()=>{sys.caut.ack=true;sfx.click();}});
-      plate(fg,-.21,.058,.2,.016,400,(c,w,h)=>{c.fillStyle='#46a7a3';c.fillRect(0,0,w,h);['GO APPROACH','DAMP','ROLL 45°','HDG'].forEach((t,i)=>lt(c,t,50+i*100,h/2,15,'#fff'));},.016);
-      // ---- left flight block ----
-      round(MG.ias,.042,-.39,.0,fg);round(MG.alt,.042,-.39,-.1,fg);round(MG.egt,.036,-.39,-.19,fg);
-      round(adiC,.056,-.26,-.005,fg);blk(-.26,-.13,.115,.115);face(hsiC,new THREE.PlaneGeometry(.105,.105),-.26,-.13,.0315,fg);
-      dial(fg,-.19,-.19,.008,'CRS · COURSE SET',{n:72,wrap:1,get:()=>Math.round(sys.hsi.crs/5)%72,set:v=>sys.hsi.crs=v*5,label:v=>String(v*5).padStart(3,'0')+'°'},.02);
-      round(swC,.03,-.155,-.06,fg);blk(-.15,-.17,.07,.04);face(gearC,new THREE.PlaneGeometry(.064,.034),-.15,-.17,.0315,fg,false);
-      // ---- right block ----
-      round(VG.clk,.03,.17,.18,fg);blk(.17,.085,.1,.08);face(MG.mach,new THREE.PlaneGeometry(.075,.075),.17,.085,.0315,fg);
-      round(MG.rpm,.052,.3,.04,fg);
-      out.flLmp=mk(256,256);blk(.4,.04,.085,.12);face(out.flLmp,new THREE.PlaneGeometry(.075,.11),.4,.04,.0315,fg);
-      out.flLmp2=mk(256,128);blk(.19,-.045,.12,.065);face(out.flLmp2,new THREE.PlaneGeometry(.11,.056),.19,-.045,.0315,fg);
-      round(MG.ralt,.044,.15,-.15,fg);round(MG.vvi,.044,.27,-.15,fg);
-      blk(.4,-.08,.045,.12);face(fuC,new THREE.PlaneGeometry(.038,.11),.4,-.08,.0315,fg);
-      blk(.3,-.06,.05,.026);liveWin(fg,cartsC,.3,-.06,.042,.02,.022);
-      // weapons panel, black, angled on the upper right wing
-      {const g=new THREE.Group();g.position.set(.37,.165,.045);g.rotation.set(.05,-.3,0);fg.add(g);
-        const pc=plate(g,0,0,.13,.1,260,(c,w,h)=>{pnlB(c,w,h);lt(c,'RM',90,20,12);lt(c,'RAD',40,110,11);lt(c,'AUTO',126,110,10);lt(c,'MAN',126,186,10);lt(c,'FWD',214,110,11);lt(c,'BASE',214,24,10);},.006);
-        let[x,y]=pc(90,56);dial(g,x,y,.01,'RM · radar mode / close combat',{n:4,get:()=>sys.mig.rmode,set:v=>{sys.mig.rmode=v;if(mw()==='RAD')migWCS(sys.mig.wcs);},label:v=>['CC · close combat vertical scan','AUTO · search','FWD · front hemisphere','REAR · rear hemisphere'][v],a0:-1.6,a1:1.6},.012);
-        [x,y]=pc(214,60);dial(g,x,y,.008,'BASE · target wingspan for the sight ring',{n:8,get:()=>sys.mig.span,set:v=>sys.mig.span=v,label:v=>MSPAN[v]+' m',a0:-2.2,a1:2.2},.012);
-        [x,y]=pc(126,150);lever(g,x,y,['AUTO · auto','MAN · manual'],'FWD · launch preparation',()=>sys.mig.prep,v=>sys.mig.prep=v,.012);
-        [x,y]=pc(214,150);pbtn(g,x,y,.014,.012,'FWD · EMERGENCY MISSILE LAUNCH',()=>pickle(true),{col:0x8a2412,z:.012});}
-      // CHECK missile readiness panel, low right
-      out.flStC=mk(256,192);blk(.42,-.19,.12,.075);face(out.flStC,new THREE.PlaneGeometry(.11,.066),.42,-.19,.0315,fg);
-      // wing sweep handle (HANDLE) on the console directly inboard of the throttle (SLD flight report), gate 16° forward / 45° / 72° aft
+      // ПОВТ ЗАХОД / ДЕМПФ / КРЕН ЗАДАН 45° / КУРС ЗАДАН АВТОМ strip with its lamps and toggles
+      {const w=.125,h=.06,cx=PX(640),cy=PY(572),cw=500,pc=plate(fg,cx,cy,w,h,cw,(c,W2,H2)=>{pgT(c,W2,H2);
+          [['ПОВТ','ЗАХОД'],['ДЕМП','ФЕР'],['КРЕН','ЗАДАН 45°'],['КУРС','ЗАДАН АВТОМ']].forEach((t,i)=>{lt(c,t[0],62+i*124,22,17,'#fff');lt(c,t[1],62+i*124,46,t[1].length>6?12:15,'#fff');});},.02);
+        let[x,y]=pc(62,150);lamp(fg,x,y,.011,.011,'',0x40d66a,P=>sys.mig.ap.rec,.026);
+        [x,y]=pc(186,150);pbtn(fg,x,y,.013,.013,'ДЕМП ФЕР · pitch / roll damper',()=>apT('damper'),{col:0x2a8a50,z:.026,lit:()=>sys.mig.ap.damper?0x1c6a2c:0});
+        [x,y]=pc(310,150);lever(fg,x,y,['ON','OFF'],'КРЕН ЗАДАН 45° · roll to 45° (no effect here)',()=>sys.mig.r45?0:1,v=>sys.mig.r45=v?0:1,.03);
+        [x,y]=pc(434,150);lever(fg,x,y,['ON','OFF'],'КУРС ЗАДАН АВТОМ · heading hold (no effect here)',()=>sys.mig.hdgA?0:1,v=>sys.mig.hdgA=v?0:1,.03);}
+      // ============================ CENTRE: ASP-17ML ============================
+      {const g=new THREE.Group();g.position.set(PX(868),PY(478),.06);g.rotation.set(.1,0,0);fg.add(g);
+        // olive two-tone control plate under the visor: ПЗ / РУЧ / НСИН on top, М, НМ left, ОБ / РУЧ / ТБ below, yellow-olive lever in the middle
+        {const pc=plate(g,0,0,.15,.085,360,(c,w,h)=>{c.fillStyle='#8c9468';c.fillRect(0,0,w,h);c.fillStyle='#6d7448';c.fillRect(0,h*.52,w,h*.48);c.strokeStyle='#3b4026';c.lineWidth=4;c.strokeRect(2,2,w-4,h-4);
+            [['ПЗ',150,28],['РУЧ',212,16],['НСИН',276,32],['М',56,48],['НМ',56,124],['ОБ',148,170],['РУЧ',212,182],['ТБ',276,166]].forEach(([t,x,y])=>{c.fillStyle='#141510';c.fillRect(x-24,y-11,48,22);lt(c,t,x,y,13,'#e7e9de');});},.026);
+          const[x,y]=pc(212,100);dial(g,x,y,.012,'ASP-17ML · sight / weapon mode (lever)',{n:8,get:()=>sys.mig.wcs,set:migWCS,label:v=>MWCS[v]+' · '+['loft bombing (not modelled)','navigation','radar search / attack','TP-26Sh IR search','close combat','— (no helmet sight on the 23ML)','fixed sight, manual','missile seeker boresight'][v],a0:-2.6,a1:2.6},.032);
+          [[130,100,'BASE · target wingspan for the sight ring',{n:8,get:()=>sys.mig.span,set:v=>sys.mig.span=v,label:v=>MSPAN[v]+' m',a0:-2.2,a1:2.2}],
+           [296,100,'СЕТКА · reticle brightness',{cont:1,get:()=>sys.mig.setka,set:v=>sys.mig.setka=v}]].forEach(([px,py,nm,o])=>{const[xx,yy]=pc(px,py);dial(g,xx,yy,.0075,nm,o,.032);});
+          const[bx,by]=pc(70,100);lever(g,bx,by,['ДЕНЬ · day','НОЧЬ · night'],'ДЕНЬ / НОЧЬ · sight filter',()=>sys.mig.hudm===1?1:0,v=>sys.mig.hudm=v,.032);}
+        // Lazur command lamp bar along the lower edge of the visor
+        add(rbox(.23,.035,.02,.004),L(0x3a3f43),0,-.057,.01,g);out.flLaz=mk(768,80);
+        {const lz=face(out.flLaz,new THREE.PlaneGeometry(.222,.026),0,-.057,.0215,g);reg([lz],{act:()=>{},name:'ПАЗУРЬ · Lazur command bar: ППС frontal intercept · 100/60/36 km · Ф afterburner · < I > heading · ! new task · Г 30° pop-up/dive · Т abort, RTB · ПД target jamming · К datalink BIT',state:()=>LAZ.filter((_,i)=>GCI.lamps(player)[i]).join(' ')||'dark'});}}
+      // lower black unit: grille (ПОД НАПРЯЖЕНИЕМ НЕ ОТКРЫВАТЬ), ЛАМПА / РЕЗЕРВ, АСП / РП, ГОДЕН / КОНТРОЛЬ, НОЧЬ / ДЕНЬ
+      {const g=new THREE.Group();g.position.set(PX(865),PY(598),.04);fg.add(g);
+        add(rbox(.07,.075,.02,.004),L(0x181b1d),0,0,.004,g);
+        plate(g,0,.003,.058,.07,160,(c,w,h)=>{c.fillStyle='#0d0f10';c.fillRect(0,0,w,h);lt(c,'ПОД НАПРЯЖЕНИЕМ',w/2,14,10,'#b8bcb0');lt(c,'НЕ ОТКРЫВАТЬ',w/2,28,10,'#b8bcb0');c.fillStyle='#2a2e30';for(let i=0;i<9;i++)c.fillRect(20+i*14,46,8,h-58);},.012);
+        const pc=plate(g,.09,.005,.075,.07,200,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);c.strokeStyle='#3a4246';c.lineWidth=2;c.strokeRect(1,1,w-2,h-2);
+            lt(c,'ГОДЕН',48,22,19);lt(c,'КОНТРОЛЬ',138,22,17);lt(c,'НС ЯРКО',186,60,10,Wd);lt(c,'ПМ',190,84,11,Wd);lt(c,'РП',190,104,11,Wd);},.012);
+        let[x,y]=pc(48,70);pbtn(g,x,y,.012,.012,'ГОДЕН · sight self-test (GO)',()=>{sys.mig.test=now()+3;},{col:0x2a6a30,z:.018,lit:()=>now()<sys.mig.test?0x1c6a2c:0});
+        [x,y]=pc(140,72);pbtn(g,x,y,.016,.016,'КОНТРОЛЬ · lamp test (CHECK)',()=>{sys.mig.lamp=now()+2.5;},{col:0xd8d0b0,z:.018});
+        lever(g,-.075,.008,['ЛАМПА','РЕЗЕРВ'],'ЛАМПА / РЕЗЕРВ · sight lamp (reserve lamp not modelled)',()=>sys.mig.lampR?1:0,v=>sys.mig.lampR=v,.012);
+        plate(g,-.075,-.022,.04,.012,100,(c,w,h)=>{c.fillStyle='#16191b';c.fillRect(0,0,w,h);lt(c,'ЛАМПА',w/2,h/2,13);},.012);}
+      // ГЛАВНЫЙ / ПОДГОТОВКА / КРЫЛ / СЕР. / ВОЗДУХ strip under the sight
+      {const w=.31,h=.072,cx=PX(876),cy=PY(668),cw=780,pc=plate(fg,cx,cy,w,h,cw,(c,W2,H2)=>{pgT(c,W2,H2);c.strokeStyle='#c8281c';c.lineWidth=4;c.strokeRect(10,10,92,H2-20);
+          lt(c,'ГЛАВНЫЙ',56,26,15,'#fff');lt(c,'ОТКЛ',56,H2-16,13,'#fff');[['ПОДГОТОВКА',200],['КРЫЛ',336],['СЕР.',430],['ВОЗДУХ',530]].forEach(([t,x])=>lt(c,t,x,24,15,'#fff'));
+          lt(c,'СБРОС',150,H2-16,12,'#fff');lt(c,'ФУС',250,H2-16,12,'#fff');lt(c,'Т-Р',610,24,15,'#fff');lt(c,'ПЕРЕЗАР',700,24,13,'#fff');lt(c,'ЗЕМЛЯ',530,H2-16,12,'#fff');},.02);
+        let[x,y]=pc(56,86);lever(fg,x,y,['ON · ARM','OFF · SAFE'],'ГЛАВНЫЙ · MASTER ARM',()=>game.armPos===0?0:1,v=>setArm(v?1:0),.026);
+        [x,y]=pc(150,86);lever(fg,x,y,['AUTO','MAN'],'ПОДГОТОВКА · missile preparation',()=>sys.mig.prep,v=>sys.mig.prep=v,.026);
+        [x,y]=pc(250,86);lever(fg,x,y,['КРЫЛ','ФУС'],'КРЫЛ / ФУС · wing or fuselage stations (no effect here)',()=>sys.mig.stw?1:0,v=>sys.mig.stw=v,.026);
+        [x,y]=pc(430,86);lever(fg,x,y,['SALVO · pair','SINGLE · single'],'СЕР. · release mode',()=>sys.mig.salvo,v=>sys.mig.salvo=v,.026);
+        [x,y]=pc(530,86);lever(fg,x,y,['ВОЗДУХ · air targets','ЗЕМЛЯ · ground targets (not modelled)'],'ВОЗДУХ / ЗЕМЛЯ · target type',()=>sys.mig.gnd?1:0,v=>sys.mig.gnd=v,.026);
+        [x,y]=pc(610,86);lever(fg,x,y,['ON · radar and IRST work together, handing the lock to each other','OFF'],'Т-Р · radar and IRST as one sensor',()=>sys.mig.pus.coop,v=>sys.mig.pus.coop=v,.026);
+        [x,y]=pc(700,86);pbtn(fg,x,y,.01,.01,'ПЕРЕЗАР · re-arm cycle (no effect here)',()=>{},{col:0xd8d8cc,z:.022});}
+      // placard (the white card in the centre of the panel)
+      plate(fg,PX(888),PY(775),.062,.085,140,(c,w,h)=>{c.fillStyle='#e6e8e2';c.fillRect(0,0,w,h);c.fillStyle='#555';for(let i=0;i<9;i++)c.fillRect(8,10+i*14,w-16,2);c.fillStyle='#2a2a2a';c.fillRect(8,10,w-16,2);},.016);
+      // ============================ RIGHT SHOULDER ============================
+      round(manoC,.03,PX(1072),PY(470),fg);
+      {const mx=PX(1082),my=PY(556);add(rbox(.088,.088,.022,.006),black,mx,my,.026,fg);out.flMV=mk(256,256);face(out.flMV,new THREE.PlaneGeometry(.08,.08),mx,my,.0375,fg);}
+      // black N003-34 radar panel, crop 407 x 525
+      {const g=SG(1198,545,0);const w=.115,h=.148,pc=plate(g,0,0,w,h,407,(c,W2,H2)=>{pnlB(c,W2,H2);
+          c.strokeStyle=W;c.lineWidth=2;c.beginPath();c.arc(150,205,74,-2.2-Math.PI/2,2.2-Math.PI/2);c.stroke();
+          ['3','2','1','РЛ','I','II','III','φ0 I','φ0 II'].forEach((t,i)=>{const a=-2.2+i*.55;lt(c,t,150+Math.sin(a)*96,205-Math.cos(a)*96,t.length>2?11:14);});
+          lt(c,'БС',26,168,16);lt(c,'Т',290,150,16);lt(c,'СИСТ',150,305,14);
+          lt(c,'ПУ',300,214,16);lt(c,'ВЫК',296,315,14);lt(c,'ИЗЛ',60,342,16);lt(c,'Э',150,345,13);lt(c,'ВЫК',60,478,15);
+          lt(c,'АВТ',190,405,14);lt(c,'РУЧН',192,495,14);lt(c,'НАВЕД',250,448,11);lt(c,'ППС',324,372,15);lt(c,'ЗПС',320,480,14);lt(c,'МСКЦ',386,428,11);},.021);
+        let[x,y]=pc(150,205);dial(g,x,y,.016,'СИСТ · system / radar mode: БС 3-2-1 (side-lobe coherent), РЛ, Т I-III and Т φ0 I-II (IRST)',
+          {n:9,get:()=>{if(mw()==='IR')return sys.mig.sist>=4?sys.mig.sist:4;if(mw()==='RAD')return sys.mig.sist<=3?sys.mig.sist:3;return sys.mig.sist??3;},
+           set:v=>{sys.mig.sist=v;sys.mig.rmode=sys.mig.rmode||1;migWCS(MWCS.indexOf(v<4?'RAD':'IR'));},
+           label:v=>['БС III · 65 km','БС II · 45 km','БС I · 27 km','РЛ · radar (BSV / SMV / MV by altitude)','Т I · IRST 60° × 15°','Т II · IRST 15° × 6°','Т III · IRST track','Т φ0-I · seeker slaved to IRST','Т φ0-II'][v],a0:-2.2,a1:2.2},.032);
+        [x,y]=pc(282,258);lever(g,x,y,['ПУ · parametric amplifier on (no effect here)','ВЫК · off'],'ПУ / ВЫК · parametric amplifier',()=>sys.mig.puOff?1:0,v=>sys.mig.puOff=v,.03);
+        [x,y]=pc(90,408);lever(g,x,y,['ИЗЛ · radiating','ЭКВ · equivalent (dummy load)','ВЫК · off'],'ИЗЛ / ЭКВ / ВЫК · transmitter',PWR.get,PWR.set,.03);
+        [x,y]=pc(190,450);lever(g,x,y,['АВТ · GCI steering (ARL-SM datalink)','РУЧН · manual'],'НАВЕД · АВТ / РУЧН · GCI guidance',()=>sys.mig.guid?0:1,v=>GCI.setGuid(v===0),.03);
+        [x,y]=pc(322,430);lever(g,x,y,['МСКЦ · low-speed targets (radar search mode as set)','ППС · front hemisphere','ЗПС · rear hemisphere'],'МСКЦ / ППС / ЗПС · target aspect',()=>sys.mig.rmode===3?2:sys.mig.rmode===2?1:0,v=>{sys.mig.rmode=[1,2,3][v];if(mw()==='RAD')migWCS(sys.mig.wcs);},.03);}
+      // ============================ LEFT COLUMN ============================
+      round(MG.ias,.048,PX(510),PY(718),fg);round(MG.alt,.05,PX(510),PY(830),fg);round(MG.mach,.05,PX(510),PY(940),fg);
+      // САУ lamp box
+      {const w=.095,h=.082,cx=PX(378),cy=PY(742),pc=plate(fg,cx,cy,w,h,260,(c,W2,H2)=>{pnlB(c,W2,H2);lt(c,'САУ',W2/2,18,15);[['ДИР',50],['АВТ',130],['Б РЕЖ',208]].forEach(([t,x])=>lt(c,t,x,92,13));lt(c,'КВ',W2-34,150,12);},.02);
+        [[50,'damper'],[130,'att'],[208,'alt']].forEach(([px,k])=>{const[x,y]=pc(px,140);lamp(fg,x,y,.011,.011,'',0x40d66a,P=>sys.mig.ap[k],.026);});
+        const[x,y]=pc(228,176);lever(fg,x,y,['ON','OFF'],'КВ · (no effect here)',()=>sys.mig.kv?0:1,v=>sys.mig.kv=v?0:1,.03);}
+      round(adiC,.06,PX(655),PY(718),fg);
+      blk(fg,PX(640),PY(868),.128,.128);face(hsiC,new THREE.PlaneGeometry(.118,.118),PX(640),PY(868),.0315,fg);
+      dial(fg,PX(738),PY(922),.008,'CRS · COURSE SET',{n:72,wrap:1,get:()=>Math.round(sys.hsi.crs/5)%72,set:v=>sys.hsi.crs=v*5,label:v=>String(v*5).padStart(3,'0')+'°'},.02);
+      // trim lamps under the KPP, gear / flap / AP window, wing sweep dial
+      plate(fg,PX(640),PY(1000),.1,.02,300,(c,w,h)=>{c.fillStyle='#46a7a3';c.fillRect(0,0,w,h);c.strokeStyle='#2c6e6b';c.lineWidth=2;c.strokeRect(1,1,w-2,h-2);['ТРИММ КРЕН','ТРИММ РН','ПОСАД'].forEach((t,i)=>lt(c,t,50+i*100,h/2,12,'#fff'));},.016);
+      blk(fg,PX(716),PY(1006),.07,.04);face(gearC,new THREE.PlaneGeometry(.064,.034),PX(716),PY(1006),.0315,fg,false);
+      round(swC,.032,PX(917),PY(1008),fg);
+      // ============================ RIGHT COLUMN ============================
+      round(MG.rpm,.052,PX(1072),PY(705),fg);
+      round(MG.egt,.04,PX(1200),PY(862),fg);
+      round(MG.ralt,.052,PX(1048),PY(945),fg);round(MG.vvi,.054,PX(1183),PY(968),fg);round(VG.clk,.04,PX(850),PY(1005),fg);
+      // twin lamp matrices with their ДЕНЬ / НОЧЬ switches
+      out.flLmp=mk(256,320);blk(fg,PX(1022),PY(822),.078,.124);face(out.flLmp,new THREE.PlaneGeometry(.07,.116),PX(1022),PY(822),.0315,fg);
+      out.flLmp2=mk(256,320);blk(fg,PX(1103),PY(822),.078,.124);face(out.flLmp2,new THREE.PlaneGeometry(.07,.116),PX(1103),PY(822),.0315,fg);
+      [PX(1022),PX(1103)].forEach((x,i)=>{lever(fg,x-.012,PY(892),['ДЕНЬ','НОЧЬ'],'ДЕНЬ / НОЧЬ · lamp matrix brightness (no effect here)',()=>sys.mig['mx'+i]?1:0,v=>sys.mig['mx'+i]=v,.022);
+        plate(fg,x+.002,PY(906),.06,.01,160,(c,w,h)=>{c.fillStyle='#46a7a3';c.fillRect(0,0,w,h);lt(c,'ДЕНЬ   НОЧЬ',w/2,h/2,13,'#fff');},.016);});
+      // КАНАЛ radio panel: black, with the red cross knob
+      {const g=SG(1203,725,0);const w=.085,h=.12,pc=plate(g,0,0,w,h,240,(c,W2,H2)=>{pnlB(c,W2,H2);lt(c,'КАНАЛ',W2/2,60,20);c.strokeStyle='#b8321e';c.lineWidth=8;c.beginPath();c.arc(120,300,56,0,7);c.stroke();},.021);
+        const[x,y]=pc(120,300);dial(g,x,y,.016,'КАНАЛ · R-832M channel',{n:20,get:()=>sys.v.r832||0,set:v=>sys.v.r832=v,label:v=>String(v+1),a0:-2.6,a1:2.6},.032);
+      }
+      // КОНТРОЛЬ missile readiness panel, low right
+      out.flStC=mk(256,192);blk(fg,PX(1318),PY(985),.12,.09);face(out.flStC,new THREE.PlaneGeometry(.11,.08),PX(1318),PY(985),.0315,fg);
+      // red lamp-buttons
+      add(new THREE.SphereGeometry(.014,14,10),L(0xb81a12),PX(753),PY(762),.036,fg);add(new THREE.SphereGeometry(.016,14,10),L(0xb81a12),PX(958),PY(877),.036,fg);
+      // ============================ wing sweep handle: console directly inboard of the throttle, gate 16° / 45° / 72° ============================
       {const g=new THREE.Group();g.position.set(-.4,-.6125,-.16);g.rotation.set(-Math.PI/2,0,Math.PI/2);root.add(g);out.flOnly.push(g);
         add(rbox(.2,.036,.03,.008),panelM,0,0,0,g);
         plate(g,0,0,.18,.03,360,(c,w,h)=>{c.fillStyle='#1c1f21';c.fillRect(0,0,w,h);c.fillStyle='#55605f';c.fillRect(20,h/2-5,w-40,10);
-          [['16°',40],['45°',180],['72°',320]].forEach(([t,x])=>{lt(c,t,x,16,18,'#f2f4ee');c.fillStyle='#e9ece6';c.fillRect(x-2,h/2-9,4,18);});lt(c,'WING',w/2,h-12,14,'#f2f4ee');},.016);
+          [['16°',40],['45°',180],['72°',320]].forEach(([t,x])=>{lt(c,t,x,16,18,'#f2f4ee');c.fillStyle='#e9ece6';c.fillRect(x-2,h/2-9,4,18);});lt(c,'КРЫЛО',w/2,h-12,14,'#f2f4ee');},.016);
         const arm=new THREE.Group();arm.position.set(0,0,.025);g.add(arm);
         const geo=new THREE.CylinderGeometry(.006,.008,.11,10);geo.translate(0,.055,0);geo.rotateX(Math.PI/2);const sh=add(geo,metal,0,0,0,arm);
         const kn=add(new THREE.SphereGeometry(.017,14,10),L(0x1c1f22),0,0,.115,arm);kn.scale.set(1,1.2,1);
         const hb2=add(sbox(.06,.06,.13),hitM,0,0,.06,arm);
         const pos=v=>(v-45)/56*-.075;
         out.anims.push(dt=>{const P=player;if(!P||!P.ac.swing)return;arm.position.x=lerp(arm.position.x,pos(P.sweepCmd),Math.min(1,dt*10));});
-        reg([sh,kn,hb2],{name:'HANDLE · WING SWEEP handle (, forward / . aft)',state:()=>player&&player.ac.swing?player.sweepCmd+'° set · '+Math.round(player.sweep)+'° actual':'',act:d=>sweepStep(d>0?1:-1)});}
+        reg([sh,kn,hb2],{name:'РУЧКА КРЫЛА · WING SWEEP handle (, forward / . aft)',state:()=>player&&player.ac.swing?player.sweepCmd+'° set · '+Math.round(player.sweep)+'° actual':'',act:d=>sweepStep(d>0?1:-1)});}
       // right console: the SPO-10 control box sits where the 29's SPO-15 panel is
       {const g=new THREE.Group();out._spo10=g;out.flOnly.push(g);add(rbox(.186,.106,.05,.006),panelM,0,-.04,.025,g);
-        const pc=plate(g,0,-.04,.18,.1,360,(c,w,h)=>{pgT(c,w,h,'SPO-10');lt(c,'POWER',70,60,11,'#fff');lt(c,'ON',70,84,9,'#fff');lt(c,'OFF',70,170,9,'#fff');lt(c,'CHECK',180,60,11,'#fff');lt(c,'BRIGHTNESS',290,60,11,'#fff');},.051);
-        let[x,y]=pc(70,128);lever(g,x,y,['ON','OFF'],'SPO-10 · POWER',()=>sys.rwr.pwr?0:1,v=>sys.rwr.pwr=v?0:1,.052);
-        [x,y]=pc(180,128);pbtn(g,x,y,.02,.016,'SPO-10 · CHECK · lamp test',()=>{sys.rwr.testT=now()+3;},{z:.052});
-        [x,y]=pc(290,128);dial(g,x,y,.012,'SPO-10 · lamp brightness',{cont:1,get:()=>sys.rwr.brt,set:v=>sys.rwr.brt=v},.052);}
-      const LMP=[['FIRE','#ff4a2a'],['GEN','#ffb020'],['HYD','#ffb020'],['OIL','#ffb020'],['REMAIN','#ffb020'],['A/B','#e8f0e0'],['GEAR','#ff4a2a'],['DANGER ALT','#ff4a2a'],['α LIM','#ffb020'],['OVERG','#ff4a2a']];
-      out.flTick=(P)=>{drawSweepInd(swC.getContext('2d'),P);const lmp=now()<sys.mig.lamp,bl=performance.now()%500<260,agl=P.pos.y-groundAt(P.pos.x,P.pos.z);
+        const pc=plate(g,0,-.04,.18,.1,360,(c,w,h)=>{pgT(c,w,h,'СПО-10');lt(c,'СИРЕНА',70,60,11,'#fff');lt(c,'ВКЛ',70,84,9,'#fff');lt(c,'ВЫКЛ',70,170,9,'#fff');lt(c,'ПРОВЕРКА',180,60,11,'#fff');lt(c,'ЯРКОСТЬ',290,60,11,'#fff');},.051);
+        let[x,y]=pc(70,128);lever(g,x,y,['ON','OFF'],'СПО-10 · POWER',()=>sys.rwr.pwr?0:1,v=>sys.rwr.pwr=v?0:1,.052);
+        [x,y]=pc(180,128);pbtn(g,x,y,.02,.016,'СПО-10 · ПРОВЕРКА · lamp test',()=>{sys.rwr.testT=now()+3;},{z:.052});
+        [x,y]=pc(290,128);dial(g,x,y,.012,'СПО-10 · lamp brightness',{cont:1,get:()=>sys.rwr.brt,set:v=>sys.rwr.brt=v},.052);}
+      const LMP=[['ПОЖАР','#ff4a2a'],['ГЕН','#ffb020'],['ГИДР','#ffb020'],['МАСЛО','#ffb020'],['ОСТАТ','#ffb020'],['ФОРС','#e8f0e0'],['ШАССИ','#ff4a2a'],['ОПАС\nВЫС','#ff4a2a'],['КРИТ\nα','#ffb020'],['ПЕРЕГР','#ff4a2a']];
+      const MX=['ЛОКАЦ','СОПР','ТП','СДЦ','КРЫЛ 16','КРЫЛ 72','ОРУЖ','ГОТОВ','ПТБ','ПУШКА'];
+      out.flTick=(P)=>{drawSweepInd(swC.getContext('2d'),P);const lmp=now()<sys.mig.lamp,agl=P.pos.y-groundAt(P.pos.x,P.pos.z);
         const on=[P.hp<35,P.hp<50,P.hp<45,P.hp<40,P.totalFuel<800,P.ab>.1,false,P.vel.y<-5&&agl/-P.vel.y<7,P.alpha>(P.acx||P.ac).aoaLim*D2R*.95,P.nz>(P.gAllow||8)];
-        {const c=out.flLmp.getContext('2d');c.fillStyle='#15181a';c.fillRect(0,0,256,256);LMP.forEach(([t,col],i)=>{const x=10+(i%2)*123,y=8+Math.floor(i/2)*49;
-          c.fillStyle=lmp||on[i]?col:'#3a3c3a';c.fillRect(x,y,113,42);c.fillStyle=lmp||on[i]?'#1a1a16':'#787a76';c.font='700 15px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(t,x+56,y+21);});}
+        {const c=out.flLmp.getContext('2d');c.fillStyle='#15181a';c.fillRect(0,0,256,320);c.textAlign='center';c.textBaseline='middle';
+          for(let i=0;i<12;i++){const x=6+(i%3)*82,y=6+Math.floor(i/3)*78,L2=LMP[i],lit=L2&&(lmp||on[i]);c.fillStyle=L2?(lit?L2[1]:'#4a1c16'):'#2a2220';c.fillRect(x,y,76,72);
+            if(L2){c.fillStyle=lit?'#1a1a16':'#8a5a52';c.font='700 15px "B612",sans-serif';const ls=L2[0].split('\n');ls.forEach((s,k)=>c.fillText(s,x+38,y+36+(k-(ls.length-1)/2)*17));}}}
         {const c=out.flLaz.getContext('2d'),L=GCI.lamps(P);c.fillStyle='#141210';c.fillRect(0,0,768,80);c.textAlign='center';c.textBaseline='middle';let x=6;
           LAZ.forEach((t,i)=>{const w=t.length>1&&t!=='ПД'?(t==='ППС'?70:56):t==='ПД'?62:50,lit=lmp||L[i];c.fillStyle='#050505';c.fillRect(x,6,w,68);c.fillStyle=lit?'#ff8a1a':'#2a1a0e';c.fillRect(x+3,9,w-6,62);
             c.font='700 '+(t.length>2?24:30)+'px sans-serif';c.fillStyle=lit?'#fff0c8':'#6a3e1c';c.fillText(t,x+w/2,41);x+=w+5;});}
-        {const c=out.flLmp2.getContext('2d');c.fillStyle='#15181a';c.fillRect(0,0,256,128);const ok=[radar.on(),radar.mode==='STT',radar.sensor==='IRST',sys.mig.mti,P.sweep<30,P.sweep>60,game.arm,true,P.tankFuel>0,P.gun.ammo>0];
-          for(let i=0;i<20;i++){const x=8+(i%10)*24.5+(i%10>4?8:0),y=8+Math.floor(i/10)*58;const lit=lmp||(i<10&&ok[i]);c.fillStyle=lit?'#f4f2e6':'#5a5c58';c.fillRect(x,y,20,52);}}
+        {const c=out.flLmp2.getContext('2d');c.fillStyle='#15181a';c.fillRect(0,0,256,320);c.textAlign='center';c.textBaseline='middle';
+          const ok=[radar.on(),radar.mode==='STT',radar.sensor==='IRST',sys.mig.mti,P.sweep<30,P.sweep>60,game.arm,true,P.tankFuel>0,P.gun.ammo>0];
+          for(let i=0;i<12;i++){const x=6+(i%3)*82,y=6+Math.floor(i/3)*78,t=MX[i],lit=t&&(lmp||ok[i]);c.fillStyle=t?(lit?(i%3===2?'#ffb020':'#4ee06a'):'#173a22'):'#222a24';c.fillRect(x,y,76,72);
+            if(t){c.fillStyle=lit?'#0a140c':'#5f8a6a';c.font='700 14px "B612",sans-serif';const ls=t.split(' ');ls.forEach((s,k)=>c.fillText(s,x+38,y+36+(k-(ls.length-1)/2)*16));}}}
+        {const c=out.flMV.getContext('2d');c.fillStyle='#0b0c0c';c.fillRect(0,0,256,256);c.strokeStyle='#33383b';c.lineWidth=8;c.strokeRect(4,4,248,248);c.textAlign='center';c.textBaseline='middle';
+          const kmh=Math.round(P.cas*1.852/10)*10,mach=P.mach;c.fillStyle='#e9ece6';c.font='700 24px "B612 Mono",monospace';c.fillText(String(Math.round(mach*100)).padStart(2,'0'),66,34);c.fillText(String(kmh),186,34);
+          c.font='700 26px "B612",sans-serif';c.fillText('M',66,66);c.fillText('V',190,66);
+          const a1=-Math.PI*.9+clamp(mach/2.6,0,1)*Math.PI*.8,a2=-Math.PI*.1-clamp(kmh/1600,0,1)*Math.PI*.8;
+          c.strokeStyle='#f2f2ee';c.lineWidth=9;c.lineCap='round';[[a1,100],[a2,100]].forEach(([a,r])=>{c.beginPath();c.moveTo(128,206);c.lineTo(128+Math.cos(a)*r,206+Math.sin(a)*r*1.1);c.stroke();});c.lineCap='butt';
+          c.fillStyle='#e9ece6';c.font='700 14px "B612",sans-serif';[0,.5,1,1.5,2,2.5].forEach(v=>{const a=-Math.PI*.9+v/2.6*Math.PI*.8;c.fillText(String(v),128+Math.cos(a)*112,206+Math.sin(a)*112*1.1);});}
         const c=out.flStC.getContext('2d'),W2=256,H2=192;c.fillStyle='#1b1e20';c.fillRect(0,0,W2,H2);c.font='700 16px sans-serif';c.textAlign='center';c.textBaseline='middle';
-        c.fillStyle='#e9ece6';c.fillText('CHECK',W2/2,18);
+        c.fillStyle='#e9ece6';c.fillText('КОНТРОЛЬ',W2/2,18);
         ['1','2','3','4','C'].forEach((k,i)=>{const x=28+i*50,w=P.load[k],has=w&&w!=='PTB',sel=w===game.wsel;
           c.fillStyle=lmp?'#ffd040':has?(sel?'#ffb020':'#46d66a'):w==='PTB'?'#3a6a8a':'#2a302c';c.beginPath();c.arc(x,74,15,0,7);c.fill();
-          c.fillStyle='#cfd3d5';c.fillText(k==='C'?'C':k,x,108);c.fillText(w?SN[w]||'TANK':'—',x,140);});
-        c.fillStyle=game.arm?'#ff5a3a':'#3a2a26';c.fillRect(20,160,W2-40,20);c.fillStyle='#fff';c.fillText(game.arm?'MASTER ON':'MASTER OFF',W2/2,170);};}
+          c.fillStyle='#cfd3d5';c.fillText(k==='C'?'СБР':k+'ЗАР',x,108);c.fillText(w?SN[w]||'ПТБ':'—',x,140);});
+        c.fillStyle=game.arm?'#ff5a3a':'#3a2a26';c.fillRect(20,160,W2-40,20);c.fillStyle='#fff';c.fillText(game.arm?'ГЛАВНЫЙ ВКЛ':'ГЛАВНЫЙ ОТКЛ',W2/2,170);};}
     // ================= Su-27S and MiG-23ML get their own consoles and wall panels; the MiG-29's PUR-31 / PU-S31 / A-323 consoles are MiG-29 only =================
     const pgQ=(bg,edge)=>(c,w,h,t)=>{c.fillStyle=bg;c.fillRect(0,0,w,h);c.strokeStyle=edge;c.lineWidth=3;c.strokeRect(1.5,1.5,w-3,h-3);if(t)lt(c,t,w/2,14,11,'#f2f4ee');};
     const pgSu=pgQ('#5f9199','#3c6a72'),pg23=pgQ('#46a7a3','#2c6e6b');
@@ -5616,29 +5681,36 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
       {t:'sw',x:150,y:74,pos:['SEARCH','OFF'],l:'',n:'SPO-15 · search radars shown',fx:1,get:()=>sys.rwr.srch?0:1,set:v=>sys.rwr.srch=v?0:1},
       vol5(260,72,16,'VOL','SPO-15 · VOLUME','thr')],null,.006,pgSu);
 
-    // ---------- MiG-23ML: throttle on the left wall with the wing-sweep handle directly inboard of it and the three flap buttons (TAKEOFF /
-    // FLIGHT / LANDING) on the left wall just behind it; engine start button on the right wall (B. Lambeth / SLD flight report). The SAU-23
-    // autopilot, R-832M radio, RSBN / ARK navigation, lighting and power panels follow the usual MiG-23 grouping (left: flight / radio,
-    // right: navigation / electrics), placements not confirmed by a published layout.
-    const flC={lF:consoleGrp(-.305,-.36),lA:consoleGrp(-.305,.125),rF:consoleGrp(.37,-.38),rA:consoleGrp(.37,.125)};
+    // ---------- MiG-23ML consoles, after the left / right cockpit photos of a preserved 23ML (all legends in Russian as on the jet). Throttle on the left wall with the
+    // wing-sweep handle directly inboard of it and the three flap buttons (ВЗЛЕТ / ПОЛЕТ / ПОСАДКА) behind it; ЗАПУСК on the right wall. Left console: SAU-23, R-832M radio, the
+    // emergency jettison / tank handles, oxygen, intake / nozzle / brake toggles. Right console: toggle bank РАЦИЯ / САУ / САРПП / АРК / РСБН / СРО / ТЕПЛОПЕЛЕНГ / ПАЗУРЬ, КАНАЛ radio
+    // pod, lighting (ЗАПИС КР СВЕТ, БЕЛЫЙ СВЕТ), power and cabin air. Placement is by group as in the photos; where a switch has no model behind it the tooltip says so.
+    const flC={lF:consoleGrp(-.305,-.36),lA:consoleGrp(-.305,.125),rF:consoleGrp(.37,-.38),rM:consoleGrp(.37,-.1),rA:consoleGrp(.37,.125)};
     const flWL=wallG(-1,-.535,.045),flWR=wallG(1,-.45,-.12);
-    panel(flWL,0,0,.14,.045,'',[['TAKEOFF',0],['FLIGHT',1],['LANDING',2]].map(([l,v],i)=>({t:'pb',x:46+i*94,y:56,w:44,h:24,l,n:'FLAPS · '+l+' · flap setting',act:()=>V.fl23=v,lit:()=>(V.fl23??1)===v?0x1c6a2c:0})),null,.006,pg23);
-    panel(flWR,0,0,.07,.045,'',[{t:'pb',x:70,y:56,w:44,h:28,l:'START',n:'START · engine start',col:0x7a1a12}],null,.006,pg23);
-    panel(flC.lF,0,.055,.13,.1,'SAU-23',[apB(36,120,'damper','DAMP','pitch / roll damper'),apB(96,120,'att','STAB','hold pitch and bank'),
-      apB(156,120,'rec','ALIGN HOR','return to level flight'),apB(216,120,'alt','STAB N','hold altitude')],null,.006,pg23);
-    panel(flC.lF,0,-.06,.13,.09,'R-832M',[{t:'kn',x:56,y:112,r:20,pos:['1','','','','5','','','','','10','','','','','15','','','','','20'],l:'CHAN',k:'r832',d:0,a0:-2.6,a1:2.6},
-      {t:'sw',x:136,y:116,pos:['ON','OFF'],l:'SQ',k:'r832p',d:0},vol5(212,112,18,'VOL','R-832M · VOL · master volume','master')],null,.006,pg23);
-    panel(flC.lF,0,-.16,.13,.07,'WEAPONS',[{t:'sw',x:60,y:92,pos:['EXPL','INERT'],l:'',k:'f23vz',d:1},
-      {t:'pb',x:190,y:88,w:50,h:30,l:'EMER RESET',n:'EMER RESET · jettison all stores',fx:1,act:jettisonAll,col:0x7a1a12}],null,.006,pg23);
-    panel(flC.lA,0,.02,.13,.08,'OXYGEN',[{t:'sw',x:50,y:104,pos:['100%','MIX'],l:'',k:'o100',d:1},{t:'sw',x:130,y:104,pos:['EMERGENCY','OFF'],l:'',k:'oem',d:1},
-      {t:'pb',x:212,y:104,w:40,h:24,l:'CHK',n:'OXYGEN · CHECK'}],null,.006,pg23);
-    panel(flC.rF,0,.09,.18,.08,'RSBN-6S',[{t:'kn',x:60,y:104,r:20,pos:['OFF','NAV','LAND'],l:'MODE',k:'rsbn',d:1},
-      {t:'kn',x:170,y:104,r:18,pos:['1','','','','','','','','','40'],l:'NAV',k:'rsbnN',d:0},{t:'kn',x:280,y:104,r:18,pos:['1','','','','','','','','','40'],l:'LAND',k:'rsbnP',d:0}],null,.006,pg23);
-    panel(flC.rF,0,-.15,.18,.08,'ADF-10',[{t:'kn',x:60,y:104,r:18,pos:['OFF','COMP','ANT','LOOP'],l:'',k:'ark',d:1},
-      {t:'kn',x:170,y:104,r:18,pos:['1','','','','','','','','','10'],l:'CHAN',k:'arkc',d:0},{t:'sw',x:270,y:108,pos:['TLF','TLG'],l:'',k:'arkt',d:0}],null,.006,pg23);
-    panel(flC.rA,0,.12,.18,.09,'LIGHTS',[lt5(60,116,20,'FLOOD','LIGHTS · flood','flood'),lt5(160,116,20,'INSTR','LIGHTS · instruments','inst'),lampTest(280,116,'CHK LAMP')],null,.006,pg23);
-    panel(flC.rA,0,.02,.18,.08,'POWER SYS',[['BATT','f23a'],['GEN','f23g'],['INVERTER','f23p'],['PT-500','f23t']].map(([l,k],i)=>({t:'sw',x:50+i*86,y:104,pos:['ON','OFF'],l,k,d:0})),null,.006,pg23);
-    panel(flC.rA,0,-.08,.18,.08,'A/C',[{t:'kn',x:80,y:104,r:20,pos:['COLD','','','HEAT'],l:'',k:'f23c',d:1},{t:'sw',x:220,y:108,pos:['ON','OFF'],l:'PRESS',k:'f23n',d:0}],null,.006,pg23);
+    panel(flWL,0,0,.14,.045,'',[['ВЗЛЕТ',0],['ПОЛЕТ',1],['ПОСАДКА',2]].map(([l,v],i)=>({t:'pb',x:46+i*94,y:56,w:44,h:24,l,n:'ЗАКРЫЛКИ · '+l+' · flap setting',act:()=>V.fl23=v,lit:()=>(V.fl23??1)===v?0x1c6a2c:0})),null,.006,pg23);
+    panel(flWR,0,0,.07,.045,'',[{t:'pb',x:70,y:56,w:44,h:28,l:'ЗАПУСК',n:'ЗАПУСК · engine start',col:0x7a1a12}],null,.006,pg23);
+    panel(flC.lF,0,.07,.13,.1,'САУ-23',[apB(36,120,'damper','ДЕМПФ','pitch / roll damper'),apB(96,120,'att','СТАБ','hold pitch and bank'),
+      apB(156,120,'rec','ГОРИЗ','return to level flight'),apB(216,120,'alt','СТАБ Н','hold altitude')],null,.006,pg23);
+    panel(flC.lF,0,-.04,.13,.09,'Р-832М',[{t:'kn',x:56,y:112,r:20,pos:['1','','','','5','','','','','10','','','','','15','','','','','20'],l:'КАНАЛ',k:'r832',d:0,a0:-2.6,a1:2.6},
+      {t:'sw',x:136,y:116,pos:['ВКЛ','ВЫКЛ'],l:'ШП',k:'r832p',d:0},vol5(212,112,18,'ГРОМК','Р-832М · ГРОМК · master volume','master')],null,.006,pg23);
+    panel(flC.lF,0,-.14,.13,.095,'АВАРИЙНЫЕ',[{t:'sw',x:44,y:112,pos:['ВЗРЫВ','ИНЕРТ'],l:'БЧ',k:'f23vz',d:1},
+      {t:'pb',x:130,y:122,w:50,h:30,l:'СБРОС БАКОВ',n:'АВАР СБРОС ПОДВЕСНЫХ БАКОВ · jettison external tanks',fx:1,act:jettison,col:0xa8321e},
+      {t:'pb',x:210,y:122,w:50,h:30,l:'АВАР СБРОС',n:'АВАР СБРОС · jettison all stores',fx:1,act:jettisonAll,col:0x7a1a12}],null,.006,pg23);
+    panel(flC.lA,0,.06,.13,.08,'КИСЛОРОД',[{t:'sw',x:50,y:104,pos:['100%','СМЕСЬ'],l:'',k:'o100',d:1},{t:'sw',x:130,y:104,pos:['АВАР','ОТКЛ'],l:'',k:'oem',d:1},
+      {t:'pb',x:212,y:104,w:40,h:24,l:'КОНТР',n:'КИСЛОРОД · КОНТР · check'}],null,.006,pg23);
+    panel(flC.lA,0,-.04,.13,.1,'ДВИГАТЕЛЬ / ШАССИ',[{t:'sw',x:40,y:112,pos:['АВТОМ','РУЧН'],l:'ВОЗДУХОЗАБ',k:'fInl',d:0},{t:'sw',x:92,y:112,pos:['ВКЛ','ВЫКЛ'],l:'ТЕРМОРЕГУЛ',k:'fThr',d:0},
+      {t:'sw',x:144,y:112,pos:['ЗАКР','ОТКР'],l:'СОПЛО',k:'fNoz',d:1},{t:'sw',x:196,y:112,pos:['ВКЛ','ВЫКЛ'],l:'АВТОМ ТОРМ',k:'fAbr',d:1},{t:'sw',x:248,y:112,pos:['ВКЛ','ВЫКЛ'],l:'ЗАПУСК В ВОЗДУХЕ',k:'fAir',d:1}],null,.006,pg23);
+    panel(flC.lA,0,-.14,.13,.08,'АВАРИЙНЫЕ СИСТЕМЫ',[{t:'sw',x:60,y:104,pos:['ВКЛ','ОТКЛ'],l:'АВАР ГИДРОПРИВОД',k:'fEh',d:1},{t:'pb',x:170,y:104,w:50,h:26,l:'ВЫПУСК ПАРАШЮТА',n:'ВЫПУСК ПАРАШЮТА · drag chute (not fitted in game)',col:0xa8321e},
+      {t:'sw',x:240,y:104,pos:['ВКЛ','ОТКЛ'],l:'АВАР ОТКЛ МРК',k:'fMrk',d:1}],null,.006,pg23);
+    panel(flC.rM,0,.04,.18,.1,'ПЕРЕКЛЮЧАТЕЛИ БОРТОВЫХ СИСТЕМ',[...['РАЦИЯ','САУ','САРПП','АРК','РСБН'].map((l,i)=>({t:'sw',x:44+i*68,y:70,pos:['ВКЛ','ВЫКЛ'],l,k:'f23t1'+i,d:i===0||i===1?0:1})),
+      ...['СРО','РПС','ИНДИКАЦИЯ','ТЕПЛОПЕЛЕНГ'].map((l,i)=>({t:'sw',x:44+i*68,y:160,pos:['ВКЛ','ВЫКЛ'],l,k:'f23t2'+i,d:i===3?0:1})),
+      {t:'sw',x:316,y:160,pos:['ВКЛ','ВЫКЛ'],l:'ПАЗУРЬ',n:'ПАЗУРЬ · Lazur GCI datalink (same as НАВЕД АВТ)',fx:1,get:()=>sys.mig.guid?0:1,set:v=>GCI.setGuid(v===0)}],null,.006,pg23);
+    panel(flC.rF,0,.05,.18,.09,'РАДИОСТАНЦИЯ',[{t:'kn',x:80,y:112,r:20,pos:['1','','','','5','','','','','10','','','','','15','','','','','20'],l:'КАНАЛ',n:'КАНАЛ · R-832M channel',fx:1,k:'r832',d:0,a0:-2.6,a1:2.6},
+      {t:'sw',x:170,y:112,pos:['ВКЛ','ВЫКЛ'],l:'ПОДСВЕТ',k:'f23pod',d:0},{t:'kn',x:270,y:112,r:18,pos:['0','','','','','','','','','10'],l:'ГОТОВНОСТЬ',k:'f23rdy',d:0}],null,.006,pg23);
+    panel(flC.rF,0,-.06,.18,.07,'КОНТР ЛАМП',[lampTest(90,92,'КОНТР'),{t:'sw',x:200,y:92,pos:['ВКЛ','ВЫКЛ'],l:'КОНТР ЗНАК',k:'f23kz',d:1}],null,.006,pg23);
+    panel(flC.rA,0,.12,.18,.09,'ОСВЕЩЕНИЕ',[lt5(60,116,20,'ЗАПИС КР СВЕТ','ОСВЕЩЕНИЕ · ЗАПИС КР СВЕТ · instrument lights','inst'),lt5(160,116,20,'БЕЛЫЙ СВЕТ','ОСВЕЩЕНИЕ · БЕЛЫЙ СВЕТ · flood light','flood'),lampTest(280,116,'КОНТР')],null,.006,pg23);
+    panel(flC.rM,0,-.07,.18,.08,'ЭЛЕКТРОПИТАНИЕ',[['АККУМ','f23a'],['ГЕНЕР','f23g'],['ПО-750','f23p'],['ПТ-500','f23t']].map(([l,k],i)=>({t:'sw',x:50+i*86,y:104,pos:['ВКЛ','ВЫКЛ'],l,k,d:0})),null,.006,pg23);
+    panel(flC.rA,0,.02,.18,.08,'КОНДИЦИОНИРОВАНИЕ',[{t:'kn',x:80,y:104,r:20,pos:['ХОЛ','','','ТЕПЛ'],l:'',k:'f23c',d:1},{t:'sw',x:220,y:108,pos:['ВКЛ','ВЫКЛ'],l:'ГЕРМЕТ',k:'f23n',d:0}],null,.006,pg23);
 
     // ================= MiG-25PD front panel, after a photo of a preserved MiG-25PD cockpit (teal interior) =================
     // Layout from the photo: top left a white-outlined toggle board and the G / AoA meter; the small black dual air-intake RAMP indicator on top
