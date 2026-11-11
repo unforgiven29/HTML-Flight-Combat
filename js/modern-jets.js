@@ -102,7 +102,7 @@ function addM(s){try{
   for(const k of Object.keys(A.st))if(!S[k])S[k]=[];
   // loadouts (validated against the station lists)
   const L=s.load||{};
-  for(const era of['cold','modern'])LOAD[era][id]=validLoad(id,era,Object.assign({},L[era]||L.modern||{}));
+  for(const era of['cold','modern'])LOAD[era][id]=validLoad(id,era,Object.assign({},L[era]||L.modern||L.cold||{}));
   LOAD.guns[id]=L.guns||{};STRIKE_LOAD[id]=Object.assign({},L.strike||L.modern||{});
   if(s.cms)for(const era of Object.keys(CMS))CMS[era][id]=s.cms.slice();
   ENGN[id]=s.eng;if(s.irstn)IRSTN[id]=s.irstn;else delete IRSTN[id];
@@ -114,6 +114,8 @@ function addM(s){try{
   if(s.dl!==false)DL_FIT.add(id);else DL_FIT.delete(id);
   if(s.hms){for(const n of['HMS_ALWAYS','HMS_MODERN']){const H=tryS(n);if(H){if(s.hms===n)H.add(id);else H.delete(id);}}}
   if(s.cv===false)try{CV_AC.delete(id);}catch(e){}
+  if(s.cv===true)try{CV_AC.add(id);APP_KT[id]=s.app||140;}catch(e){}
+  if(s.noRdr===false)delete A.noRdr;
   if(A.radar&&A.radar.name&&!RGIM[A.radar.name])RGIM[A.radar.name]=s.gim||RGIM[P.radar&&P.radar.name]||[60,60,60,1];
   if(s.noAB)A.noAB=true;
   ENG_SUP[A.name]=s.engSup!=null?s.engSup:(ENG_SUP[P.name]!=null?ENG_SUP[P.name]:.05);
@@ -399,5 +401,6 @@ try{const pool={'F-15EX':['CAP','INT','ESC','STK'],'F-18F':['CAP','STK'],'EA-18G
   for(const s of NEW){const side=s.side==='RED'?1:0,T=CTYPES.modern&&CTYPES.modern[side];if(!T)continue;for(const r of pool[s.id]||[])if(T[r]&&!T[r].includes(s.id))T[r].push(s.id);}}catch(e){console.warn('[modern] campaign',e);}
 // the twin / single-engine set and start-up family follow the parent unless the parent is a different engine count
 window.MODERN_NEW=NEW.map(s=>s.id);
+window.MJ={addM,aam,ag,uniq,toCN,R,G_,NOGUN,SH,sustain,US_AAM,US_AG,EU_IR,EU_BVR,EU_AG,FR_AAM,FR_AG,CN_IR,CN_BVR,CN_AG,RU_AG,NEW};
 console.info('[modern] added '+NEW.length+' jets: '+window.MODERN_NEW.join(', '));
 })();

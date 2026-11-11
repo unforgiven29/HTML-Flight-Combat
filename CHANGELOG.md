@@ -1,5 +1,10 @@
 # Changelog
 
+## v283 — 46 more jets, own airframes for every new jet
+- New `js/more-jets.js`: F-4J, F-4B, F-101B, F-102A, F-105D, F-104G, F-5A, A-6E, A-37B, Hunter F.6, Harrier GR.3, Sea Harrier FRS.1 / FA2, Harrier GR.9, Buccaneer S.2B, Tornado F.3 / ECR, JA 37, Mirage 5, Mirage 2000D, Kfir C2 / Block 60, F-16 Block 70, F-16E, F-16I, F-15I, Tejas Mk 1A, FA-50, M-346FA, F-CK-1; MiG-17F, MiG-21MF, Su-7BMK, Su-15TM, Tu-128, Yak-28P, J-6, Q-5, MiG-29K, MiG-31BM, Su-25SM3, Su-25T, J-11B, J-35, JH-7A, J-7G. Each has its own flight-model numbers, radar (name, range, mechanical / PESA / AESA, track counts), IRST where fitted, gun, ECM, stations and loadouts.
+- New missiles: AIM-4A / 4D, Shafrir 2, Python 3 / 5, Derby, I-Derby ER, Sky Flash, Rb 71, Rb 99, R-98R / T, R-4R / T, PL-2, Tien Chien I / II. New stores: Sea Eagle, ALARM, Brimstone, SPICE 1000, Vikhr.
+- New `js/jet-models.js`: every jet from v282 and v283 gets its own procedural 3D airframe built from its real length, span, wing planform and sweep, tail / canard / fin layout, engine count and intake type, plus its own paint. Stations are re-placed onto the new wing and fuselage (pylons on the model and in the loadout room), and the loadout-room silhouette is redrawn from the same numbers.
+
 ## v282 — Modern hangar: 24 more jets
 - New file `js/modern-jets.js`. Added: F-15EX, F/A-18F, EA-18G, F-22A, F-35A, A-10C, F-2A, Eurofighter Typhoon, Rafale C, Mirage 2000-5, JAS 39C, JAS 39E, KF-21 (BLUFOR); MiG-35, Su-30MKI, Su-30MKM, Su-34, Su-57, J-10C, J-16, J-15T, J-20, JF-17 Block III, Yak-130 (REDFOR).
 - Each jet has its own flight model numbers (empty mass, internal fuel, wing area, dry / reheat thrust, G and AoA limits, roll rate, FBW, RCS / IR signature), radar (mechanical, PESA or AESA, with the matching scan behaviour), IRST where fitted, gun, internal ECM, stations and cold / modern / strike loadouts.
