@@ -1,5 +1,9 @@
 # Changelog
 
+## v291 — table gap fill
+- The jets added in v283 and the older ones that had fallen back to defaults now have their own entries: start system (air cart, cartridge, JFS, APU, turbo/electric, onboard) and twin/single in `startup.js`; engine class, intake, inlet control and hydraulics in `engsys.js` (55 start entries, 46 engines); leading-edge scheduling in `structure.js` (17 jets).
+- Start systems are sensible placeholders by era and family; refine per jet when real start procedures are added.
+
 ## v290 — Crew personalities
 - New `js/crewvoice.js`: the RIO / WSO / EWO has a nationality (US, Russia, China, Britain, France, Sweden) and a temperament (dry, cocky, nervous, veteran) fixed per airframe, plus a name and callsign. Stock calls (kill, bingo, missile, spike, wave-off, tone, radar, no-lock, ESM) are said in his voice.
 - Missile and spike calls carry context: missile type and seeker, range, seconds to impact; which fighter has you locked and how far.

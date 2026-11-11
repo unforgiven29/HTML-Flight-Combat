@@ -37,10 +37,13 @@ const TYPE={'F-8E':{f:'AIR',lo:12,idle:65,cut:50,tI:42,ign:5},'F-4E':'AIR','F-14
   'Su-24M':'APUR','MiG-31':'APUR','Yak-141':'APUR','JH-7':'APUR',
   'F-15EX':'JFS','F-18F':'APU','EA-18G':'APU','F-22':'APU','F-35A':'APU','A-10C':'APU','F-2A':'JFS','EF-2000':'APU','Rafale':'APU','Mirage 2000-5':'AUTO',
   'JAS-39C':'APU','JAS-39E':'APU','KF-21':'APU','MiG-35':'APUR','Su-30MKI':'APUR','Su-30MKM':'APUR','Su-34':'APUR','Su-57':'APUR','J-10C':'APUR','J-16':'APUR',
-  'J-15T':'APUR','J-20':'APUR','JF-17':'APUR','Yak-130':'APUR'};
+  'J-15T':'APUR','J-20':'APUR','JF-17':'APUR','Yak-130':'APUR',
+  // v291 gap fill: every added jet gets its own start system
+  'A-37B':'ELEC','A-6E':'AIR','Buccaneer S.2B':'CART','F-101B':'AIR','F-102A':'AIR','F-104G':'AIR','F-105D':'AIR','F-15I':'JFS','F-16E':'JFS','F-16I':'JFS','F-16V':'JFS','F-4B':'AIR','F-4J':'AIR','F-5A':'AIR','F-CK-1':'APU','FA-50':'JFS','Harrier GR.3':'AIR','Harrier GR.9':'APU','Sea Harrier FRS.1':'AIR','Sea Harrier FA2':'APU','Hunter F.6':'CART','J-11B':'APUR','J-35':'APUR','J-6':'ELEC','J-7G':'ELEC','JA 37':'AUTO','JH-7A':'APUR','Kfir C2':'AIR','Kfir Block 60':'JFS','M-346FA':'APU','MiG-17F':'ELEC','MiG-21MF':'ELEC','MiG-29K':'APUR','MiG-31BM':'APUR','Mirage 2000D':'AUTO','Mirage 5':'AUTO','Q-5':'ELEC','Su-15TM':'ELEC','Su-25SM3':'AUTO','Su-25T':'AUTO','Su-7BMK':'ELEC','Tejas Mk1A':'JFS','Tornado ECR':'APU','Tornado F.3':'APU','Tu-128':'ELEC','Yak-28P':'ELEC','MiG-15':'ELEC','MiG-19':'ELEC','MiG-21':'ELEC','MiG-23':'AUTO','MiG-25':'AUTO','MiG-27K':'AUTO','Su-22M4':'AUTO','Su-25':'AUTO','Yak-38':'AUTO'};
 const TWIN=new Set(['F-4E','F-14A','F-14B','F-14D','F-5E','F-15C','F-15E','F-18C','F-18E','F-111F','F-20','Tornado GR.4','Jaguar','Alpha Jet','Lightning F.6',
   'MiG-29','MiG-29S','MiG-29SMT','Su-27','Su-27SM','Su-33','Su-30SM','Su-30MK2','Su-35S','J-11','Su-24M','MiG-25','MiG-31','Su-25','MiG-19','J-8F','JH-7',
-  'F-15EX','F-18F','EA-18G','F-22','A-10C','EF-2000','Rafale','KF-21','MiG-35','Su-30MKI','Su-30MKM','Su-34','Su-57','J-16','J-15T','J-20','Yak-130']);
+  'F-15EX','F-18F','EA-18G','F-22','A-10C','EF-2000','Rafale','KF-21','MiG-35','Su-30MKI','Su-30MKM','Su-34','Su-57','J-16','J-15T','J-20','Yak-130',
+  'A-37B','A-6E','Buccaneer S.2B','F-101B','F-15I','F-4B','F-4J','F-5A','F-CK-1','J-11B','J-35','J-6','JH-7A','M-346FA','MiG-29K','MiG-31BM','Q-5','Su-15TM','Su-25SM3','Su-25T','Tornado ECR','Tornado F.3','Tu-128','Yak-28P']);
 function spec(type){let t=TYPE[type];if(!t)t='ELEC';const o=typeof t==='string'?Object.assign({},FAM[t]):Object.assign({},FAM[t.f],t);
   try{if(typeof STALL!=='undefined'&&STALL[type]&&STALL[type].twin)TWIN.add(type);}catch(e){}o.n=TWIN.has(type)?2:1;return o;}
 
