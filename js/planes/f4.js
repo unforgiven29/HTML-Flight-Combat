@@ -101,7 +101,7 @@ function drawPhScope(P){const c=phScopeC.getContext('2d'),S=360,FB_=P.ac.pit==='
   c.globalAlpha=1;if(stt&&P.ac.pulse&&window.RAWVID&&RAWVID.lockPaint){c.strokeStyle=c.fillStyle=col;RAWVID.lockPaint(c,x0+4,y0+4,x1-4,y0+118,col);c.globalAlpha=1;}
   for(const [j,s] of radar.strobes){if(Math.abs(s.az)>62*D2R)continue;const x=X(s.az);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=col;c.lineWidth=1.4;c.setLineDash([2,3]);c.beginPath();c.moveTo(x,y1);c.lineTo(x,y0);c.stroke();c.setLineDash([]);}
   c.globalAlpha=1;c.fillStyle=col;c.strokeStyle=col;c.fillRect(X(radar.antAz)-1,y1+3,2,9);
-  if(!stt){const cx=X(radar.cur.az),cy=y1-radar.cur.r*(y1-y0);c.lineWidth=2;c.beginPath();c.moveTo(cx-5,cy-10);c.lineTo(cx-5,cy+10);c.moveTo(cx+5,cy-10);c.lineTo(cx+5,cy+10);c.stroke();}
+  if(!stt){const cx=X(radar.cur.az),cy=y1-radar.cur.r*(y1-y0),sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.4);c.lineWidth=1.1;c.beginPath();c.moveTo(cx-4,cy-7);c.lineTo(cx-4,cy+7);c.moveTo(cx+4,cy-7);c.lineTo(cx+4,cy+7);c.stroke();c.globalAlpha=sv;}   // lock-select cursor: dim until slewed
   c.textAlign='left';c.font='700 13px "B612 Mono",monospace';c.fillText(radar.mode,x0+6,y0+14);c.textAlign='right';c.fillText(Math.round(rng/(P.ac.units==='met'?1000:NM))+(P.ac.units==='met'?' KM':' NM'),x1-6,y0+14);
   if(stt&&radar.tgt()){const L=radar.tgt();c.textAlign='center';c.fillText(radar.hoj?'HOJ':U.rng(P,L.pos.distanceTo(P.pos))+(P.ac.units==='met'?' KM':' NM'),(x0+x1)/2,y0+14);}
 

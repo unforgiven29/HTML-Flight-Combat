@@ -1,5 +1,11 @@
 # Changelog
 
+## v307-v308 — Pulse scope cleanup
+- Range marks off by default (RAWVID.rm=false; set true to restore).
+- Pulse-radar scopes draw the raw echo as a single-bin return, not blobs/bars. The lock-select cursor is thin and dim, brightening for 3 s after a slew (F-4E, MiG-23, Flogger).
+- RP-5 Izumrud scope (MiG-19P) now paints raw video clipped to the scope instead of bar contacts.
+- Tests: 51/51. Visual check done on F-4E and RP-5; MiG-23/Flogger cursors changed but not screenshotted. Gameplay-level estimates, not published data.
+
 ## v306 — Electronic beam steering (js/esasteer.js, window.ESAS)
 - PESA / AESA sets only; mechanical sets unchanged. The registry already held the array numbers (spacing, phase-shifter bits, time-delay units, agility, steering limit, blind angle) but nothing read them.
 - Beam squint: phase-shifter steering points at sin(theta) proportional to f0/f, so each frequency hop moves the beam by tan(theta) x df/f (agile PESA 3.5 %, agile AESA 1.5 %, 0.6 % not agile, a tenth with time-delay units). About 0.5 deg average at 50 deg scan on an agile AESA.

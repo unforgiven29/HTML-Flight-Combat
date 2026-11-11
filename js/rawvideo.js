@@ -65,7 +65,7 @@ RV.fluct=fluct;RV.jemDepth=jemDepth;
    graticule: a scope read against the graticule is off by 1 to 2 %. Pulse-set range error follows pulse length and signal-to-noise. */
 const NL={g:0,d:.015,tau:.035,t:-9,inv:new Float32Array(nR),mk:[],tmp:new Float32Array(nR)};
 const uOf=x=>x*(1+NL.g)-NL.d*(1-Math.exp(-x/NL.tau));
-RV.warpU=uOf;RV.nlOn=true;RV.rm=true;RV.rn=true;
+RV.warpU=uOf;RV.nlOn=true;RV.rm=false;RV.rn=true;
 function nlSetup(now,RNGm){const tb=Math.floor(now/4);if(tb===NL.t&&NL.R===RNGm)return;NL.t=tb;NL.R=RNGm;NL.g=.012*Math.sin(now/38+1.3);
   for(let d=0;d<nR;d++){const want=(d+.5)/nR;let lo=0,hi=1.2;for(let i=0;i<18;i++){const m=(lo+hi)/2;if(uOf(m)<want)lo=m;else hi=m;}NL.inv[d]=(lo+hi)/2*nR-.5;}
   const mi=isMigK()?1000:1852,nice=[1,2,5,10,20,25,50,100],raw=RNGm/mi/5;let st=nice[0];for(const v of nice)if(v<=raw*1.2)st=v;st*=mi;NL.mk.length=0;
@@ -229,7 +229,7 @@ function mkX(now,P){setup();const A=ant(),f=P.fwd(_f),h0=Math.atan2(f.x,-f.z),st
 RV.sweep=function(a0,a1,now){
   const P=player;if(!RV.on||!P||!P.alive||!P.ac||!P.ac.pulse||radar.sensor!=='RDR'||!radar.on())return;
   const t0=performance.now();const X=mkX(now,P);const lo=Math.min(a0,a1),hi=Math.max(a0,a1),i0=cl(Math.floor((lo/AZ*.5+.5)*nA),0,nA-1),i1=cl(Math.floor((hi/AZ*.5+.5)*nA),0,nA-1);
-  const A=X.A,bin=X.bin;targets(now,P);const spread=Math.max(2,Math.round(C*tau()/2/bin));
+  const A=X.A,bin=X.bin;targets(now,P);const spread=Math.max(1,Math.round(C*tau()/2/bin));
   for(let ia=i0;ia<=i1;ia++){const az=((ia+.5)/nA*2-1)*AZ;column(X,az,now);
     const base=ia*nR,row=new Float32Array(nR);
     for(let ir=0;ir<nR;ir++){let v=RV.noise?nz():.2;if(clr[ir]>0)v+=clr[ir]*nz();if(seaA[ir]>0)v+=seaA[ir]*ex()*ex()*.7;if(rainA[ir]>0)v+=rainA[ir]*nz();row[ir]=v;}   // sea clutter is spiky: heavier tailed than land

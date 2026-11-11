@@ -113,7 +113,10 @@ drawPhScope=function(P){const n=P&&P.ac&&P.ac.radar?P.ac.radar.name:'';
   c.globalAlpha=1;c.font='700 12px "B612 Mono",monospace';c.textAlign='left';for(let k=4;k<=12;k+=4)c.fillText(String(k),x1+6,Y(k*1000));
   // sweep: two-way raster, 1.33 s frame
   const ph=(now%1.33)/1.33,sw=ph<.5?ph*2:2-ph*2,sx=x0+sw*(x1-x0);c.globalAlpha=.55;c.lineWidth=2;c.beginPath();c.moveTo(sx,y0);c.lineTo(sx,y1);c.stroke();
-  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>12000)continue;const x=X(tk.az),y=Y(tk.d);c.globalAlpha=clamp(1-(now-tk.t)/2.6,.1,1);c.lineWidth=3;c.beginPath();c.moveTo(x-6,y);c.lineTo(x+6,y);c.stroke();}
+  const rawv=window.RAWVID&&RAWVID.on&&radar.on()&&radar.sensor==='RDR'&&radar.mode==='RWS'&&window.flPaint;
+  if(rawv){c.save();c.beginPath();c.rect(x0,y0,x1-x0,y1-y0);c.clip();                                  // the scope is a fixed 12 km; the video is built for the selected range, so it is stretched and clipped, never drawn outside the tube
+    c.strokeStyle=col;flPaint(c,(u,v)=>({x:x0+(u+1)/2*(x1-x0),y:y1-(v*radar.rngM/12000)*(y1-y0)}),1.2,.8);c.restore();}
+  else for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>12000)continue;const x=X(tk.az),y=Y(tk.d);c.globalAlpha=clamp(1-(now-tk.t)/2.6,.1,1);c.lineWidth=3;c.beginPath();c.moveTo(x-6,y);c.lineTo(x+6,y);c.stroke();}
   c.globalAlpha=1;c.font='700 13px "B612 Mono",monospace';c.textAlign='left';c.fillText('ОБЗОР',x0,20);};
 
 console.info('[intc] RP-5 / MA-1 / Genie / AI.23B / Rb 28 rules active');

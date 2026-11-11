@@ -170,7 +170,7 @@ PLANES.add('mig23',{
       if(irst||sys.mig.wcs!=null&&MWCS[sys.mig.wcs]==='IR'){const bx0=x0+18,bx1=x1-18,by0=y1+22,by1=y0-22,k=12;c.lineWidth=3;
         [[bx0,by0,1,1],[bx1,by0,-1,1],[bx0,by1,1,-1],[bx1,by1,-1,-1]].forEach(([x,y,dx,dy])=>{c.beginPath();c.moveTo(x,y+dy*k);c.lineTo(x,y);c.lineTo(x+dx*k,y);c.stroke();});c.lineWidth=2.4;}
       // ---- search: locking strobes (two short vertical bars) and the antenna mark at the bottom ----
-      if(radar.mode==='RWS'&&on){const p=m(radar.cur.az/(30*D2R),irst?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);c.lineWidth=4;[-8,8].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-14);c.lineTo(p.x+d,p.y+14);c.stroke();});c.lineWidth=2.4;
+      if(radar.mode==='RWS'&&on){const p=m(radar.cur.az/(30*D2R),irst?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);{const sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.45);c.lineWidth=1.6;[-6,6].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-10);c.lineTo(p.x+d,p.y+10);c.stroke();});c.globalAlpha=sv;}c.lineWidth=2.4;
         const an=m(radar.antAz/(30*D2R),0).x;c.beginPath();c.moveTo(an,y0+6);c.lineTo(an,y0+16);c.stroke();}
       // ---- lock: strobes around the target, lead circle from the line-of-sight rate ----
       if(L){const a=radar.ang(L.pos),p=m(clamp(a.az/(30*D2R),-1,1),clamp(a.d/radar.rngM,0,1)),now=performance.now()/1000;
