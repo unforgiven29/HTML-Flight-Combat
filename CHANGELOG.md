@@ -1,5 +1,38 @@
 # Changelog
 
+## v271 — more radar and RWR logic
+- `sensorradar2.js`: look-down clutter by surface (sea with sea-state scaling and spikes, land by slope, snow, desert) and grazing angle, offset by clutter rejection (a 40 degree look-down over land: 152 -> 82 as rejection falls from 70 to 5 dB); target resolution cells (contacts closer than the radar's own range / angle / closure resolution are one blob, so the farther one is not detected separately); scheduler load degrades search frames and track update noise; rain polarisation and clutter-map terms.
+- `rwrlogic.js` (western warners): threat score from mode, range, signal, emitter type, time in track and bearing rate, smoothed so ranks don't flip; priority modes All / Priority_Only / Top_N / Closest / Most_Lethal / Unknown_Only; hand-off delay before the top threat changes; constant-bearing alert; rare false launch alerts.
+- Tests: two contacts 8 m apart merge on the F-16 (11.5 m range resolution) but separate by closure speed; defaults cost ~0.8 dB against the layer switched off (the rest of any difference is the game's own medium-PRF eclipsing).
+
+## v270 — SPO-15LM rebuilt from the Fulcrum manual
+- RWR registry grows to 758 variables (sections 20-24: threat program, azimuth/track/priority, power + elevation, CW channel + own-radar interlock, panel/lamps/audio).
+- `js/rwrspo15.js`: the MiG-29 warner now follows the manual. Six type lamps (Pi 3 X H F C) from the stock program (emitters outside it light no type lamp; overlapping ones can be taken for a higher priority type; unstable PRFs can defeat recognition). Search vs track from detection length (125-250 ms), track state latched per azimuth channel for 2-4 s, sidelobes of strong search radars can read as track. Channels are visited in turn; two pulse radars in one sector are only separated if 6 dB apart. Power scale in 2 dB steps, B/H elevation only at high power, flashing engagement-zone segment. CW circuit: HPRF fighters first appear as (flashing) X 6-14 dB early, and positive F identification shuts the CW circuit down. Own FCR radiating blanks the whole forward hemisphere. Priority: track > priority sector > type row > PRF > power; main threat remembered 8-12 s (search) / 2-4 s (track). Continuous high tone in track. Panel redrawn to the manual's fig. 30.
+- Not implemented: Nike-Hercules launch detection (the manual notes it is not implemented in DCS either), friendly radars mistaken for threats, ready light delay on re-power only, BIT faults.
+
+## v269 — RWR realism layer (registry + model)
+- `docs/rwr_registry.txt` (19 sections, 613 variables) -> `js/rwrreg.js` via `scripts/gen-rwr-registry.js`; `js/rwr.js` seeds it per warner (ALR-67/56/69/46/45-50, SPO-15LM, SPO-10) and drives `rwrUpdate()` through six hooks.
+- Detection range now follows a received-power budget: sensitivity, antenna gain by azimuth/elevation, airframe + bank + stores + gear blockage, polarization, radome/cable/installation loss, atmosphere + rain, low-altitude multipath fading, ducting, warmup drift, crystal-video desensitisation. 12 dB less sensitive = 1/4 range; defaults are neutral.
+- Intercept probability falls with own-radar/jammer blanking, processor overload and agility; new emitters need deinterleave time + confirm hits; a track radar counts as a lock only after continuous illumination; guidance uplinks can be missed; IDs need observation time and show as unknown until then.
+- Bearings gain quantisation, bias, jitter, low-altitude multipath, airframe reflection, sidelobe false bearings and amplitude-comparison flips; range-from-power reads sidelobe hits too far; scope and tracker capacity, overload ghosts, operator-mode filters.
+- Faults (lost quadrant / band, degraded sensitivity, wrong bearing) from combat damage and random failure; warmup applies when the warner is switched on mid-flight (a warner already on at spawn starts warm).
+- RWR-triggered chaff/flare programs honour altitude, ground and cooldown inhibits; tone repeat rates come from the registry.
+- About 100 of the 613 variables are read by logic, about 150 more are seeded or live-mirrored; the rest are stored-only.
+
+## v268 (addendum) — registry variables made live
+- New modules `sensorradar.js`, `sensorirst.js`, `sensorpulse.js`, `sensorsys.js`, `sensorphys1.js`, `sensorphys2.js` cover sections 1-56: values are computed each frame from the sim (geometry, ISA atmosphere, Planck, Friis, INS drift, scheduler load...) and a subset feed back into the sim (track gates and caps, look-down, notch, ESA/radome loss, IR range, receiver losses, thermal derating, EMCON, datalink).
+- `scripts/sensor-coverage.js [--md]` audits which variables are live-written, which change the sim and which are stored-only (`docs/sensor_coverage.md`). Most of the remainder is stored-only.
+- `sensoreffects.js`: the own-jammer variables (power, antenna gain, polarization, technique gating, look-through window, cooling limit) now drive the game's burn-through ranges; the G-LOC threshold, anti-G suit and time-to-LOC drive `gEffects`; mutual radar interference lowers SNR near hostile radars.
+- Defaults are unchanged relative to spawn-time baselines, so gameplay only shifts when values are edited (a few ESA/radome losses shift balance slightly).
+
+## v268 — Sensor suite parameter registry v3.0.0, fused with the radar simulation
+- New `docs/sensor_suite_v3.txt`: the full radar / IRST / pulse radar / realism parameter registry (56 sections, 2,047 parameters): 01-19 radar, 20-29 IRST, passive ranging and radar+IRST fusion, 30-38 pulse radar, 39-56 realism physics (link budget, arrays, propagation, RCS, micro-Doppler, signal processing, INS, tracking, jamming, ESM, IFF, radiometry, environment, scheduling, SAR/GMTI, datalink, human factors, reliability).
+- New `js/sensorreg.js` (generated from the doc), loaded in `index.html`: `SENSOR_REG.sections`, `SENSOR_REG.create(ids?)` for a typed default state object, `createBySection(ids?)`, `lookup(name)` and `curve(table, x)`.
+- New `js/sensorfuse.js`: the registry is fused with the player's radar. `SENSOR_FUSE.reg` is the live state (updated from the sim every frame); 30 two-way bindings write edits back (power state, warm-up, gimbal limits, scan width / bars / rate, beamwidth, reference range, PRF mode, ECCM). Nominal hardware per set (APG-66/63/73/79, AWG-9, APQ-120, N019/N019M/Zhuk-ME, N001, Sapfir-23ML/25, RP-22, Zaslon).
+- Radar range equation from the registry (Pt, gain from aperture and wavelength, noise figure, bandwidth, losses) scales detection range by the fourth-root law relative to spawn, so default ranges are unchanged. Beamwidth 70·λ/D drives the beam the same way.
+- Transmitter heat vs ram/ECS cooling with half-power cut-back when overheated; electrical bus (no generator, no radar); random failures at realistic MTBF (Reduced power, Intermittent, Stuck antenna, Dead); EMCON Radiating / Silent / Burst_Only; clear-air attenuation and the 4/3-Earth radar horizon.
+- Derived and mirrored values: wavelength, gain, unambiguous range / velocity, duty cycle, noise floor, sensitivity, resolution, lock state and break reason, SNR / Pd / detection range on the lock, jamming J/S and burn-through, ECCM alerts, IRST state.
+- New `js/radardbg.js`: F4 radar debug overlay (F3 stays the performance panel). Panel: power / failure / heat / EMCON, link-budget scale, beam, gimbal, scan, PRF, the lock (range vs detection range, SNR, Pd, closure, jamming J/S and burn-through, ECCM alert) and every track file (age, hits, position error, HOJ). Plan view, heading up: gimbal limits, scan sector, the beam, range rings, every real aircraft coloured by the radar's verdict (SEEN / GIMBAL / RANGE / NOTCH / TERRAIN / HORIZON / JAM / OFF) and the radar's track files joined to the real aircraft. Console: `RADARDBG.show(true)`, `.ids`, `.all`, `.hz`.
 ## v266 — Full missile parameter model, per-gun ballistics, WEAPON DATA page
 - New `js/weapons-data.js`: every missile gets the full parameter set (hardware / pre-launch, propulsion, aerodynamics, environment, seeker, signal processing / ECCM, guidance, fuze / warhead, power / limits) as `MSL[type].spec`, with per-round live state in `missile.st`.
 - Wired into flight: rail push vs gas-piston ejection, safe-separation hold, hang-fire on older motors, nozzle erosion, wind on the airframe, transonic buffet, dome-heating noise, IR coolant run-out, battery brown-out, data-driven memory hold and terrain-masking time.
@@ -387,3 +420,10 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - At most two detonations per campaign. The victim's side retaliates 70 % of the time, otherwise (and after the second) both governments call a ceasefire and the campaign ends.
 - Time skips resolve a raid on the averages (about 45 % are stopped).
 - Tested in headless Chrome with the sim stepped by hand: bomb stick accuracy, nuclear sequence from alert to ceasefire, shockwave damage by distance, debrief grading, save/load. Not tested in a live multiplayer room.
+
+## v272 — radar modes, deception jamming, seekers, weather/terrain, AI radars (js/sensorwar.js)
+- U cycles radar modes AA / VS / GMTI / SEA / GMAP (gm* registry values). GMTI/SEA/GMAP paint ground units and ships as contacts; VS favours closing targets.
+- Jamming: RGPO range pull-off, velocity pull, DRFM false targets, cross-eye angle error, chaff bloom clutter, using jam* values.
+- Seekers: SARH illumination memory, CW low-altitude notch, rain dropouts on active heads, gate stealing by DRFM scaled by ccm.
+- Weather/terrain: rain loss by band and radar horizon on ground radars (canSee) and AI fighter radars; AI track delay and pulse-radar clutter.
+- Not verified in live play; headless smoke test only (modes switch, no NaN/errors, rain scaling). GMAP is contact-based, not an image.

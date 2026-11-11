@@ -1346,7 +1346,7 @@ function dlEstimate(sh,tg){if(sh===player&&radar.mode==='TWS'&&(radar.bug===tg||
 const IRG={az:30,eu:45,ed:15,stab:1},CONE=1.6*D2R,CONE_ERR=.2*D2R;// ALR-23 conical scan: ~1.6 deg nutation, bearing good to ~0.2 deg from the modulated signal
 const RGIM={'APG-68':[60,60,60,1],'APG-66(V)1':[60,60,60,1],'APG-68(V)5':[60,60,60,1],'APG-63':[60,60,60,1],'APG-73':[70,60,60,1],'APQ-120':[60,45,45,1],'N019':[67,56,40,1],'N001':[60,56,40,1],'RP-22SM':[30,18,12,0],'AWG-9':[65,60,60,1],'Sapfir-23ML':[56,56,40,1],'Sapfir-25':[56,40,30,1]};
 const _qi=new Q4(),_rb=new V3();
-const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',R0:42*NM,ri:2,mode:'RWS',sensor:'RDR',azs:[60,30,10],ai:0,barsL:[4,2,1],bi:0,
+const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',R0:42*NM,ri:2,mode:'RWS',sensor:'RDR',azs:[60,30,10],ai:0,barsL:[4,2,1],bi:0,
   antAz:0,antEl:0,elCmd:0,dir:1,bar:0,beam:3.3*D2R,rate:65*D2R,scanC:0,
   cur:{az:0,r:.5,el:0},tracks:new Map(),lock:null,lostT:0,notched:0,lostWhy:'',strobes:new Map(),hoj:false,pull:0,rngErr:0,jamLock:null,ecc:.5,acmT:0,power:'ON',warm:0,prf:'AUTO',acm:'30x20',fromACM:false,bug:null,bugMan:false,fromTWS:false,
   ang(p){const rel=p.clone().sub(player.pos),d=rel.length(),f=player.fwd(new V3()),h=Math.atan2(f.x,-f.z);
@@ -1446,7 +1446,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       else{const vr=Math.abs(j.vel.dot(_rl.copy(j.pos).sub(player.pos).normalize()));s*=.003+.997*(t=>t*t*(3-2*t))(clamp((vr-17)/22,0,1));}}
     const J=this.jam(j);if(J&&J.noise&&a.d>J.bt)s=0;return s;},
   // measured position: range error along the line of sight, angle error (beamwidth over the root of 2·SNR) across it
-  meas(j,a,snr,out){const sa=this.spin()?CONE_ERR:this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006,sr=player.ac.pulse?120+.004*a.d:25+.0025*a.d,los=_rl.copy(j.pos).sub(player.pos).normalize();
+  meas(j,a,snr,out){const sa=(this.spin()?CONE_ERR:this.beam/(1.6*Math.sqrt(2*Math.max(snr,1)))+.0006)*this.kAng,sr=(player.ac.pulse?120+.004*a.d:25+.0025*a.d)*this.kRng,los=_rl.copy(j.pos).sub(player.pos).normalize();
     _rp1.set(-los.z,0,los.x);if(_rp1.lengthSq()<1e-6)_rp1.set(1,0,0);_rp1.normalize();_rp2.copy(los).cross(_rp1);
     return out.copy(j.pos).addScaledVector(los,gauss()*sr).addScaledVector(_rp1,gauss()*sa*a.d).addScaledVector(_rp2,gauss()*sa*a.d);},
   // a track file: alpha-beta filter on the hits; the first hit seeds the velocity from the Doppler range rate only
@@ -1454,7 +1454,7 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
     // one detection per pass of the beam: the frames while the beam dwells on the target are one look, not several
     if(tk&&tk.p&&!tk.hoj&&now-tk.t<.35){tk.snr=Math.max(tk.snr||0,snr);return;}
     const pm=this.meas(j,a,snr,_rpm),q=this.ang(pm);
-    if(tk&&tk.p&&now-tk.t<10&&!tk.hoj){const dt=Math.max(now-tk.t,.35),pr=_rp1.copy(tk.p).addScaledVector(tk.v,dt),res=pm.sub(pr),n=Math.min((tk.n||1)+1,8),al=Math.max(.45,2*(2*n-1)/(n*(n+1))),be=Math.max(.12,6/(n*(n+1)));
+    if(tk&&tk.p&&now-tk.t<10&&!tk.hoj){const dt=Math.max(now-tk.t,.35),pr=_rp1.copy(tk.p).addScaledVector(tk.v,dt),res=pm.sub(pr),n=Math.min((tk.n||1)+1,8),al=Math.min(1,Math.max(.45,2*(2*n-1)/(n*(n+1)))*this.kA),be=Math.min(1,Math.max(.12,6/(n*(n+1)))*this.kB);
       tk.p.copy(pr).addScaledVector(res,al);tk.v.addScaledVector(res,be/dt);if(tk.v.length()>950)tk.v.setLength(950);tk.n=n;}
     else{const los=_rl.copy(j.pos).sub(player.pos).normalize(),v=new V3().copy(los).multiplyScalar(j.vel.dot(los));
       this.tracks.set(j,{p:pm.clone(),v,n:1});}
@@ -1509,9 +1509,9 @@ const radar={gl:{az:60,eu:60,ed:60,stab:1},ranges:[10,20,40,80],unit:NM,ul:'NM',
       if(a.off>gim+2*D2R){this.drop('GIMBAL');return;}
       // jammed beyond burn-through the range channel is blind: the radar keeps the bearing and homes on the noise (HOJ), which needs no Doppler notch
       const J=this.jam(L);this.hoj=!!(J&&J.noise&&a.d>J.bt);
-      if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>1.2){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
+      if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>this.lostG){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
       else{if(L.isGhost){L._life=(L._life==null?2+Math.random()*7:L._life)-dt;if(L._life<=0){L.alive=false;this.drop('LOST');return;}}this.sttAcc=(this.sttAcc||0)+dt;let lost=false;
-        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a)*8);if(ok)this.lostT=0;else{this.lostT+=.1;if(this.lostT>1.2){lost=true;break;}}}
+        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a)*8);if(ok)this.lostT=0;else{this.lostT+=.1;if(this.lostT>this.lostG){lost=true;break;}}}
         if(lost){this.drop(this.notch(L,a)?'NOTCH':'LOST');return;}}
       // deception: the range / velocity gate is walked off the echo, the displayed range creeps away, and when the jammer lets go the track breaks
       if(J&&J.dec&&a.d>J.btD){this.pull=Math.max(0,this.pull+dt*J.rate*(Math.random()<dt*.5*this.ecc?-2:1));this.rngErr=this.pull*this.pull*2600;
@@ -2406,11 +2406,11 @@ function rwrUpdate(dt){
   const P=player,sy=P&&P.alive&&sys.rwr.pwr?rwrSysOf(P):null;RW.sy=sy;RW.list=[];RW.msl=[];
   if(!sy){RW.recs.clear();return;}
   if(RW.nm!==sy.nm){RW.nm=sy.nm;RW.recs.clear();sys.rwr.srch=sy.srch0!=null?sy.srch0:1;}
-  RW.clk+=dt;const clk=RW.clk,qi=P.q.clone().invert(),upY=P.up(new V3()).y,mnv=1+1.4*(1-clamp(upY,0,1));   // bearings degrade in a hard bank
+  RW.clk+=dt;if(window.RWRX)RWRX.tick(dt,P,sy,sy.nm);const clk=RW.clk,qi=P.q.clone().invert(),upY=P.up(new V3()).y,mnv=1+1.4*(1-clamp(upY,0,1));   // bearings degrade in a hard bank
   const brg=p=>{const r=p.clone().sub(P.pos).applyQuaternion(qi);return Math.atan2(r.x,-r.z);};
   const gn=()=>(Math.random()+Math.random()+Math.random()+Math.random()-2)*1.73,agl=Math.max(5,P.pos.y-groundAt(P.pos.x,P.pos.z));
   // radar-guided missiles whose seekers are transmitting at me, and how close the warner hears them
-  const mm=[];for(const m of missiles){if(!m.alive||m.track!==P||m.def.seek!=='ARH'||!m.active||!m.threat)continue;const dm=m.pos.distanceTo(P.pos);if(dm<sy.arh)mm.push({m,d:dm});}
+  const mm=[];for(const m of missiles){if(!m.alive||m.track!==P||m.def.seek!=='ARH'||!m.active||!m.threat)continue;const dm=m.pos.distanceTo(P.pos);if(dm<(window.RWRX?RWRX.uplinkRange(sy):sy.arh))mm.push({m,d:dm});}
   let anyL=false,anyT=false;
   for(const j of rwrEmitters(P)){
     const e=rwrEmit(j),d=j.pos.distanceTo(P.pos);let rc=RW.recs.get(j);
@@ -2420,23 +2420,24 @@ function rwrUpdate(dt){
     const a=brg(j.pos),aa=Math.abs(a);
     let R=e.R0*sy.k*(e.pd?sy.pd:1)*(e.aesa?sy.lpi:1)*(sy.rear?(aa>110*D2R?sy.rear:aa>70*D2R?sy.side:1):1);
     if(lk)R*=1.15;else if(!cone)R*=.12;                                        // outside the scan cone only sidelobe leakage reaches the warner
-    if(boost)R=Math.max(d*4,1);
+    if(boost)R=Math.max(d*4,1);else if(window.RWRX)R*=RWRX.rangeMul(j,e,d,a,lk,P);
     let hit=false;
     if(d<R){
       if(clk-(j._rwT===undefined?-9:j._rwT)>.6){j._rwT=clk;const o=e.g?_rwO.copy(j.pos).setY(j.pos.y+4):j.pos;j._rwL=terrLOS(o,P.pos)&&(!e.g||d<4120*(Math.sqrt(8)+Math.sqrt(agl)));}
       if(j._rwL){
         if(!rc){rc={j,e,seen:-99,shown:false,mode:'S',err:gn()*sy.sd*D2R*.6,dErr:Math.exp(.28*gn()),idOk:Math.random()<sy.id,cap:Math.random(),tmr:Math.random()*e.scan,pm:'',newT:-9,R:R};RW.recs.set(j,rc);}
-        if(lk)hit=true;else{rc.tmr-=dt;if(rc.tmr<=0){rc.tmr=e.scan*(.9+.2*Math.random());hit=Math.random()<clamp((R-d)/(R*.12),0,1);}}}}
+        if(lk)hit=true;else{rc.tmr-=dt;if(rc.tmr<=0){rc.tmr=e.scan*(.9+.2*Math.random());hit=Math.random()<clamp((R-d)/(R*.12),0,1)*(window.RWRX?RWRX.pHit(rc,sy):1);}}}}
     if(!rc)continue;
-    if(hit){rc.seen=clk;rc.d=d;rc.R=R;rc.mode=lk?'T':'S';rc.a=a;}
+    if(hit){rc.seen=clk;rc.d=d;rc.R=R;rc.mode=lk?'T':'S';rc.a=a;rc.sl=!lk&&!cone;rc.lkNow=lk;}
     rc.err+=-rc.err*.05*dt+gn()*sy.sd*D2R*.12*mnv*Math.sqrt(dt);                      // bearing error drifts about the truth, wider in a hard turn
     const age=clk-rc.seen,hold=rc.mode==='S'?sy.mem+e.scan*1.6:sy.mem+2.5;
     if(age>hold+sy.mem*2){RW.recs.delete(j);continue;}
     if(age>=hold){rc.shown=false;rc.pm='';continue;}
     let mode=rc.mode;
     if(mode==='T'){const guid=missiles.some(m=>m.alive&&(m.sh===j||e.g)&&m.track===P&&(e.g?(m.def.seek!=='IR'&&m.sh&&m.sh.gnd&&m.sh.pos.distanceTo(j.pos)<3500):(m.def.seek==='SARH'&&m.threat)));if(guid&&rc.cap<(e.g?sy.sam:sy.sarh))mode='L';}
+    if(window.RWRX){const gm=RWRX.gate(rc,mode,clk,dt,d,e,sy,rc.lkNow);if(!gm){rc.shown=false;continue;}mode=gm;}
     if(!rc.shown){rc.shown=true;rc.newT=clk;if(sy.fam==='W'&&mode==='S')sfx.rwr('new');}
-    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4)cmdsRun('chaff');else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
+    if(rc.pm!==mode){if(rc.pm&&mode==='T'&&rc.pm==='S'&&sy.fam!=='S15')sfx.rwr('lock');if(mode==='L'){rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}rc.pm=mode;}
     if(mode==='L')anyL=true;else if(mode==='T')anyT=true;
     RW.list.push({j,d,lk:mode!=='S',gnd:e.g?1:0,mode,a:(rc.a===undefined?a:rc.a)+rc.err,e,age,dEst:d*rc.dErr,idOk:rc.idOk,sym:rc.idOk?e.sym:'U',newT:rc.newT,
       pwr:clamp(20*Math.log10(Math.max(rc.R,1)/Math.max(d,1))/30,0,1),
@@ -2444,14 +2445,16 @@ function rwrUpdate(dt){
       score:(mode==='L'?3000:mode==='T'?2000:0)+(e.g?(e.R0<30000?160:110):120)+300*clamp(e.R0*sy.k/Math.max(d,1)/4,0,1)});}
   RW.list.sort((x,y)=>y.score-x.score);
   if(sy.fam==='W')for(const x of mm){const m=x.m;if(m._rwE===undefined)m._rwE=gn()*sy.sd*D2R*.8;
-    if(!RW.mseen.has(m)){RW.mseen.add(m);rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4)cmdsRun('chaff');else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}
+    if(!RW.mseen.has(m)){RW.mseen.add(m);rwrState.launchT=3;RW.tLaunch=0;if(!isMig()&&sys.cm.mode===4){if(window.RWRX)RWRX.autoCM('launch',P);else cmdsRun('chaff');}else if(!isMig()&&sys.cm.mode===3)flash('CMDS CONSENT · PRESS C',1600);}
     RW.msl.push({m,d:x.d,a:brg(m.pos)+m._rwE});}
   if(RW.msl.length)anyL=true;
+  if(window.RWRX)RWRX.post(RW.list,sy,P);
   // repeating tones: a fast warble while a launch or active seeker is heard, a slow one while a radar tracks you (the Soviet warners tone once)
   RW.tLaunch-=dt;RW.tLock-=dt;
-  if(anyL){if(RW.tLaunch<=0){sfx.rwr('launch');RW.tLaunch=sy.tone==='N'?1.7:1.6;}}
-  else if(anyT&&sy.fam==='W'){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=3.4;}}
-  if(!anyL&&!anyT){RW.tLock=0;}
+  if(anyL){if(RW.tLaunch<=0){sfx.rwr('launch');RW.tLaunch=window.RWRX?RWRX.tone('launch',sy.tone==='N'?1.7:1.6):(sy.tone==='N'?1.7:1.6);}}
+  else if(anyT&&sy.fam==='W'){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=window.RWRX?RWRX.tone('track',3.4):3.4;}}
+  else if(sy.fam==='S15'&&window.RWRX&&RWRX.spoTone&&RWRX.spoTone()){if(RW.tLock<=0){sfx.rwr('lock');RW.tLock=.95;}}   // SPO-15LM: continuous high tone while a track is shown
+  if(!anyL&&!anyT&&!(sy.fam==='S15'&&window.RWRX&&RWRX.spoTone&&RWRX.spoTone())){RW.tLock=0;}
 }
 function rwrEvent(){}   // events now come from what the receiver actually hears (rwrUpdate); the missile code still calls this on launch
 const rwrMslSeen=()=>RW.msl.length>0||RW.list.some(t=>t.mode==='L');
@@ -2492,6 +2495,7 @@ function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=pe
   if((isFlogger()||isFishbed())&&P.type!=='MiG-31'){drawSPO10(c,S,th,brg,msl,NOW);return;}
   if(mig){// SPO-15LM (manual fig. 103): numbered main-threat lamps, small green threat lamps, red track light, power ring, type letters
     c.fillStyle='#1b1a17';c.fillRect(0,0,S,S);const test=NOW<sys.rwr.testT||NOW<sys.mig.lamp,bl2=performance.now()%250<125;
+    if(window.RWRX&&RWRX.drawSPO15&&RWRX.spoS){RWRX.drawSPO15(c,S,P,NOW,bl2,performance.now()%500<250);return;}
     const tl=th.filter(t=>sys.rwr.srch||t.mode!=='S'),main=tl.slice().sort((a,b)=>(b.lk-a.lk)||(b.pwr-a.pwr))[0],sec=t=>{const a=t.a*R2D,A=Math.abs(a);return[a<0?0:1,A<20?0:A<40?1:A<70?2:A<110?3:4];};
     const has=(sd,i)=>tl.some(t=>{const q=sec(t);return q[0]===sd&&q[1]===i;}),ms=main?sec(main):null,isMain=(sd,i)=>ms&&ms[0]===sd&&ms[1]===i;
     c.globalAlpha=.3+.7*sys.rwr.brt;c.textAlign='center';c.textBaseline='middle';
