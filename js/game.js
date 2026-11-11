@@ -2121,7 +2121,7 @@ function drawFlogScope(c,S){const P=player;const FX=!!P&&P.ac.pit==='foxbat';c.s
   if(radar.on()&&radar.sensor==='RDR'&&radar.mode==='RWS'){flPaint(c,m,1.6,b);jamPaint(c,m,b);}
   if(radar.sensor==='IRST'&&radar.mode==='RWS'){irC(c,m,1.6,b,30*D2R,-30,30,false);irTracksC(c,m,b,30*D2R,-30,30,1.6);}
   c.globalAlpha=b;c.lineWidth=2;
-  if(radar.mode==='RWS'&&radar.on()){const p=m(radar.cur.az/(30*D2R),radar.sensor==='IRST'?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);[-7,7].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-12);c.lineTo(p.x+d,p.y+12);c.stroke();});
+  if(radar.mode==='RWS'&&radar.on()){const p=m(radar.cur.az/(30*D2R),radar.sensor==='IRST'?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);{const sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.45);c.lineWidth=1.4;[-6,6].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-9);c.lineTo(p.x+d,p.y+9);c.stroke();});c.globalAlpha=sv;}
     const an=m(radar.antAz/(30*D2R),0).x;c.beginPath();c.moveTo(an,y0+4);c.lineTo(an,y0+16);c.stroke();}
   if(radar.mode==='STT'&&radar.lock){const a=radar.ang(radar.lock.pos),p=m(clamp(a.az/(30*D2R),-1,1),clamp(a.d/radar.rngM,0,1));c.strokeRect(p.x-10,p.y-8,20,16);c.textAlign='center';c.fillText('LOCK',S/2,y0+20);
     if(window.RAWVID&&RAWVID.lockPaint){c.globalAlpha=b;RAWVID.lockPaint(c,x0+6,y1+6,x1-6,y1+120,FX?'#ffb347':'#62ffa8');}}   // conical-scan lock video: range-gated A-scope and nutation envelope

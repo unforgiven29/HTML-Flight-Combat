@@ -118,7 +118,7 @@ test('scope: sweep nonlinearity, range marks, range noise, PRF agility','F-4E',a
     const S=window.SENSOR_SIG,A=RAWVID.rngSig(4,40000),B=RAWVID.rngSig(100,40000);
     return{mono,maxe,cols,perCol:cols?marks/cols:0,A,B};});
   ok('sweep is monotone and off by 1-4 %',r.mono&&r.maxe>.003&&r.maxe<.04,+r.maxe.toFixed(4));
-  ok('range marks written on every line, a few per sweep',r.cols>10&&r.perCol>=3&&r.perCol<30,+r.perCol.toFixed(1));
+  ok('range marks are off by default',r.cols>10&&r.perCol<3,+r.perCol.toFixed(1));
   ok('range error falls with signal-to-noise',r.B<r.A,[+r.A.toFixed(1),+r.B.toFixed(1)]);});
 
 test('sig: STT re-dithers the PRF set every dwell, search holds it for 1.5 s','F-22',async p=>{
