@@ -995,6 +995,11 @@ function mslMotor(d,tb,r){const p=d.ph;if(tb<=0)return[0,p.m0];
   if(p.gap&&tb>=p.tb){const m=MSLCUR,t0=m&&m.def===d?m.p2T:p.tb+p.gap;if(t0==null||tb<t0)return[0,p.m0-p.mdB*p.tb];tb=p.tb+(tb-t0);}
   if(tb<p.tb)return[p.Tb*(1+.08*(1-r/1.225)),p.m0-p.mdB*tb];
   const t2=tb-p.tb,m1=p.m0-p.mdB*p.tb;if(t2<p.ts)return[p.Ts*(1+.08*(1-r/1.225)),m1-p.mdS*t2];return[0,p.mbo];}
+// throttled ramjet / ducted-rocket sustainer (Meteor): d.ramjet={mach,min}. Fuel flow stays as tabulated, but after the booster the thrust is throttled to
+// hold the Mach limit (cruise thrust = drag), and the intake flames out below its minimum Mach. Without d.ramjet nothing changes.
+function ramT(d,ph,tb,T,v,M,y,rr,m){const R=d.ramjet;if(!R||!(T>0)||tb<=ph.tb)return T;
+  const dr=.5*rr*v*v*ph.S*mslCd0(ph,M,true),want=dr+clamp((R.mach*sos(y)-v)*.8,-dr,1e9)*m,k=R.min?clamp((M-R.min+.6)/.6,0,1):1;
+  return clamp(want,0,T*1.9)*k;}
 // no-allocation closest approach of a segment against a moving point over one step
 const _s1=new V3(),_s2=new V3();
 function segDist(p0,p1,jp,jv,dt){_s1.copy(p1).sub(p0).divideScalar(dt).sub(jv);const r0=_s2.copy(p0).sub(jp).addScaledVector(jv,dt);
@@ -1112,7 +1117,7 @@ class Missile{
     else if(this.maddog&&tb>0)cmd.y+=G;
     cmd.addScaledVector(vd,-cmd.dot(vd));
     // ---- airframe: motor, lift-limited turn, autopilot lag, drag ----
-    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T,m]=(MSLCUR=this,mslMotor(d,tb,rr));MSLCUR=null;this.mass=m;this.thrust=T;
+    const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T0,m]=(MSLCUR=this,mslMotor(d,tb,rr));MSLCUR=null;const T=ramT(d,ph,tb,T0,V,M,y,rr,m);this.mass=m;this.thrust=T;
     const tvcA=this.burning&&d.tvc?T*d.tvc/m:0;this.tvcOn=tvcA>0;
     const aeroMax=qd*ph.S*ph.cnMax/m,amax=Math.min(d.maxG*G,aeroMax+tvcA);
     if(cmd.lengthSq()>amax*amax)cmd.setLength(amax);
@@ -1621,7 +1626,7 @@ function dlz(type,tg){const d=MSL[type],ph=d.ph,h=(player.pos.y+tg.pos.y)/2,los=
   // lofting rounds spend the long shots in thinner air
   const lf=d.loft?d.loft*1.4*clamp((R0-12000)/35000,0,1):0,r=rho(h+lf*9000),cs=sos(h);
   const vt=tg.vel.dot(los),run=tg.vel.length();let v=Math.max(player.vel.dot(los),0)+20,s=0,b1=0,b2=0;const dt=.25,prof=[];
-  for(let t=0;t<d.life;t+=dt){const mo=mslMotor(d,t+dt/2-d.ign,r),T=mo[0],m=mo[1];v+=(T/m-.5*r*v*v*ph.S*mslCd0(ph,v/cs,T>0)/m)*dt;s+=v*dt;prof.push([t+dt,s]);
+  for(let t=0;t<d.life;t+=dt){const mo=mslMotor(d,t+dt/2-d.ign,r),m=mo[1],T=ramT(d,ph,t+dt/2-d.ign,mo[0],v,v/cs,h,r,m);v+=(T/m-.5*r*v*v*ph.S*mslCd0(ph,v/cs,T>0)/m)*dt;s+=v*dt;prof.push([t+dt,s]);
     if(t>d.ign+d.burnT&&v<d.stop+40)break;b1=Math.max(b1,s-vt*t);b2=Math.max(b2,s-run*t);}
   const cap=d.seek==='IR'?irLockRange(d,tg,player.pos):1e9;
   return{rmax:Math.min(b1*.92,cap),rne:Math.min(Math.max(d.rmin*1.5,b2*.85),cap*.8),rmin:d.rmin,prof};}

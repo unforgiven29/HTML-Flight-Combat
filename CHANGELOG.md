@@ -1,5 +1,7 @@
 # Changelog
 
+## v294 — Throttled ramjet model: Meteor now holds ~Mach 4 after the booster (thrust throttled to drag, flameout below ~M1.8) via a d.ramjet flag in the missile motor and in the DLZ reach profile. Kh-31P/PD and YJ-91 already used the ARM ramjet flag.
+
 ## v293 — Tornado F.3 and ECR now use the real Tornado GR.4 airframe (the procedural stand-ins in jet-models.js were removed; same swing-wing model and stations).
 
 ## v292 — menu redo

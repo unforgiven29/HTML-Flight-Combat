@@ -27,6 +27,7 @@ function addAAMs(){
   aam('Meteor','AIM-120D',{mass:190,acc:42,burn:40,cd:3.1e-5,maxG:40,trk:.95,ccm:.85,hoj:1,loft:.55,life:150,aiR:60000,res:.86,ecc:.8},
     SH(3.65,.089,[[.35,.32,.18],[2.6,.3,.22]]),.178,'MTR','Meteor · ramjet, 2-way link');
   sustain('Meteor',1,3.5,40,.22);
+  MSL.Meteor.ramjet={mach:4.0,min:1.8};   // throttled ducted rocket: holds ~M4, flames out below ~M1.8
   // MBDA MICA: 112 kg, 160 mm, TVC (jet vanes), EM = active radar seeker, IR = imaging IR seeker
   aam('MICA EM','AIM-120C',{mass:112,acc:150,burn:4.5,cd:4.4e-5,maxG:50,gimbal:60*D,aiR:24000,life:60,fuse:10,trk:.88,ccm:.7},
     SH(3.1,.08,[[.25,.32,.14],[2.55,.36,.2]]),.16,'MICA','MICA EM · active radar, TVC');
