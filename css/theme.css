@@ -1,0 +1,140 @@
+/* =====================================================================================================================
+   v292 — menu theme: matte, flat, tech-manual. Loaded after game.css; only the #menu is touched, the cockpit HUD is not.
+   One signal colour (brass) for selection, one for hostile (signal red). No glow, no gradients, 2 px corners, hairline rules.
+   ===================================================================================================================== */
+#menu{
+  --bg:#0a0c08;--pn:rgba(19,22,15,.97);--pn2:rgba(29,33,22,.98);--ln:rgba(171,163,120,.2);--ln2:rgba(171,163,120,.4);
+  --tx:#d9d6c3;--dm:#8a8c76;--cy:#cfa94f;--rd:#c4432e;--am:#cfa94f;--gr:#8fae6a;
+  --f1:"B612 Mono","Courier Prime",monospace;--f2:"Stardos Stencil","B612",sans-serif;--ok:#8fae6a;--fr:#7fa3b8;
+  font-size:12.5px}
+#menu *{text-shadow:none!important}
+#menu :is(button,input,select,textarea,.seg,.pl-sec,.qm,.chips button,.pk,.sc,.wo,.acts button,.fl-item,.tgrp,.stp,.wp,.cm-btn,.bar,.bar u,kbd,.sea,.cm-over,.cm-legend,.pl-brief,.ix,.ix *){border-radius:2px!important}
+#menu :is(.dot,.wp i,input[type=range]::-webkit-slider-thumb){border-radius:50%!important}
+#menu .dot{box-shadow:none!important}
+#menu .dot.cy{background:var(--fr)}
+
+/* shade: a plain plate behind every tab except the planner, whose map stays visible */
+#menu:not([data-tab=plan]) .hq-shade{background:#0a0c08}
+#menu[data-tab=plan] .hq-shade{background:linear-gradient(rgba(8,10,6,.92),transparent 100px)}
+#menu:not([data-tab=plan]) #hqMap{display:none}
+
+/* top bar */
+#menu .hq-top{background:#0e110b;border-bottom:1px solid var(--ln2);height:50px}
+#menu .hq-pane{top:50px;bottom:18px}
+#menu .hq-brand h1{font:700 21px var(--f2);letter-spacing:.2em;color:var(--tx)}
+#menu .hq-sub{letter-spacing:.16em;font-size:9.5px;color:var(--dm)}#menu .hq-sub i{color:var(--cy)}
+#menu .hq-tabs{gap:0;margin-left:14px}
+#menu .hq-tabs button{padding:0 16px;font-size:11px;letter-spacing:.16em;border-bottom:3px solid transparent;border-left:1px solid transparent;border-right:1px solid transparent;color:var(--dm)}
+#menu .hq-tabs button+button{border-left-color:var(--ln)}
+#menu .hq-tabs button:hover{background:rgba(171,163,120,.07);color:var(--tx)}
+#menu .hq-tabs button[aria-selected=true]{background:#171a11;color:var(--tx);border-bottom-color:var(--cy)}
+#menu .hq-tabs button kbd{border:1px solid var(--ln2);color:var(--dm);font-size:9.5px;padding:0 4px}
+#menu .hq-tabs button[aria-selected=true] kbd{color:#0a0c08;background:var(--cy);border-color:var(--cy)}
+
+/* classification strip at the foot of the screen */
+#menu::after{content:"UNCLASSIFIED  //  FOR TRAINING AND SIMULATION USE ONLY";position:absolute;left:0;right:0;bottom:0;height:18px;line-height:18px;text-align:center;z-index:30;pointer-events:none;
+  font:700 9px var(--f1);letter-spacing:.34em;color:#0a0c08;background:#7d9a55}
+
+/* buttons, segments, chips, fields */
+#menu .seg{border:1px solid var(--ln2)}
+#menu .seg button{background:#12150e;color:var(--dm);padding:6px 12px;letter-spacing:.14em;font-size:10.5px}
+#menu .seg button+button{border-left:1px solid var(--ln2)}
+#menu .seg button:hover{color:var(--tx);background:#1a1e13}
+#menu .seg button[aria-pressed=true]{background:var(--cy);color:#0a0c08}
+#menu .hq-fly{background:#a93a27;color:#f3ece0!important;box-shadow:none;border:1px solid #d1604a;letter-spacing:.2em!important}
+#menu .hq-fly:hover{background:#bd432e;filter:none}
+#menu #resume,#menu .hq-solo{border:1px solid var(--ok);color:var(--ok)!important;background:transparent}
+#menu #result{background:#2a110b;border:1px solid var(--rd);color:#f0b9ac}
+#menu .chips button{background:#12150e;border:1px solid var(--ln2);color:var(--tx)}
+#menu .chips button:hover{border-color:var(--cy);color:var(--cy)}
+#menu input[type=text],#menu input[type=number],#menu select,#menu textarea{background:#0b0d08;border:1px solid var(--ln2);color:var(--tx)}
+#menu input[type=range]::-webkit-slider-thumb{background:var(--cy);border:2px solid #0a0c08;border-radius:0!important}
+#menu input[type=range]::-moz-range-thumb{background:var(--cy);border:2px solid #0a0c08;border-radius:0}
+#menu input[type=range]::-webkit-slider-runnable-track{background:var(--ln2)}
+#menu .acts button,#menu .cm-btn{border:1px solid var(--ln2);background:#12150e}
+#menu .acts button:hover,#menu .cm-btn:hover{border-color:var(--cy);color:var(--cy);background:#171b10}
+#menu .tgrp{background:var(--pn);border:1px solid var(--ln2)}
+#menu .tgrp button[aria-pressed=true]{background:rgba(207,169,79,.16);color:var(--cy)}
+#menu .tgrp button:hover{background:rgba(171,163,120,.08)}
+
+/* panels: flat plates with a heavy top rule and a label bar, like a data-sheet section */
+#menu .pl-sec{background:var(--pn);border:1px solid var(--ln);border-top:2px solid var(--ln2);padding:10px 12px}
+#menu .pl-sec h3,#menu .ops h2{font:700 10.5px var(--f1);letter-spacing:.24em;color:var(--dm);text-transform:uppercase}
+#menu .pl-sec h3 b{color:var(--tx)}
+#menu .ops{gap:10px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+#menu .qm{background:#12150e;border:1px solid var(--ln);border-left:3px solid var(--ln2);padding:9px 12px}
+#menu .qm:hover{background:#181c11;border-color:var(--ln2);border-left-color:var(--cy)}
+#menu .qm b{font:700 13px var(--f1);letter-spacing:.1em}
+#menu .qm i{color:var(--cy);font-size:10px;letter-spacing:.12em;min-width:44px}
+#menu .qm em{background:transparent;color:var(--cy);border:1px solid var(--cy);padding:3px 12px;letter-spacing:.24em;font-size:11px}
+#menu .qm:hover em{background:var(--cy);color:#0a0c08}
+
+/* campaign + planner chrome */
+#menu .cm-legend,#menu .pl-brief{background:var(--pn);border:1px solid var(--ln2)}
+#menu .pl-brief div{background:var(--pn)}
+#menu .fl-item{background:#12150e;border:1px solid var(--ln)}
+#menu .fl-item.on{border-color:var(--rd);background:#241510}
+#menu .cm-tasks button{background:#12150e!important;border:1px solid var(--ln)!important}
+#menu .cm-tasks button.on{border-color:var(--cy)!important;background:#1b1d12!important}
+#menu .cm-bases button.on{background:var(--cy);color:#0a0c08;border-color:var(--cy)}
+
+/* ---------------- hangar ---------------- */
+#menu .hg-sw{margin-top:8px}
+#menu .ed{grid-template-columns:292px minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:10px;padding:10px 14px 4px}
+#menu .ed-pick{display:none}
+#menu .ed-stage{background:#0d100a;border:1px solid var(--ln);border-top:2px solid var(--ln2);
+  background-image:linear-gradient(rgba(171,163,120,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(171,163,120,.045) 1px,transparent 1px);background-size:40px 40px}
+#menu .ed-title h2{font:700 20px var(--f2);letter-spacing:.14em;color:var(--tx)}
+#menu .ed-title span,#menu .ed-title .vw{color:var(--dm);letter-spacing:.18em;font-size:9.5px}
+#menu .foe .ed-title h2{color:#e3a091}
+#menu .ed-svg .stn{fill:#d9d6c3;stroke:#0a0c08}
+#menu .ed-svg .ring{stroke:var(--cy)}
+#menu .sc{background:#12150e;border:1px solid var(--ln)}
+#menu .sc.on{border-color:var(--cy);background:#1b1d12}
+#menu .sc.em b{color:#5d604f}#menu .sc.tk b{color:#a9a995}
+#menu .wo{background:#12150e;border:1px solid var(--ln)}
+#menu .wo:hover{background:#181c11;border-color:var(--ln2)}
+#menu .wo.on{border-color:var(--cy);background:#1b1d12}
+#menu .wo i.c{border-radius:0!important}
+#menu .wcat{color:var(--cy);border-bottom:1px solid var(--ln2);letter-spacing:.2em}
+#menu .stats dt{letter-spacing:.14em}
+#menu .bar{background:rgba(171,163,120,.15)}#menu .bar u{background:var(--cy)}
+
+/* aircraft index */
+#menu .ix{grid-column:1;display:flex;flex-direction:column;gap:6px;min-height:0;background:var(--pn);border:1px solid var(--ln);border-top:2px solid var(--ln2);padding:9px 8px 8px}
+#menu .ix-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 3px}
+#menu .ix-h b{font:700 10.5px var(--f1);letter-spacing:.24em;color:var(--tx)}
+#menu .ix-n{font:700 9px var(--f1);letter-spacing:.14em;color:var(--dm)}
+#menu .ix-q{width:100%;font:700 10.5px var(--f1)!important;letter-spacing:.08em;text-transform:uppercase;padding:7px 8px!important}
+#menu .ix-q::placeholder{color:#5d604f}
+#menu .ix-f{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--ln2)}
+#menu .ix-f button{flex:1 1 auto;text-align:center;padding:5px 4px;font:700 9.5px var(--f1);letter-spacing:.1em;color:var(--dm);background:#12150e}
+#menu .ix-f button+button{border-left:1px solid var(--ln2)}
+#menu .ix-f button:hover{color:var(--tx);background:#1a1e13}
+#menu .ix-f button.on{background:var(--cy);color:#0a0c08}
+#menu .ix-role{margin-bottom:2px}
+#menu .ix-l{flex:1;overflow:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--ln2) transparent;touch-action:pan-y;border-top:1px solid var(--ln)}
+#menu .ix-g{display:grid;grid-template-columns:14px 1fr auto;align-items:center;gap:4px;width:100%;padding:7px 6px 6px;margin-top:3px;border-bottom:1px solid var(--ln);background:#0f120b;font:700 10px var(--f1);letter-spacing:.16em;color:var(--dm)}
+#menu .ix-g:hover{color:var(--tx);background:#14180e}
+#menu .ix-g i{width:0;height:0;border-left:5px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:none}
+#menu .ix-g.open i{border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;border-bottom:0}
+#menu .ix-g u{text-decoration:none;font-size:9px;letter-spacing:.06em;color:#5d604f}
+#menu .ix-g.has{color:var(--cy)}
+#menu .ix-r{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;width:100%;padding:6px 8px 6px 22px;border-bottom:1px solid rgba(171,163,120,.08);border-left:3px solid transparent;font:700 11px var(--f1);letter-spacing:.04em;color:var(--tx)}
+#menu .ix-r:hover{background:#171b10}
+#menu .ix-r.on{background:#1f2214;border-left-color:var(--cy);color:#fff}
+#menu .foe .ix-r.on{border-left-color:var(--rd)}
+#menu .ix-nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#menu .ix-rl{font-size:9px;letter-spacing:.12em;color:var(--dm);border:1px solid var(--ln);padding:0 4px;min-width:24px;text-align:center}
+#menu .ix-r.on .ix-rl{color:var(--cy);border-color:var(--cy)}
+#menu .ix-r.auto{padding-left:8px;color:var(--cy)}
+#menu .ix-none{margin:14px 6px;font:700 10px var(--f1);letter-spacing:.2em;color:var(--dm);text-align:center}
+
+@media (max-width:900px){
+  #menu .ed{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);overflow:auto}
+  #menu .ix{max-height:34vh}
+  #menu .hq-tabs button{padding:0 9px}
+}
+#menu #cmMap{filter:sepia(.45) saturate(.75) hue-rotate(-12deg) brightness(.95)}
+@media (max-width:1100px){#menu .hq-tabs button kbd{display:none}#menu .hq-brand h1{font-size:16px;letter-spacing:.12em}#menu .hq-tabs button{padding:0 10px;letter-spacing:.1em}}
+@media (max-width:900px){#menu .hq-tabs{margin-left:2px}#menu .hq-tabs button{font-size:9.5px;padding:0 7px;letter-spacing:.06em}#menu .hq-brand{display:none}#menu .hq-right .seg button{padding:6px 7px;font-size:9.5px}}

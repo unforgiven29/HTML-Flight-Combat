@@ -1,5 +1,9 @@
 # Changelog
 
+## v292 — menu redo
+- Hangar: the one-line strip of 75 variant cards is now an aircraft index: search, nation and role filters, jets grouped under their family (F-16 FALCON, SU-27 FLANKER, DASSAULT ...) with the variants listed under it. The family of the selected jet is open; filtering opens every match. Same for the bandit picker (with AUTO). New `js/hangar.js`.
+- New `css/theme.css`: whole menu re-skinned flat and matte (olive-black, brass for selection, signal red for hostile, hairline rules, 2 px corners, no glow or gradients), classification strip along the bottom. The in-flight HUD is untouched.
+
 ## v291 — table gap fill
 - The jets added in v283 and the older ones that had fallen back to defaults now have their own entries: start system (air cart, cartridge, JFS, APU, turbo/electric, onboard) and twin/single in `startup.js`; engine class, intake, inlet control and hydraulics in `engsys.js` (55 start entries, 46 engines); leading-edge scheduling in `structure.js` (17 jets).
 - Start systems are sensible placeholders by era and family; refine per jet when real start procedures are added.
