@@ -1,5 +1,12 @@
 # Changelog
 
+## v288 — Stealth
+- New `js/stealth.js`. Classes: VLO (F-22, F-35A, J-20, J-35), LO (Su-57), REDUCED (F/A-18E/F, EA-18G, F-15EX, Rafale, Typhoon, Gripen C/E, KF-21, J-10C, MiG-35, F-2A).
+- Player radar uses each class's own aspect curve (nose-on lowest, beam/tail spikes, top/bottom); 4th-gen RAM cuts beam and tail returns ~40 %.
+- Internal bays: bay stores add no RCS and are hidden until a launch opens the doors for 2.5 s (door cavity adds RCS, "WEAPON BAY OPEN"). Tanks/pods/external stores always add RCS.
+- IR trims, SIGNATURE rows on the loadout screen. Fixed missing RCS on AIM-174B, AIM-260A, MIM-23B, Roland (was NaN on the F-18F).
+- Note: SAM and AI radar paths use live RCS (incl. stores/open bay) but not the aspect curve.
+
 ## v287 — Flight-model calibration for the 70 added jets
 - New `js/fmcal.js`: each added jet's clean, half-fuel top speed at 11 km is solved against its published maximum Mach using `acPerf()` (the same drag and thrust code the flight model runs). Reheated jets: the supersonic reheat trim (`ENG_SUP`) is bisected; jets still too fast (dry jets, or trim at its floor) get a wave-drag rise from 90 % of the published Mach; jets still too slow get their wave-drag table scaled down. Reheated jets with no Mach limit get one 0.15 above published.
 - Before: F-101B M3.03, Tornado F.3 M3.10, Tornado ECR M3.18, Yak-28P M2.83, F-104G M2.63, A-10C M1.02, Su-25 M0.99, Harrier GR.3 M1.23, M-346 M1.33 (all too fast); JA 37 M1.31, Mirage 2000 M1.37, Mirage 5 M1.09, Kfir M1.33, F-4B M1.33, F-22 M1.91 (all too slow); F-35A M1.91 (limit is M1.6). After: all 70 within 2 % of published. A-10C flown level at 11 km settles at M0.66.
