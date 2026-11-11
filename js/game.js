@@ -1568,7 +1568,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     else if(this.antAz<lo){this.antAz=lo;this.dir=1;this.bar=(this.bar+1)%this.nb();}
     {const g=this.glim(),te=clamp(this.barEl(),-g.ed*D2R,g.eu*D2R),de=te-this.antEl;const es=(this.aesa?3000:50)*D2R*dt;this.antEl+=clamp(de,-es,es);}
     const a0=Math.min(prev,this.antAz)-this.beam/2,a1=Math.max(prev,this.antAz)+this.beam/2;
-    if(window.BEAM&&BEAM.on&&this.sensor==='RDR'&&!this.spin())BEAM.sweep(this,prev,this.antAz,now,dt,gim);else for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
+    if(window.BEAM&&BEAM.on&&this.sensor==='RDR'&&!this.spin())BEAM.sweep(this,prev,this.antAz,now,dt,gim);else if(window.IRPHYS&&IRPHYS.on&&this.sensor==='IRST'&&!this.spin())IRPHYS.sweep(this,prev,this.antAz,now,dt,gim);else for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
       const st=this.gl.stab||this.sensor==='IRST',ra=st?a.az:a.baz,re=st?a.el:a.bel;
       const CR=this.spin()?CONE:0;// conical scan: the detector's field circles the pointing axis, so a target is only modulated while it lies inside the cone
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
