@@ -34,9 +34,13 @@ const TYPE={'F-8E':{f:'AIR',lo:12,idle:65,cut:50,tI:42,ign:5},'F-4E':'AIR','F-14
   'F-16':'JFS','F-16C':'JFS','F-15C':'JFS','F-15E':'JFS','F-18C':'APU','F-18E':'APU','AV-8B':'APU','Tornado GR.4':'APU','Jaguar':'APU','AMX':'APU',
   'Lightning F.6':'CART','Mirage III':'AUTO','Mirage F1':'AUTO','Mirage 2000':'AUTO','Super Etendard':'AIR','Alpha Jet':'AUTO','J 35F':'AUTO','AJS-37':'AUTO',
   'MiG-29':'APUR','MiG-29S':'APUR','MiG-29SMT':'APUR','Su-27':'APUR','Su-27SM':'APUR','Su-33':'APUR','Su-30SM':'APUR','Su-30MK2':'APUR','Su-35S':'APUR','J-11':'APUR',
-  'Su-24M':'APUR','MiG-31':'APUR','Yak-141':'APUR','JH-7':'APUR'};
+  'Su-24M':'APUR','MiG-31':'APUR','Yak-141':'APUR','JH-7':'APUR',
+  'F-15EX':'JFS','F-18F':'APU','EA-18G':'APU','F-22':'APU','F-35A':'APU','A-10C':'APU','F-2A':'JFS','EF-2000':'APU','Rafale':'APU','Mirage 2000-5':'AUTO',
+  'JAS-39C':'APU','JAS-39E':'APU','KF-21':'APU','MiG-35':'APUR','Su-30MKI':'APUR','Su-30MKM':'APUR','Su-34':'APUR','Su-57':'APUR','J-10C':'APUR','J-16':'APUR',
+  'J-15T':'APUR','J-20':'APUR','JF-17':'APUR','Yak-130':'APUR'};
 const TWIN=new Set(['F-4E','F-14A','F-14B','F-14D','F-5E','F-15C','F-15E','F-18C','F-18E','F-111F','F-20','Tornado GR.4','Jaguar','Alpha Jet','Lightning F.6',
-  'MiG-29','MiG-29S','MiG-29SMT','Su-27','Su-27SM','Su-33','Su-30SM','Su-30MK2','Su-35S','J-11','Su-24M','MiG-25','MiG-31','Su-25','MiG-19','J-8F','JH-7']);
+  'MiG-29','MiG-29S','MiG-29SMT','Su-27','Su-27SM','Su-33','Su-30SM','Su-30MK2','Su-35S','J-11','Su-24M','MiG-25','MiG-31','Su-25','MiG-19','J-8F','JH-7',
+  'F-15EX','F-18F','EA-18G','F-22','A-10C','EF-2000','Rafale','KF-21','MiG-35','Su-30MKI','Su-30MKM','Su-34','Su-57','J-16','J-15T','J-20','Yak-130']);
 function spec(type){let t=TYPE[type];if(!t)t='ELEC';const o=typeof t==='string'?Object.assign({},FAM[t]):Object.assign({},FAM[t.f],t);
   try{if(typeof STALL!=='undefined'&&STALL[type]&&STALL[type].twin)TWIN.add(type);}catch(e){}o.n=TWIN.has(type)?2:1;return o;}
 

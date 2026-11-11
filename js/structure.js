@@ -31,7 +31,8 @@ const SOFT=new Set(['MiG-29','MiG-29S','MiG-29SMT']);                 // mechani
 const HEAVY=new Set(['Cargo','E-3A','A-50','B-52H','Tu-95MS']);         // not a fighter airframe: no stick-authority lift
 const SLK={auto:['A-4E','Alpha Jet','Super Etendard','Su-25','Su-22M4'],
   sched:['F-4E','F-14A','F-14B','F-14D','F-16','F-16C','F-18C','F-18E','Su-27','Su-27SM','Su-33','Su-30SM','Su-30MK2','Su-35S','J-11',
-    'MiG-29','MiG-29S','MiG-29SMT','MiG-23','MiG-27K','Su-24M','F-111F','F-5E','F-20','F-104S','F-8E','A-7D','Mirage F1','Mirage 2000','Tornado GR.4','AMX']};
+    'MiG-29','MiG-29S','MiG-29SMT','MiG-23','MiG-27K','Su-24M','F-111F','F-5E','F-20','F-104S','F-8E','A-7D','Mirage F1','Mirage 2000','Tornado GR.4','AMX',
+    'F-15EX','F-18F','EA-18G','F-22','F-35A','F-2A','EF-2000','Rafale','Mirage 2000-5','JAS-39C','JAS-39E','KF-21','MiG-35','Su-30MKI','Su-30MKM','Su-34','Su-57','J-10C','J-16','J-15T','J-20','JF-17','Yak-130']};
 const SLT={};for(const k in SLK)for(const t of SLK[k])SLT[t]=k;
 const MODES=['AUTO','RETRACT','EXTEND'];
 

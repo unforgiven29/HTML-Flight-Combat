@@ -1,5 +1,12 @@
 # Changelog
 
+## v282 — Modern hangar: 24 more jets
+- New file `js/modern-jets.js`. Added: F-15EX, F/A-18F, EA-18G, F-22A, F-35A, A-10C, F-2A, Eurofighter Typhoon, Rafale C, Mirage 2000-5, JAS 39C, JAS 39E, KF-21 (BLUFOR); MiG-35, Su-30MKI, Su-30MKM, Su-34, Su-57, J-10C, J-16, J-15T, J-20, JF-17 Block III, Yak-130 (REDFOR).
+- Each jet has its own flight model numbers (empty mass, internal fuel, wing area, dry / reheat thrust, G and AoA limits, roll rate, FBW, RCS / IR signature), radar (mechanical, PESA or AESA, with the matching scan behaviour), IRST where fitted, gun, internal ECM, stations and cold / modern / strike loadouts.
+- Cockpits and 3D models are placeholders from the parent family (F-15E, F/A-18E, F-16C, Mirage 2000, MiG-29SMT, Su-30SM, Su-33, Su-35S) until each jet gets its own pass. Stealth jets carry their internal loads on the parent's stations.
+- New missiles: Meteor (ramjet sustain), MICA EM / IR, IRIS-T, ASRAAM, AAM-4B, AAM-5, PL-15 (dual pulse), PL-10, Astra. New A/G stores: SCALP-EG, Taurus KEPD 350, AASM-250, AGM-88E, ASM-2, BrahMos-A, YJ-83K, YJ-91, CM-400AKG, LS-6, ALQ-99 pod.
+- Engine, start-up and structural tables updated for the new types; new jets join the modern campaign pools.
+
 ## v281 — F-111F gun, no radar picture on strike HUDs, MiG-27K TV weapons slaved to the Kaira head, J-11 / J-8F
 - F-111F has the M61A1 in the weapons bay (1,000 rounds).
 - Su-24M, Su-22M4, MiG-27K and JH-7: the HUD no longer draws the radar picture (range scale, scan box and strobe, ACM cues, lock box and the NO LOCK cue). Their air-to-air sets are ranging / ground modes only.
