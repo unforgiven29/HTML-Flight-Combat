@@ -1,12 +1,75 @@
 # Changelog
 
+## v306 — Electronic beam steering (js/esasteer.js, window.ESAS)
+- PESA / AESA sets only; mechanical sets unchanged. The registry already held the array numbers (spacing, phase-shifter bits, time-delay units, agility, steering limit, blind angle) but nothing read them.
+- Beam squint: phase-shifter steering points at sin(theta) proportional to f0/f, so each frequency hop moves the beam by tan(theta) x df/f (agile PESA 3.5 %, agile AESA 1.5 %, 0.6 % not agile, a tenth with time-delay units). About 0.5 deg average at 50 deg scan on an agile AESA.
+- Grating lobes: a second full beam appears once sin(scan) >= 1/d - 1 (about 55 deg at 0.55 lambda), weighted by the element pattern, so faint at first and growing toward the 60 deg limit. Targets in it are seen as if in the main beam.
+- Phase-shifter quantisation rounds the beam position to bw / 2^bits.
+- Scan loss exponent from the registry, a dip at the blind angle, a roll-off past the steering limit (S.scan replaced for electronic sets).
+- Limits: a detection through the grating lobe is reported at its true bearing, not at the main-beam bearing a real set would assign; squint does not bias the angle measurement.
+- Tests: 51 checks. Gameplay-level estimates, not published data.
+
+## v305 — Scope timebase, range noise, PRF agility, spoofing, nav error in steering, IR path
+- Sweep nonlinearity (rawvideo.js): the range ramp starts slowly and its slope drifts with time (about 1 to 2 % off), so the scope reads off against the fixed graticule. RAWVID.nlOn / RAWVID.warpU.
+- Range-mark generator: crystal marks (every 1, 2, 5, 10 ... km or nm to give about five per scale, every fifth brighter) are written through the same time base as the echoes. RAWVID.rm.
+- Pulse-set range noise: measured range error is now pulse length / sqrt(2 SNR) plus a calibration and a gate term instead of the flat 120 m + 0.4 %. RAWVID.rn, RAWVID.rngSig.
+- PRF-agile STT (sensorsig.js): in a lock the PRF set is re-dithered every 0.1 s (up to 8 %), in search every 1.5 s, so eclipsing and blind speeds do not stay on one range or closing speed. S.agileStt.
+- GPS spoofing (navphys.js): a hostile long-range emitter inside 20 km, or sys.gpsSpoofForce, walks the fix away at 15 m/s with no GPS-lost warning, then pulls it back. NAVW.tot is INS plus spoof.
+- NAVW.tot now reaches the HSI distance, bearing and course arrow, the waypoint block on the Su/MiG HDD, and the CCIP. A ground point held by the pod in nav coordinates drifts with the error; one tracked in the video does not.
+- Conical-scan IRST: bearing error follows the nutation modulation and falls with signal-to-noise (floor 0.04 deg) instead of a fixed 0.2 deg. IRPHYS.coneSig.
+- Cumulus IR occlusion: the drawn cumulus clusters are ellipsoids that cut an infrared path (about 30 per km), so a chord of a few hundred metres is opaque. RAWVID.cuIR, used by irstphys.
+- Tests: 47 checks. Gameplay-level estimates, not published data.
+
+## v304 — Radar clutter, targets and antenna from the world and from physics
+- Land clutter reads what the game draws (js/rawvideo.js landTex): the terrain shader's biome bands, field patchwork (same hash), rock on slopes, snow line and winter cover, plus airfield pavement and its real buildings (window.WREFL, registered when the airfield is built). The invented towns and forests are gone; this world has none.
+- Clutter Doppler: MTI no longer applies a flat -11 dB. A two-pulse canceller with clutter-lock passes a fraction set by the spectral width (platform motion across the beam: nil dead ahead, widest abeam; wind-driven sea and land; rain carried by the wind). Clutter now cancels best on the nose and leaks abeam, and sea and rain leak more than land.
+- Target RCS: Swerling I fluctuation is correlated in aspect (decorrelation about lambda / 2L) and time (2.5 s) instead of a 1 s timer, so a steady head-on closure fades slowly and a manoeuvring target scintillates. Jet engine modulation flickers nose- and tail-on echoes with power setting.
+- Antenna: sidelobe null spacing follows the set's taper (S.period); the old ripple had its peaks where the first null belongs. Sidelobe rays are placed on this set's own lobe peaks.
+- Roll retrace: the cached columns live only inside one sweep call (one frame), so the terrain is re-traced every frame at the current attitude.
+- Tests: 37 checks. Cost about 0.58 ms per column written (headless software GL, real clock). Gameplay-level estimates, not published data.
+
+## v303 — One shared precipitation field (js/wxcells.js, window.WXC)
+- Radar rain and the cockpit rain overlay now read the same world-fixed cells, so a storm on the scope is a storm outside; flying out of a cell stops the rain. Before, radar rain was a made-up noise drifting at a fixed 6 / 3 m/s and the cockpit rain was a single global value.
+- Cells are carried by the real wind at 3000 m (ENV.windAt), coverage follows ENV.rain (about 15% of the map at the rainy preset, about 70% in a storm).
+- New test: coverage grows with rain, the pattern moves with wind x time. 28 checks pass.
+- Not done yet in this step: terrain / building clutter from real world objects, clutter Doppler, target RCS correlation. Gameplay-level estimates, not published data.
+
+## v302 — Navigation errors, AI terrain / pump tactics, regression tests, video cost fix
+- js/navphys.js (NAVW): GPS jammers (hostile ground emitters, T.gpsj override) deny GPS inside a radius; the INS error then grows at the aircraft's drift rate (0.8 nm/h) and decays when GPS returns. Flash 'GPS LOST · INS' / 'GPS RECOVERED'. The error shifts the player's CCIP impact point. Not done: spoofing, and the error in waypoint / HSI / SNS designations.
+- js/aiphys.js tactics: after a lock the AI PUMPs (turns cold or to the beam, 4-6.5 s) and after being painted it HIDEs behind terrain (tests 7 km ahead candidates with terrLOS, floor lowered to 230-420 m).
+- tests/run.js: runtime regression suite (`node tests/run.js [filter]`): F-22 head-on lock hold, pulse detector, STC, AI background, seekers, RWR hearing, nav, AI tactics, performance. 25 checks.
+- Performance fix: sidelobe ground rays are traced every 4th column and the main terrain trace every 2nd (the beam is oversampled), cached columns are reused. Real-clock measurement on the F-4E scan: 2.83 -> 1.59 ms per frame (headless software GL).
+- Gameplay-level estimates, not published data.
+
+## v301 — Shared echo physics for everybody else's radar (js/aiphys.js, window.AIP)
+- AI fighters, SAM sites, GCI / early-warning sites and the Russian AI "knows" check now divide the echo by the background in the target's own cell (terrain clutter by the radar equation, rain, chaff clouds, two-way rain attenuation) via RAWVID.bgAny. A low flier in clutter or a jet inside a chaff cloud is harder for the AI to lock.
+- Radar-missile seekers (active heads) compare the echo with the same background: clutter, rain or a chaff cloud in the cell can make the head lose the target (it falls into the existing memory / reacquire logic). The semi-active head is not wired (AIP.seeker supports it).
+- AI RWR hearing: AI warners hear the player's radar at about 2.4x its range (AESA 0.35x, pulse-Doppler 0.8x, terrain-masked). A search sweep wakes a patrol; a lock (STT) makes the AI dispense chaff.
+- Radar band: stealth shaping is tuned for X-band. Long-wave early-warning radars (UHF 0.8 GHz ground, S-band 3.1 GHz airborne / other sites) see VLO / LO jets at a larger RCS (F-22 about +17 dB at 0.8 GHz, Su-57 about +6 dB at 3.1 GHz, capped at 300x). Sites over the sea get a duct-extended horizon.
+- Lock A-scope electronic attack: noise jamming raises the trace (burn-through is where the echo climbs out), range-gate pull-off shows a false echo walking away with the tracking gate on it, chaff clouds show as broad ragged returns.
+- Already existed, not new: the aspect / stealth RCS curves and open-bay RCS (stealth.js), RWR emitter ranges and lock/launch modes (RWRX), site horizon and terrain masking. Not done: jet-engine modulation, AI changing PRF, SAM fire-control band, AI beaming in reaction to a lock (only chaff).
+- Gameplay-level estimates, not published data.
+
+## v300 — Raw video, second pass (js/rawvideo.js)
+- Fake track-based blobs removed from the round Phantom (DSCG) scope and every other pulse scope: an echo is on the scope only if the radar equation puts it above the noise and clutter. Ground units (tanks, SAM sites, buildings) are now radar targets in the video too (terrain-masked, seen or buried in clutter like aircraft).
+- Bank / pitch in the ground geometry: a non-stabilised antenna rolls with the aircraft (antenna-frame rays), a stabilised one keeps the horizon. Switch RAWVID.bank.
+- Azimuth sidelobes of clutter: off-axis rays at 1.6-50 beamwidths with the set's sidelobe level. Switch RAWVID.side.
+- Second-time-around echoes: targets and clutter beyond c/(2 PRF) fold back into the display range (RAWVID.prf, default 1200 Hz).
+- STC dials (MiG-23 panel, F-4E scope panel): sys.stc.depth cuts gain at short range, 40 log R, at paint time.
+- Cumulus rain cells: the sky's cloud clusters that rain are volume echoes. Switch RAWVID.cu.
+- Round Phantom scope draws the raw video in every non-lock mode. Lock-on video on pulse sets (MiG-23/25 scope, round Phantom scope): range-gated A-scope with conical-scan nutation and the error envelope (RAWVID.lockPaint).
+- v300 part 2: **one detector** (RAWVID.det): on pulse sets radar.snr1 and detect1 now read the same echo, noise, clutter, rain and chaff as the scope (cell-averaging signal-to-background in the target's own cell), so a target buried in clutter cannot be locked and a lock fades with its echo. **Chaff** clouds are volume echoes (RCS blooms then disperses, near-zero Doppler so MTI cancels them) and sitting in one is sitting in clutter. **Land cover** from the terrain (towns +7 dB, forest, farmland, rock) and spiky sea clutter. **Propagation**: two-way X-band rain attenuation (a cell shadows what is behind it) and a calm-sea surface duct that raises the effective earth radius. **Receiver**: recovery dead zone after the main bang, AGC desensitisation and IF saturation, magnetron sparkle. **CRT**: two-layer phosphor (white flash over green afterglow), defocus with gain, sweep jitter. Switches RAWVID.det .chaff .prop .rcv .crt .gnd.
+- Fix: the STT hold dropped a lock after 1.2 s of blanking from medium-PRF range eclipsing / Doppler blind speeds (F-22 head-on at 10 km broke "LOST" with no notch). A non-notch dropout now coasts about 3 s; a real notch breaks at the old rate.
+- Not done: range-mark generator, scope sweep nonlinearity, PRF-agile STT (the radar changing PRF set to leave an eclipse zone).
+- Gameplay-level estimates, not published data. Not done: RP-5 Izumrud / MA-1 own scope, MiG-25 STC dial, F-8E and HUD-repeater lock video, F-4E FCR lock window.
+
 ## v299 — Raw radar video on the pulse-radar scopes (js/rawvideo.js)
 - Every jet with a pulse radar (F-4E/B/J, F-104, F-8E, MiG-21, MiG-23, MiG-25, Mirage, ...) now shows what the receiver outputs instead of tracker marks. One video sample per range bin (192) per azimuth step (about a quarter of a beamwidth), written as the antenna sweeps and held by a phosphor (2.2 s decay). The pilot picks the blip out of the grass; detection and locking are unchanged (tracker and AI still decide what the radar "sees").
 - Each sample, in units of receiver noise: exponential noise; terrain clutter by the radar equation on the real mesh (slant-range bins, ground point from slant range, 4/3-Earth bulge, running-elevation shadowing, slope-dependent grazing angle, land gamma-sin-psi with patchy cover, sea by grazing angle and wind, cell = range x beamwidth x c*tau/2, Rayleigh fluctuation); the antenna pattern at the elevation of each ground point (mainlobe lights the ground it touches, sidelobes paint a faint wash, the empty gap below the aircraft and the altitude line come out of the same geometry, with a specular boost near the vertical); main bang; patchy rain (1/R^2 volume return, below the freezing level / cloud top); noise-jammer strobes along the whole range line (strength from burn-through range); target echoes from the detector's own calibration (R0, RCS, aspect), two-way beam pattern in azimuth and elevation, BEAM multipath / diffraction factor, Swerling I fluctuation per beam passage, spread over the pulse length; MTI on fades slow-closing targets toward the blind speeds.
 - Brightness: gain knob (sys.mig.fgain / sys.fcr.gain, +-9 dB around the default) into a 30 dB log amplifier, so a high gain fills the picture with grass. Test (MiG-23, 22 km target): echo peak 28.6 dB over noise against 40.3 dB from the detector formula minus pattern, multipath and Swerling draws; two-way arc width 2.47 deg for a 3.3 deg beam; clutter profile at 3000 m shows the altitude line at 2-4 km (11 dB over noise) and the mainbeam ground return at 21 km (40-46 dB, stronger than a 5 m2 target at that range).
 - Scopes wired: flPaint is wrapped, so the F-4E FCR scope, the MiG-23 / MiG-25 scope and the MiG-21 / MiG-23 HUD repeater get it at once; the F-8E APQ-94 indicator is hooked separately. In search the track boxes and the jam hatch marks are no longer drawn on pulse sets (the video shows them); lock still draws the lock symbol. `RAWVID.on=false` restores the old painter. Switches: .clut .rain .jam .tgt .noise .mti; .tau, .tph, .thr, .span for pulse width and display.
 - Video integrator: noise and clutter are averaged over a few pulses per beam passage, so the grass is fine and a 10-15 dB echo stands out; the echo's fade draw (Swerling I) is refreshed once per beam passage. A one-bin echo gets a spot bloom on the tube. The F-4E (APQ-120 model, 4 bars) shows a 12 dB blip only on the sweeps whose bar lights the target, and it fades over 2.2 s.
-- Cost: sweep 0.003 ms per column (about 0.1 ms per frame), paint 0.7 ms against 3.5 ms for the old painter. F4 page: RAWVID row.
+- Cost: CORRECTED in v302. The 0.003 ms/column figure was wrong (it was taken under a faked clock). Measured with the real clock the sweep cost about 0.9 ms per column (about 3 ms per frame on the F-4E 4-bar scan) before v302's caching. F4 page: RAWVID row.
 - Gameplay-level estimates, not published data. Not done: bank-angle error in the ground geometry (the antenna elevation is taken against the horizon plus pitch), azimuth sidelobes of clutter, second-time-around echoes, STC / FTC knobs, cumulus rain cells, the round Phantom scope's A/A picture (it only draws ground modes), conical-scan lock-on video.
 
 ## v298 — IRST physics and radar range / Doppler from the echo (js/irstphys.js, js/echometer.js)

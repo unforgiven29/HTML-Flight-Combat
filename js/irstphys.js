@@ -13,12 +13,13 @@
    * Passive ranging: the old random fixed error is gone. Range is fused from (a) intensity ranging, assuming 85 % throttle and the aspect read off the track
      velocity, so an afterburning target looks nearer and a head-on one farther, and (b) bearings-only triangulation from your own motion, whose error is
      R^2 * sigma_theta / baseline, so it converges only when you manoeuvre across the line of sight. Laser or radar range still wins when available.
+   Cumulus (v305): the drawn cumulus clusters block the path (RAWVID.cuIR). Conical-scan sets (ALR-23 type) get a bearing error from the nutation modulation that falls with signal-to-noise (IRPHYS.coneSig) instead of a fixed 0.2 degrees.
    IRPHYS.on=false restores the old behaviour; IRPHYS.ranging / IRPHYS.cloud switch parts. Loads after sensorirst.js and beamtrace.js.
    ===================================================================================================================== */
 (function(){
 if(typeof radar==='undefined'||typeof jets==='undefined'||typeof player==='undefined'||typeof THREE==='undefined'){console.warn('[irstphys] core missing');return;}
 const F=window.SENSOR_FUSE||{},D=Math.PI/180,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),HW=2100;
-const IR=window.IRPHYS={on:true,ranging:true,cloud:true,kcal:1,dw:new Map(),fr:0,st:{dwell:0,det:0,miss:0,edge:0,cloud:0},last:null};
+const IR=window.IRPHYS={coneSig:snr=>Math.max(.04*D,1.6*D/(2*Math.sqrt(2*Math.max(snr,1)))),on:true,ranging:true,cloud:true,kcal:1,dw:new Map(),fr:0,st:{dwell:0,det:0,miss:0,edge:0,cloud:0},last:null};
 const gauss=()=>Math.sqrt(-2*Math.log(1-Math.random()+1e-12))*Math.cos(2*Math.PI*Math.random());
 /* ---------- intensity (relative units; 1 = nozzle at 85 % throttle seen tail-on) and the atmosphere ---------- */
 function inten(o,asp,thr,ab,M){const fh=o.tail>0?Math.pow((o.head||0)/o.tail,2):.17,fa=fh+(1-fh)*Math.pow(clamp(asp,0,1),1.6);
@@ -29,7 +30,9 @@ function atmos(P,T){const E=typeof ENV!=='undefined'?ENV:{rain:0,P:{}},fog=(E.P&
   return .045*dens+.004+1.1*(E.rain||0)*Math.min(1,dens*2)+Math.max(0,fog-1.3e-5)*2e4*low;}   // per km
 function hash(x,z){const s=Math.sin(x*127.1+z*311.7)*43758.5453;return s-Math.floor(s);}
 function vn(x,z){const ix=Math.floor(x),iz=Math.floor(z),fx=x-ix,fz=z-iz,sx=fx*fx*(3-2*fx),sz=fz*fz*(3-2*fz),a=hash(ix,iz),b=hash(ix+1,iz),c=hash(ix,iz+1),d=hash(ix+1,iz+1);return a+(b-a)*sx+(c-a)*sz+(a-b-c+d)*sx*sz;}
-function cloudK(P,T){const E=typeof ENV!=='undefined'?ENV:null,Pp=E&&E.P;if(!IR.cloud||!Pp||!(Pp.strat>0))return 1;const lo=Pp.alt-300,hi=Pp.alt+300,y1=P.y,y2=T.y;
+function cuK(P,T){return IR.cloud&&window.RAWVID&&RAWVID.cuIR?RAWVID.cuIR(P,T):1;}
+function cloudK(P,T){return cloudK0(P,T)*cuK(P,T);}
+function cloudK0(P,T){const E=typeof ENV!=='undefined'?ENV:null,Pp=E&&E.P;if(!IR.cloud||!Pp||!(Pp.strat>0))return 1;const lo=Pp.alt-300,hi=Pp.alt+300,y1=P.y,y2=T.y;
   if((y1<lo&&y2<lo)||(y1>hi&&y2>hi))return 1;let t=.5;if(!(y1>=lo&&y1<=hi&&y2>=lo&&y2<=hi))t=cl((Pp.alt-y1)/((y2-y1)||1e-6),0,1);
   const x=P.x+(T.x-P.x)*t,z=P.z+(T.z-P.z)*t;return vn(x/4000,z/4000)<Pp.strat?.03:1;}
 function solve(Iv,Eth,be){const tg=Iv/Eth;let lo=100,hi=250000;for(let i=0;i<26;i++){const m=.5*(lo+hi),v=m*m*Math.exp(be*m/1000);if(v<tg)lo=m;else hi=m;}return .5*(lo+hi);}

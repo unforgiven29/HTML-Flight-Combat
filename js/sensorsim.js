@@ -14,8 +14,10 @@ const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),un=x=>Math.pow(10,x/10),C=299792458,
 S.sim=true;
 
 // ---------- antenna
+/* null spacing of the aperture pattern in half-power beamwidths: lambda/(D*bw) is 1.13 for a uniform aperture (-13 dB sidelobes) and shrinks as the taper that buys lower sidelobes widens the beam (about 0.87 at -30 dB). Nulls sit at multiples of it, sidelobe peaks halfway. */
+S.period=function(sllDb){return Math.max(.8,Math.min(1.13,1.13-.0153*(Math.abs(sllDb)-13)));};
 const pat=S.pattern=function(dAz,dEl,bwA,bwE,sllDb){const u=Math.hypot(dAz/bwA,dEl/bwE),main=Math.exp(-2.7726*u*u);if(u<.9)return main;
-  const sl=un(sllDb),env=sl*Math.min(1,Math.pow(1.3/u,1.4)),rip=.3+.7*Math.pow(Math.cos(Math.PI*u*.95),2),t=cl((u-.9)/.5,0,1);return Math.max(main*(1-t)+env*rip*t,sl*.004);};
+  const sl=un(sllDb),env=sl*Math.min(1,Math.pow(1.3/u,1.4)),rip=.04+.96*Math.pow(Math.sin(Math.PI*u/S.period(sllDb)),2),t=cl((u-.9)/.5,0,1);return Math.max(main*(1-t)+env*rip*t,sl*.004);};
 // scan geometry for an electronic array: beam widens and gain falls with scan angle from the array normal
 S.scan=function(scanRad){const type=F.reg&&F.reg.antennaType,elec=type&&type!=='Mechanical_Slotted_Planar';if(!elec)return{w:1,g:1};const c=Math.max(Math.cos(Math.min(Math.abs(scanRad),1.4)),.17);return{w:1/c,g:Math.pow(c,1.5)};};
 
