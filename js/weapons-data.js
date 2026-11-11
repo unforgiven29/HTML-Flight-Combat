@@ -31,7 +31,18 @@ const MREALX={
  'R-40RD':[6.22,38,16,'BF','RF_Proximity','none','SARH'],'R-40TD':[5.8,38,16,'BF','RF_Proximity','N2_launcher','IR_Conical'],
  'R-37M':[4.2,60,25,'BF','RF_Proximity','none','ARH'],'3M9':[5.8,57,24,'BF','RF_Proximity','none','SARH'],'9M331':[2.9,15,6,'BF','RF_Proximity','none','SARH']};
 // rail-launched (LAU-7 / P-72 / APU) rounds push forward, ejected rounds (LAU-92, AKU-58, AKU-470) are kicked down by gas pistons
-const SPEC=(k,d)=>{const x=MREALX[k]||[ (d.ph&&d.ph.dia?d.ph.dia*22:3), (d.mass||100)*.12,(d.mass||100)*.05,'BF',d.seek==='IR'?'IR_Influence':'RF_Proximity',d.seek==='IR'?'N2_launcher':'none',d.seek==='IR'?'IR_Conical':d.seek];
+
+// ---- SARH angle-tracking architecture. Conical scan (CW illumination, seeker nutates its beam and reads the amplitude modulation): AIM-7E / E-2 / F.
+// Inverse monopulse (4-channel simultaneous lobing, needs a monopulse-encoded pulse-Doppler illuminator, no scan modulation to exploit): AIM-7M / P (and the
+// Skyflash / Aspide family), R-40RD, R-23R / R-24R, R-27R / ER. Monopulse reads the angle off a single return: far smaller miss, tighter gates, AM / inverse-gain
+// deception and chaff lose most of their pull, and the head can follow a jammer's angle alone; the price is that the launch radar must radiate monopulse-coherent
+// illumination. Values are engineering estimates scaled to the published difference (conical-scan Sparrows missing by 20-30 m, monopulse ones mostly hitting).
+const SARH_ARCH={
+ mono:{type:'SARH_Monopulse',scan:'Monopulse',noise:.45,decm:.55,bt:.82,lr:1.15,ccm:.15,cross:.5,am:.1,gate:.8,glint:.8,update:2000},
+ con:{type:'SARH_ConScan',scan:'Conical_Scan',noise:1.6,decm:1.7,bt:1.1,lr:.85,ccm:0,cross:.12,am:.9,gate:1.15,glint:.35,update:30}};
+const SARH_MONO=new Set(['AIM-7M','AIM-7P','R-40RD','R-24R','R-27R','R-27ER']);
+function sarhArch(k,d){if(d.seek!=='SARH')return null;return SARH_MONO.has(k)?SARH_ARCH.mono:SARH_ARCH.con;}
+const SPEC=(k,d)=>{const sa=sarhArch(k,d);const x=MREALX[k]||[ (d.ph&&d.ph.dia?d.ph.dia*22:3), (d.mass||100)*.12,(d.mass||100)*.05,'BF',d.seek==='IR'?'IR_Influence':'RF_Proximity',d.seek==='IR'?'N2_launcher':'none',d.seek==='IR'?'IR_Conical':d.seek];
   const ph=d.ph||{},L=x[0],m0=ph.m0||d.mass||100,mbo=ph.mbo||m0*.6,mp=ph.mp||m0-mbo,dia=ph.dia||.15,ej=(d.ign||0)>0,ir=d.seek==='IR',arh=d.seek==='ARH',big=m0>300;
   const tb=ph.tb||d.burn||4,ts=ph.ts||0,isp=ph.Tb&&ph.mdB?ph.Tb/ph.mdB/G:240,Ix=(mm,LL)=>mm*LL*LL/12,cool=x[5],old=/AIM-9[BDE]|AIM-7E|R-3S|R-13/.test(k);
   const life=d.life||40,fuse=d.fuse||9,whK=x[1],exK=x[2],wt=x[3];
@@ -65,18 +76,18 @@ const SPEC=(k,d)=>{const x=MREALX[k]||[ (d.ph&&d.ph.dia?d.ph.dia*22:3), (d.mass|
   barometricPressurePressure:101325,cloudWaterContentDensity:0,humidityAttenuationFactor:ir?.12:.02,groundMultipathReflectance:arh||d.seek==='SARH'?.6:0,
   solarBlindingAzimuth:null,ionosphericScintillation:0,terrainElevationAtFootprint:0,
   // 05 seeker
-  seekerType:x[6],seekerFieldOfView:(d.search||2.5*D2R)*R2D,seekerInstantaneousFOV:ir?(/9X|M2/.test(k)?.02:1.2):3.5,gimbalLimitMax:(d.gimbal||.7)*R2D,
+  seekerType:sa?sa.type:x[6],seekerAngleTracking:sa?sa.scan:ir?'Conical_Scan':'Active_Monopulse',seekerAngleNoiseMult:sa?sa.noise:1,seekerAmDeceptionSusceptibility:sa?sa.am:0,seekerTrackRateMult:sa?sa.lr:1,seekerAngleUpdateHz:sa?sa.update:0,seekerRequiresMonopulseIlluminator:!!(sa&&sa===SARH_ARCH.mono),decmSusceptibility:sa?sa.decm:1,burnThroughMult:sa?sa.bt:1,seekerFieldOfView:(d.search||2.5*D2R)*R2D,seekerInstantaneousFOV:ir?(/9X|M2/.test(k)?.02:1.2):3.5,gimbalLimitMax:(d.gimbal||.7)*R2D,
   gimbalSlewRateMax:(d.trk||.6)*R2D,instantaneousBoresightAngle:0,seekerCooledStatus:ir&&cool!=='none',
   coolantType:cool,coolantGasQuantityRemaining:cool==='none'?0:/launcher/.test(cool)?(/R-|AIM-9[DG]/.test(k)?60:150):Infinity,
-  minimumRadarCrossSection:arh?.5:d.seek==='SARH'?1:0,receiverNoiseFloor:arh?-110:d.seek==='SARH'?-104:0,antennaGainPattern:arh||d.seek==='SARH'?[1,.97,.88,.74,.56,.37,.2,.08,.02]:null,
+  minimumRadarCrossSection:arh?.5:d.seek==='SARH'?1:0,receiverNoiseFloor:arh?-110:d.seek==='SARH'?-104:0,antennaGainPattern:arh||sa?[1,.97,.88,.74,.56,.37,.2,.08,.02]:null,
   opticalContrastThreshold:ir?(old?.35:.12):0,lensFoggingFactor:0,rangeGateMin:ir?150:300,rangeGateMax:ir?(d.irR||12000):arh?(d.pit||20000)*1.4:(d.aiR||25000)*1.5,
-  seekerScanPatternType:x[6]==='IR_Imaging'?'Focal_Plane_Array':ir?'Conical_Scan':arh?'Raster':'Conical_Scan',transmitterOutputPower:arh?(big?1000:500):0,
+  seekerScanPatternType:sa?sa.scan:x[6]==='IR_Imaging'?'Focal_Plane_Array':ir?'Conical_Scan':arh?'Raster':'Conical_Scan',transmitterOutputPower:arh?(big?1000:500):0,
   receiverIntermediateFreq:d.seek==='IR'?0:30e6,opticalMagnificationFactor:0,domeRefractionIndex:ir?1.74:1.0012,uncooledThermalNoiseScalar:ir?3:1,activeLaserPulseRepetitionID:0,
   // 06 signal processing / ECCM
   flareRejectionThreshold:ir?d.res||.6:0,chaffRejectionFactor:ir?0:d.res||.6,dopplerFilterWidth:ir?0:55*(1-.45*(d.ccm||0)),sideLobeAttenuatorLevel:ir?0:-20-15*(d.ecc||0),
   burnThroughRangeThreshold:ir?0:(arh?7000:9000)*(.6+(d.ecc||0)),homeOnJamCapable:!!d.hoj,frequencyHoppingRate:arh?(d.ecc||0)*2000:0,
-  targetMemoryHoldTime:arh?3:d.seek==='SARH'?1:.4,clutterRejectionCoeff:old?.3:.75,glintSuppressionGain:arh?.6:.3,jammingSignalToNoiseRatio:0,
-  crossEyeJammingVulnerability:old?.6:.25,twoColorIRRatioTolerance:/9X|9M|R-73|R-74|R-27T|R-27ET/.test(k)?.18:0,velocityGateSize:55*(1-.45*(d.ccm||0)),
+  targetMemoryHoldTime:arh?3:d.seek==='SARH'?1:.4,clutterRejectionCoeff:old?.3:.75,glintSuppressionGain:sa?sa.glint:arh?.6:.3,jammingSignalToNoiseRatio:0,
+  crossEyeJammingVulnerability:sa?sa.cross:old?.6:.25,twoColorIRRatioTolerance:/9X|9M|R-73|R-74|R-27T|R-27ET/.test(k)?.18:0,velocityGateSize:55*(1-.45*(d.ccm||0))*(sa?sa.gate:1),
   leadingEdgeTrackerBias:arh?.4:0,terrainMaskingSensitivity:.5,
   // 07 guidance
   guidanceLawProfile:d.apn?'Augmented_Prop_Nav':'Proportional_Nav',proportionalNavConstant:d.N||4,loftAngleInitial:(d.loft||0)*R2D,loftTerminalDropRange:.35,
@@ -94,9 +105,13 @@ const SPEC=(k,d)=>{const x=MREALX[k]||[ (d.ph&&d.ph.dia?d.ph.dia*22:3), (d.mass|
   thermalBatteryLifeMax:life,thermalBatteryCurrentLife:life,onboardComputerCycleRate:old?0:arh?400:100,structuralIntegrityHealth:1,flightDurationTimer:0,
   maximumFlightDurationLimit:life,minimumVelocityDestructLimit:(d.stop||260)-60,selfDestructCommandReceived:false,wireSpoolLengthRemaining:0,
   hydraulicFluidVolume:/AIM-7|AIM-54|R-27|R-40|R-24/.test(k)?1:0,voltageDropTolerance:.15,squibActivationState:false,altimeterFailSafeOverride:true};};
-function mspecAll(){for(const[k,d]of Object.entries(MSL))if(d&&!d.spec)d.spec=SPEC(k,d);}
+function mspecAll(){for(const[k,d]of Object.entries(MSL))if(d&&!d.spec){const sa=sarhArch(k,d);if(sa&&sa.ccm&&!d._monoCcm){d.ccm=Math.min(.9,(d.ccm||0)+sa.ccm);d._monoCcm=1;}d.spec=SPEC(k,d);}}
 mspecAll();window.MSPEC=MSL;
 
+
+// jamming: deception works on the angle channel, so it pulls conical-scan heads much harder than monopulse; burn-through shrinks for monopulse (it keeps the echo through noise longer)
+{const _j=jamOfMsl;jamOfMsl=function(tg,d,pos){const o=_j(tg,d,pos);if(!o||!d.spec||d.seek!=='SARH')return o;const sp=d.spec;
+  o.pk*=sp.decmSusceptibility;o.bt*=sp.burnThroughMult;const r=pos.distanceTo(tg.pos);o.far=r>o.bt;o.farD=r>o.bt*.5;return o;};}
 // ---- per-missile live state + flight effects ----
 const _w=new V3(),_lat=new V3(),_v0=new V3();let _curM=null;
 {const _mm=mslMotor;mslMotor=function(d,tb,r){const o=_mm(d,tb,r);const m=_curM;if(m&&m.def===d){if(m.hang)return[0,d.ph.m0];if(d.spec&&o[0]>0)o[0]*=1-d.spec.nozzleErosionRate*tb;}return o;};}
@@ -224,8 +239,8 @@ const GRP=[['01 HARDWARE / PRE-LAUNCH',/^(parent|rail|ejection|arm|total|dry|cen
  ['02 PROPULSION',/^(booster|sustainer|motor|nozzle|thermalDiss|thrustVector|gasGen|smoke|interstage|ramjet|fuelGrain|throttle|exhaust|combustion)/],
  ['03 AERODYNAMICS',/^(reference|zeroLift|induced|liftCurve|canard|tailFin|maxAngle|maxSide|structural|finDef|finAct|rollStab|parasitic|waveDrag|bodyRey|skinTemp|chord|staticMargin|pitchDamp|yawDamp|rollDamp|transonic|finAsym)/],
  ['04 ENVIRONMENT',/^(ambient|localSpeed|currentMach|dynamicP|windVec|downdraft|barometric|cloudWater|humidity|groundMulti|solarBl|ionospheric|terrainElev)/],
- ['05 SEEKER',/^(seeker|gimbal|instantaneous|coolant|minimumRadar|receiverNoise|antennaGain|optical|lensFog|rangeGate|transmitter|receiverInter|domeRef|uncooled|activeLaser)/],
- ['06 SIGNAL PROC / ECCM',/^(flare|chaff|doppler|sideLobe|burnThrough|homeOnJam|frequencyHop|targetMemory|clutter|glint|jammingSig|crossEye|twoColor|velocityGate|leadingEdge|terrainMask)/],
+ ['05 SEEKER',/^(seeker|gimbal|instantaneous|coolant|minimumRadar|receiverNoise|antennaGain|optical|lensFog|rangeGate|transmitter|receiverInter|domeRef|uncooled|activeLaser|decmSus)/],
+ ['06 SIGNAL PROC / ECCM',/^(flare|chaff|doppler|sideLobe|burnThrough|homeOnJam|frequencyHop|targetMemory|burnThroughMult|clutter|glint|jammingSig|crossEye|twoColor|velocityGate|leadingEdge|terrainMask)/],
  ['07 GUIDANCE / NAV',/^(guidanceLaw|proportionalNav|loft|midcourse|datalink|activeRadar|terminalGuid|leadBias|insDrift|gpsSig|kalman|targetAccel|timeToGo|optimalInt|waypoint)/],
  ['08 FUZE / WARHEAD',/^(proximity|fuze|backupImpact|explosive|warhead|blast|fragmentation|continuousRod|focused|closureSpeed|directionalW|armorPen|incendiary)/],
  ['09 POWER / LIMITS',/^(thermalBattery|onboard|structuralInt|flightDur|maximumFlight|minimumVel|selfDestruct|wireSpool|hydraulic|voltage|squib|altimeter)/]];

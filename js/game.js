@@ -1062,7 +1062,7 @@ class Missile{
     if(P&&d.wob){this.wbPh=(this.wbPh||rnd(0,6))+dt*rnd(2,5);const rr=this.pos.distanceTo(P),w=Math.min(60,6+rr*.012);P.x+=Math.sin(this.wbPh*1.3)*w;P.y+=Math.cos(this.wbPh*.9)*w*.7;P.z+=Math.sin(this.wbPh*1.9+1)*w;}
     // seeker gimbal-rate limit: a line-of-sight rate above the head's tracking rate for a quarter second breaks the track
     if(P&&(this.track||d.seek==='SARH')&&(this.active||d.seek==='SARH')){const r=_mr.copy(P).sub(this.pos),vr=_mvr.copy(Vt).sub(this.vel),lr=_mtmp.copy(r).cross(vr).length()/Math.max(r.lengthSq(),1);
-      this.slip=lr>d.trk?(this.slip||0)+dt:Math.max(0,(this.slip||0)-dt*2);
+      this.slip=lr>d.trk*(d.spec&&d.spec.seekerTrackRateMult||1)?(this.slip||0)+dt:Math.max(0,(this.slip||0)-dt*2);
       if(this.slip>.25&&r.length()>150){this.track=null;this.slip=0;if(d.seek==='SARH')this.seekLost=true;P=null;}}
     // an IR head whose flare burned out, or that lost the target, sweeps a small cone to reacquire
     if(d.seek==='IR'&&this.active&&!this.track&&tb>-1){let best=null,bd=1e9;
@@ -1082,7 +1082,7 @@ class Missile{
       if(d.loft&&!this.active&&this.R0>12000&&R>.35*this.R0&&this.pos.y<(d.loftCap||24000)){const la=d.loft*clamp((this.R0-12000)/35000,0,1)*clamp((R/this.R0-.35)/.3,0,1);aimP.y+=R*Math.tan(la);}
       const r=aimP.sub(this.pos),vr=_mvr.copy(Vt).sub(this.vel),om=_mom.copy(r).cross(vr).divideScalar(Math.max(r.lengthSq(),1));
       // glint / thermal noise on the measured line-of-sight rate: larger for radar heads, grows as the range closes
-      const sg=(d.seek==='IR'?4:14)/Math.max(R,120)+.0015;this.sn.lerp(rndUnit(_mrnd).multiplyScalar(sg),Math.min(1,dt*9));om.add(this.sn);
+      const sg=(d.seek==='IR'?4:14)*(d.spec&&d.spec.seekerAngleNoiseMult||1)/Math.max(R,120)+.0015;this.sn.lerp(rndUnit(_mrnd).multiplyScalar(sg),Math.min(1,dt*9));om.add(this.sn);
       cmd.copy(om).cross(this.vel).multiplyScalar(d.N*(this.hoj?.8:1));
       if(d.apn&&this.track&&!this.track.isDecoy&&this.track.accV){r.normalize();const at=_mtmp.copy(this.track.accV);at.addScaledVector(r,-at.dot(r));cmd.addScaledVector(at,d.N*.5);}
       cmd.y+=G;}
