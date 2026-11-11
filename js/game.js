@@ -797,7 +797,7 @@ class AI{
     if(tOK){const hot=t.fwd(new V3()).dot(los.clone().negate()),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(t.ac.rcs/5,.25)*(.62+.38*Math.max(0,hot));
       if(Math.abs(t.vel.dot(los))<30&&t.pos.y<j.pos.y-300&&Math.random()<dt*.6)this.notchT=2.5;this.notchT-=dt;
       // the target's jammer: noise hides it beyond burn-through (the radar can still home on the noise itself), deception walks the range gate off a track
-      const Jt=jamOf(t,j.ac.radar),noiseFar=!!(Jt&&Jt.noise&&dist>Jt.bt),geo=off<60*D2R&&terrLOS(j.pos,t.pos);this.jamT=(this.jamT||0)-dt;
+      const Jt=jamOf(t,j.ac.radar,j),noiseFar=!!(Jt&&Jt.noise&&dist>Jt.bt),geo=off<60*D2R&&terrLOS(j.pos,t.pos);this.jamT=(this.jamT||0)-dt;
       const snr=SNR50*Math.pow(R/Math.max(dist,1),4);
       this.radarLock=geo&&this.notchT<=0&&!noiseFar&&this.jamT<=0&&(this.radarLock?!(Math.random()<dt*1.5*Math.pow(1-pdOf(snr*8),2)):Math.random()<dt*2*pdOf(snr));
       this.hojLock=geo&&noiseFar&&dist<R*1.5;
@@ -1415,7 +1415,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   esaPar(){return this.esa==='A'?{dw:.003,rv:.2,tdw:2,nl:4}:{dw:.006,rv:.4,tdw:3,nl:3};},
   esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
       if(Math.abs(ra-az)>this.beam/2||Math.abs(re-el)>this.bmV()/2||a.off>this.gimbal()+2*D2R)continue;
-      {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
+      {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<1-Math.pow(1-pdOf(sn),this.esaPar().nl))this.hit(j,a,sn,now);}},  // a dwell is a burst of pulses: several looks integrated per beam position
   // track dwells: the beam goes to where the file says the target is now; a target that has turned hard since the last hit can be outside it
   esaRevisit(now,skip){const q=this.esaPar();let used=0;
@@ -1563,7 +1563,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       const st=this.gl.stab||this.sensor==='IRST',ra=st?a.az:a.baz,re=st?a.el:a.bel;
       const CR=this.spin()?CONE:0;// conical scan: the detector's field circles the pointing axis, so a target is only modulated while it lies inside the cone
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
-      {const J=this.jam(j);if(J&&J.noise&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
+      {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}}
     for(const [j,tk] of this.tracks)if(!j.alive||now-tk.t>(tws?8:10))this.tracks.delete(j);
     if(tws&&mg){// N019 / N001 TWS: a jammer on the scope throws the set back to search, ten track files at most, the most dangerous closing track is bugged until the pilot takes over
@@ -2025,7 +2025,7 @@ const FSC={AZ:7,E0:-14.2,E1:2.4};
 // noise strobes on the raw video: a column of dense hash at the jammer's azimuth, the whole range of the display
 function jamPaint(c,m,base){const now=performance.now()/1000;c.save();c.lineCap='round';
   for(const [j,s] of radar.strobes){const u=s.az/flClutter.AZ;if(Math.abs(u)>1)continue;c.globalAlpha=base*clamp(1-(now-s.t)/4.5,.2,1)*.85;c.lineWidth=2;c.beginPath();
-    for(let k=0;k<46;k++){const v=k/46,w=(Math.random()-.5)*.09,a=m(u+w-.03,v),b=m(u+w+.03,v);if(a&&b){c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);}}c.stroke();}
+    for(let k=0;k<46;k++){const v=k/46,w=(Math.random()-.5)*.09*(s.ws||1),a=m(u+w-.03,v),b=m(u+w+.03,v);if(a&&b){c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);}}c.stroke();}
   c.restore();}
 function flPaint(c,m,px,base){flFit();const C=flClutter,now=performance.now()/1000,g=sys.mig.fgain,rng=radar.rngM;
   if(C.rng!==rng)return;const du=1.25/C.nA,lv=[[],[],[],[]];
@@ -2601,7 +2601,7 @@ const DL={seen:new Map(),acc:0,
     const los=_dlv2.copy(rel).divideScalar(Math.max(d,1));if(Math.acos(clamp(F.fwd(_dlv3).dot(los),-1,1))>(rd.awg?65:60)*D2R)return false;
     const c=Math.max(0,-e.fwd(_dlv3).dot(los));let R=rd.R0*Math.pow(e.ac.rcs/5,.25)*(.62+.38*c);const el=Math.asin(clamp(los.y,-1,1));if(el<-2*D2R)R*=.8;if(d>R)return false;
     if(el<-1*D2R&&Math.abs(_dlv3.copy(e.vel).sub(F.vel).dot(los))<28)return false;
-    const J=jamOf(e,rd);if(J&&J.noise&&d>J.bt)return false;
+    const J=jamOf(e,rd,F);if(J&&J.noise&&d>J.bt)return false;
     return terrLOS(F.pos,e.pos);},
   tick(dt){this.acc-=dt;if(this.acc>0)return;this.acc=.5;const P=player;if(!this.on()||net.on){this.seen.clear();return;}
     const now=performance.now()/1000,M=this.mates();for(const e of [...this.seen.keys()])if(!e.alive||jets.indexOf(e)<0)this.seen.delete(e);
@@ -7131,7 +7131,7 @@ const GCI={run:false,S:[null,null],bull:null,sites:[],G:[],gid:0,opened:false,t0
       const agl=e.pos.y-groundAt(e.pos.x,e.pos.z),hor=4120*(Math.sqrt(Math.max(air?rp.y:a.T.ant||20,1))+Math.sqrt(Math.max(agl,1)));
       if(d<hor){const hot=Math.max(0,e.fwd(_g3).dot(_g4.copy(los).negate())),rv=_g5.copy(e.vel);if(air)rv.sub(a.jet.vel);const radial=Math.abs(rv.dot(los));
         let R=a.T.R0*Math.pow(e.ac.rcs/5,.25)*(.62+.38*hot);if(air&&agl<400)R*=.6;
-        const J=jamOf(e,{R0:a.T.R0,ecc:.45}),noise=!!(J&&J.noise&&d>J.bt);if(noise)e._gjam=now;
+        const J=jamOf(e,{R0:a.T.R0,ecc:.45,name:a.ty},{pos:rp,side:S.side,key:a}),noise=!!(J&&J.noise&&d>J.bt);if(noise)e._gjam=now;
         if(d<R&&radial>28&&!noise&&terrLOS(rp,e.pos)){const snr=SNR50*Math.pow(R/Math.max(d,1),4);ok=had?Math.random()<pdOf(snr*8):Math.random()<pdOf(snr);
           if(ok&&J&&J.dec&&d>J.btD&&Math.random()<.4)ok=false;}}   // deception walks the range gate off the track
       if(ok){const ne=a.T.hf?150:1200;
@@ -7139,7 +7139,7 @@ const GCI={run:false,S:[null,null],bull:null,sites:[],G:[],gid:0,opened:false,t0
   // what a Russian AI fighter knows: its own radar first (with a few seconds of memory), then the picture. Returns 'own', 'gci' or null.
   knows(ai,x){const j=ai.j,now=nowS(),rel=_g1.copy(x.pos).sub(j.pos),d=rel.length(),los=_g2.copy(rel).divideScalar(d||1),off=Math.acos(clamp(j.fwd(_g3).dot(los),-1,1));
     if(off<70*D2R){const hot=Math.max(0,x.fwd(_g4).dot(_g5.copy(los).negate())),R=j.ac.radar.R0*(j.rdrK||1)*Math.pow(x.ac.rcs/5,.25)*(.62+.38*hot),
-        J=jamOf(x,j.ac.radar),far=!!(J&&J.noise&&d>J.bt);
+        J=jamOf(x,j.ac.radar,j),far=!!(J&&J.noise&&d>J.bt);
       if((far?d<R*1.5:d<R)&&terrLOS(j.pos,x.pos)){ai.kn.set(x,now);return'own';}}
     const k=ai.kn.get(x);if(k&&now-k<6)return'own';
     const S=this.S[j.side],tk=S&&S.pic.get(x);if(tk&&now-tk.t<24)return'gci';
