@@ -1,5 +1,9 @@
 # Changelog
 
+## v280 — ACM reachable again on pulse-radar jets; Mirage 2000 DDM SAMIR is a pod
+- Fixed: jets with pulse radars and no TWS (F-4E and the like) could not reach their ACM modes with the radar-mode key, because the cycle went RWS -> TWS and TWS is refused on a pulse set. RWS now goes straight to ACM, then 30x20 -> VERT -> BORE -> RWS.
+- The Mirage 2000 DDM SAMIR missile-approach warner is now a pod store on its own pseudo-stations 1P / 9P at the Magic II wingtip pylons, so it is carried alongside the Magic 2 / Magic 1 rails, not instead of them. The warner works while a pod is loaded; without one the Mirage has no MAWS. Default loads carry both pods. Pod weight (14 kg), size and signature are estimates.
+
 ## v279 — the Su-27 family's L-005S jammer is a real pod store
 - `L-005S` Sorbtsiya-S is now a station store like the ALQ-131: load it on the wingtip stations 1 and 10 (in place of the R-73s). It has weight (45 kg each), drag, a visible pod mesh on the wingtip and an entry in the loadout lists under PODS. Applies to Su-27, Su-27SM, Su-33, Su-30SM, Su-35S, Su-30MK2 and J-11. The old rule "jammer only while both wingtip rails are empty" is gone; the jammer works while at least one pod is loaded, and one pod radiates half the power of two (burn-through x1.41). ECM description and the ECM panels say how many pods are fitted, or where to load them.
 - Default loadouts still carry R-73s on the wingtips, so nothing changes until you swap them (AI Russian jets therefore still do not jam).
