@@ -588,15 +588,17 @@ const ECM_MODES=['OFF','STBY','AUTO','NOISE','DECM'];
 const BT0=18000,BT_REF=42*NM,BTM0=3200;
 const ecmFit=(type,era)=>{const t=ECM_FIT[type];return t?t[era]||t.cold:null;};
 // the wingtip pods only fit with both wingtip rails empty
-const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.tips||(!j.load['1']&&!j.load['10']))&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s]&&AGW[s].k==='ecm'));// v233: pod jammers need their pod on a station
+const ecmFitted=j=>!!j.ecm&&(!j.ecm.fit.pod||Object.values(j.load).some(s=>AGW[s]&&AGW[s].k==='ecm'));// v233: pod jammers need their pod on a station
 // Burn-through. A jammer's power at the radar falls with R^2 (one way) while the radar's own skin echo falls with R^4 (there and back), so inside
 // R_bt = k * sqrt(P_radar * RCS / ERP_jammer) the target shows through the noise. For a given receiver P_radar scales with R0^4, so R_bt scales with R0^2.
 // Deception needs far less J/S than noise, but the true skin echo beats it inside roughly half the noise burn-through range.
-function jamOf(tg,rd){const e=tg.ecm;if(!e||!e.on||!rd)return null;const f=e.fit,r=rd.R0/BT_REF,bt=BT0*r*r*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(f.jp),ecc=rd.ecc==null?.5:rd.ecc;
+// the Su-27's L-005S is a pair of wingtip pods: one pod radiates half the power
+const jpOf=(tg,f)=>f.tips?f.jp*Math.max(.05,((tg.load['1']==='L-005S')+(tg.load['10']==='L-005S'))/2):f.jp;
+function jamOf(tg,rd){const e=tg.ecm;if(!e||!e.on||!rd)return null;const f=e.fit,r=rd.R0/BT_REF,bt=BT0*r*r*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(jpOf(tg,f)),ecc=rd.ecc==null?.5:rd.ecc;
   return{noise:e.tech==='NOISE',dec:e.tech==='DECM',bt,btD:bt*.45,rate:f.dec*(1-ecc)*.28};}
 // A missile seeker is only a few km away but has a small aperture and little power: its burn-through is short, and shorter again against deception.
 function jamOfMsl(tg,d,pos){const e=tg.ecm;if(!e||!e.on)return null;const f=e.fit,r=pos.distanceTo(tg.pos),
-    bt=clamp(BTM0*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(f.jp)*(d.seek==='SARH'?.85:1),1200,6500);
+    bt=clamp(BTM0*Math.sqrt(tg.ac.rcs/5)/Math.sqrt(jpOf(tg,f))*(d.seek==='SARH'?.85:1),1200,6500);
   return{noise:e.tech==='NOISE',dec:e.tech==='DECM',bt,far:r>bt,farD:r>bt*.5,pk:f.dec*(1-(d.ecc||.4))*.12};}
 // is a hostile radar tracking the player, or a radar missile guiding on him (what an AUTO jammer reacts to)
 function ecmThreat(j){if(j!==player)return false;for(const o of jets)if(o!==j&&o.alive&&o.ai&&!o.ai.friend&&o.ai.radarLock&&o.ai.t===j)return true;
@@ -614,7 +616,7 @@ function cycleECM(){const P=player;if(!P||!P.alive)return;const e=P.ecm;
   e.mode=(e.mode+1)%5;sfx.click();flash('ECM '+ECM_MODES[e.mode]+(e.mode&&e.warm>0?' · WARM-UP '+Math.ceil(e.warm):''),1300);}
 const ecmTxt=P=>{const e=P&&P.ecm;if(!e||!ecmFitted(P))return'';return e.mode===0?'OFF':e.warm>0?'WARM '+Math.ceil(e.warm):ECM_MODES[e.mode]+(e.on?' XMIT':'');};
 function ecmDesc(ac,era,l){const f=ecmFit(ac,era);if(!f)return'none (RWR, chaff and flares only)';
-  if(f.tips&&(l['1']||l['10']))return'none while the wingtip rails are loaded (clear stations 1 and 10 to fit the '+f.n+' pods)';
+  if(f.tips){const n=(l['1']==='L-005S')+(l['10']==='L-005S');return n?f.n+' · '+n+(n>1?' wingtip pods':' wingtip pod'):'none loaded (put '+f.n+' pods on stations 1 and 10 in place of the R-73s)';}
   return f.n+(f.tips?' pods on the wingtips':f.kg?' pod':' internal');}
 
 /* ============ particles ============ */
@@ -2047,14 +2049,15 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
   const T=(s,a,e,al='left')=>{const p=hb(a,e);if(p)txt(s,p.x,p.y,al);return p;};const{AZ,E0,E1}=FSC,base=hx.globalAlpha,pki=!!P.ac.pki;
   if(sys.mig.hudm===1)hx.strokeStyle=hx.fillStyle='#46c27a';
   if(now<sys.mig.test){const c=hb(0,-4);if(c){circ(c.x,c.y,k*4);circ(c.x,c.y,k*1.2);line(c.x-k*6,c.y,c.x+k*6,c.y);line(c.x,c.y-k*6,c.x,c.y+k*6);}T('TEST',0,-11,'center');return;}
-  const L=radar.mode==='STT'?radar.lock:null,agl=P.pos.y-groundAt(P.pos.x,P.pos.z),w=game.wsel,wd=MSL[w];
+  const nr=!!(P.ac.noRdr||P.ac.noHudRdr);/* no air-to-air radar picture on this HUD: Su-24M, Su-22, MiG-27K, JH-7 (their sets are ranging / ground modes only) */
+  const L=!nr&&radar.mode==='STT'?radar.lock:null,agl=P.pos.y-groundAt(P.pos.x,P.pos.z),w=game.wsel,wd=MSL[w];
   hx.lineWidth=2.2;
   // artificial horizon: two bars with a gap, the right one carries the sky arrow
   if(!pki){const hz=new V3(f.x,0,f.z);if(hz.lengthSq()<1e-6){const u=P.up();hz.set(-u.x,0,-u.z);}hz.normalize();const hr=new V3(-hz.z,0,hz.x),e=(q,up=0)=>projDir(hz.clone().addScaledVector(hr,q).setY(up).normalize());
     const a1=e(-.24),a2=e(-.05),b1=e(.05),b2=e(.15),sk=e(.15,.075);
     if(a1&&a2)line(a1.x,a1.y,a2.x,a2.y);if(b1&&b2){line(b1.x,b1.y,b2.x,b2.y);if(sk){const dx=sk.x-b2.x,dy=sk.y-b2.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,L2=Math.min(l,k*2.2),tx=b2.x+ux*L2,ty=b2.y+uy*L2;
       line(b2.x+ux*k*1.2,b2.y+uy*k*1.2,tx,ty);line(tx,ty,tx-ux*9-uy*7,ty-uy*9+ux*7);line(tx,ty,tx-ux*9+uy*7,ty-uy*9-ux*7);}}}
-  const scan=!pki&&(m==='RAD'||m==='IR')&&(radar.mode==='RWS'||radar.mode==='TWS')&&w!=='GUN';
+  const scan=!nr&&!pki&&(m==='RAD'||m==='IR')&&(radar.mode==='RWS'||radar.mode==='TWS')&&w!=='GUN';
   // side scales with their carets
   const sc=(x,sd,v)=>{const a=hb(x,E0),b=hb(x,E1);if(!a||!b)return;line(a.x,a.y,b.x,b.y);line(a.x,a.y,a.x-sd*14,a.y);line(b.x,b.y,b.x-sd*14,b.y);
     for(let i=1;i<6;i++){const y=lerp(a.y,b.y,i/6),x0=lerp(a.x,b.x,i/6);line(x0,y,x0-sd*12,y);}
@@ -2072,7 +2075,7 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
     T(String(MDH[sys.mig.dh]),AZ-.4,lerp(E0,E1,.42),'right');
     if(sys.mig.mti)T('MTI',-AZ+.4,E1-1.2);
   }
-  else if(radar.mode==='ACM'&&!L&&radar.on()){[-4.5,4.5].forEach(a=>{const p=hb(a,-12),q=hb(a,3);if(p&&q)line(p.x,p.y,q.x,q.y);});T('CC',-AZ-2.6,0,'right');}
+  else if(!nr&&radar.mode==='ACM'&&!L&&radar.on()){[-4.5,4.5].forEach(a=>{const p=hb(a,-12),q=hb(a,3);if(p&&q)line(p.x,p.y,q.x,q.y);});T('CC',-AZ-2.6,0,'right');}
   // ASP-17ML fixed cross and the gyro / radar lead pipper
   const bs=hb(0,-1.2);if(bs&&pki){// PKI collimator sight: a ring with a centre dot and four ticks, fixed on the aircraft axis
     circ(bs.x,bs.y,k*4.4);circ(bs.x,bs.y,k*1.3);hx.beginPath();hx.arc(bs.x,bs.y,2.2,0,7);hx.fill();[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>line(bs.x+a*k*4.4,bs.y+b*k*4.4,bs.x+a*k*6,bs.y+b*k*6));}
@@ -2094,7 +2097,7 @@ function drawFlogHud(P,fs,lh){const m=mw(),now=performance.now()/1000,k=KPX*D2R,
   if(w!=='GUN'&&wd&&!scan){const Tg=wd.seek==='IR'?irTarget(w):null;if(Tg){const sp=proj(Tg.pos);if(sp){circ(sp.x,sp.y,12);line(sp.x-18,sp.y,sp.x-12,sp.y);line(sp.x+12,sp.y,sp.x+18,sp.y);}
       if(!L){const ls=Tg.pos.clone().sub(P.pos).normalize(),d=dlzGet(w,Tg),r=Tg.pos.distanceTo(P.pos);if(r>d.rmin&&r<d.rmax&&(r<d.rne||blink))T('PREP',0,-10.4,'center');}}}
   if(w!=='GUN'&&wd){T(`${SN[w]} ${P.count(w)}${game.arm?'':' OFF'}`,-AZ,E1+1.2);
-    if(wd.seek!=='IR'&&!L&&!scan&&radar.mode!=='ACM')T('NO LOCK',0,-9,'center');}
+    if(wd.seek!=='IR'&&!L&&!scan&&!nr&&radar.mode!=='ACM')T('NO LOCK',0,-9,'center');}
   // SOS-3 angle-of-attack warning
   if(P.alpha>(P.acx||P.ac).aoaLim*D2R*.95&&blink)T('α',0,1.6,'center');
   migWarn(P,agl);}
@@ -2388,7 +2391,7 @@ function mfdClick(id,x,y){if(id==='sms'&&isEagle()){const n=hornOsbAt(x,y);if(n)
   if(id==='fcr'&&x>46&&x<314&&y>44&&y<306){radar.cur.az=((x-46)/268*120-60)*D2R;radar.cur.r=(306-y)/262;radar.designate();return;}
   if(id==='sms'){const rows=player.missileTypes().concat(agTypes(player),['GUN']),i=Math.round((y-212)/21);if(i>=0&&i<rows.length){game.wsel=rows[i];sfx.click();}}}
 function osbAct(a){switch(a){
-  case'mode':if(isMig()){if(radar.mode==='RWS')radar.bore();else radar.drop();}else if(radar.mode==='RWS')radar.setTWS(true);else if(radar.mode==='TWS')radar.bore();else{radar.drop();radar.mode='RWS';radar.bug=null;}break;case'sensor':radar.toggleSensor();break;case'az':radar.ai=(radar.ai+1)%3;break;case'bars':radar.bi=(radar.bi+1)%3;break;
+  case'mode':if(isMig()){if(radar.mode==='RWS')radar.bore();else radar.drop();}else if(radar.mode==='RWS'){if(player.ac.pulse)radar.bore();else radar.setTWS(true);}/* pulse sets have no TWS: RWS goes straight to the ACM modes */else if(radar.mode==='TWS')radar.bore();else if(radar.mode==='ACM'&&player.ac.pulse&&radar.acmList().indexOf(radar.acm)<radar.acmList().length-1)radar.bore();else{radar.drop();radar.mode='RWS';radar.bug=null;}break;case'sensor':radar.toggleSensor();break;case'az':radar.ai=(radar.ai+1)%3;break;case'bars':radar.bi=(radar.bi+1)%3;break;
   case'rup':radar.ri=Math.min(radar.ranges.length-1,radar.ri+1);break;case'rdn':radar.ri=Math.max(0,radar.ri-1);break;case'wpn':cycleW(0);break;case'arm':setArm(game.armPos===0?1:0);break;case'prf':radar.prf={AUTO:'A',A:'B',B:'AUTO'}[radar.prf];break;case'jett':jettison();break;}}
 /* ============ RWR model: every jet carries its own warner ============
    Real receivers differ in how far they hear a radar (a one-way path, so a multiple of the emitter's own detection range), how well they
