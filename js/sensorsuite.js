@@ -148,7 +148,7 @@ function sense(P,m,fit,now){
    still not break), the chance of a break when the dwell completes falls with generation, haze and a laser that is aimed through weather, and a
    failed dwell is tried once more. A missile in the last second cannot be stopped, a second missile needs a second turret, and it does nothing
    against radar-guided rounds. */
-const PK_GEN={1:.92,2:.78,3:.2},LAMP_GEN={1:.8,2:.2,3:0}   // v320: laser jam codes beat reticle seekers; staring-array seekers rarely lose the target to a few-watt DIRCM (open literature: 100 W+ to damage the array); a lamp jammer only works on simple heads,DW_GEN={1:1.5,2:2.5,3:5};
+const PK_GEN={1:.92,2:.78,3:.2},LAMP_GEN={1:.8,2:.2,3:0},DW_GEN={1:1.5,2:2.5,3:5};   // v320: laser jam codes beat reticle seekers; staring-array seekers rarely lose the target to a few-watt DIRCM (open literature: 100 W+ to damage the array); a lamp jammer only works on simple heads
 function dircmTick(P,fit,list,dt,now){const dc=fit.dircm;if(!dc||!M.dircm){M.dir.state='OFF';return;}
   const T=dc.turrets;if(!dc._st)dc._st=T.map(c=>({tgt:null,az:c[0][0]*D,el:c[0][1]*D,state:'RDY',t:0}));
   const taken=new Set();
@@ -166,11 +166,13 @@ function dircmTick(P,fit,list,dt,now){const dc=fit.dircm;if(!dc||!M.dircm){M.dir
     if(u.state==='SLEW'){if(u.t>=u.slew){u.state='ACQ';u.t=0;}return;}
     if(u.state==='ACQ'){if(u.t>=dc.acq){u.state='LASE';u.t=0;}return;}
     // lasing
-    if(w.d/Math.max(m.vel.length(),1)<1){u.state='LATE';return;}
+    // the code-jam decision needs about a second to take effect, but the laser keeps firing to the end, so an imaging head stays dazzled all the way in
+    const dazzle=()=>{if(j.g===3&&dc.kind!=='lamp'){const R0=dc.R*.25,sat=cl(Math.pow(R0/Math.max(w.d,R0*.5),2)*(.35+.65*Math.min(1,j.got/j.need))*(1-.5*(P.ab||0)),0,1);m._dzT=now+.3;m._dzK=sat;m._dzSrc=P;if(sat>.8&&m.track)m.track=null;}};
+    if(w.d/Math.max(m.vel.length(),1)<1){u.state='LATE';dazzle();return;}
     j.got+=dt*wx('IR',null);
     // v320: an imaging (staring-array) head is not jammed by a modulation code. The laser dazzles the array: the glare spot grows as the square of the missile's closing range, and it only
     // takes the track away once it covers nearly the whole field (below that the head still sees the target at the edge of the glare and homes on it). A lamp jammer does nothing to it.
-    if(j.g===3&&dc.kind!=='lamp'){const R0=dc.R*.25,sat=cl(Math.pow(R0/Math.max(w.d,R0*.5),2)*(.35+.65*j.got/j.need)*(1-.5*(P.ab||0)),0,1);m._dzT=now+.3;m._dzK=sat;m._dzSrc=P;if(sat>.8&&m.track)m.track=null;}
+    dazzle();
     if(j.got>=j.need){j.tries++;const pk=dc.pk*PK_GEN[j.g]/ .92*(1-.15*(j.tries-1))*(dc.kind==='lamp'?LAMP_GEN[j.g]:1)*(1-.35*(P.ab||0));   // afterburner raises the aircraft's own signature, so the jam-to-signal ratio falls
       if(Math.random()<pk){m.track=null;m.target=null;m.maddog=true;m.active=false;j.done=true;u.state='JAM';M.dir.n++;try{flash('DIRCM · SEEKER DEFEATED',1500);}catch(e){}}
       else if(j.tries>=2){j.done=true;u.state='FAIL';try{flash('DIRCM · NO EFFECT',1200);}catch(e){}}
