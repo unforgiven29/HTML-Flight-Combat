@@ -233,7 +233,7 @@ M.tick=function(dt){const P=player;M.warned.length=0;if(!P||!P.alive||!M.on)retu
   }catch(e){}
   return r;};}
 {const _h=drawHUD;drawHUD=function(){_h.apply(this,arguments);try{const P=player;if(!P||!M.warned.length)return;const cv=document.getElementById('hud');if(!cv)return;const c=cv.getContext('2d');
-  if(performance.now()%400>250)return;c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
+  c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
   const w=M.warned[0],qi=P.q.clone().invert(),r=w.m.pos.clone().sub(P.pos).applyQuaternion(qi),clk=Math.round(((Math.atan2(r.x,-r.z)*180/Math.PI+360)%360)/30)||12;
   c.font='700 16px "B612 Mono",monospace';c.fillText(clk+' O\'CLOCK',cv.width/2,cv.height*.16+22);
   const st=M.dir.state;if(M.fit&&M.fit.dircm&&st!=='OFF'&&st!=='RDY'){c.fillStyle='#ffd24a';c.fillText('DIRCM '+st,cv.width/2,cv.height*.16+42);}
@@ -302,3 +302,7 @@ console.info('[sensorsuite] v309 MAWS / DAS / EOTS / side arrays / DIRCM');
   SNS.tms=function(){if(this.slaved)this.slvBrk=this.slaved;return _tms();};
   SNS.bore=function(){this.slvBrk=tgtOf();return _bore();};
 })();
+
+/* ACM modes (boresight, vertical, 30x20, wide, helmet) are not gimbal-stabilised: the scan volume is fixed in the airframe's axes and rolls and pitches with it.
+   The pilot's stabilisation setting returns in every other mode. */
+{const U=radar.update;radar.update=function(){const g=this.gl;if(g.stab0==null)g.stab0=g.stab;g.stab=this.mode==='ACM'?0:g.stab0;return U.apply(this,arguments);};}

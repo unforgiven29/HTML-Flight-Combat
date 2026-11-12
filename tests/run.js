@@ -245,7 +245,7 @@ test('maws_mirage: SAMIR warns (it ran inside a draw hook the Mirage replaces), 
   ok('warns on an IR missile from behind',a.w.length>0&&a.n>0,a);ok('no warning at 30 km',b.w.length===0,b);});
 test('maws_f35: DAS covers all round; built-in EOTS counts as a targeting pod','F-35A',async p=>{
   const a=await missile(p,'R-73',[3000,0,3000]);const e=await p.evaluate(()=>({pod:SNS.hasPod(player),kind:SNS.podKind(player),irg:IRG.az}));
-  ok('DAS sees a missile from the rear quarter',a.w.length>0,a);ok('EOTS is a pod, no store needed',e.pod&&e.kind==='EOTS',e);ok('IRST limit is 180 deg',e.irg===180,e.irg);});
+  ok('DAS sees a missile from the rear quarter',a.w.length>0,a);ok('MAWS missile reaches the RWR as a missile contact',a.n>0,a);ok('EOTS is a pod, no store needed',e.pod&&e.kind==='EOTS',e);ok('IRST limit is 180 deg',e.irg===180,e.irg);});
 test('su57: cheek arrays find an abeam target; rear is blind; DIRCM defeats IR seekers','Su-57',async p=>{
   const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);radar.mode='RWS';radar.ai=2;tgt.pos.set(30000,6000,0);tgt.vel.set(0,0,0);tgt.q.set(0,1,0,0);
     run(30*12,()=>{MSS.tick(1/30);});const side=radar.tracks.has(tgt);radar.tracks.clear();tgt.pos.set(0,6000,30000);run(30*12,()=>{MSS.tick(1/30);});const rear=radar.tracks.has(tgt);
@@ -308,6 +308,10 @@ test('tgp_slave: pod / EOTS follows the radar target in A-A, a manual slew break
     game.wsel='AIM-120C';radar.mode='RWS';run(30*8);radar.bug=tgt;radar.stt&&radar.stt(tgt);SNS.tick(.05);const d1=SNS.spi.distanceTo(tgt.pos),sl=!!SNS.slaved;
     SNS.slew(1,0,.2);SNS.tick(.05);const brk=!SNS.slaved;return{d1:Math.round(d1),sl,brk};});
   ok('pod aimed at the radar target and marked slaved',r.sl&&r.d1<50,r);ok('manual slew breaks the slave',r.brk);});
+
+test('acm_unstab: the radar gimbal is not stabilised in ACM, and is again outside ACM','F-16C',async p=>{
+  const r=await p.evaluate(()=>{radar.setACM('30x20');run(3);const a=radar.gl.stab;radar.mode='RWS';run(3);const b=radar.gl.stab;return{a,b};});
+  ok('stab off in ACM',r.a===0,r);ok('stab back on in RWS',r.b>0,r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}

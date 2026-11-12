@@ -89,11 +89,11 @@ nctrTick=function(dt){const P=player;
     else{j._nctrId=r.id;flash('NCTR · '+r.id,1600);}
     j._nctrT=now;NCTR.p=1;NCTR.why='';sfx.click();}};
 
-// HUD read-out for the jets that have no NCTR page of their own
-{const _h=drawHUD;drawHUD=function(){_h.apply(this,arguments);try{const P=player;if(!X.on||!P||!P.alive||isH()||!FIT.has(P.type)||!NCTR.on)return;const cv=document.getElementById('hud');if(!cv)return;
-  const j=NCTR.j,c=cv.getContext('2d');if(!j)return;c.save();c.setTransform(1,0,0,1,0,0);c.font='700 15px "B612 Mono",monospace';c.textAlign='left';
-  const x=cv.width*.72,y=cv.height*.22;c.fillStyle=j._nctrId?'#e8ffd8':NCTR.why?'#ffd24a':'#8dffb4';
-  const l1=j._nctrId?'NCTR  '+j._nctrId:NCTR.why?'NCTR  '+NCTR.why:'NCTR  '+Math.round(NCTR.p*100)+'%';c.fillText(l1,x,y);
-  c.font='700 12px "B612 Mono",monospace';if(j._nctrCls)c.fillText(j._nctrCls,x,y+16);if(j._nctrEng)c.fillText(j._nctrEng,x,y+30);
-  c.restore();}catch(e){}};}
+// NCTR read-out on the radar MFD page (no text on the HUD): bottom-left block of the FCR page, for the jets that have no NCTR page of their own
+{const _f=drawFCR;drawFCR=function(){const r=_f.apply(this,arguments);try{const P=player;if(!X.on||!P||!P.alive||isH()||!FIT.has(P.type)||!NCTR.on)return r;const j=NCTR.j;if(!j)return r;
+  const c=fcr,S=360;c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.textAlign='left';c.textBaseline='alphabetic';const x=8,y=S-58;c.fillStyle='rgba(0,0,0,.55)';c.fillRect(x-4,y-14,150,64);
+  c.font='700 12px "B612 Mono",monospace';c.fillStyle=j._nctrId?'#e8ffd8':NCTR.why?'#ffd24a':'#8dffb4';
+  c.fillText(j._nctrId?'NCTR  '+j._nctrId:NCTR.why?'NCTR  '+NCTR.why:'NCTR  '+Math.round(NCTR.p*100)+'%',x,y);
+  c.font='700 10px "B612 Mono",monospace';if(j._nctrCls)c.fillText(j._nctrCls,x,y+16);if(j._nctrEng)c.fillText(j._nctrEng,x,y+30);
+  c.restore();}catch(e){}return r;};}
 })();
