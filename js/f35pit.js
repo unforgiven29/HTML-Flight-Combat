@@ -156,7 +156,7 @@ function visor(){const e=ckCam.matrixWorld.elements;_r.set(e[0],e[1],e[2]);_u.se
 
 /* ---------------- PCD pages ---------------- */
 const G='#47f58a',GD='rgba(71,245,138,.35)',CY='#4ad8ff',MN='#27d6dc',WH='#e9efe9',AM='#ffc23a',RD='#ff4a3a',MG='#c45cff',BG='#010504';
-const PAGES=['EFI','TSD','VSD','RCS','FCR','SMS','FCS','ENG','FUEL','DAS','EOTS','GEAR','EW','MENU'];
+const PAGES=['EFI','TSD','VSD','RCS','FCR','SAR','SMS','FCS','ENG','FUEL','DAS','EOTS','GEAR','EW','MENU'];
 const PI={};PAGES.forEach((n,i)=>PI[n]=i);
 const WIN=[{x:14,w:488,page:PI.EFI},{x:512,w:484,page:PI.SMS},{x:1004,w:484,page:PI.ENG},{x:1498,w:488,page:PI.TSD}];
 const WY=84,WH_=PH-84-74;
@@ -208,6 +208,7 @@ function pgTSD(c,w,h,P){hdr(c,w,'TSD1','NAV',1);NS(c,'VIEW',10,74,20,G);NS(c,'HS
   // range arrows + EMC + OSB column
   c.fillStyle=G;c.beginPath();c.moveTo(24,196);c.lineTo(46,232);c.lineTo(2,232);c.fill();NS(c,String(TS.rngs[TS.rng]),30,262,22,G,'center');c.beginPath();c.moveTo(24,310);c.lineTo(46,276);c.lineTo(2,276);c.closePath();c.save();c.translate(0,30);c.beginPath();c.moveTo(2,276);c.lineTo(46,276);c.lineTo(24,310);c.fill();c.restore();
   NS(c,'EMC',10,h*.56,18,G);NS(c,'EMC4',10,h*.56+22,18,G);NS(c,'BLOB',10,h*.72,18,G);
+  {const bj=radar.bug||radar.lock,t=bj&&radar.tracks.get(bj);if(bj&&t&&t.p){const b=body(P,t.p),az=Math.round(Math.atan2(b.x,-b.z)/D),d=Math.hypot(b.x,b.z);c.strokeStyle=G;c.lineWidth=2;c.strokeRect(w-176,h-98,166,84);NS(c,'A-A NTS',w-168,h-84,16,G);NS(c,'BRG '+String(((az+Math.round(P.hdg))%360+360)%360).padStart(3,'0')+'/'+nm(d).toFixed(1),w-168,h-62,15,WH);NS(c,'ALT '+Math.round(ft(t.p.y)),w-168,h-42,15,WH);NS(c,'HDG '+String(Math.round(((t.hdg!=null?t.hdg:bj.hdg)||0)%360)).padStart(3,'0'),w-168,h-22,15,WH);}}
   ['NORM','DEP','MK','ASGN>','DCLT>'].forEach((t,i)=>NS(c,t,w-8,h*.18+i*h*.12,18,G,'right'));NS(c,(radar.sensor==='IRST'?'IR ':'')+radar.mode,w*.5,20,20,G,'center');}
 /* ---- VSD: side view, range ahead vs altitude */
 function pgVSD(c,w,h,P){hdr(c,w,'TSD1','NAV',1);NS(c,'VIEW',10,74,20,G);NS(c,'VSD',10,98,20,G);const L=70,B=h*.88,T=h*.22,rng=TS.rngs[TS.rng]*1852,mx=Math.max(20000,Math.ceil(ft(P.pos.y)/10000+1)*10000),ay=a=>B-(B-T)*Math.min(1,a/mx);
@@ -264,8 +265,17 @@ function pgEW(c,w,h,P){hdr(c,w,'EW','NAV',0);const cx=w/2,cy=h*.5,R=Math.min(w,h
   for(const m of RW.msl){const a=m.a||0;const x=cx+Math.sin(a)*R*.55,y=cy-Math.cos(a)*R*.55;c.strokeStyle=RD;c.lineWidth=3;c.beginPath();c.moveTo(x,y-20);c.lineTo(x+16,y+14);c.lineTo(x-16,y+14);c.closePath();c.stroke();NS(c,'M',x,y+2,18,RD,'center');}}
 function pgMENU(c,w,h,P){const W=WIN.find(x=>x.menu);NS(c,'MENU',10,20,20,MN);const cols=4,rows=Math.ceil((PAGES.length)/cols),cw=(w-20)/cols,ch=Math.min(100,(h-70)/6);c.strokeStyle=MN;c.lineWidth=2;
   for(let r=0;r<7;r++)for(let q=0;q<cols;q++){c.strokeRect(10+q*cw,50+r*ch,cw,ch);}PAGES.forEach((n,i)=>{if(n==='MENU')return;const q=i%cols,r=Math.floor(i/cols);NS(c,n,10+q*cw+cw/2,50+r*ch+ch/2,24,MN,'center');});NS(c,'TAP A PAGE',w/2,h-20,18,GD,'center');}
+/* ---- SAR: synthetic-aperture ground map ahead (heading up). Built from the game's terrain: grey by slope against a low sun, water dark. Refreshes once a second. */
+const _sar=mkCv(112,112);let _sarT=-9,_sarR=0;
+function pgSAR(c,w,h,P){hdr(c,w,'SAR1','NAV',1);const rng=TS.rngs[TS.rng]*1852*.5,now=performance.now()/1000;
+  if(now-_sarT>1||_sarR!==rng){_sarT=now;_sarR=rng;const g=_sar.getContext('2d'),N=112,im=g.createImageData(N,N),hd=P.hdg*D,sx=Math.sin(hd),sz=-Math.cos(hd),rx=Math.cos(hd),rz=Math.sin(hd),st=rng/N,hh=(x,z)=>groundAt(x,z);
+    for(let j=0;j<N;j++)for(let i=0;i<N;i++){const f=(N-1-j)*st,l=(i-N/2)*st,X=P.pos.x+sx*f+rx*l,Z=P.pos.z+sz*f+rz*l,y=hh(X,Z),dx=hh(X+st,Z)-hh(X-st,Z),dz=hh(X,Z+st)-hh(X,Z-st),sh=Math.max(0,Math.min(1,.5+(dx*.6-dz*.4)/(st*1.6))),v=y<=.5?14:Math.round(40+sh*150+Math.min(40,y/30)),o=(j*N+i)*4;im.data[o]=v;im.data[o+1]=v;im.data[o+2]=v;im.data[o+3]=255;}g.putImageData(im,0,0);}
+  const s=Math.min(w-20,h-130),x0=(w-s)/2,y0=60;c.imageSmoothingEnabled=true;c.drawImage(_sar,x0,y0,s,s);c.strokeStyle=G;c.lineWidth=2;c.strokeRect(x0,y0,s,s);
+  for(let i=1;i<4;i++){c.strokeStyle='rgba(71,245,138,.55)';c.beginPath();c.arc(x0+s/2,y0+s,s*i/4,Math.PI*1.2,Math.PI*1.8);c.stroke();NS(c,String(Math.round(rng/1852*i/4)),x0+s/2+4,y0+s-s*i/4+16,16,G);}
+  c.strokeStyle=WH;c.lineWidth=2;c.beginPath();c.moveTo(x0+s/2,y0+s);c.lineTo(x0+s/2,y0);c.stroke();jet(c,x0+s/2,y0+s-14,12,WH);
+  NS(c,'MODE SAR',14,h*.9,19,G);NS(c,'RNG '+Math.round(rng/1852)+' NM',14,h*.95,18,G);NS(c,'HDG '+String(Math.round((P.hdg%360+360)%360)).padStart(3,'0'),w-14,h*.9,19,G,'right');NS(c,'ALT '+Math.round(ft(P.pos.y)),w-14,h*.95,18,G,'right');}
 const live=(cv,fb)=>(c,w,h,P)=>{try{if(cv()&&cv().width){hdr(c,w,'FCR','NAV',1);const k=Math.min(w/cv().width,(h-60)/cv().height),dw=cv().width*k,dh=cv().height*k;c.drawImage(cv(),(w-dw)/2,56,dw,dh);return;}}catch(e){}fb(c,w,h,P);};
-const DRAW={EFI:pgEFI,TSD:pgTSD,VSD:pgVSD,RCS:pgRCS,FCR:live(()=>fcrC,pgTSD),SMS:pgSMS,FCS:pgFCS,ENG:pgENG,FUEL:pgFUEL,DAS:pgDAS,EOTS:pgEOTS,GEAR:pgGEAR,EW:pgEW,MENU:pgMENU};
+const DRAW={EFI:pgEFI,TSD:pgTSD,VSD:pgVSD,RCS:pgRCS,FCR:live(()=>fcrC,pgTSD),SAR:pgSAR,SMS:pgSMS,FCS:pgFCS,ENG:pgENG,FUEL:pgFUEL,DAS:pgDAS,EOTS:pgEOTS,GEAR:pgGEAR,EW:pgEW,MENU:pgMENU};
 function icaws(P){const m=[];if(!P)return m;if(P.hp<35)m.push(['DAMAGE',RD]);if(P.totalFuel<(P.ac.fuel||8000)*.15)m.push(['FUEL LOW',AM]);if(window.MSS&&MSS.warned.length)m.push(['MISSILE',RD]);if(RW.list.some(t=>t.mode==='L'))m.push(['LAUNCH',RD]);
   if(!sys.v.gear&&P.cas<95&&ft(P.pos.y-groundAt(P.pos.x,P.pos.z))<1500)m.push(['GEAR',AM]);if(P.gAllow&&P.nz>P.gAllow*.95)m.push(['OVERG',AM]);return m;}
 function drawPCD(){const P=PL(),c=pcv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.fillStyle=BG;c.fillRect(0,0,PW,PH);if(!P||!P.alive)return;
