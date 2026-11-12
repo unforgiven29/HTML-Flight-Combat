@@ -8,11 +8,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT=dist; rm -rf "$OUT"; mkdir -p "$OUT"
 cp -r index.html .nojekyll README.md LICENSE css assets vendor "$OUT"/ 2>/dev/null || true
-mkdir -p "$OUT/js/planes"
 T=$(mktemp -d); (cd "$T" && npm i --silent --no-audit --no-fund terser@5 >/dev/null)
 TERSER="$T/node_modules/.bin/terser"
 KEEP='js/planes/f18.js js/planes/su27.js js/planes/mig25.js'
-for f in js/*.js js/planes/*.js; do
+for f in $(find js -name "*.js" | sort); do
+  mkdir -p "$OUT/$(dirname "$f")"
   if [[ " $KEEP " == *" $f "* ]]; then cp "$f" "$OUT/$f"; continue; fi
   "$TERSER" "$f" --compress passes=1,keep_fnames=true,keep_fargs=true,keep_classnames=true --keep-fnames --comments false -o "$OUT/$f"
 done

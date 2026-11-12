@@ -1,7 +1,7 @@
 // Static audit of the sensor registry: which variables are live-written by the sim, which change the sim, which are stored-only.
 // Usage: node scripts/sensor-coverage.js [--md]   (writes docs/sensor_coverage.md with --md)
 const fs=require('fs'),path=require('path');global.window=global;
-const root=path.join(__dirname,'..');require(path.join(root,'js/sensorreg.js'));
+const root=path.join(__dirname,'..');require(path.join(root,'js/sensors/sensorreg.js'));
 const names=new Set();for(const k in SENSOR_REG.sections){const s=SENSOR_REG.sections[k];for(const p of(s.params||s.vars||[]))names.add(p.name||p[0]);}
 const files=fs.readdirSync(path.join(root,'js')).filter(f=>/^sensor(?!reg).*\.js$/.test(f));
 const live=new Set(),eff=new Set(),bound=new Set();
@@ -9,7 +9,7 @@ for(const f of files){const src=fs.readFileSync(path.join(root,'js',f),'utf8');
   for(const m of src.matchAll(/\b(?:r|F\.reg|R)\.([A-Za-z0-9_]+)\s*=(?!=)/g))if(names.has(m[1]))live.add(m[1]);
   for(const m of src.matchAll(/\bQ\.([A-Za-z0-9_]+)/g))if(names.has(m[1]))eff.add(m[1]);
   for(const m of src.matchAll(/\['([A-Za-z0-9_]+)'\s*,\s*['"][^'"]+['"]\s*(?:,|\])/g))if(names.has(m[1]))bound.add(m[1]);}
-const fuse=fs.readFileSync(path.join(root,'js/sensorfuse.js'),'utf8');
+const fuse=fs.readFileSync(path.join(root,'js/sensors/sensorfuse.js'),'utf8');
 for(const m of fuse.matchAll(/\b(?:r|reg)\.([A-Za-z0-9_]+)/g))if(names.has(m[1]))bound.add(m[1]);
 const wired=new Set([...live,...eff,...bound]),stored=[...names].filter(n=>!wired.has(n));
 const out={total:names.size,liveWritten:live.size,changesSim:eff.size,twoWayOrRead:bound.size,anyWired:wired.size,storedOnly:stored.length};

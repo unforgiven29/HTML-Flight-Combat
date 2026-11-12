@@ -6,21 +6,24 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
 ## Layout
 ```
-index.html               page shell + UI markup
+index.html               page shell + UI markup; the <script> list is grouped and commented by category
 css/game.css             all game styles
-js/game.js               the sim (flight model, avionics, AI, campaign, MP) and the shared cockpit scene
-js/planes/registry.js    plane registry: per-jet files register here, game.js pulls their data in
-js/planes/<jet>.js       one file per original jet family: f16, f15, f18, f14, f4, mig29, su27, mig21, mig23, mig25
-                         (flight data, loadouts, countermeasures, model builder, variants, jet-specific cockpit/MFD code)
-js/heli.js               rotorcraft flight model (Jet.step hook) + the Ka-50 airframe, model and registration
-js/ka50pit.js           Ka-50 cockpit (left / right forward panels, controls, HUD combiner)
-js/campmp.js             campaign debrief/theatre panel/save export, multiplayer ping/chat/invite/rounds
-js/strategic.js          AI heavy bombers, strategic alert, nuclear escalation event
-js/assets.js             loads custom models/audio and hooks them into the game
+js/core/                 game.js (the sim: flight model, avionics, AI, campaign, MP, cockpit scene), IFF, binds, assets, start-up, realism, crash guard
+js/planes/               plane registry + one file per original jet family (f16, f15, f18, f14, f4, mig29, su27, mig21, mig23, mig25)
+js/hangar/               Cold War / modern / extra jets: data, models, stealth
+js/cockpits/             dedicated 3D cockpits and HUD combiners
+js/aircraft/             jet-specific systems (radars, scopes, warners, avionics)
+js/flight/               V/STOL, engines and stall, structure
+js/rotorcraft/           helicopter flight model, systems, Apache, Vikhr, strike mission
+js/weapons/              missile / gun data, stores and pods, AIM-9X Block II + LOAL, seeker cameras, anti-ship
+js/rwr/                  warner registry and models
+js/sensors/              sensor registry, radar, IRST, signal processing, jamming, NCTR, pulse-radar set control
+js/campaign/             campaign / multiplayer, strategic air war, dynamic campaign
 assets/assets.config.js  ← edit this to add your own models and sounds
 assets/models/           .glb / .gltf files
 assets/audio/            .ogg / .mp3 / .wav files
 vendor/                  three.js r128, GLTFLoader, PeerJS
+docs/ARCHITECTURE.md     what each folder is, load-order rules, patterns
 ```
 
 ## Custom 3D models

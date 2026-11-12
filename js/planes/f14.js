@@ -89,7 +89,7 @@ PLANES.add('f14',{
     clt:[[-20,-.95],[-10,-.56],[0,.04],[5,.4],[10,.76],[15,1.08],[20,1.32],[25,1.46],[30,1.5],[35,1.45],[40,1.36],[50,1.15],[60,.95],[90,0]],
     abM:[[0,1],[.5,1.195],[1,1.36],[1.5,1.495],[2,1.6347],[2.5,1.7028],[3,1.724]],cdm:[[0,0],[.8,0],[.9,.006],[1,.026],[1.1,.034],[1.3,.032],[2,.028]],dW:22470,tkG:[6,6.5],dep:{a:31,rock:.9,spin:3.0},
     ff:[.35,2.1,14.5],gLim:7.5,aoaLim:30,roll:3.4,fbw:false,noLimiter:true,rcs:14,irs:1.35,ols:{tail:19800,head:9240,lrf:0,spin:1},cockpit:'viper',pit:'tomcat',eye:[6.1,1.0],units:'imp',
-    radar:{name:'AWG-9',R0:62*NM,ranges:[25,50,100,200],unit:NM,ul:'NM',ecc:.45,awg:true,beam:2.3*D2R},irst:true,rio:true,
+    radar:{name:'AWG-9',R0:62*NM,ranges:[5,10,20,50,100,200],unit:NM,ul:'NM',ecc:.45,awg:true,beam:2.3*D2R},irst:true,rio:true,
     gun:{name:'M61A1',rate:100,v:1030,dmg:9,ammo:675,spread:.0024},rel:['1A','8A','4','5','3','6','1B','8B'],keepJ:['1B','8B'],rwr:'14',spo:0,tankName:'267 gal tank',
     swing:{a:[20,45,68],rate:9,auto:true,S:[54.5,52.5,49.5],CLa:[5.3,4.4,3.1],cd0:[.0235,.0215,.0195],k:[.075,.11,.2],aoaLim:[30,30,26],gLim:[6.5,7.5,7.5],roll:[3.6,3.4,2.4],
       vne:[800,1300,1480],dep:[{a:30,rock:1.0,spin:3.2},{a:31,rock:.9,spin:3.0},{a:27,rock:.9,spin:2.6}],

@@ -1,4 +1,4 @@
-// docs/rwr_registry.txt -> js/rwrreg.js  (node scripts/gen-rwr-registry.js)
+// docs/rwr_registry.txt -> js/rwr/rwrreg.js  (node scripts/gen-rwr-registry.js)
 const fs=require('fs'),path=require('path'),root=path.join(__dirname,'..');
 const L=fs.readFileSync(path.join(root,'docs/rwr_registry.txt'),'utf8').split('\n');const S=[];let cur=null;
 for(const l of L){let m=l.match(/^\[(\d+)\.\s*(.+)\]\s*$/);if(m){cur={id:+m[1],title:m[2],params:[]};S.push(cur);continue;}
@@ -15,4 +15,4 @@ return{sections,names:()=>[...idx.keys()],has:n=>idx.has(n),typeOf:n=>idx.has(n)
   validate(n,v){const t=this.typeOf(n);if(!t)return false;if(t==='number')return typeof v==='number'&&isFinite(v);if(t==='int')return Number.isInteger(v);if(t==='boolean')return typeof v==='boolean';if(t==='string')return typeof v==='string';
     if(t==='Enum'){const o=enumOptions(n);return typeof v==='string'&&(!o||o.includes(v));}return Array.isArray(v);}};})();
 `;
-fs.writeFileSync(path.join(root,'js/rwrreg.js'),out);console.log(S.length,'sections',n,'params');
+fs.writeFileSync(path.join(root,'js/rwr/rwrreg.js'),out);console.log(S.length,'sections',n,'params');

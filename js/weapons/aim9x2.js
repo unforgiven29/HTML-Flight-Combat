@@ -7,7 +7,9 @@ const D=D2R;
 M.aam('AIM-9X-II','AIM-9X',{mass:86,acc:175,irR:18000,aiR:16000,trk:1.8,ccm:.9,maxG:60},null,.127,'9X2','Sidewinder · AIM-9X Block II · imaging IR, LOAL');
 // which rounds can be launched before the seeker has a lock (search cone in radians around the velocity vector)
 const LOAL={'AIM-9X-II':55,'AIM-9X':60,'IRIS-T':60,'ASRAAM':50,'Python 5':55,'AAM-5':40,'R-74M2':40,'MICA IR':40,'PL-10':45};
-for(const k of Object.keys(LOAL))if(MSL[k]){MSL[k].loal=true;MSL[k].search=LOAL[k]*D;}
+// blind-shot acquisition: the instantaneous field of view of the head, NOT its off-boresight gimbal. A round fired with no lock only picks up a target that sits almost dead ahead of it (degrees off the nose).
+const ACQ={'AIM-9X-II':3,'AIM-9X':3,'IRIS-T':3,'ASRAAM':3,'Python 5':3,'AAM-5':3,'MICA IR':3,'PL-10':3.5,'R-74M2':4};
+for(const k of Object.keys(LOAL))if(MSL[k]){MSL[k].loal=true;MSL[k].search=LOAL[k]*D;MSL[k].acq=(ACQ[k]||4)*D;}
 // the Block II goes wherever the Block I hangs
 // modern active-radar rounds with a datalink: fire with no lock and they are flown at a track / search after launch
 const DLK=/^(AIM-120|Meteor|PL-1[25]|R-77|MICA[ -]?EM|Derby|I-Derby|Astra|AIM-260|SD-10|AAM-4|Sky ?Sword|TK-?[12])/;
