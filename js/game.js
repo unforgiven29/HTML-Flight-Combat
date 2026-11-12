@@ -511,6 +511,9 @@ function canopy(grp,c,sx,sy,sz,y,z,frame){const can=new THREE.Mesh(new THREE.Sph
 // thrust N (mil / AB, all engines, sea level), spool-up s, fuel flow kg/s (idle / mil / AB), limits, roll rate rad/s,
 // radar reference range against a 5 m² target, RCS m², IR signature scale
 const AC={};
+// v315: a shot-down aircraft stays a radar contact while it falls, and an IR source while it falls and while it burns on the ground
+function SEEN(j){if(j.alive)return true;if(j.gone||j.ejected&&j===player)return false;return j.pos.y-groundAt(j.pos.x,j.pos.z)>15;}
+function SEENIR(j){if(SEEN(j))return true;if(j.gone)return false;return (performance.now()-(j.deadAt||0))<60000;}
 PLANES.apply('AC',AC);
 // ===== v203: installed-thrust deck. Idle / military / maximum thrust against Mach and altitude after the F-16 simulator data in NASA TP-1538
 // (Nguyen et al., 1979; the F100 deck reproduced in Stevens & Lewis), normalised to sea-level static so each jet's own ratings scale it.
@@ -774,7 +777,7 @@ class Jet{
     const wg=this.mesh.userData.wings;if(wg){const wb=this.mesh.userData.wingBase||16;if(this.remote)this.sweep=this.ac.swing&&this.ac.swing.auto?f14Prog(this.mach):this.mach>1.05?72:this.vel.length()<140?16:45;for(const w of wg)w.g.rotation.y=-w.sd*((this.sweep||45)-wb)*D2R;}
     const ab=this.mesh.userData.ab;ab.visible=this.alive&&this.ab>.05;ab.scale.setScalar(.5+this.ab*.7+Math.random()*.15);}
   damage(d,src){if(!this.alive)return;this.hp-=d;if(src)this.lastHitBy=src;if(this.hp<=0)this.kill('SHOT DOWN',src);}
-  kill(why,src){if(!this.alive)return;this.alive=false;this.hp=0;explode(this.pos,true);src=src||this.lastHitBy;
+  kill(why,src){if(!this.alive)return;this.deadAt=performance.now();this.alive=false;this.hp=0;explode(this.pos,true);src=src||this.lastHitBy;
     if(this===player)onPlayerDead(why,src);else if(src===player)onKill(this);else if(src&&src.ai&&src.ai.friend&&this.side===1)wingSplash(this,src);if(this.wingman)wingDown(this);}
   dispense(type){if(!this.alive||this.remote)return;
     if(type==='flare'){if(this.flares<=0)return;this.flares--;}else{if(this.chaff<=0)return;this.chaff--;}
@@ -1426,7 +1429,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   // (one tube transmitter behind ferrite phase shifters) has fewer, longer dwells and a slower revisit than an AESA (a T/R module per element).
   esaOn(){return !!this.esa&&this.sensor==='RDR';},
   esaPar(){return this.esa==='A'?{dw:.003,rv:.2,tdw:2,nl:4}:{dw:.006,rv:.4,tdw:3,nl:3};},
-  esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
+  esaCell(az,el,now,lo,hi){for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const a=this.ang(j.pos),ra=a.az,re=a.el;
       if(Math.abs(ra-az)>this.beam/2||Math.abs(re-el)>this.bmV()/2||a.off>this.gimbal()+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const dx=(ra-az)/this.beam,dy=(re-el)/this.bmV(),sn=this.snr(j,a,window.BEAM?BEAM.cell(j,a,ra-az,re-el):Math.exp(-5.55*(dx*dx+dy*dy)));if(sn>0&&Math.random()<1-Math.pow(1-pdOf(sn),this.esaPar().nl))this.hit(j,a,sn,now);}},  // a dwell is a burst of pulses: several looks integrated per beam position
@@ -1448,7 +1451,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   // the cursor, so the rest of the picture is not lost the moment the lock is taken
   esaRetain(dt,gim,now){const W=Math.min(30*D2R,gim),c=clamp(this.cur.az||0,-gim+W,gim-W),az=this.antAz,el=this.antEl;
     const keep=this.esaAz;this.esaSearch(dt*.45,c-W,c+W,gim,now,true);this.esaAz=this.antAz;this._esaBeam=this.antAz;this._esaBeamEl=this.antEl;this.antAz=az;this.antEl=el;
-    for(const [j,tk] of this.tracks)if(j!==this.lock&&(!j.alive||now-tk.t>8))this.tracks.delete(j);},
+    for(const [j,tk] of this.tracks)if(j!==this.lock&&(!SEEN(j)||now-tk.t>8))this.tracks.delete(j);},
   on(){return this.sensor==='IRST'||this.power==='ON'&&this.warm<=0;},
   // COOP (MiG-29 PU-S31 switch): the radar and the IRST work as one sensor. A target is seen if either of them sees it, the IRST fills in what the
   // Doppler notch and look-down lose, the radar gives the IRST track its range, and the tracking dwell holds on whichever return is better.
@@ -1558,7 +1561,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       else if(b.w>=b.h){this.antAz=b.az+b.w*Math.sin(t*this.rate/b.w);this.antEl=b.el+b.h*((t*.8%2)-1);}
       else{this.antEl=b.el+b.h*Math.sin(t*this.rate/b.h);this.antAz=b.az+b.w*((t*.8%2)-1);}
       let best=null,bd=1e9;
-      for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const q=this.bang(j.pos);
+      for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const q=this.bang(j.pos);
         if(q.d>Rm||Math.abs(q.az-b.az)>b.w+this.beam/2||Math.abs(q.el-b.el)>b.h+this.beam/2)continue;
         const a=this.ang(j.pos);if(a.off<gim&&this.acmDet(j,a)&&q.d<bd){bd=q.d;best=j;}}
       this.acmBest=best;if(best&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
@@ -1572,13 +1575,13 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     else if(this.antAz<lo){this.antAz=lo;this.dir=1;this.bar=(this.bar+1)%this.nb();}
     {const g=this.glim(),te=clamp(this.barEl(),-g.ed*D2R,g.eu*D2R),de=te-this.antEl;const es=(this.aesa?3000:50)*D2R*dt;this.antEl+=clamp(de,-es,es);}
     const a0=Math.min(prev,this.antAz)-this.beam/2,a1=Math.max(prev,this.antAz)+this.beam/2;
-    if(window.BEAM&&BEAM.on&&this.sensor==='RDR'&&!this.spin())BEAM.sweep(this,prev,this.antAz,now,dt,gim);else if(window.IRPHYS&&IRPHYS.on&&this.sensor==='IRST'&&!this.spin())IRPHYS.sweep(this,prev,this.antAz,now,dt,gim);else for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
+    if(window.BEAM&&BEAM.on&&this.sensor==='RDR'&&!this.spin())BEAM.sweep(this,prev,this.antAz,now,dt,gim);else if(window.IRPHYS&&IRPHYS.on&&this.sensor==='IRST'&&!this.spin())IRPHYS.sweep(this,prev,this.antAz,now,dt,gim);else for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const a=this.ang(j.pos);
       const st=this.gl.stab||this.sensor==='IRST',ra=st?a.az:a.baz,re=st?a.el:a.bel;
       const CR=this.spin()?CONE:0;// conical scan: the detector's field circles the pointing axis, so a target is only modulated while it lies inside the cone
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}}
-    for(const [j,tk] of this.tracks)if(!j.alive||now-tk.t>(tws?8:10))this.tracks.delete(j);
+    for(const [j,tk] of this.tracks)if(!SEEN(j)||now-tk.t>(tws?8:10))this.tracks.delete(j);
     if(tws&&mg){// N019 / N001 TWS: a jammer on the scope throws the set back to search, ten track files at most, the most dangerous closing track is bugged until the pilot takes over
       {const TN=(player&&player.ac.trkN)||10;if(this.tracks.size>TN){const l=[...this.tracks].sort((a,b)=>a[1].d-b[1].d);for(let i=TN;i<l.length;i++)if(l[i][0]!==this.bug)this.tracks.delete(l[i][0]);}}
       this._thT=(this._thT||0)-dt;
@@ -12285,7 +12288,7 @@ try{
 {const _co=radar.coop;radar.coop=function(){if(!this._cx&&player&&player.type==='MiG-31')return true;return _co.apply(this,arguments);};}
 // 8TK search runs whatever the radar is doing: passive bearings only (no range of its own)
 {const _u=radar.update;let acc=0;radar.update=function(dt){const r=_u.apply(this,arguments);try{if(!player||player.type!=='MiG-31'||!player.alive)return r;acc+=dt;if(acc<.25)return r;acc=0;
-  const now=performance.now()/1000;for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=this.ang(j.pos);
+  const now=performance.now()/1000;for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const a=this.ang(j.pos);
     if(Math.abs(a.baz)>IRG.az*D2R||a.bel>IRG.eu*D2R||a.bel<-IRG.ed*D2R)continue;const c=j.fwd(new V3()).dot(player.pos.clone().sub(j.pos).normalize());
     if(a.d<this.irRange(j,a,c)&&terrLOS(player.pos,j.pos)&&Math.random()<.8)M31IR.set(j,{az:a.az,el:a.el,t:now});}
   for(const [j,e] of M31IR)if(!j.alive||now-e.t>3)M31IR.delete(j);}catch(e){}return r;};}

@@ -78,7 +78,7 @@ B.cell=function(j,a,dAz,dEl){
 B.sweep=function(rd,prev,cur,now,dt,gim){
   const fr=++B.fr,A=ant(),stab=rd.gl.stab,K=cl(Math.ceil(Math.abs(cur-prev)/(A.bwA*.3)),1,10),Tn=.752*A.bwA/Math.max(rd.rate,1e-3);
   for(const j of jets){
-    if(j===player||!j.alive||IFF.hide(j))continue;
+    if(j===player||!SEEN(j)||IFF.hide(j))continue;
     const a=rd.ang(j.pos);let g=0,rec=B.dw.get(j);
     if(a.off<=gim+2*D){
       const ra=stab?a.az:a.baz,re=stab?a.el:a.bel,sc=scanOf(a),bw=A.bwA*sc.w,bwE=A.bwE*sc.w,dE=re-rd.antEl,ce=Math.cos(re);
@@ -94,7 +94,7 @@ B.sweep=function(rd,prev,cur,now,dt,gim){
   for(const [j,rec] of B.dw)if(rec.fr!==fr)B.fin(rd,j,rec,now);};
 
 B.fin=function(rd,j,rec,now){B.dw.delete(j);if(now-(rec.t||now)>.4)return;B.st.dwell++;
-  if(!j.alive||!rec.a||rec.pk<.25){if(rec.pk>=.003)B.st.slb++;return;}   // sidelobe blanking: only the main lobe declares a target
+  if(!SEEN(j)||!rec.a||rec.pk<.25){if(rec.pk>=.003)B.st.slb++;return;}   // sidelobe blanking: only the main lobe declares a target
   const snr=rec.sb*rec.pf*(rec.E/rec.Tn)*B.kcal;
   if(snr>0&&Math.random()<pdOf(snr)){B.st.det++;rd.hit(j,rec.a,snr,now);}else B.st.miss++;};
 
@@ -111,7 +111,7 @@ function groundHit(org,dir,maxR){const step=250;let pd=0,pc=org.y-groundAt(org.x
 B.scanIll=function(){B.ill.length=0;B.gnd=null;if(!player||!player.alive||radar.sensor!=='RDR'||!radar.on())return;
   const A=ant(),org=nose(new THREE.Vector3()),dir=beamDir(new THREE.Vector3());
   B.gnd=groundHit(org,dir,Math.min(radar.rngM*1.5,150000));
-  for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=radar.ang(j.pos),sc=scanOf(a),stab=radar.gl.stab,ra=stab?a.az:a.baz,re=stab?a.el:a.bel;
+  for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const a=radar.ang(j.pos),sc=scanOf(a),stab=radar.gl.stab,ra=stab?a.az:a.baz,re=stab?a.el:a.bel;
     let dA=ra-radar.antAz;dA=Math.atan2(Math.sin(dA),Math.cos(dA));const p=pat1(dA*Math.cos(re),re-radar.antEl,A.bwA*sc.w,A.bwE*sc.w,A.sll),g2=p*p*sc.g*sc.g;
     if(g2<.02)continue;const pr=propRadar(j,a),s=radar.snr(j,a,1)*g2*pr.f;
     B.ill.push({j:j,d:a.d,g2:g2,mp:pr.mp,df:pr.df,J:pr.J,psi:pr.psi,snr:s,tau:2*a.d/C,prf:Math.max(1,(player.ac.radar&&player.ac.radar.prf)||12000)});}};

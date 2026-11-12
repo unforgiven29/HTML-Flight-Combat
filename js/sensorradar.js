@@ -109,7 +109,7 @@ F.mod('s08',10,(r,c)=>{const tk=c.tk,j=c.pt;r.trackIsLocked=!!c.L;
   r.trackFileID=j.id||0;r.trackTargetEntityID=j.id||0;r.trackLastDetectionTime=tk.t;
   if(!tk._b)tk._b=c.now;r.trackAgeSeconds=c.now-tk._b;
   r.trackQuality=cl(n/8*(1-age/Math.max(r.trackCoastTimeMax,1)),0,1);
-  r.trackState=!j.alive?'Dropped':age>r.trackCoastTimeMax?'Lost':age>2*Math.max(r.scanFrameTimeSeconds,1)?'Coasting':n>=r.trackConfirmationHits?'Confirmed':n>1?'Tentative':'Candidate';
+  r.trackState=!SEEN(j)?'Dropped':age>r.trackCoastTimeMax?'Lost':age>2*Math.max(r.scanFrameTimeSeconds,1)?'Coasting':n>=r.trackConfirmationHits?'Confirmed':n>1?'Tentative':'Candidate';
   r.trackQualityGrowthRate=1/8/Math.max(r.scanFrameTimeSeconds,.5);r.trackQualityDecayRate=1/Math.max(r.trackCoastTimeMax,1);
   if(tk.p){r.trackPositionEstimate=[tk.p.x,tk.p.y,tk.p.z];r.trackAltitudeM=tk.p.y;}
   if(tk.v){r.trackVelocityEstimate=[tk.v.x,tk.v.y,tk.v.z];r.trackHeadingDeg=(Math.atan2(tk.v.x,-tk.v.z)*R+360)%360;
