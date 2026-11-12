@@ -1575,7 +1575,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       this.acmBest=best;if(best&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
     const mg=player.ac.cockpit==='fulcrum',tws=this.mode==='TWS';if(tws&&this.awg&&this.bi===2)this.bi=1;
     // AWG-9 TWS: ±20° in 4 bars or ±40° in 2 bars, about a 2 s frame
-    const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,tws?25*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
+    const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,tws?60*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
     if(mg)this.elCmd=Math.atan2(MDH[sys.mig.dh]*1000,this.sensor==='IRST'?Math.max(this.rngM*.5,4000):Math.max(this.cur.r*this.rngM,2500));{const g=this.glim();if(this.sensor==='IRST'&&!this.rotor())this.elCmd=(this.spin()?6:7.5)*D2R;/* the IRST drives its own elevation pattern; nothing the pilot does changes it */this.elCmd=clamp(this.elCmd,-(g.ed-2)*D2R,(g.eu-2)*D2R);}
     const lo=this.scanC-W,hi=this.scanC+W,prev=this.antAz;if(this.esaOn())this.esaSearch(dt,lo,hi,gim,now,tws);else{{const dE=this.dir>0?hi-this.antAz:this.antAz-lo,kk=this.aesa?1:clamp(dE/(8*D2R)+.22,.28,1);this.antAz+=this.dir*this.rate*(this.sensor==='IRST'?(this.spin()?1.1:this.rotor()?1.7:2.1):1)*kk*dt;}
     if(player.ac.pulse){flClutterSweep(prev,clamp(this.antAz,lo,hi));ghostSweep(prev,clamp(this.antAz,lo,hi),now);}if(this.sensor==='IRST')irCSweep(prev,clamp(this.antAz,lo,hi),now);
@@ -2774,7 +2774,8 @@ const dlTgt=()=>{if(!player||!player.alive||!DL.on())return null;const j=sys.dl.
 function dlCycle(){const P=player,l=DL.contacts().sort((a,b)=>a.pos.distanceTo(P.pos)-b.pos.distanceTo(P.pos)),i=l.findIndex(c=>c.j===sys.dl.tgt);
   const nx=l[i+1];sys.dl.tgt=nx?nx.j:null;flash(nx?'LINK TGT '+Math.round(nx.pos.distanceTo(P.pos)/NM)+' NM':'LINK TGT CLEARED',900);}
 // the missile's mid-course update when it was launched on a link track: the same picture the shooter has, a few seconds old, not the truth
-function dlLinkEst(tg){if(!tg||!tg.alive||!DL.on())return null;for(const c of DL.contacts())if(c.j===tg)return{p:c.pos,v:c.vel};return null;}
+function dlLinkEst(tg){if(!tg||!tg.alive)return null;if(DL.on())for(const c of DL.contacts())if(c.j===tg)return{p:c.pos,v:c.vel};
+  const tk=radar.tracks.get(tg),now=performance.now()/1000;if(tk&&tk.p&&!tk.hoj&&now-tk.t<6)return{p:tk.p.clone().addScaledVector(tk.v,now-tk.t),v:tk.v};return null;}   // v329: the shooter's own radar track feeds the in-flight update too
 function dlPick(list,x,y){let best=null,bd=26;for(const h of list||[]){const d=Math.hypot(h.x-x,h.y-y);if(d<bd){bd=d;best=h;}}if(best){sys.dl.tgt=sys.dl.tgt===best.j?null:best.j;sfx.click();flash(sys.dl.tgt?'LINK TGT SET':'LINK TGT CLEARED',800);return true;}return false;}
 const saClick=(x,y)=>dlPick(DL.hit,x,y),rdrLinkClick=(x,y)=>dlPick(DL.rhit,x,y);
 // F/A-18C SA page (the Hornet's link page): same plan view, own colours, OSBs for north-up / link tracks / range
@@ -6281,6 +6282,10 @@ function pickle(force){if(!player||!player.alive||game.paused||player.gloc>0)ret
   if(d.seek==='IR'){tg=irTarget(w);if(!tg&&d.loal)flash(SN[w]+' · LOAL',1000);else if(!tg&&!force){flash(isMig()?'NO SEEKER LOCK':'NO TONE',1200);return;}}
   else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(DL.on()&&d.seek==='ARH'&&radar.mode!=='STT'&&!(radar.mode==='TWS'&&radar.bugOK()&&!radar.tracks.get(radar.bug).lnk)&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
   if(tg&&d.seek==='ARH'&&!lnk){const _tk=radar.tracks.get(tg);if(_tk&&_tk.lnk&&radar.mode!=='STT')lnk=true;}
+  if(!tg&&d.seek==='ARH'&&d.dlk){   // v329 lock-after-launch: a datalink missile fired with no lock is flown at the nearest track in the forward cone and updated in flight; with no track it searches
+    const f=player.fwd(new V3());let bd=1e9;for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||j.side===player.side)continue;const r=j.pos.clone().sub(player.pos),dd=r.length();
+      if(f.angleTo(r)<60*D2R&&dd<bd&&dlLinkEst(j)){bd=dd;tg=j;}}
+    if(tg){lnk=true;flash(SN[w]+' · LOAL · TRACK '+Math.round(bd/NM)+' NM',1000);}else flash(SN[w]+' · LOAL · SEARCH',1000);}
   {const _r=IFF.roeCheck(tg);if(_r&&!force){flash('NO RELEASE · '+_r,1600);radio('Negative, '+_r.toLowerCase()+'.');return;}}
   {const _m=fireMissile(w,player,tg,player.release(w));if(lnk&&_m){_m.dlx=true;flash(SN[w]+' · DATALINK',1200);}}game.pickleCd=.8;
   if(isMig()&&sys.mig.salvo===0&&!force&&player.count(w)>0)setTimeout(()=>{if(player&&player.alive&&!game.paused&&player.count(w)>0)fireMissile(w,player,tg&&tg.alive?tg:null,player.release(w));},280);
