@@ -1406,7 +1406,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     // F-16: uplook (low PRF) cannot see below the horizon at all; downlook (medium PRF) can, at reduced range.
     // Sapfir-23ML: a pulse set with no PRF choice, so no tail-aspect blind spot, but look-down is poor (65 km up, ~25 km down);
     // with MTI (moving target selection) on the clutter is cancelled, at the cost of range and of slow / beaming targets
-    if(player.ac.pulse){const pk=player.ac.pki;if(dn)R*=pk?(sys.mig.mti?.45:.7):(sys.mig.mti?.4:.75);R*=(.8+.4*sys.mig.fgain);if(pk&&this.lock===j)R=Math.min(R,60000);return R;}
+    if(player.ac.pulse){const pk=player.ac.pki;if(dn)R*=player.ac.radar.name==='Sapfir-23ML'?(sys.mig.mti?.38:.25)/* 65 km look-up, ~25 km look-down with MTI */:pk?(sys.mig.mti?.45:.7):(sys.mig.mti?.4:.75);R*=(.8+.4*sys.mig.fgain);if(pk&&this.lock===j)R=Math.min(R,60000);return R;}
     if(player.ac.cockpit==='fulcrum'){const hi=c>.25?1.15:.45;R*=p==='A'?hi:p==='B'?.8:Math.max(hi,.8);if(dn)R*=.9;}
     else if(p==='A'){if(dn)return 0;}else if(p==='B'||dn)R*=.85;
     return R*(.85+.3*sys.fcr.gain);},

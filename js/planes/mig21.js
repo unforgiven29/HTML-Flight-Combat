@@ -45,7 +45,7 @@ PLANES.add('mig21',{
         clt:[[-20,-.8],[-10,-.45],[0,0],[5,.26],[10,.5],[15,.74],[20,.94],[25,1.08],[30,1.12],[35,1.06],[40,.97],[50,.8],[60,.64],[90,0]],
         abM:[[0,1],[.5,1.195],[1,1.36],[1.5,1.495],[2,1.7521],[2.5,1.9494],[3,2.0763]],cdm:[[0,0],[.8,0],[.9,.004],[1,.02],[1.1,.027],[1.3,.026],[1.6,.0153],[2,.0135],[2.5,.0102],[3,.0083]],dW:8500,tkG:[5.5,7],dep:{a:30,rock:1.0,spin:2.6},
         ff:[.14,1.15,4.0],gLim:8.5,aoaLim:27,roll:4.2,fbw:false,noLimiter:true,rcs:3,irs:.9,cockpit:'viper',pit:'fishbed',eye:[3.4,.8],units:'met',
-        radar:{name:'RP-22SM',R0:20000,ranges:[2.5,5,10,20],unit:1000,ul:'KM',ecc:.05},irst:false,pulse:true,
+        radar:{name:'RP-22SM',R0:18000/* ~9.8 NM detection, ~6 NM track (Cooper, MiG-23 Flogger in the Middle East) */,ranges:[2.5,5,10,20],unit:1000,ul:'KM',ecc:.05},irst:false,pulse:true,
         gun:{name:'GSh-23L',rate:57,v:715,dmg:12,ammo:200,spread:.0032},rel:[1,4,2,3],keepJ:['1','4'],rwr:'21',spo:4,tankName:'PTB-490'}
   }),
   ENG_SUP:()=>({
