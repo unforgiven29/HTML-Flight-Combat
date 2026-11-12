@@ -170,6 +170,47 @@ test('mig23_cockpit: every control on the rebuilt MiG-23ML panels steps without 
   ok('no control throws when stepped both ways',r.bad.length===0,r.bad.slice(0,3));
   ok('СИСТ moves between RAD and IR',r.mode1==='IR'||r.mode2==='IR',{m1:r.mode1,m2:r.mode2});});
 
+
+/* ---- Ka-50 (heli.js): hover, power, forward flight, autorotation, ground contact. Gameplay-level thresholds. ---- */
+const KA_SETUP=`(()=>{const P=player;for(const j of jets)if(j!==P)j.pos.set(1e7,6000,1e7);
+  window.kaSet=(alt,fuel)=>{P.fuel=fuel??1500;P.tankFuel=0;P.pos.set(0,alt,0);P.vel.set(0,0,0);P.q.set(0,0,0,1);P.onGnd=false;P.hp=100;P.alive=true;const h=HELI.st(P);h.Nr=1;h.run=true;h.start=0;h.warm=1;h.gov=.6;h.vi=15;h.T=P.mass*9.81;h.hold={p:null,r:null,y:null};h.w={p:0,y:0,r:0};P.ctl={p:0,r:0,y:0};P.gloc=0;};
+  window.kaRun=(n,f)=>{for(let i=0;i<n;i++){P.step(1/30);if(f)f(i);}};
+  window.kaHover=()=>{let lo=0,hi=1;for(let k=0;k<14;k++){const m=(lo+hi)/2;kaSet(groundAt(0,0)+150);P.thr=m;kaRun(90);if(P.vel.y>0)hi=m;else lo=m;}return(lo+hi)/2;};
+  return 1;})()`;
+test('ka50_hover: a collective setting holds a hover on the rotor power the manual implies, and it drops out of the sky when the engines quit','Ka-50',async p=>{
+  const r=await p.evaluate(s=>{game.paused=true;eval(s);const hv=kaHover();kaSet(groundAt(0,0)+150);player.thr=hv;kaRun(300);const h=HELI.st(player);
+    const o={lever:hv,TW:h.T/(player.mass*9.81),Pr:h.Pr,Pa:h.Pa,drift:Math.hypot(player.vel.x,player.vel.z),vy:player.vel.y,Nr:h.Nr,mass:player.mass};
+    kaSet(groundAt(0,0)+150);player.thr=hv;kaRun(30);h.run=false;player.thr=0;kaRun(30*3);o.vyOff=player.vel.y;return o;},KA_SETUP);
+  ok('hover lever mid-range (0.45-0.7)',r.lever>.45&&r.lever<.7,+r.lever.toFixed(3));
+  ok('hover thrust equals weight and the pair needs 55-80 % of the available power',Math.abs(r.TW-1)<.03&&r.Pr/r.Pa>.55&&r.Pr/r.Pa<.8,{TW:+r.TW.toFixed(3),load:+(r.Pr/r.Pa).toFixed(2)});
+  ok('rotor RPM holds 100 % and the aircraft sits still in the hover',Math.abs(r.Nr-1)<.02&&r.drift<.5&&Math.abs(r.vy)<.4,{Nr:+r.Nr.toFixed(3),drift:+r.drift.toFixed(2),vy:+r.vy.toFixed(2)});
+  ok('mass is near the 9,800 kg normal takeoff weight',r.mass>9500&&r.mass<10400,Math.round(r.mass));
+  ok('with the engines off and the lever kept, the aircraft sinks',r.vyOff<-1.5,+r.vyOff.toFixed(2));});
+test('ka50_flight: forward flight at the cruise attitude, hover ceiling at 4,000 m, rotor droop under a full collective pull','Ka-50',async p=>{
+  const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player,hv=kaHover(),o={};
+    kaSet(groundAt(0,0)+400);P.thr=hv;const tgt=-8*Math.PI/180;kaRun(30*90,()=>{P.ctl.p=Math.max(-.6,Math.min(.6,-(P.pitch-tgt)*1.4));const e=P.pos.y-(groundAt(0,0)+400);P.thr=Math.max(0,Math.min(1,P.thr+(-P.vel.y*.0008-e*.00002)));});
+    o.cruise=P.vel.length()*3.6;o.cruisePitch=P.pitch*57.3;o.cruiseAlive=P.alive;
+    kaSet(4000,1200);P.thr=1;kaRun(240);o.vy4000=P.vel.y;
+    kaSet(groundAt(0,0)+150);P.thr=1;let nr=9;kaRun(120,()=>{nr=Math.min(nr,HELI.st(P).Nr);});o.nrMin=nr;o.climb=P.vel.y;return o;},KA_SETUP);
+  ok('cruise 220-320 km/h at 5-12 degrees nose down, level, not overstressed',r.cruise>220&&r.cruise<320&&r.cruisePitch<-5&&r.cruisePitch>-12&&r.cruiseAlive,{kmh:Math.round(r.cruise),pitch:+r.cruisePitch.toFixed(1)});
+  ok('can still hover at 4,000 m at light weight (full collective)',r.vy4000>-.6,+r.vy4000.toFixed(2));
+  ok('a full collective pull droops the rotor but the aircraft climbs',r.nrMin<.97&&r.nrMin>.7&&r.climb>3,{Nr:+r.nrMin.toFixed(3),vy:+r.climb.toFixed(1)});});
+test('ka50_autorotation: engines out, lever down, forward speed: rotor stays turning and the descent is survivable','Ka-50',async p=>{
+  const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player;kaSet(groundAt(0,0)+1500);const h=HELI.st(P);h.run=false;P.thr=.1;P.vel.set(0,0,-45);kaRun(30*12);
+    const o={Nr:h.Nr,vy:P.vel.y,alive:P.alive};
+    // vortex ring: steep slow descent from a hover with power on
+    kaSet(groundAt(0,0)+1500);P.thr=.2;kaRun(30*6);o.vrsVy=P.vel.y;o.vrs=HELI.st(P).vrs;return o;},KA_SETUP);
+  ok('rotor stays above 85 % in autorotation',r.Nr>.85&&r.alive,+r.Nr.toFixed(3));
+  ok('descent rate between 5 and 20 m/s',r.vy<-5&&r.vy>-20,+r.vy.toFixed(1));
+  ok('a slow powered descent with the lever low sinks faster than 8 m/s',r.vrsVy<-8,+r.vrsVy.toFixed(1));});
+test('ka50_ground: stands on its wheels, lifts off with the collective, lands and settles without damage','Ka-50',async p=>{
+  const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player,H=P.ac.heli;kaSet(groundAt(0,0)+H.gh+.01);P.onGnd=true;P.thr=0;kaRun(60);const o={onGnd0:P.onGnd,y0:P.pos.y-groundAt(0,0),hp0:P.hp};
+    P.thr=.75;kaRun(90);o.climb=P.pos.y-groundAt(0,0);o.airborne=!P.onGnd;
+    const hv=kaHover();kaSet(groundAt(0,0)+25);P.thr=hv;kaRun(30*70,()=>{if(P.onGnd){P.thr=0;return;}const agl=P.pos.y-groundAt(0,0)-H.gh,vt=-Math.max(.7,Math.min(2.2,agl*.12));P.thr=Math.max(0,Math.min(1,P.thr+.004*(vt-P.vel.y)));});P.thr=0;kaRun(60);o.landed=P.onGnd;o.hp1=P.hp;o.alive=P.alive;o.sink=P.td;return o;},KA_SETUP);
+  ok('rests on the wheels at the CG height',r.onGnd0&&Math.abs(r.y0-1.72)<.1&&r.hp0===100,{y:+r.y0.toFixed(2)});
+  ok('a collective pull lifts it off the ground',r.airborne&&r.climb>3,+r.climb.toFixed(1));
+  ok('a gentle descent lands it on the wheels with no damage',r.alive&&r.landed&&r.hp1>99&&r.sink<2.5,{landed:r.landed,hp:Math.round(r.hp1),sink:+(r.sink||0).toFixed(2)});});
+
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -12,6 +12,8 @@ js/game.js               the sim (flight model, avionics, AI, campaign, MP) and 
 js/planes/registry.js    plane registry: per-jet files register here, game.js pulls their data in
 js/planes/<jet>.js       one file per original jet family: f16, f15, f18, f14, f4, mig29, su27, mig21, mig23, mig25
                          (flight data, loadouts, countermeasures, model builder, variants, jet-specific cockpit/MFD code)
+js/heli.js               rotorcraft flight model (Jet.step hook) + the Ka-50 airframe, model and registration
+js/ka50pit.js           Ka-50 cockpit (left / right forward panels, controls, HUD combiner)
 js/campmp.js             campaign debrief/theatre panel/save export, multiplayer ping/chat/invite/rounds
 js/strategic.js          AI heavy bombers, strategic alert, nuclear escalation event
 js/assets.js             loads custom models/audio and hooks them into the game
