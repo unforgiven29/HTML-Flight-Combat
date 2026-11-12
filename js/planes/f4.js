@@ -84,25 +84,37 @@ function drawPhScope(P){const c=phScopeC.getContext('2d'),S=360,FB_=P.ac.pit==='
   c.textBaseline='middle';c.textAlign='center';c.font='700 15px "B612 Mono",monospace';
   if(!radar.on()){if(radar.power!=='OFF'){c.fillStyle=col;c.globalAlpha=.55;c.fillText(radar.power==='ON'?'WARM-UP '+Math.ceil(radar.warm):'STBY',S/2,S/2);c.globalAlpha=1;}return;}
   const gim=radar.gimbal(),X=a=>x0+(a*R2D+60)/120*(x1-x0),rng=radar.rngM,Y=d=>y1-clamp(d/rng,0,1)*(y1-y0),now=performance.now()/1000,stt=radar.mode==='STT';
+  // v327: the radar set DISPLAY switch: B-scope (azimuth across, range up) or PPI (cross-range across, down-range up, plan view) and BEACON (replies only)
+  const PR=window.PRC,PPI=!!(PR&&P.ac.pulse&&PR.disp===1&&!FB_&&PR.has('disp')),BCN=!!(PR&&P.ac.pulse&&PR.mode===4&&!FB_&&PR.has('mode')),xc=(x0+x1)/2;
+  const PT=(a,d)=>PPI?{x:xc+Math.sin(a)*clamp(d/rng,0,1)*(x1-x0)/2,y:y1-Math.cos(a)*clamp(d/rng,0,1)*(y1-y0)}:{x:X(a),y:Y(d)};
   c.strokeStyle=(FB_?'rgba(255,216,74,.3)':'rgba(141,255,180,.3)');c.lineWidth=1;c.fillStyle=col;c.strokeRect(x0,y0,x1-x0,y1-y0);
-  for(let i=1;i<4;i++){const y=y0+(y1-y0)*i/4;c.beginPath();c.moveTo(x0,y);c.lineTo(x1,y);c.stroke();}
-  for(let a=-30;a<=30;a+=30){const x=X(a*D2R);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y1);c.stroke();}
+  if(PPI){c.save();c.beginPath();c.rect(x0,y0,x1-x0,y1-y0);c.clip();for(let i=1;i<=4;i++){c.beginPath();c.arc(xc,y1,(y1-y0)*i/4,-Math.PI,0);c.stroke();}
+    for(let a=-60;a<=60;a+=30){c.beginPath();c.moveTo(xc,y1);c.lineTo(xc+Math.sin(a*D2R)*(y1-y0)*1.2,y1-Math.cos(a*D2R)*(y1-y0)*1.2);c.stroke();}c.restore();}
+  else{for(let i=1;i<4;i++){const y=y0+(y1-y0)*i/4;c.beginPath();c.moveTo(x0,y);c.lineTo(x1,y);c.stroke();}
+    for(let a=-30;a<=30;a+=30){const x=X(a*D2R);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y1);c.stroke();}}
   c.textAlign='left';c.font='700 12px "B612 Mono",monospace';for(let i=1;i<=4;i++)c.fillText(String(Math.round(rng/(P.ac.units==='met'?1000:NM)*i/4)),x0+4,y1-(y1-y0)*i/4-7);
-  if(radar.mode==='RWS'){const W=Math.min(radar.azs[radar.ai]*D2R,gim,9);c.setLineDash([4,6]);[radar.scanC-W,radar.scanC+W].forEach(a=>{const x=X(a);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y1);c.stroke();});c.setLineDash([]);}
+  if(radar.mode==='RWS'){const W=Math.min(radar.azs[radar.ai]*D2R,gim,9);c.setLineDash([4,6]);[radar.scanC-W,radar.scanC+W].forEach(a=>{const p=PT(a,rng);c.beginPath();c.moveTo(PPI?xc:p.x,y1);c.lineTo(p.x,PPI?p.y:y0);c.stroke();});c.setLineDash([]);}
   // the APQ-120 is a pulse radar: raw video, ground clutter in look-down and smeared echoes, painted by the same routine as the other pulse sets
-  if(P.ac.pulse&&!stt){c.strokeStyle=col;c.fillStyle=col;flPaint(c,(u,v)=>({x:X(u*flClutter.AZ),y:Y(v*rng)}),1.4,.9);c.globalAlpha=1;c.fillStyle=col;}
-  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng)continue;const Lk=stt&&j===radar.lock;if(stt&&!Lk||tk.hoj)continue;if(!Lk&&P.ac.pulse&&window.RAWVID&&RAWVID.on)continue;
-    const x=X(tk.az),y=Y(tk.d);c.globalAlpha=Lk?1:clamp(1-(now-tk.t)/10,.15,1);c.fillStyle=Lk?'#ffffff':col;
+  if(P.ac.pulse&&!stt&&!BCN){const MP=PR&&PR.mode===2&&PR.has('mode');c.strokeStyle=col;c.fillStyle=col;flPaint(c,(u,v)=>PT(u*flClutter.AZ,v*rng),MP?2.2:1.4,MP?1.5:.9);c.globalAlpha=1;c.fillStyle=col;}
+  for(const [j,tk] of radar.tracks){if(!j.alive||tk.d>rng||BCN)continue;const Lk=stt&&j===radar.lock;if(stt&&!Lk||tk.hoj)continue;if(!Lk&&P.ac.pulse&&window.RAWVID&&RAWVID.on)continue;
+    const _p=PT(tk.az,tk.d),x=_p.x,y=_p.y;c.globalAlpha=Lk?1:clamp(1-(now-tk.t)/10,.15,1);c.fillStyle=Lk?'#ffffff':col;
     {// raw video: a fat, smeared echo built from a few short range-sweep dashes that shimmer, the same for an aircraft and for a hard ground return
       const sd=Math.floor(now*6),k0=Math.floor(x*.37)+Math.floor(y*.53),st=clamp((tk.snr||5)/9,.55,1.2),a0=c.globalAlpha;c.strokeStyle=Lk?'#ffffff':col;c.lineCap='round';
       for(let q=-1;q<=1;q++){const h1=hash(k0+q*7,sd+q),h2=hash(k0*3+q,sd*5+q),w=(3.2+h1*3.4)*st,yy=y+q*2.6+(h2-.5)*1.6;c.globalAlpha=a0*(q?.62:.95)*(.75+.25*h2);c.lineWidth=2.6+st;
         c.beginPath();c.moveTo(x-w+(h2-.5)*3,yy);c.lineTo(x+w+(h1-.5)*3,yy);c.stroke();}c.globalAlpha=a0;c.lineCap='butt';}
     if(Lk){c.strokeStyle='#ffffff';c.lineWidth=1.5;c.strokeRect(x-12,y-12,24,24);c.textAlign='left';c.font='700 12px "B612 Mono",monospace';c.fillText(U.kalt(P,tk.alt),x+15,y+15);}}
   c.globalAlpha=1;if(stt&&P.ac.pulse&&window.RAWVID&&RAWVID.lockPaint){c.strokeStyle=c.fillStyle=col;RAWVID.lockPaint(c,x0+4,y0+4,x1-4,y0+118,col);c.globalAlpha=1;}
-  for(const [j,s] of radar.strobes){if(Math.abs(s.az)>62*D2R)continue;const x=X(s.az);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=col;c.lineWidth=1.4;c.setLineDash([2,3]);c.beginPath();c.moveTo(x,y1);c.lineTo(x,y0);c.stroke();c.setLineDash([]);}
-  c.globalAlpha=1;c.fillStyle=col;c.strokeStyle=col;c.fillRect(X(radar.antAz)-1,y1+3,2,9);
-  if(!stt){const cx=X(radar.cur.az),cy=y1-radar.cur.r*(y1-y0),sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.4);c.lineWidth=1.1;c.beginPath();c.moveTo(cx-4,cy-7);c.lineTo(cx-4,cy+7);c.moveTo(cx+4,cy-7);c.lineTo(cx+4,cy+7);c.stroke();c.globalAlpha=sv;}   // lock-select cursor: dim until slewed
-  c.textAlign='left';c.font='700 13px "B612 Mono",monospace';c.fillText(radar.mode,x0+6,y0+14);c.textAlign='right';c.fillText(Math.round(rng/(P.ac.units==='met'?1000:NM))+(P.ac.units==='met'?' KM':' NM'),x1-6,y0+14);
+  for(const [j,s] of radar.strobes){if(Math.abs(s.az)>62*D2R)continue;const e=PT(s.az,rng);c.globalAlpha=clamp(1-(now-s.t)/4.5,.2,1);c.strokeStyle=c.fillStyle=col;c.lineWidth=1.4;c.setLineDash([2,3]);c.beginPath();c.moveTo(PPI?xc:e.x,y1);c.lineTo(e.x,PPI?e.y:y0);c.stroke();c.setLineDash([]);}
+  c.globalAlpha=1;c.fillStyle=col;c.strokeStyle=col;{const aa=PT(radar.antAz,rng);if(PPI){c.globalAlpha=.5;c.beginPath();c.moveTo(xc,y1);c.lineTo(aa.x,aa.y);c.stroke();c.globalAlpha=1;}else c.fillRect(X(radar.antAz)-1,y1+3,2,9);}
+  // BEACON: only transponder replies, no echoes - friendly aircraft and the field beacon, coded
+  if(BCN){c.font='700 12px "B612 Mono",monospace';c.textAlign='left';const bc=[];for(const j of jets)if(j!==P&&j.alive&&j.side===P.side&&!j.isGhost&&!j.isDecoy)bc.push([j.pos,(j.callsign||'').slice(-2)||'F']);
+    if(typeof AF!=='undefined')bc.push([{x:AF.x,y:0,z:AF.z},'TCN']);
+    for(const [pp,lb] of bc){const q=radar.ang(new V3(pp.x,pp.y,pp.z));if(q.d>rng||Math.abs(q.az)>gim)continue;const p=PT(q.az,q.d);c.globalAlpha=.9;c.lineWidth=2;c.strokeRect(p.x-6,p.y-6,12,12);c.beginPath();c.moveTo(p.x,p.y-6);c.lineTo(p.x,p.y-12);c.stroke();c.fillText(lb,p.x+9,p.y-8);}c.globalAlpha=1;}
+  // AIR-GRD with no air-to-ground weapon selected: antenna fixed on the boresight, ranging the ground under the nose
+  if(PR&&P.ac.pulse&&PR.mode===3&&PR.has('mode')&&!FB_){const f=P.fwd(new V3());let rg=0;for(let d=300;d<60000;d+=60*Math.max(1,d/3000)){const xx=P.pos.x+f.x*d,yy=P.pos.y+f.y*d,zz=P.pos.z+f.z*d;if(yy<=groundAt(xx,zz)){rg=d;break;}}
+    c.globalAlpha=1;c.textAlign='center';c.font='700 14px "B612 Mono",monospace';c.fillText('AIR-GRD · BORESIGHT',xc,y0+34);c.font='700 20px "B612 Mono",monospace';c.fillText(rg?(rg/(P.ac.units==='met'?1000:NM)).toFixed(2)+(P.ac.units==='met'?' KM':' NM'):'NO GND RTN',xc,y0+60);}
+  if(!stt){const _c=PT(radar.cur.az,radar.cur.r*rng),cx=_c.x,cy=_c.y,sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.4);c.lineWidth=1.1;c.beginPath();c.moveTo(cx-4,cy-7);c.lineTo(cx-4,cy+7);c.moveTo(cx+4,cy-7);c.lineTo(cx+4,cy+7);c.stroke();c.globalAlpha=sv;}   // lock-select cursor: dim until slewed
+  c.textAlign='left';c.font='700 13px "B612 Mono",monospace';c.fillText(radar.mode+(PPI?' PPI':'')+(BCN?' BCN':''),x0+6,y0+14);c.textAlign='right';c.fillText(Math.round(rng/(P.ac.units==='met'?1000:NM))+(P.ac.units==='met'?' KM':' NM'),x1-6,y0+14);
   if(stt&&radar.tgt()){const L=radar.tgt();c.textAlign='center';c.fillText(radar.hoj?'HOJ':U.rng(P,L.pos.distanceTo(P.pos))+(P.ac.units==='met'?' KM':' NM'),(x0+x1)/2,y0+14);}
 
   c.textAlign='left';c.fillStyle=col;c.fillText(String(Math.round(P.hdg)).padStart(3,'0')+'°',x0+6,y1-12);}
