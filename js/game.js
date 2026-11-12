@@ -1607,7 +1607,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     if(this.mode==='TWS'){const i=list.findIndex(([j])=>j===this.bug);this.bug=list[(i+1)%list.length][0];this.bugMan=true;sfx.click();return;}
     const i=list.findIndex(([j])=>j===this.lock),j=list[(i+1)%list.length][0],a=this.ang(j.pos);
     if(this.detect(j,a)&&a.off<this.gimbal())this.stt(j);},
-  acmList(){if(this.awg)return['PAL','VSLH','VSLL','PLM'];return player&&player.ac.cockpit==='fulcrum'?(player.ac.pulse?['VERT','BORE']:['VERT','BORE','HMD']):['30x20','VERT','BORE'];},
+  acmList(){if(this.awg)return['PAL','VSLH','VSLL','PLM'];return player&&player.ac.cockpit==='fulcrum'?(player.ac.pulse?['VERT','BORE']:['VERT','BORE','HMD']):hasHelmet()?['30x20','VERT','BORE','HMD']:['30x20','VERT','BORE'];},
   bore(){if(player&&player.ac.cockpit==='fulcrum'){const seq=player.ac.pulse?['RADCC','OPT','BS']:['RADCC','HELM','OPT','BS'],cur=mw()==='RAD'&&sys.mig.rmode===0?'RADCC':mw(),nx=seq[(seq.indexOf(cur)+1)%seq.length];
       if(nx==='RADCC')sys.mig.rmode=0;migWCS(MWCS.indexOf(nx==='RADCC'?'RAD':nx));sfx.click();return;}
     const L=this.acmList();this.setACM(this.mode==='ACM'?L[(L.indexOf(this.acm)+1)%L.length]:L.includes(this.acm)?this.acm:L[0]);},
@@ -1638,7 +1638,7 @@ const HEAD0={pitch:-SET.look*D2R,fov:SET.fov};const head={yaw:0,pitch:HEAD0.pitc
 // helmet sight: JHMCS on the modern Viper, Shchel-3UM on every MiG-29; blanked while looking through the HUD
 // v215: helmet sights only where the real jet has one. Shchel-3UM / Sura on the MiG-29 and Flanker families (never the MiG-21 / 23 / 25),
 // JHMCS on the modern-era F-16C, F-15C / E and F/A-18C / E only. No helmet sight on the F-4, F-14 (any), F-16A ADF, MiG-21, MiG-23, MiG-25, MiG-31.
-const HMS_ALWAYS=new Set(['MiG-29','MiG-29S','Su-27','Su-27SM','Su-33','Su-30SM']),HMS_MODERN=new Set(['F-16C','F-15C','F-15E','F-18C','F-18E']);
+const HMS_ALWAYS=new Set(['MiG-29','MiG-29S','Su-27','Su-27SM','Su-33','Su-30SM','F-35A','EF-2000','Rafale','JAS-39E','Su-35S','Su-57','Su-30MKM','MiG-35','J-20','J-10C','J-16','J-11B','J-15T','J-35','KF-21','F-18F','EA-18G']),HMS_MODERN=new Set(['F-16C','F-15C','F-15E','F-18C','F-18E']);
 const helmetFit=(type,era)=>HMS_ALWAYS.has(type)||era==='modern'&&HMS_MODERN.has(type);
 const hasHelmet=()=>!!player&&helmetFit(player.type,player.era);
 const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&hasHelmet()&&(player.ac.cockpit==='fulcrum'?mw()==='HELM':Math.hypot(head.yaw,head.pitch)>.26);
@@ -2007,7 +2007,7 @@ function drawHornetHud(P,fs,lh){
   hx.restore();}
 
 // MiG-29 (N019 + ILS-31): the radar picture is on the HUD (DCS manual fig. 87): range scale left, azimuth zone line below, capture strobe
-const MSC={AZ:4.6,E0:-7.9,E1:3.8};let hudScope=null;
+const MSC={AZ:4.6,E0:-9.4,E1:3.8};let hudScope=null;
 function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}const{AZ,E0,E1}=MSC,rng=radar.rngM,X=az=>clamp(az*R2D/60,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
   const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
   const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);
@@ -2970,8 +2970,8 @@ function suIRHDD(c,S,br){const G=SU_G,x0=S*.22,x1=S*.8,y0=S*.08,y1=S*.84,m=(u,v)
   c.textAlign='center';c.strokeRect(S-90,S-50,70,30);c.fillText(String(Math.round(P.vel.length()*3.6)),S-55,S-35);
   if(!radar.on())c.fillText(radar.power==='OFF'?'OFF':'READY',S/2,S/2);}
 function drawMigC(){const{AZ,E0,E1}=MSC,k=KPX*D2R;const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
-  const EL0=-30,EL1=30,m=(u,v)=>hb(u*AZ,lerp(E0,E1,v));
-  const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);for(let e=-30;e<=30;e+=10){const y=lerp(s0.y,s1.y,(e-EL0)/(EL1-EL0));line(s0.x,y,s0.x+6,y);txt(String(e),s0.x-4,y,'right');}hx.restore();}
+  const EL0=-15,EL1=30,m=(u,v)=>hb(u*AZ,lerp(E0,E1,v));
+  const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);for(let e=-10;e<=30;e+=10){const y=lerp(s0.y,s1.y,(e-EL0)/(EL1-EL0));line(s0.x,y,s0.x+6,y);txt(String(e),s0.x-4,y,'right');}hx.restore();}
   {const a=hb(-AZ,E0),b=hb(AZ,E0),c2=hb(-AZ,E1),d=hb(AZ,E1);if(a&&b&&c2&&d){hx.save();hx.globalAlpha*=.6;hx.lineWidth=1;line(a.x,a.y,b.x,b.y);line(c2.x,c2.y,d.x,d.y);line(a.x,a.y,c2.x,c2.y);line(b.x,b.y,d.x,d.y);hx.restore();}}
   const hz=-player.pitch*R2D;if(hz>EL0&&hz<EL1){const a=m(-1,(hz-EL0)/(EL1-EL0)),b=m(1,(hz-EL0)/(EL1-EL0));if(a&&b){hx.save();hx.setLineDash([6,6]);hx.globalAlpha*=.5;line(a.x,a.y,b.x,b.y);hx.restore();}}
   irC(hx,m,1.15,hx.globalAlpha,30*D2R,EL0,EL1,false);
@@ -9151,7 +9151,7 @@ function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(
    Mavericks: A and B (early TV, contrast tracker, day only), H (CCD, works into dusk), D / G (IIR), E (laser), F (Navy IIR). Lock range depends on
    target contrast or heat, daylight, weather and magnification. F-4E carries A / B / D / G / H on a LAU-88 on stations 2 and 8. */
 {
-const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&u.nv!=null)return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
+const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&(u.nv!=null||u.ship||(typeof SDEF!=='undefined'&&SDEF[k])))return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
 const wrapA=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const hash2=(x,z)=>{const s=Math.sin(x*12.9898+z*78.233)*43758.5453;return s-Math.floor(s);};
 const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D','Tornado GR.4','F-111F','Su-24M','AJS-37','JH-7','Super Etendard','A-4E'];
@@ -9287,7 +9287,7 @@ SNS.capture=function(kind){const P=player,now=performance.now(),pod=kind==='TGP'
 {const _r=SNS.render;SNS.render=function(){_r.call(this);if(this.box&&this.shown)this.box.classList.toggle('ir',this.vmodeFor(this.wk()!=='agm')==='WHOT');};}
 
 /* ---------------- sensor symbology (box, F-16C TGP / WPN pages, Hornet TGP / MAV pages) ---------------- */
-SNS.symbology=function(P,masked){const cvx=this.cv,c=cvx.getContext('2d'),S=320;if(cvx.width!==undefined)c.clearRect(0,0,S,S);
+SNS.symbology=function(P,masked){const cvx=this.cv,c=cvx.getContext('2d'),S=320;if(cvx.width!==undefined)c.clearRect(0,0,S,S);if(!this.spi)return;
   const agm=this.wk()==='agm',a=AGW[game.wsel],ps=this.podSpec(),e=this.eye(P),rng=e.distanceTo(this.spi),vm=this.vmodeFor(!agm),agmA=agm&&a&&a.k==='agm'?a:AGW['AGM-65D'];
   const col=agm?'#e8f4e8':'#f2f2ea';c.strokeStyle=c.fillStyle=col;c.lineWidth=2;c.font='700 14px "B612 Mono",monospace';c.textBaseline='middle';
   const tx=(s,x,y,al='left')=>{c.textAlign=al;c.fillText(s,x,y);};
@@ -9432,7 +9432,13 @@ const AGR={NC:96,NB:96,val:null,sh:null,colT:null,cv:null,ictx:null,img:null,mod
     if((mode==='GMT'||mode==='SEA')&&sp){c.lineWidth=2;for(const e of this.ents){if(this.entVal(e)<=0||now-(e.u._gT||-99)>4.5)continue;const q=this.proj(e.az,e.g,G);if(!q)continue;
       c.strokeStyle=c.fillStyle=SNS.unit===e.u?MA:col;c.globalAlpha=clamp(1.2-(now-e.u._gT)/4.5,.25,1);c.strokeRect(q.x-5,q.y-5,10,10);
       if(e.v>1){const hr=Math.atan2(e.vx,-e.vz)-this.h;c.beginPath();c.moveTo(q.x,q.y);c.lineTo(q.x+Math.sin(hr)*clamp(e.v*3,8,34),q.y-Math.cos(hr)*clamp(e.v*3,8,34));c.stroke();c.font='700 12px "B612 Mono",monospace';c.textAlign='left';c.fillText(String(Math.round(e.v*1.944)),q.x+8,q.y+12);}
+      if(mode==='SEA'&&e.u.callsign){c.font='700 11px "B612 Mono",monospace';c.textAlign='left';c.fillText(e.u.callsign+' '+(e.g/1852).toFixed(1),q.x+8,q.y-9);}
       if(SNS.unit===e.u){c.beginPath();c.arc(q.x,q.y,11,0,7);c.stroke();}c.globalAlpha=1;}c.lineWidth=1;c.strokeStyle=c.fillStyle=col;}
+    // anti-ship missiles in flight from this jet, on the surface-search picture
+    if(sp&&window.ASM&&mode!=='AGR'){c.lineWidth=1.6;c.font='700 12px "B612 Mono",monospace';c.textAlign='left';for(const k of ASM.list){if(k.src!==P)continue;const dx=k.p.x-P.pos.x,dz=k.p.z-P.pos.z,q=this.proj(wrapA(Math.atan2(dx,-dz)-this.h),Math.hypot(dx,dz),G);if(!q)continue;
+      c.strokeStyle=c.fillStyle='#ffffff';c.beginPath();c.moveTo(q.x,q.y-6);c.lineTo(q.x+5,q.y+4);c.lineTo(q.x-5,q.y+4);c.closePath();c.stroke();
+      const tg=k.tgt||k.tgtShip,tt=tg?Math.hypot(tg.pos.x-k.p.x,tg.pos.z-k.p.z)/Math.max(k.s,1):0;c.fillText((k.tgt?'TRM ':k.seek?'SKR ':'INS ')+Math.round(tt)+'S',q.x+8,q.y+3);}
+      c.lineWidth=1;c.strokeStyle=c.fillStyle=col;}
     // SPI from the pod / designation
     if(SNS.spi&&mode!=='AGR'){const dx=SNS.spi.x-P.pos.x,dz=SNS.spi.z-P.pos.z,q=this.proj(wrapA(Math.atan2(dx,-dz)-this.h),Math.hypot(dx,dz),G);if(q){c.strokeStyle=MA;c.beginPath();c.moveTo(q.x,q.y-7);c.lineTo(q.x+7,q.y);c.lineTo(q.x,q.y+7);c.lineTo(q.x-7,q.y);c.closePath();c.stroke();c.strokeStyle=col;}}
     // cursor
@@ -11493,7 +11499,7 @@ PLANES.run('su27','L12773');
 try{
 const EN=()=>SET.hudlang==='EN';
 // v210: typeOf lives in another scope; the L-150 code below threw a ReferenceError every frame once any ground emitter was on the RWR (crashed the STRIKE mission)
-const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&u.nv!=null)return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
+const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&(u.nv!=null||u.ship||(typeof SDEF!=='undefined'&&SDEF[k])))return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
 const LET={П:'P',Х:'H',Р:'R',В:'V',С:'S',К:'K',О:'O',А:'A',Г:'G',Н:'U'};
 function l150Type(t){if(!t.idOk)return'Н';const j=t.j,e=t.e;
   if(!e.g){return /E-3|A-50|AWACS|E-2/.test(j.type||'')?'А':'С';}

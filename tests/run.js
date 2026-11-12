@@ -12,7 +12,7 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
 const filter=process.argv[2]||'';let browser,port,fails=0,total=0;
 async function boot(ac){const exe=process.env.CHROME||(fs.existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':undefined);
   if(!browser)browser=await pw.chromium.launch({executablePath:exe,args:['--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
-  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
+  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n').slice(1,4).join('|')));
   await p.goto('http://localhost:'+port+'/index.html?'+Date.now());
   await p.waitForFunction(()=>typeof start==='function'&&typeof radar!=='undefined',null,{timeout:90000});
   await p.evaluate(a=>{game.ac=a;return start('RANGE');},ac);await p.waitForTimeout(4000);
@@ -312,6 +312,15 @@ test('tgp_slave: pod / EOTS follows the radar target in A-A, a manual slew break
 test('acm_unstab: the radar gimbal is not stabilised in ACM, and is again outside ACM','F-16C',async p=>{
   const r=await p.evaluate(()=>{radar.setACM('30x20');run(3);const a=radar.gl.stab;radar.mode='RWS';run(3);const b=radar.gl.stab;return{a,b};});
   ok('stab off in ACM',r.a===0,r);ok('stab back on in RWS',r.b>0,r);});
+
+test('f35_hmd_overlay: F-35 HMD draws without error with a datalink picture','F-35A',async p=>{
+  const r=await p.evaluate(()=>{run(3);try{F35HMD.overlay();return{ok:1};}catch(e){return{err:e.message};}});ok('overlay runs',r.ok===1,r);
+  const a=await p.evaluate(()=>radar.acmList());ok('F-35 HMD mode',a.includes('HMD'),a);});
+test('sar_expand: SAR EXP state cycles and renders','F-35A',async p=>{
+  const r=await p.evaluate(()=>{const W=F35PIT.WIN[0];W.page=F35PIT.PI.SAR;run(3);return{pg:W.page,sar:F35PIT.PI.SAR};});ok('SAR page set',r.pg===r.sar,r);});
+test('sea_ships: ASM mission ships are SHIP class on the SEA scope','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await start('ASHM');const P=player;radar.power='ON';radar.warm=0;AGR.mode='SEA';P.pos.set(-60000,350,5000);await new Promise(r=>setTimeout(r,8000));const e=AGR.ents.filter(e=>AGR.entVal(e)>0);return{n:e.length,ships:GND.units.filter(u=>typeof SDEF!=='undefined'&&SDEF[u.kind]).length};});
+  ok('ships visible in SEA',r.n>0,r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}

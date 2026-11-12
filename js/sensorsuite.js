@@ -66,7 +66,7 @@ const FIT={
   'EA-18G':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}}};
 /* ---------------- v313: Legion IRST pod (IRST21) for the F-15C/E/EX/I (centreline) and the F-16 family (left intake station) ----------------
    Carrying it gives the player's aircraft an IRST with the TWS-style IRST track mode. Gameplay-level numbers, not published data. */
-const LEGION={name:'IRST21 Legion',tail:50000,head:16000,lrf:0,leg:true};
+const LEGION={name:'IRST21 Legion',tail:50000,head:22000,lrf:0,leg:true};
 M.LEGION=LEGION;
 try{AGW.LEGION={k:'hts',mass:240,L:3.9,R:.17,col:0x7d858c,rcs:.1,irsB:.05,irsC:.05};SN.LEGION='IRST';STORE_NAME.LEGION='Legion IRST21 pod · long-range IRST, TWS';MODERN_ONLY.add('LEGION');
   for(const [ac,sts] of [['F-15C',['5']],['F-15E',['5']],['F-15EX',['5']],['F-15I',['5']],['F-16C',['5L']],['F-16V',['5L']],['F-16E',['5L']],['F-16I',['5L']]]){
