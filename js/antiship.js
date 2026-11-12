@@ -58,6 +58,7 @@ const SDEF={
   CGR: {sam:{min:4000,max:18000,pk:.33,gap:7},ciws:{r:2500,pk:.4},chaff:.3,nm:'S-300F'},
   FACR:{sam:null,ciws:{r:2500,pk:.2},chaff:.1,nm:'AK-630'}};
 const isShip=u=>u&&u.gnd&&u.alive&&(u.nv!=null||!!SDEF[u.kind]);
+window.SDEF=SDEF;
 
 const ASM={list:[],ships:[],log:[],sel:null,selT:0};
 window.ASM=ASM;
@@ -65,7 +66,7 @@ window.ASM=ASM;
 /* ---- picking the target the way the radar would ---- */
 ASM.pick=function(P,a){
   const fw=P.fwd(new THREE.Vector3()),out={t:null,why:'NO SHIP TRACK'};let best=1e9;
-  const des=(typeof SNS!=='undefined'&&SNS.mav&&isShip(SNS.mav)&&SNS.mav.side!==P.side)?SNS.mav:null;
+  const des=(typeof SNS!=='undefined'&&SNS.unit&&isShip(SNS.unit)&&SNS.unit.side!==P.side)?SNS.unit:(typeof SNS!=='undefined'&&SNS.mav&&isShip(SNS.mav)&&SNS.mav.side!==P.side)?SNS.mav:null;
   for(const u of GND.units){if(!isShip(u)||u.side===P.side)continue;
     const rel=new THREE.Vector3().subVectors(u.pos,P.pos),d=rel.length();if(d>hor(Math.max(P.pos.y,5),22))continue;
     const off=Math.acos(Math.max(-1,Math.min(1,rel.clone().normalize().dot(fw))))/D;if(off>70)continue;
@@ -204,6 +205,14 @@ ASM.tick=function(dt){
     const mine=ASM.list.filter(m=>m.src===P);if(mine.length){const m=mine[mine.length-1],rem=Math.max(0,(m.a.range-m.path)/Math.max(m.s,1));
       T(mine.length+' IN FLIGHT · '+(m.tgt?'TERMINAL':m.seek?'SEEKER ON':'INS')+' · '+Math.round(Math.max(0,(Math.hypot(m.aim.x-m.p.x,m.aim.z-m.p.z))/Math.max(m.s,1)))+' S',0,-14.4);}
     hx.restore();};}
+
+/* ---- weapon camera: the missile camera can follow an anti-ship missile from release to impact ---- */
+{const camK=k=>k._cam||(k._cam={src:k,isAG:true,maddog:false,track:null,hit:true,
+    get alive(){return ASM.list.includes(k);},get pos(){return k.p;},get vel(){return k.v;},get t(){return k.t;},get burning(){return k.t<4;},
+    get target(){const t=k.tgt||k.tgtShip;return t&&t.alive?t:null;},get type(){return (k.P&&k.P.name||k.w)+' · '+(k.tgt?'TERMINAL':k.seek?'SEEKER':'INS');}});
+  const _l=window.agCamList;window.agCamList=function(){const a=_l?_l():[];if(!player)return a;return a.concat(ASM.list.filter(k=>k.src===player).map(camK));};
+  const _f=ASM.fire;ASM.fire=function(){const k=_f.apply(this,arguments);try{if(k&&game.mcam==='AUTO'&&!net.on&&!mcam.m)mcamStart(camK(k));}catch(e){}return k;};
+  window.ASM_CAM=camK;}
 
 /* ---- loadout screen: its own category and description ---- */
 try{if(Array.isArray(STORE_CATS)&&!STORE_CATS.includes('ANTI-SHIP MISSILES'))STORE_CATS.splice(STORE_CATS.indexOf('AIR-TO-GROUND MISSILES')+1,0,'ANTI-SHIP MISSILES');}catch(e){}

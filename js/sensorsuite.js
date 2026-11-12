@@ -66,7 +66,7 @@ const FIT={
   'EA-18G':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}}};
 /* ---------------- v313: Legion IRST pod (IRST21) for the F-15C/E/EX/I (centreline) and the F-16 family (left intake station) ----------------
    Carrying it gives the player's aircraft an IRST with the TWS-style IRST track mode. Gameplay-level numbers, not published data. */
-const LEGION={name:'IRST21 Legion',tail:50000,head:16000,lrf:0,leg:true};
+const LEGION={name:'IRST21 Legion',tail:50000,head:22000,lrf:0,leg:true};
 M.LEGION=LEGION;
 try{AGW.LEGION={k:'hts',mass:240,L:3.9,R:.17,col:0x7d858c,rcs:.1,irsB:.05,irsC:.05};SN.LEGION='IRST';STORE_NAME.LEGION='Legion IRST21 pod · long-range IRST, TWS';MODERN_ONLY.add('LEGION');
   for(const [ac,sts] of [['F-15C',['5']],['F-15E',['5']],['F-15EX',['5']],['F-15I',['5']],['F-16C',['5L']],['F-16V',['5L']],['F-16E',['5L']],['F-16I',['5L']]]){
@@ -233,7 +233,7 @@ M.tick=function(dt){const P=player;M.warned.length=0;if(!P||!P.alive||!M.on)retu
   }catch(e){}
   return r;};}
 {const _h=drawHUD;drawHUD=function(){_h.apply(this,arguments);try{const P=player;if(!P||!M.warned.length)return;const cv=document.getElementById('hud');if(!cv)return;const c=cv.getContext('2d');
-  if(performance.now()%400>250)return;c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
+  c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
   const w=M.warned[0],qi=P.q.clone().invert(),r=w.m.pos.clone().sub(P.pos).applyQuaternion(qi),clk=Math.round(((Math.atan2(r.x,-r.z)*180/Math.PI+360)%360)/30)||12;
   c.font='700 16px "B612 Mono",monospace';c.fillText(clk+' O\'CLOCK',cv.width/2,cv.height*.16+22);
   const st=M.dir.state;if(M.fit&&M.fit.dircm&&st!=='OFF'&&st!=='RDY'){c.fillStyle='#ffd24a';c.fillText('DIRCM '+st,cv.width/2,cv.height*.16+42);}
@@ -289,3 +289,20 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
 }
 console.info('[sensorsuite] v309 MAWS / DAS / EOTS / side arrays / DIRCM');
 })();
+/* TGP / EOTS slaved to the radar in air-to-air: with no A/G store selected the pod line of sight follows the radar's bugged (or locked) air target, the way the
+   pod page shows it ("SLAVE"). Any manual slew, TMS or bore command breaks the slave on that target until the radar changes target. */
+(function(){if(typeof SNS==='undefined')return;
+  const tgtOf=()=>{const j=radar.mode==='STT'&&radar.lock?radar.lock:radar.bug||radar.lock;return j&&j.alive&&!j.gnd?j:null;};
+  const _tick=SNS.tick.bind(SNS),_slew=SNS.slew.bind(SNS),_tms=SNS.tms.bind(SNS),_bore=SNS.bore.bind(SNS);
+  SNS.slaved=null;SNS.slvBrk=null;
+  SNS.tick=function(dt){const P=player;this.slaved=null;
+    if(P&&P.alive&&this.hasPod(P)&&!this.wk()&&!this.unit){const j=tgtOf();if(j&&j!==this.slvBrk&&j!==P){this.ensure(P);this.spi=j.pos.clone();this.mode='AREA';this.slaved=j;}}
+    return _tick(dt);};
+  SNS.slew=function(cs,cr,dt){if((cs||cr)&&this.slaved)this.slvBrk=this.slaved;return _slew(cs,cr,dt);};
+  SNS.tms=function(){if(this.slaved)this.slvBrk=this.slaved;return _tms();};
+  SNS.bore=function(){this.slvBrk=tgtOf();return _bore();};
+})();
+
+/* ACM modes (boresight, vertical, 30x20, wide, helmet) are not gimbal-stabilised: the scan volume is fixed in the airframe's axes and rolls and pitches with it.
+   The pilot's stabilisation setting returns in every other mode. */
+{const U=radar.update;radar.update=function(){const g=this.gl;if(g.stab0==null)g.stab0=g.stab;g.stab=this.mode==='ACM'?0:g.stab0;return U.apply(this,arguments);};}

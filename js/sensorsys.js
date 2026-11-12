@@ -36,13 +36,13 @@ F.mod('s13',5,(r,c)=>{r.displayRangeRingSpacing=radar.ranges[radar.ri]*radar.uni
 
 /* ---------- 15 IFF, NCTR, datalink ---------- */
 F.mod('s15',5,(r,c)=>{const st=typeof IFF!=='undefined'?IFF.st:null;if(st){r.iffEnabled=st.pwr!=='OFF';r.iffTransponderOn=st.pwr==='NORM'||st.pwr==='EMER';r.iffModeCodeCurrent=parseInt(st.c3,10)||0;r.iffModeCodeFriendly=parseInt(IFF.DAY.m3,10)||0;}
-  r.nctrTimeToIdS=NCTR.p>0&&NCTR.p<1?NCTR.p:r.nctrTimeToIdS;r.datalinkEnabled=typeof DL!=='undefined'&&DL.on();
+  r.nctrTimeToIdS=NCTR.p>0&&NCTR.p<1?NCTR.p:r.nctrTimeToIdS;r.datalinkEnabled=typeof DL!=='undefined'&&(DL.base||DL.on).call(DL);
   if(r.datalinkEnabled){const m=DL.mates();r.datalinkSourceAircraftID=m.length?m[0].id||0:0;}
   r.awacsSupportEnabled=typeof game!=='undefined'&&game.scen==='CAMP';});
 // the module switches follow the registry
 F.mod('fx-iff',5,(r,c)=>{if(typeof IFF==='undefined')return;const st=IFF.st;
   if(Q.iffTransponderEmconOff&&Q.emconState==='Silent'){if(!F._xp){F._xp=st.pwr;}st.pwr='STBY';}else if(F._xp){st.pwr=F._xp;F._xp=null;}});
-{const _o=DL.on;DL.on=function(){const o=_o.call(this);if(!F.on||!F.reg)return o;return o&&(Q.datalinkEnabled!==false);};}
+{const _o=DL.on;DL.base=_o;DL.on=function(){const o=_o.call(this);if(!F.on||!F.reg)return o;return o&&(Q.datalinkEnabled!==false);};}
 
 /* ---------- 16 fire-control link (the game's own launch envelope) ---------- */
 const NAME={GUN:'Guns'};const typeOf=w=>{if(w==='GUN'||!w)return 'Guns';if(/AIM-?9|Magic|Sidewinder|AIM-?9/i.test(w))return 'AIM9';if(/AIM-?120|AIM-?54|AIM-?7|Sparrow|Phoenix/i.test(w))return 'AIM120';if(/R-?73|R-?60|AA-?2|R-?3/i.test(w))return 'R73';if(/R-?27|R-?40|R-?33|R-?77|R-?24/i.test(w))return 'R27';return null;};

@@ -12,7 +12,7 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
 const filter=process.argv[2]||'';let browser,port,fails=0,total=0;
 async function boot(ac){const exe=process.env.CHROME||(fs.existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':undefined);
   if(!browser)browser=await pw.chromium.launch({executablePath:exe,args:['--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
-  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
+  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n').slice(1,4).join('|')));
   await p.goto('http://localhost:'+port+'/index.html?'+Date.now());
   await p.waitForFunction(()=>typeof start==='function'&&typeof radar!=='undefined',null,{timeout:90000});
   await p.evaluate(a=>{game.ac=a;return start('RANGE');},ac);await p.waitForTimeout(4000);
@@ -245,7 +245,7 @@ test('maws_mirage: SAMIR warns (it ran inside a draw hook the Mirage replaces), 
   ok('warns on an IR missile from behind',a.w.length>0&&a.n>0,a);ok('no warning at 30 km',b.w.length===0,b);});
 test('maws_f35: DAS covers all round; built-in EOTS counts as a targeting pod','F-35A',async p=>{
   const a=await missile(p,'R-73',[3000,0,3000]);const e=await p.evaluate(()=>({pod:SNS.hasPod(player),kind:SNS.podKind(player),irg:IRG.az}));
-  ok('DAS sees a missile from the rear quarter',a.w.length>0,a);ok('EOTS is a pod, no store needed',e.pod&&e.kind==='EOTS',e);ok('IRST limit is 180 deg',e.irg===180,e.irg);});
+  ok('DAS sees a missile from the rear quarter',a.w.length>0,a);ok('MAWS missile reaches the RWR as a missile contact',a.n>0,a);ok('EOTS is a pod, no store needed',e.pod&&e.kind==='EOTS',e);ok('IRST limit is 180 deg',e.irg===180,e.irg);});
 test('su57: cheek arrays find an abeam target; rear is blind; DIRCM defeats IR seekers','Su-57',async p=>{
   const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);radar.mode='RWS';radar.ai=2;tgt.pos.set(30000,6000,0);tgt.vel.set(0,0,0);tgt.q.set(0,1,0,0);
     run(30*12,()=>{MSS.tick(1/30);});const side=radar.tracks.has(tgt);radar.tracks.clear();tgt.pos.set(0,6000,30000);run(30*12,()=>{MSS.tick(1/30);});const rear=radar.tracks.has(tgt);
@@ -302,6 +302,31 @@ test('f35_cockpit: F-35A uses its own pit, display draws, no HUD glass, tab clic
     const before=F35PIT.WIN[0].page;F35PIT.click(40/2000*360,(800-30)/800*360);const after=F35PIT.WIN[0].page;
     o.tick(player,.2);o.tick(player,.2);const g=o.glass[0];return{built:true,vis,viper,cockpit:player.ac.cockpit,before,after,visor:isFinite(g.x),errs:0};});
   ok('f35 pit built and selected',r.built&&r.vis&&!r.viper&&r.cockpit==='f35',r);ok('tab click cycles the page',r.after!==r.before,{b:r.before,a:r.after});ok('visor clip finite',r.visor);ok('no page errors',p.errs.length===0,p.errs);});
+
+test('tgp_slave: pod / EOTS follows the radar target in A-A, a manual slew breaks it','F-35A',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);tgt.pos.set(900,6100,-12000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,200);
+    game.wsel='AIM-120C';radar.mode='RWS';run(30*8);radar.bug=tgt;radar.stt&&radar.stt(tgt);SNS.tick(.05);const d1=SNS.spi.distanceTo(tgt.pos),sl=!!SNS.slaved;
+    SNS.slew(1,0,.2);SNS.tick(.05);const brk=!SNS.slaved;return{d1:Math.round(d1),sl,brk};});
+  ok('pod aimed at the radar target and marked slaved',r.sl&&r.d1<50,r);ok('manual slew breaks the slave',r.brk);});
+
+test('acm_unstab: the radar gimbal is not stabilised in ACM, and is again outside ACM','F-16C',async p=>{
+  const r=await p.evaluate(()=>{radar.setACM('30x20');run(3);const a=radar.gl.stab;radar.mode='RWS';run(3);const b=radar.gl.stab;return{a,b};});
+  ok('stab off in ACM',r.a===0,r);ok('stab back on in RWS',r.b>0,r);});
+
+test('f35_hmd_overlay: F-35 HMD draws without error with a datalink picture','F-35A',async p=>{
+  const r=await p.evaluate(()=>{run(3);try{F35HMD.overlay();return{ok:1};}catch(e){return{err:e.message};}});ok('overlay runs',r.ok===1,r);
+  const a=await p.evaluate(()=>radar.acmList());ok('F-35 HMD mode',a.includes('HMD'),a);});
+test('sar_expand: SAR EXP state cycles and renders','F-35A',async p=>{
+  const r=await p.evaluate(()=>{const W=F35PIT.WIN[0];W.page=F35PIT.PI.SAR;run(3);return{pg:W.page,sar:F35PIT.PI.SAR};});ok('SAR page set',r.pg===r.sar,r);});
+test('sea_ships: ASM mission ships are SHIP class on the SEA scope','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await start('ASHM');const P=player;radar.power='ON';radar.warm=0;AGR.mode='SEA';P.pos.set(-60000,350,5000);await new Promise(r=>setTimeout(r,8000));const e=AGR.ents.filter(e=>AGR.entVal(e)>0);return{n:e.length,ships:GND.units.filter(u=>typeof SDEF!=='undefined'&&SDEF[u.kind]).length};});
+  ok('ships visible in SEA',r.n>0,r);});
+test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16V',async p=>{
+  const r=await p.evaluate(()=>{const P=player;radar.power='OFF';const t=jets.find(j=>j!==P&&j.side!==P.side);
+    for(const j of jets)if(j!==P&&j!==t)j.pos.set(1e7,6000,1e7);
+    game.era='modern';SENSOR_FUSE.reg.datalinkEnabled=true;const o=DL.contacts;DL.contacts=()=>[{j:t,src:'LNK',by:null,pos:t.pos.clone(),vel:t.vel.clone(),hdg:t.hdg,age:0}];
+    P.pos.set(0,6000,0);P.q.set(0,0,0,1);t.pos.set(0,6000,-40000);const g=dlTgt();DL.contacts=o;return{shooter:dlShooter(),on:DL.on(),g:g===t};});
+  ok('F-16V datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
