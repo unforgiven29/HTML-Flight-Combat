@@ -186,8 +186,9 @@ function dircmTick(P,fit,list,dt,now){const dc=fit.dircm;if(!dc||!M.dircm){M.dir
 function cfg(P,fit){// field of regard, scan widths, scope width and IRST limits that depend on the fit
   if(fit.arrays){const mx=Math.max(...fit.arrays.map(a=>Math.abs(a.az)+a.hw));
     if(radar.gl.az<mx){radar.gl.az=mx;}
-    if(radar.scopeAz!==mx){radar.scopeAz=mx;radar.azs=[mx,60,30,10];radar.ai=1;}}
-  else if(radar.scopeAz){radar.scopeAz=0;}
+    {const nz=fit.arrays.find(q=>q.az===0);radar.noseHw=nz?nz.hw*D2R:0;}   // the main radar itself only sweeps the nose array's own sector; the cheek arrays search on their own and are fused into the picture
+    if(radar.scopeAz!==mx){radar.scopeAz=mx;radar.azs=[60,30,10];radar.ai=0;}}
+  else{radar.noseHw=0;if(radar.scopeAz){radar.scopeAz=0;}}
   if(fit.das){IRG.az=180;IRG.eu=90;IRG.ed=90;}else{IRG.az=IRG0.az;IRG.eu=IRG0.eu;IRG.ed=IRG0.ed;}}
 function dasTick(P,now){if(!M.das)return;
   for(const j of jets){if(j===P||!j.alive||(window.IFF&&IFF.hide&&IFF.hide(j)))continue;
