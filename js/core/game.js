@@ -1608,7 +1608,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   get rngM(){const n=this.ranges.length;return this.ranges[Math.max(0,Math.min(n-1,(this.ri|0)))]*this.unit;},
   designate(){if(this.mode==='STT')return;if(!this.on()){flash(isMig()?'RADAR OFF':'NO RAD',900);return;}
     if(this.mode==='ACM'){if(this.acmBest&&this.acmBest.alive)this.stt(this.acmBest);else sfx.click();return;}const rng=this.rngM,tws=this.mode==='TWS',now=performance.now()/1000;let best=null,bd=1e9;
-    for(const [j,tk] of this.tracks){if(!j.alive)continue;const q=tws?this.ang(this.trkPos(j,tk,now)):tk;const dd=Math.hypot((q.az-this.cur.az)/(120*D2R)*(isFishbed()?.12:1),this.sensor==='IRST'?(q.el-(this.cur.el||0))/(60*D2R):q.d/rng-this.cur.r);if(dd<.09&&dd<bd){bd=dd;best=j;}}
+    for(const [j,tk] of this.tracks){if(!j.alive)continue;const q=tws?this.ang(this.trkPos(j,tk,now)):tk;const dd=Math.hypot((q.az-this.cur.az)/(2*(this.scopeAz||60)*D2R)*(isFishbed()?.12:1),this.sensor==='IRST'?(q.el-(this.cur.el||0))/(60*D2R):q.d/rng-this.cur.r);if(dd<.09&&dd<bd){bd=dd;best=j;}}
     if(!best&&this.sensor==='RDR'){let sb=null,sd=1e9;for(const [j,s] of this.strobes){if(!j.alive)continue;const dd=Math.abs(s.az-this.cur.az);if(dd<6*D2R&&dd<sd){sd=dd;sb=j;}}
       if(sb){const a=this.ang(sb.pos);if(a.off<this.gimbal()&&this.on()&&terrLOS(player.pos,sb.pos)){this.stt(sb);return;}}}   // lock the strobe: home-on-jam
     if(!best){sfx.click();return;}
@@ -1628,7 +1628,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   slew(dx,dy){this.curMan=performance.now()/1000+3;if(this.sensor==='IRST'){this.cur.az=clamp(this.cur.az+dx*.55,-30*D2R,30*D2R);this.cur.el=clamp((this.cur.el||0)+dy*55*D2R,-30*D2R,30*D2R);return;}// the IRST scope spans 60 x 60 deg: both axes of the TDC run at the same angular rate
     // v215: RP-22SM (MiG-21bis): the strobe is a range gate only, it moves up and down the scope and cannot be slewed in azimuth
     if(isFishbed()){dx=0;this.cur.az=0;}
-    this.cur.az=clamp(this.cur.az+dx,-60*D2R,60*D2R);
+    {const lim=(this.scopeAz||60)*D2R;this.cur.az=clamp(this.cur.az+dx,-lim,lim);}   // the cursor reaches the whole scope, so contacts picked up by the Su-57's cheek arrays can be designated
     this.cur.r+=dy;
     if(this.cur.r>.98&&this.ri<this.ranges.length-1){this.ri++;this.cur.r=.55;}else if(this.cur.r<.02&&this.ri>0){this.ri--;this.cur.r=.45;}
     this.cur.r=clamp(this.cur.r,.02,.98);},
