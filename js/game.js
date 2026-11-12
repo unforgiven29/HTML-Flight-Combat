@@ -2119,7 +2119,7 @@ function drawFlogScope(c,S){const P=player;const FX=!!P&&P.ac.pit==='foxbat';c.s
   c.globalAlpha=b;c.lineWidth=2;c.strokeRect(x0,y1,x1-x0,y0-y1);
   c.font='700 16px "B612 Mono",monospace';c.textAlign='right';c.textBaseline='middle';c.fillText(String(radar.ranges[radar.ri]),x1+30,y1-14);
   if(radar.on()&&radar.sensor==='RDR'&&radar.mode==='RWS'){flPaint(c,m,1.6,b);jamPaint(c,m,b);}
-  if(radar.sensor==='IRST'&&radar.mode==='RWS'){irC(c,m,1.6,b,30*D2R,-30,30,false);irTracksC(c,m,b,30*D2R,-30,30,1.6);}
+  if(radar.sensor==='IRST'&&(radar.mode==='RWS'||radar.mode==='TWS')){irC(c,m,1.6,b,30*D2R,-30,30,false);irTracksC(c,m,b,30*D2R,-30,30,1.6);}
   c.globalAlpha=b;c.lineWidth=2;
   if(radar.mode==='RWS'&&radar.on()){const p=m(radar.cur.az/(30*D2R),radar.sensor==='IRST'?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);{const sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.45);c.lineWidth=1.4;[-6,6].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-9);c.lineTo(p.x+d,p.y+9);c.stroke();});c.globalAlpha=sv;}
     const an=m(radar.antAz/(30*D2R),0).x;c.beginPath();c.moveTo(an,y0+4);c.lineTo(an,y0+16);c.stroke();}
@@ -2327,7 +2327,7 @@ function drawFCR(){const c=fcr,S=360,P=player,mig=isMig(),col=mig?'#8dffb4':MF;i
     if(radar.power!=='OFF'){c.fillText(radar.power==='ON'?'WARM-UP '+Math.ceil(radar.warm):'STBY',S/2,S/2);if(!isHornet())osb(c,radar.power==='ON'?'WARM':'STBY',60,18,true);}if(isHornet())hornOsbs(c,'RDR');return;}
   c.globalAlpha=.35+.65*sys.fcr.sym;
   c.font=MFONT;c.fillStyle=col;c.strokeStyle=mig?'rgba(141,255,180,.35)':MFD;c.lineWidth=1;
-  const x0=46,x1=314,y0=44,y1=306,gim=radar.gimbal(),X=az=>x0+(az*R2D+60)/120*(x1-x0),rng=radar.rngM,Y=d=>y1-clamp(d/rng,0,1)*(y1-y0);
+  const x0=46,x1=314,y0=44,y1=306,gim=radar.gimbal(),SA=radar.scopeAz||60,X=az=>x0+(az*R2D+SA)/(2*SA)*(x1-x0),rng=radar.rngM,Y=d=>y1-clamp(d/rng,0,1)*(y1-y0);
   c.strokeRect(x0,y0,x1-x0,y1-y0);
   [-30,0,30].forEach(a=>{const x=X(a*D2R);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y0+10);c.moveTo(x,y1);c.lineTo(x,y1-10);c.stroke();});
   [.25,.5,.75].forEach(k=>{const y=Y(rng*k);c.beginPath();c.moveTo(x0,y);c.lineTo(x0+10,y);c.moveTo(x1,y);c.lineTo(x1-10,y);c.stroke();});
@@ -5983,7 +5983,7 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
   root.traverse(o=>{if(!o.isMesh)return;const m=o.material,tr=m.transparent||m.opacity<1;o.castShadow=!tr&&!m.isMeshBasicMaterial;o.receiveShadow=!m.isMeshBasicMaterial;});
   root.visible=false;return out;}
 ck.viper=buildCockpit('viper');ck.fulcrum=buildCockpit('fulcrum');ck.cur=ck.viper;
-function selectCockpit(kind,pit){if(_ckSh)_ckSh.force=true;ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';if(ck.ka50)ck.ka50.root.visible=kind==='ka50';const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
+function selectCockpit(kind,pit){if(_ckSh)_ckSh.force=true;ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';for(const k of Object.keys(ck))if(ck[k]&&ck[k].root&&k!=='viper'&&k!=='fulcrum'&&k!=='cur')ck[k].root.visible=kind===k;const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
   (v.off||[]).forEach(o=>o.visible=false);(v.on||[]).forEach(o=>o.visible=true);if(v.stk){c.stk=v.stk;c.thr=v.thr;}c.sg=v.sg||c.sg;c.ped=v.ped||null;
   c.panelMats.forEach((m,i)=>m.color.setHex(v.panel?v.panel[i]:c.panel0[i]));c.glass=v.glass||c.glass0;}
 PLANES.run('f15','L6543');
@@ -9161,7 +9161,7 @@ const PODS={
   SNIPER: {nm:'SNIPER XR',fovs:[3.5,1.2,.5,.25],fn:['WIDE','MED','NARO','ZOOM'],tv:1,res:256,lrf:30000,lockR:26000},
   ATFLIR: {nm:'ATFLIR',fovs:[4,1.4,.7,.35],fn:['WIDE','MED','NARO','ZOOM'],tv:1,res:224,lrf:26000,lockR:22000},
   LANTIRN:{nm:'LANTIRN',fovs:[6,1.7],fn:['WIDE','NARO'],tv:0,res:160,lrf:16000,lockR:12000}};
-const POD_KEYS=Object.keys(PODS);
+const POD_KEYS=Object.keys(PODS);window.TGP_PODS=PODS;
 Object.assign(AGW,{
   'SNIPER': {k:'tgp',mass:200,L:2.3,R:.19,col:0x8a9096},
   'ATFLIR': {k:'tgp',mass:191,L:2.2,R:.19,col:0x7f868c},

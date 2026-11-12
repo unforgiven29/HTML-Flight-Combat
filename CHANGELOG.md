@@ -1,3 +1,8 @@
+## v314
+- **F-35A cockpit** (js/f35pit.js): built from reference photos. Panoramic display with four touch windows (TSD, HSI, SMS, EW, EOTS, ENG, FUEL, GEAR; tabs below each window), ICAWS/AP/AT strip, HMD/screen brightness strip, master arm, standby ADI, console panels (jettison, gear handle, parking brake, auto recovery, B/U batt, FTA, CM doors), stick, throttle, ejection handle, seat, canopy bow. No HUD glass: symbology clips to a head-following helmet visor field.
+- PCD pages rebuilt from the photo set: EFI (bracket ladder + rose), TSD (HSD view, rings, tracks), VSD (range vs altitude), **RCS** (your signature by aspect: green / yellow / red lobes, stores raise it, tracks and RWR emitters plotted where they see you; tap to flip upper / lower), FCR (game radar scope, tap to lock), SAR (terrain ground map with ATR: every ground unit classified and named — SAM, AAA, armour, truck, structure), SMS, FCS, ENG, FUEL, DAS, EOTS, GEAR, EW and a MENU grid (tap the centre tab).
+- `selectCockpit` now toggles every registered cockpit.
+
 ## v312 — Ka-50: flips, Shkval TV sight, Vikhr launchers
 - Flight model: the pitch/roll walls are gone; the SAS attitude hold only works inside the normal envelope, so the Ka-50 can roll, loop and fly inverted (faster roll/pitch response). Negative-g blade-collision limit relaxed.
 - Shkval-V: built-in nose TV sight (no thermal, no polarity modes) with a laser ranger for the Ka-50, Su-25T and Su-25SM3 (js/shkval.js).
@@ -5,6 +10,15 @@
 - Loadout screen: new Ka-50 head-on picture, launcher shown as one store with a count; sub-rail labels no longer overlap.
 
 # Changelog
+
+## v313 — sensors round 3 (on top of v309), NCTR rebuilt, IRST TWS
+- Ported v309 (MAWS/DIRCM suite, Su-57 cheek arrays, F-35 EOTS + DAS, pulse-radar ground-clutter locks, F-16V Block 70 name, F-4 Sidewinders on 2/2b/8/8b) onto the Ka-50 line.
+- DIRCM: Ka-50, E-3A, A-50, Tu-95MS, B-52H added (with MAWS); Su-35S no longer has one.
+- Legion IRST pod (IRST21) as a store: F-15C/E/EX/I centreline, F-16C/V/E/I left intake. Carrying it gives the player an IRST; removing it takes it away.
+- IRST TWS: modern IRSTs (Legion, DAS, Hornet pod, PIRATE, OLS-35/50M, J-20 ...) can run IR TWS; old ones (F-14 TCS, OLS-29) refuse. IRST contacts now draw in TWS too; range shows once a track has aged.
+- NCTR rebuilt as a jet-engine-modulation classifier (js/nctr.js; modern Su/MiG/J- jets added on request): aspect window, throttle, dwell, class -> engine family -> type stages, sibling confusion, finite library, names expire with the track. Fitted only to radars with a documented NCTR: F-15C/E/EX, F-16C/E/V, F-18C/E/F, EA-18G, F-22, F-35, Typhoon, Rafale.
+- F-8E radar indicator: hood is no longer coplanar with the screen (z-fight); raised bezel round the CRT.
+- Gameplay-level estimates, not published data. Tests: 115 checks.
 
 ## v311 — helicopters: the Ka-50 "Black Shark" (stage 1 of 4)
 - New `js/heli.js`: rotorcraft flight model hooked into `Jet.step` (aircraft with `ac.heli` skip the fixed-wing model), plus the Ka-50 airframe, procedural model (coaxial contra-rotating rotors, twin-fin stabiliser, stub wings, 2A42 pod, Shkval nose) and registration (Su-25 tables cloned, then overridden; stores B-8M1 on the inner pylons).
@@ -35,6 +49,17 @@
 - Pulse-radar scopes draw the raw echo as a single-bin return, not blobs/bars. The lock-select cursor is thin and dim, brightening for 3 s after a slew (F-4E, MiG-23, Flogger).
 - RP-5 Izumrud scope (MiG-19P) now paints raw video clipped to the scope instead of bar contacts.
 - Tests: 51/51. Visual check done on F-4E and RP-5; MiG-23/Flogger cursors changed but not screenshotted. Gameplay-level estimates, not published data.
+## v309 — Modern sensor suite (js/sensorsuite.js, window.MSS)
+- Mirage 2000 MAWS fixed. The warning ran inside drawRWR; m2kdisp.js replaces drawRWR for the Mirage, so it never ran. MAWS now ticks every frame from the aircraft step and feeds RW.msl, so the RWR scope, Mirage VCM, tone, HUD cue and auto-dispenser all react. m2000c.js also stopped counting the SAMIR pod as an air-to-ground store (it deleted the pod whenever a bomb was loaded).
+- Missile detection by sensor: DAS / AAR-56 / 101KS-U / DDM-NG / PAWS-2 / EPAWSS plume sensors (all round), the AESA radar as a warner (radar equation with the missile's own RCS, needs the radar radiating and the missile inside the field of regard, look-down penalty), and the IRST (plume inside its field of regard). Generic rules cover every AESA / IRST jet.
+- Su-57: nose array plus two cheek arrays, field of regard +-135 deg, array-relative steering loss, small side aperture, blind rear sector, cheek arrays search on their own, FCR scope widens (radar.scopeAz), scan widths 120/60/30/10. 101KS-U MAWS and 101KS-O DIRCM (acquire 0.9 s, kill chance 0.55/s scaled by seeker CCM, 300 m to 5.2 km).
+- F-35A and J-35: built-in EOTS counts as a targeting pod (SNS.hasPod/podKind/podPos); DAS is a staring spherical IRST (IRG 180/90/90) that tracks without a scan.
+- More fits (from maws_dircm_plan_1): MAWS on A-10C, Harrier GR.9, Su-30SM/MKI/MKM, MiG-35, Su-25SM3, Su-25T, Cargo, Su-35S, Su-34, F/A-18F, EA-18G, JAS-39E, J-10C, KF-21; DIRCM on Su-25SM3/T (wingtip turrets), Cargo, F/A-18F and EA-18G (pod approximated as fitted), Su-35S and Su-34 (IR jammer, weaker). Ka-50 and the optional bombers are not done.
+- MAWS realism: UV sees only a burning motor, IR also the heated nose at high speed; rain, fog and the sun in the field of view cut range; each sensor has its own bearing error (DAS 0.5 deg, UV 4 deg) that jitters; false alarms (more below 1500 m AGL) that can fire the auto-dispenser.
+- DIRCM realism: per-turret slew, acquisition and laser dwell; the dwell needed and the chance of a break depend on the seeker generation (old / rosette / imaging), a failed dwell is retried once, nothing in the last second, one missile per turret, IR seekers only.
+- Pulse radars (ac.pulse) lock the strongest ground return under the cursor when no aircraft track is there, like any target (a ground echo, it fades). Operator's job to pick the right blip.
+- F-16 Block 70 is now "F-16V Block 70". F-4B / F-4J / F-4E: Sidewinders only on 2 / 2b / 8 / 8b (four), js/jetfixes.js.
+- Tests: 63 checks. Gameplay-level estimates, not published data. Limits: the DAS passive range error is the existing IRST model; the F-35 cockpit pages are the F-16C ones.
 
 ## v306 — Electronic beam steering (js/esasteer.js, window.ESAS)
 - PESA / AESA sets only; mechanical sets unchanged. The registry already held the array numbers (spacing, phase-shifter bits, time-delay units, agility, steering limit, blind angle) but nothing read them.

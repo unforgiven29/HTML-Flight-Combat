@@ -76,7 +76,7 @@ let pend=null;
 
 /* ---------------- loadout rules (CG §1.2) ---------------- */
 {const _v=validLoad;validLoad=function(ac,era,o){const out=_v.apply(this,arguments);if(ac!==ID)return out;
-  const ks=Object.keys(out),ag=ks.filter(k=>AGW[out[k]]&&out[k]!=='TK'&&out[k]!=='PTB');
+  const ks=Object.keys(out),ag=ks.filter(k=>AGW[out[k]]&&AGW[out[k]].k!=='ecm'&&out[k]!=='TK'&&out[k]!=='PTB');   // pods (DDM SAMIR, jammers) are not air-to-ground stores
   if(ag.length){const first=out[ag[0]];for(const k of ag)if(out[k]!==first)delete out[k];
     for(const k of ks)if(out[k]==='Super 530D')delete out[k];}
   return out;};}
