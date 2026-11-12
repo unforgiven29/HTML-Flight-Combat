@@ -294,6 +294,8 @@ test('nctr_jem: reads class, engine, then type nose-on; refuses beam-on','F-15C'
     o.beam=NCTRX.cond(b,radar.tracks.get(b),player).why;return o;});
   ok('class then engine then type',!!r.cls&&!!r.eng&&!!r.id,r);ok('beam-on gives no read',r.beam==='ASPECT',r);});
 
+for(const ac of ['Su-35S','J-20'])test('nctr_fit_'+ac+': modern Russian/Chinese jets run NCTR','' +ac,async p=>{
+  const r=await p.evaluate(()=>({fit:NCTRX.FIT.has(player.type)}));ok('NCTR fitted',r.fit,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

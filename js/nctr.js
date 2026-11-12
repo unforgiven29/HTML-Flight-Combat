@@ -13,8 +13,8 @@
    * The library is finite. The newest types are not in it (they read as UNKNOWN + class + engine family).
    * A name stays with the track only while the track lives: lose it for 20 s and the next look starts again.
    * Range: radar range against the target x (RCS)^(1/4); the dwell grows with the square of range over that limit.
-   Fitted jets (documented NCTR only): F/A-18C/E (switched on its radar page, OSB 5), F-15C/E/EX, F-16C/E/V, F-22, F-35, EF-2000, Rafale,
-   F/A-18F, EA-18G run it automatically on the track they are working. No NCTR on the F-14, MiG, Su, J- and other jets. Gameplay-level numbers.
+   Fitted jets: F/A-18C/E (switched on its radar page, OSB 5), F-15C/E/EX, F-16C/E/V, F-22, F-35, EF-2000, Rafale,
+   F/A-18F, EA-18G run it automatically on the track they are working. Also modern Su/MiG/J- jets (by request). No NCTR on the F-14, older MiGs/Sus and other jets. Gameplay-level numbers.
    Switches: NCTRX.on
    ===================================================================================================================== */
 (function(){'use strict';
@@ -22,9 +22,11 @@ if(typeof NCTR==='undefined'||typeof radar==='undefined'||typeof nctrTick==='und
 const D=Math.PI/180,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const X=window.NCTRX={on:true,st:{reads:0,sib:0,unk:0}};
 // Only radars with a documented NCTR mode: APG-63(V)1/(V)2/(V)3 and APG-70 (F-15C/E), APG-65/73/79 (Hornets), APG-77 (F-22), APG-81 (F-35),
-// APG-68(V)5 / APG-80 / APG-83 (F-16), CAPTOR (Typhoon, range-profile NCTR), RBE2 (Rafale). Russian and Chinese sets, the Gripen E and the KF-21
-// have no public NCTR description and are left without it; the F-14 never had it.
-const FIT=new Set(['F-15C','F-15E','F-15EX','F-16C','F-16E','F-16V','F-22','F-35A','EF-2000','Rafale','EA-18G','F-18F']);
+// APG-68(V)5 / APG-80 / APG-83 (F-16), CAPTOR (Typhoon, range-profile NCTR), RBE2 (Rafale). The modern Russian and Chinese jets are added by
+// request (their sets have no public NCTR description, so that part is a gameplay choice); the F-14 never had it.
+const FIT=new Set(['F-15C','F-15E','F-15EX','F-16C','F-16E','F-16V','F-22','F-35A','EF-2000','Rafale','EA-18G','F-18F',
+  // by request: the modern Russian and Chinese fighters (no public NCTR description exists for these sets; same engine-signature model)
+  'Su-35S','Su-57','Su-30SM','Su-30MKM','MiG-35','MiG-31BM','Su-34','J-20','J-10C','J-16','J-11B','J-15T','J-35']);
 X.FIT=FIT;
 // types the library does not know (newest / least collected)
 const NOLIB=new Set(['Su-57','J-20','J-35','J-15T','J-16','KF-21','F-22','F-35A']);

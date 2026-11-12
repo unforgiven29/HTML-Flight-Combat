@@ -11,7 +11,7 @@
 - DIRCM: Ka-50, E-3A, A-50, Tu-95MS, B-52H added (with MAWS); Su-35S no longer has one.
 - Legion IRST pod (IRST21) as a store: F-15C/E/EX/I centreline, F-16C/V/E/I left intake. Carrying it gives the player an IRST; removing it takes it away.
 - IRST TWS: modern IRSTs (Legion, DAS, Hornet pod, PIRATE, OLS-35/50M, J-20 ...) can run IR TWS; old ones (F-14 TCS, OLS-29) refuse. IRST contacts now draw in TWS too; range shows once a track has aged.
-- NCTR rebuilt as a jet-engine-modulation classifier (js/nctr.js): aspect window, throttle, dwell, class -> engine family -> type stages, sibling confusion, finite library, names expire with the track. Fitted only to radars with a documented NCTR: F-15C/E/EX, F-16C/E/V, F-18C/E/F, EA-18G, F-22, F-35, Typhoon, Rafale.
+- NCTR rebuilt as a jet-engine-modulation classifier (js/nctr.js; modern Su/MiG/J- jets added on request): aspect window, throttle, dwell, class -> engine family -> type stages, sibling confusion, finite library, names expire with the track. Fitted only to radars with a documented NCTR: F-15C/E/EX, F-16C/E/V, F-18C/E/F, EA-18G, F-22, F-35, Typhoon, Rafale.
 - F-8E radar indicator: hood is no longer coplanar with the screen (z-fight); raised bezel round the CRT.
 - Gameplay-level estimates, not published data. Tests: 115 checks.
 
