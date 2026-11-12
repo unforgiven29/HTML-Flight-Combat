@@ -22,13 +22,24 @@ if(typeof STN!=='undefined')for(const id of Object.keys(STN))for(const k of Obje
    velocity, so a target that jinks away from the cue is missed. With no track to cue from, the round falls back to the narrow blind-shot cone above. */
 if(MSL['AIM-9X-II'])MSL['AIM-9X-II'].dlir=true;
 const _fm=window.fireMissile;
+// cue sources, best first: STT lock / TWS bug, helmet line of sight (the head is slewed to wherever he looks), a radar or link track inside the round's LOAL cone
+function loalCue(d){const P=player,f=P.fwd(new V3());
+  const lk=radar.mode==='STT'?radar.lock:radar.mode==='TWS'&&radar.bugOK()?radar.bug:null;
+  if(lk&&lk.alive){const e=dlLinkEst(lk);if(e)return{j:lk,e:e,how:'TRACK'};}
+  if(typeof hmcsOn==='function'&&hmcsOn()){const dir=camera.getWorldDirection(new V3());let best=null,bd=1e9;
+    for(const j of jets){if(j===P||!j.alive||j.side===P.side||(typeof IFF!=='undefined'&&IFF.hide(j)))continue;const r=j.pos.clone().sub(P.pos),dd=r.length();
+      if(dir.angleTo(r)<6*D&&dd<30000&&dd<bd&&f.angleTo(r)<Math.min(d.search||1,100*D)){bd=dd;best=j;}}
+    if(best)return{j:best,e:{p:best.pos.clone(),v:best.vel.clone()},how:'HELMET'};}
+  let best=null,bd=1e9;const cone=Math.min(d.search||1,75*D);
+  for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||j.side===P.side)continue;const r=j.pos.clone().sub(P.pos),dd=r.length();
+    if(f.angleTo(r)<cone&&dd<bd){const e=dlLinkEst(j);if(e){bd=dd;best={j:j,e:e,how:'TRACK'};}}}
+  if(!best&&typeof DL!=='undefined'&&DL.on()){for(const c of DL.contacts()){const j=c.j;if(!j||!j.alive||j.side===P.side)continue;const r=j.pos.clone().sub(P.pos),dd=r.length();
+    if(f.angleTo(r)<cone&&dd<bd){bd=dd;best={j:j,e:{p:c.pos,v:c.vel},how:'LINK'};}}}
+  return best;}
 if(typeof _fm==='function'){window.fireMissile=function(type,sh,tg,st){const m=_fm.apply(this,arguments);
-  try{const d=MSL[type];if(m&&!tg&&d&&d.loal&&sh===player&&radar.sensor==='RDR'){
-    let cue=null,bd=1e9;const lk=radar.mode==='STT'?radar.lock:radar.mode==='TWS'&&radar.bugOK()?radar.bug:null;
-    if(lk&&lk.alive&&dlLinkEst(lk)){cue=lk;bd=lk.pos.distanceTo(player.pos);}
-    else{const f=player.fwd(new V3()),cone=Math.min(d.search||1,75*D);for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||j.side===player.side)continue;const r=j.pos.clone().sub(player.pos),dd=r.length();
-      if(f.angleTo(r)<cone&&dd<bd&&dlLinkEst(j)){bd=dd;cue=j;}}}
-    if(cue){const e=dlLinkEst(cue);m.dlTgt=cue;m.dlE={p:e.p.clone(),v:e.v.clone(),t:m.t};flash(type+' \u00b7 LOAL \u00b7 '+(d.dlir?'DATALINK ':'CUE ')+Math.round(bd/NM)+' NM',1200);}}}catch(e){}
+  try{const d=MSL[type];if(m&&!tg&&d&&d.loal&&sh===player){const c=loalCue(d);
+    if(c){m.dlTgt=c.j;m.dlE={p:c.e.p.clone(),v:c.e.v.clone(),t:m.t};flash(type+' \u00b7 LOAL \u00b7 '+(d.dlir?'DATALINK ':'CUE ')+c.how+' '+Math.round(c.j.pos.distanceTo(player.pos)/NM)+' NM',1400);}
+    else flash(type+' \u00b7 LOAL \u00b7 NO CUE \u00b7 BLIND CONE',1400);}}catch(e){}
   return m;};}
 const _mu=Missile.prototype.update;
 Missile.prototype.update=function(dt){
