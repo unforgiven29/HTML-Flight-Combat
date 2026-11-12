@@ -46,7 +46,7 @@ const FIT={
   'J-20':{maws:['DASJ'],das:true},
   'F-22':{maws:['MLD']},
   'Su-57':{maws:['U101'],
-    arrays:[{n:'N036-1-01 nose',az:0,hw:60,ap:1},{n:'N036B-1-01L cheek',az:-90,hw:45,ap:.35},{n:'N036B-1-01R cheek',az:90,hw:45,ap:.35}],
+    arrays:[{n:'N036-1-01 nose',az:0,hw:60,ap:1,aesa:1},{n:'N036B-1-01L cheek',az:-90,hw:45,ap:.35,aesa:1},{n:'N036B-1-01R cheek',az:90,hw:45,ap:.35,aesa:1}],   // all three are AESA (no gimbal: electronic steering and scan loss only)
     dircm:{n:'101KS-O',R:5200,rmin:300,slew:140,acq:.8,pk:.6,turrets:TWO_UD}},
   'Rafale':{maws:['DDMNG']},'EF-2000':{maws:['PAWS']},'F-15EX':{maws:['EPAWS']},
   'A-10C':{maws:['AAR47']},'Harrier GR.9':{maws:['EOW']},
@@ -297,11 +297,11 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
   // F4: text block and the cheek sectors on the plan view
   const RD=window.RADARDBG;
   if(RD){const _r=RD.extraRows;RD.extraRows=()=>{const L=_r?_r():[],A=arrs();if(!A.length)return L;const now=live();
-    L.push('','CHEEK ARRAYS  '+(on()?'searching':'idle (radar not radiating)')+'  field of regard +-'+Math.round(radar.gl.az)+' deg');
+    L.push('','AESA ARRAYS  nose N036 + 2 cheek  '+(on()?'searching':'idle (radar not radiating)')+'  field of regard +-'+Math.round(radar.gl.az)+' deg');
     for(const ar of A){let inSec=0;const hits=[];
       for(const j of jets){if(j===player||!j.alive)continue;const a=radar.ang(j.pos),q=arrFor(M.fit.arrays,a.baz,a.bel,1.5);if(q&&q.a===ar)inSec++;}
       for(const[j,h]of M.sideHits)if(h.arr===ar)hits.push(j.type+' '+(h.d/1852).toFixed(0)+'NM');
-      L.push('  '+ar.n.padEnd(20)+' az '+String(ar.az).padStart(4)+' +-'+ar.hw+'  aperture '+(ar.ap*100).toFixed(0)+'%  in sector '+inSec+(hits.length?'  declared: '+hits.slice(0,3).join(', '):''));}
+      L.push('  '+ar.n.padEnd(20)+(ar.aesa?' AESA':'')+' az '+String(ar.az).padStart(4)+' +-'+ar.hw+'  aperture '+(ar.ap*100).toFixed(0)+'%  in sector '+inSec+(hits.length?'  declared: '+hits.slice(0,3).join(', '):''));}
     return L;};
     RD.lift=H=>arrs().length?H*.3:0;    // the plan view moves the antenna up so the sectors behind the wing line show
     RD.planExtra=(g,cx,cy,s,rng)=>{const A=arrs();if(!A.length)return;const now=live(),act=on();

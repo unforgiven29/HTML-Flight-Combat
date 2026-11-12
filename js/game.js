@@ -12409,7 +12409,7 @@ function pKIS(c,x0,y0,x1,y1,vk){const f={ENG:SM_PAGE.ENG,FUE:SM_PAGE.FUE,SYS:SM_
 // roll-stabilised picture in an octagonal window, corner brackets with a gapped cross, zoom figure, <ПЗ ПЗ>, laser range. OLS-35 figures:
 // gimbal ±90° az, −15…+60° el, field 10 × 7.5° wide, laser range ≤20 km on air targets. Slaved to the lock (radar or IRST), else boresight.
 const OLS={N:320,M:240,zi:0,ZM:[1,2,5,10],pol:0,lase:1,src:'OLS',t:0,cam:new THREE.PerspectiveCamera(7.5,4/3,5,120000),los:null,lim:false,
-  fitted:()=>!!player&&player.type==='Su-35S',
+  fitted:()=>!!player&&(player.type==='Su-35S'||player.type==='Su-57'),
   aim(){const P=player,L=radar.mode==='STT'&&radar.lock&&radar.lock.alive?radar.lock:null,qi=P.q.clone().invert();
     let dir=L?L.pos.clone().sub(P.pos).normalize():P.fwd(new V3()).applyAxisAngle(P.right?P.right(new V3()):new V3(1,0,0),-2*D2R);
     const b=dir.clone().applyQuaternion(qi);let az=Math.atan2(b.x,-b.z),el=Math.asin(clamp(b.y,-1,1));
@@ -12539,7 +12539,7 @@ mkState('MKL','RDR','SPO');mkState('MKR','SMS','NAV');
 build({key:'MKL',g:GMK,X:-.335,Y:.045,w:.24,h:.18,cw:640,ch:480,nT:12,nS:8,name:'МФИ-10-5 Л'});build({key:'MKR',g:GMK,X:.27,Y:.045,w:.24,h:.18,cw:640,ch:480,nT:12,nS:8,name:'МФИ-10-5 П'});
 // the old square Su-27SM screens and their keys are switched off in both jets
 const oldSq=[];sm.children.forEach(m=>{if(!m.isMesh)return;const p=m.position;if(p.x===0&&p.y===0&&p.z===0)return;if((Math.abs(p.x+.385)<.115||Math.abs(p.x-.30)<.115)&&Math.abs(p.y-.055)<.115)oldSq.push(m);});
-{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S',mk2=t==='Su-30MK2';
+{const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S'||t==='Su-57',mk2=t==='Su-30MK2';
     G35.visible=s35;GMK.visible=mk2;if(s35||mk2)for(const m of oldSq)m.visible=false;
     // the Su-27 standby gauge cluster under the screens is not in the Su-35 (S3-A-31-11: only Щиток нижний there)
     if(!selectCockpit._lowC){const L=[],own=new Set();G35.traverse(m=>own.add(m));GMK.traverse(m=>own.add(m));const p=new THREE.Vector3();sm.updateMatrixWorld(true);
@@ -12653,4 +12653,4 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(1
       [lp,rp].forEach(arr=>{if(arr.length<2)return;hx.beginPath();arr.forEach((q,i)=>i?hx.lineTo(q.x,q.y):hx.moveTo(q.x,q.y));hx.stroke();});}}
   if(typeof S3!=='undefined'&&!S3.gces)T(tr('УВОД ОТКЛ'),6.4,-8.4,'center',sm);
   hx.restore();migWarn(P,agl);}
-{const IK=new Set(['Su-35S','Su-30SM']),_d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)){try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
+{const IK=new Set(['Su-35S','Su-57','Su-30SM']),_d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)){try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}

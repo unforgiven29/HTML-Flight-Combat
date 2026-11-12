@@ -1004,7 +1004,7 @@ PLANES.add('su27',{
   /* game.js line 14206 */
   L14206(){
     // ---------- the Flanker glass-cockpit family: Su-27SM, Su-30SM and now the Su-35S and Su-30MK2 ----------
-    {const _smx=SMX,FAM=new Set(['Su-35S','Su-30MK2']);SMX=function(t){return FAM.has(t)||_smx(t);};}
+    {const _smx=SMX,FAM=new Set(['Su-35S','Su-57','Su-30MK2']);SMX=function(t){return FAM.has(t)||_smx(t);};}
     // Su-35S 'Flanker-E': two AL-41F1S (izd. 117S, 86.3 kN dry / 142.2 kN reheat), empty 19,000 kg, 11,500 kg internal fuel, no canards, N035 Irbis-E PESA on a
     // two-axis drive (±60° electronic, ±120° with the mechanical turn; 350-400 km against a 3 m² target in a narrow sector search, ~200 km in a normal volume),
     // 30 track files / 8 engaged, OLS-35 (about 90 km tail-on, 35 km head-on, 20 km laser), L-150-35, 12 hardpoints.
@@ -1143,7 +1143,7 @@ PLANES.add('su27',{
 
     // ---------------- which board: applied after every cockpit change ----------------
     {const _sc=selectCockpit;selectCockpit=function(kind,pit){const r=_sc.apply(this,arguments);try{
-        const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S',mk2=t==='Su-30MK2',s30=t==='Su-30SM',vis=(l,v)=>{for(const m of l)m.visible=v;};
+        const t=kind==='fulcrum'&&player?player.type:'',s35=t==='Su-35S'||t==='Su-57',mk2=t==='Su-30MK2',s30=t==='Su-30SM',vis=(l,v)=>{for(const m of l)m.visible=v;};
         G35.visible=W35.visible=s35;GMK.visible=mk2;
         if(!s30){vis(old.L,!s35);vis(old.R,!s35);vis(old.C,!(s35||mk2));}
         vis(old.G,!(s35||mk2));vis(old.K,!(s35||mk2));vis(old.H,!s35);
