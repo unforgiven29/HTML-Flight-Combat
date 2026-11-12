@@ -55,14 +55,14 @@ IR.phys=phys;
 const sm=(x,s)=>.5*(1+Math.tanh(x/s));
 IR.sweep=function(rd,prev,cur,now,dt,gim){const fr=++IR.fr,w=rd.beam,h=rd.bmV(),stab=true,K=cl(Math.ceil(Math.abs(cur-prev)/(w*.3)),1,10),
     rate=rd.rate*(rd.rotor()?1.7:2.1),Tn=w/Math.max(rate,1e-3);
-  for(const j of jets){if(j===player||!j.alive||IFF.hide(j))continue;const a=rd.ang(j.pos);let g=0,rec=IR.dw.get(j);
+  for(const j of jets){if(j===player||!SEENIR(j)||IFF.hide(j))continue;const a=rd.ang(j.pos);let g=0,rec=IR.dw.get(j);
     if(a.off<=gim+2*D){const dE=a.el-rd.antEl,ge=sm(h/2-Math.abs(dE),.1*h);
       for(let i=0;i<K;i++){let dA=a.az-(prev+(cur-prev)*(i+.5)/K);dA=Math.atan2(Math.sin(dA),Math.cos(dA));g+=sm(w/2-Math.abs(dA),.1*w)*ge;}g/=K;}
     if(g>.01){if(!rec){rec={E:0,pk:0,sb:0,a:null,t:now};IR.dw.set(j,rec);}rec.E+=g*dt;rec.fr=fr;rec.t=now;
       if(g>rec.pk){rec.pk=g;if(g>.3){rec.a=a;rec.sb=rd.snr(j,a,1);}}}
     else if(rec)IR.fin(rd,j,rec,now,Tn);}
   for(const [j,rec] of IR.dw)if(rec.fr!==fr)IR.fin(rd,j,rec,now,Tn);};
-IR.fin=function(rd,j,rec,now,Tn){IR.dw.delete(j);if(now-rec.t>.4)return;IR.st.dwell++;if(!j.alive||!rec.a||rec.pk<.45){IR.st.edge++;return;}
+IR.fin=function(rd,j,rec,now,Tn){IR.dw.delete(j);if(now-rec.t>.4)return;IR.st.dwell++;if(!SEENIR(j)||!rec.a||rec.pk<.45){IR.st.edge++;return;}
   const snr=rec.sb*(rec.E/Tn)*IR.kcal;if(snr>0&&Math.random()<pdOf(snr)){IR.st.det++;rd.hit(j,rec.a,snr,now);}else IR.st.miss++;};
 /* ---------- passive ranging: intensity + bearings-only triangulation ---------- */
 {const _t=radar.trkR;radar.trkR=function(j,tk){const d0=_t.call(this,j,tk);
