@@ -155,3 +155,14 @@ Caveat: several jets were thrust-limited supersonic in the base engine model; th
 ## Still to do (batch 1)
 - Flight envelopes (Mach / ceiling / sustained turn / roll) for the core 10 against NASA and NATOPS performance charts.
 - APG-63, APG-73, APQ-120, RP-22, Sapfir-23ML, Sapfir-25 ranges.
+
+## Flight-model depth layer (`js/flight/aerodepth.js`)
+
+| Effect | Rule | Probe result (in-sim, clean, half fuel) |
+|---|---|---|
+| Transonic pitch authority (Mach tuck) | Available G × (1 − 18 %·bump(M)) for non-FBW supersonic jets, 4 % for FBW; bump peaks M1.02, ±0.12 wide | F-4E 5.5 → 4.5 G at M1.02; F-15C 6.0 → 4.9; F-16C 7.0 → 6.7; Su-27 9.0 → 8.6; A-10C unchanged |
+| Aeroelastic roll loss | Roll × (1 − 38 %·s) non-FBW, 12 % FBW, s = smoothstep((q−28 kPa)/110 kPa) | F-4E 3.9 → 2.9 → 2.3 rad/s at 250/400/600 m/s SL; F-16C 5.2 → 4.7 |
+| Energy state | `j.ps` (m/s), `j.eh` (m), `AERO.ps(j)` in ft/s, 2 s filter | **Not verified in-sim**: the headless harness spawns the jet frozen, so Ps read 0. Fields populate, no errors. |
+
+Supersonic capability is solved from the same thrust/drag code (max Mach at 11 km), not hard-coded per jet.
+The 18 % / 38 % magnitudes are my engineering estimates, not sourced from flight-test data. Tune `AERO.tuck`, `AERO.rollLoss`, `AERO.q0`, `AERO.dq`.
