@@ -289,3 +289,16 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
 }
 console.info('[sensorsuite] v309 MAWS / DAS / EOTS / side arrays / DIRCM');
 })();
+/* TGP / EOTS slaved to the radar in air-to-air: with no A/G store selected the pod line of sight follows the radar's bugged (or locked) air target, the way the
+   pod page shows it ("SLAVE"). Any manual slew, TMS or bore command breaks the slave on that target until the radar changes target. */
+(function(){if(typeof SNS==='undefined')return;
+  const tgtOf=()=>{const j=radar.mode==='STT'&&radar.lock?radar.lock:radar.bug||radar.lock;return j&&j.alive&&!j.gnd?j:null;};
+  const _tick=SNS.tick.bind(SNS),_slew=SNS.slew.bind(SNS),_tms=SNS.tms.bind(SNS),_bore=SNS.bore.bind(SNS);
+  SNS.slaved=null;SNS.slvBrk=null;
+  SNS.tick=function(dt){const P=player;this.slaved=null;
+    if(P&&P.alive&&this.hasPod(P)&&!this.wk()&&!this.unit){const j=tgtOf();if(j&&j!==this.slvBrk&&j!==P){this.ensure(P);this.spi=j.pos.clone();this.mode='AREA';this.slaved=j;}}
+    return _tick(dt);};
+  SNS.slew=function(cs,cr,dt){if((cs||cr)&&this.slaved)this.slvBrk=this.slaved;return _slew(cs,cr,dt);};
+  SNS.tms=function(){if(this.slaved)this.slvBrk=this.slaved;return _tms();};
+  SNS.bore=function(){this.slvBrk=tgtOf();return _bore();};
+})();

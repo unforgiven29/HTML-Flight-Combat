@@ -303,6 +303,12 @@ test('f35_cockpit: F-35A uses its own pit, display draws, no HUD glass, tab clic
     o.tick(player,.2);o.tick(player,.2);const g=o.glass[0];return{built:true,vis,viper,cockpit:player.ac.cockpit,before,after,visor:isFinite(g.x),errs:0};});
   ok('f35 pit built and selected',r.built&&r.vis&&!r.viper&&r.cockpit==='f35',r);ok('tab click cycles the page',r.after!==r.before,{b:r.before,a:r.after});ok('visor clip finite',r.visor);ok('no page errors',p.errs.length===0,p.errs);});
 
+test('tgp_slave: pod / EOTS follows the radar target in A-A, a manual slew breaks it','F-35A',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);tgt.pos.set(900,6100,-12000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,200);
+    game.wsel='AIM-120C';radar.mode='RWS';run(30*8);radar.bug=tgt;radar.stt&&radar.stt(tgt);SNS.tick(.05);const d1=SNS.spi.distanceTo(tgt.pos),sl=!!SNS.slaved;
+    SNS.slew(1,0,.2);SNS.tick(.05);const brk=!SNS.slaved;return{d1:Math.round(d1),sl,brk};});
+  ok('pod aimed at the radar target and marked slaved',r.sl&&r.d1<50,r);ok('manual slew breaks the slave',r.brk);});
+
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

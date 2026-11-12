@@ -1,6 +1,7 @@
 ## v314
 - **F-35A cockpit** (js/f35pit.js): built from reference photos. Panoramic display with four touch windows (TSD, HSI, SMS, EW, EOTS, ENG, FUEL, GEAR; tabs below each window), ICAWS/AP/AT strip, HMD/screen brightness strip, master arm, standby ADI, console panels (jettison, gear handle, parking brake, auto recovery, B/U batt, FTA, CM doors), stick, throttle, ejection handle, seat, canopy bow. No HUD glass: symbology clips to a head-following helmet visor field.
 - PCD pages rebuilt from the photo set: EFI (bracket ladder + rose), TSD (HSD view, rings, tracks), VSD (range vs altitude), **RCS** (your signature by aspect: green / yellow / red lobes, stores raise it, tracks and RWR emitters plotted where they see you; tap to flip upper / lower), FCR (game radar scope, tap to lock), SAR (terrain ground map with ATR: every ground unit classified and named — SAM, AAA, armour, truck, structure), SMS, FCS, ENG, FUEL, DAS, EOTS, GEAR, EW and a MENU grid (tap the centre tab).
+- TGP / EOTS slaves to the radar target (bug or lock) in air-to-air whenever no A/G store is selected; slew, TMS or bore breaks it; the pod page shows SLAVE · RDR.
 - `selectCockpit` now toggles every registered cockpit.
 
 ## v312 — Ka-50: flips, Shkval TV sight, Vikhr launchers
