@@ -106,6 +106,8 @@ function sub1(j,H,h,dt,last){
     T=q*CTs;h.vi+=(vi-h.vi)*Math.min(1,dt/.35*(it===0?1:.0));
   }
   h.T=T;h.vrs=inf.vrs;h.vh=inf.vh;
+  // blade flapping / collective servo lag: the disc takes about a seventh of a second to build or shed thrust after a collective change
+  h.Tf=h.Tf==null?T:h.Tf+(T-h.Tf)*(1-Math.exp(-dt/(.14/Math.max(.6,Nr))));
   // ---- rotor power: induced + climb, profile, fuselage parasite ----
   const mu=Vh/Math.max(tip,10),Pind=T*(Vax+h.vi),Pprof=(H.sigma*H.cd0/8)*rho_*H.A*tip*tip*tip*(1+4.65*mu*mu)*(1+8*Math.max(0,CTover(T,q,H)));
   const Vtot=Math.max(V,.1),Ppar=.5*rho_*H.fPar[0]*Vtot*Vtot*Vtot*.35;                       // the fuselage drag is also applied as a force below; only the power the rotor must supply
@@ -132,7 +134,7 @@ function sub1(j,H,h,dt,last){
   if(eOn){let burn=(Pe/1000)*H.fuelK*dt;if(j.tankFuel>0){const t=Math.min(j.tankFuel,burn);j.tankFuel-=t;burn-=t;}j.fuel=Math.max(0,j.fuel-burn);}
   // ---- forces ----
   const a=_a.set(0,-G,0);
-  a.addScaledVector(u,T/m);
+  a.addScaledVector(u,h.Tf/m);
   // fuselage drag (body axes), the fins and stub wing add sideways and vertical area; compressibility and retreating-blade stall bring in a Vne wall
   const wall=1+Math.pow(Math.max(0,(V-(H.vne/3.6)*.82)/22),2);
   const dfx=.5*rho_*H.fPar[0]*wall*Math.abs(vf),dfy=.5*rho_*H.fPar[1]*Math.abs(vr),dfz=.5*rho_*H.fPar[2]*Math.abs(vu);
@@ -175,7 +177,19 @@ function sub1(j,H,h,dt,last){
   else{if(h.hold.y===null)h.hold.y=hdg;let e=h.hold.y-hdg;e=Math.atan2(Math.sin(e),Math.cos(e));rCmd+=Math.max(-30*DEG,Math.min(30*DEG,e*2.0))*(1-spdY);}
   if(upr)rCmd+=j.beta*1.6*Math.max(0,spdY)*(j.onGnd?0:1);
   if(spdY>0&&!gnd&&upr)rCmd+=Math.tan(Math.max(-1.2,Math.min(1.2,bnk)))*G/Math.max(V,12)*.55*spdY*Math.cos(pit);
-  h.qc=qCmd;h.cpIn=cp;const tau=.17,ka=1-Math.exp(-dt/tau),w=h.w;
+  // coaxial collective-yaw coupling: raising the lever shifts torque between the two rotors, a small yaw kick the pedals must trim out
+  {const dl=h.lev0==null?0:(lever-h.lev0)/Math.max(dt,1e-4);h.lev0=lever;rCmd+=Math.max(-2,Math.min(2,dl))*3.2*DEG*(1-spdY*.6);}
+  h.qc=qCmd;h.cpIn=cp;const tau=.17/Math.max(.6,Math.min(1.1,Nr)),ka=1-Math.exp(-dt/tau),w=h.w;
+  // rotor-disc flapping effects the SAS has to fight: flap-back (speed makes the nose rise), dihedral (sideslip rolls the aircraft away from the wind),
+  // and cyclic cross-coupling (a pitch input leaks a little into roll). All three vanish with the rotor unloaded on the ground.
+  if(!j.onGnd){const air=Math.min(1,Math.max(0,(hgt-groundAt(pos.x,pos.z)-H.gh)/6));
+    qCmd+=vf*.0011*Nr*air;pCmd+=-vr*.0042*Nr*air+cp*H.rateP*DEG*.07*(Math.abs(cp)>.04?1:0);}
+  // v313 dynamics: effective translational lift (the rotor leaves its own wake at about 8-15 m/s: inflow changes shake the disc), and the disc answering gusts at low
+  // speed (a rotor in a hover feels every gust through the whole disc, far more than a fixed wing at the same airspeed)
+  h.tt=(h.tt||0)+dt;
+  if(!j.onGnd&&Nr>.5){const ag=Math.min(1,Math.max(0,(hgt-groundAt(pos.x,pos.z)-H.gh)/5)),etl=Math.exp(-Math.pow((Vh-11)/3.2,2))*ag*Math.min(1,T/(m*G)),slow=ag*(1-Math.min(1,Vh/40));
+    pCmd+=Math.sin(h.tt*17.3)*etl*5*DEG;qCmd+=(Math.sin(h.tt*13.1)*4-2.5*Math.cos(h.tt*2.1))*etl*DEG;
+    if(j.gust){const gf=j.gust.dot(f),gr=j.gust.dot(rt);qCmd+=gf*1.1*DEG*slow;pCmd+=-gr*1.1*DEG*slow;}}
   w.p+=(qCmd*eff-w.p)*ka;w.r+=(pCmd*eff-w.r)*ka;w.y+=(rCmd*eff-w.y)*ka;
   // ground contact
   const gh=groundAt(pos.x,pos.z),gl=gh+H.gh;
@@ -203,6 +217,9 @@ function sub1(j,H,h,dt,last){
     const pav=onPaved(j.pos.x,j.pos.z),load=Math.max(0,Math.min(1,1-T*Math.max(0,j.up(_u).y)/(m*G)));
     const mu=(pav?.03:.12)*(1+.0),dec=(mu+.35*j.brk)*G*load*dt;
     lon=lon>0?Math.max(0,lon-dec):Math.min(0,lon+dec);
+    // dynamic rollover: sliding sideways with the rotor carrying part of the weight, a skid catches and the aircraft pivots over it; the SAS cannot hold it once it starts
+    if(j.onGnd&&load<.85&&Math.abs(lat)>1.2){const ex=(Math.abs(lat)-1.2)*(.3+(1-load));w.r+=Math.sign(lat)*ex*.1*dt*60*.35;}
+    if(j.onGnd&&load<.9&&Math.abs(bnk)>38*DEG&&Math.abs(w.r)>.05){j.kill('DYNAMIC ROLLOVER');return;}
     lat*=Math.exp(-dt*(4+8*load));
     j.vel.x=fx*lon+rx*lat;j.vel.z=fz*lon+rz*lat;
     if(load>.15){const settle=1-Math.exp(-dt*(1.2+3*load));w.p+=((-pit)*3-w.p)*settle*.5;w.r+=((-bnk)*3-w.r)*settle*.5;}

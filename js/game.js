@@ -9227,7 +9227,12 @@ Object.assign(SNS,{
       q=(TVC[t]!=null?TVC[t]:.7)*dk*(1-.55*(ENV.rain||0))*(1-({BROKEN:.1,OVERCAST:.25,STORM:.45}[ENV.wx]||0));}
     return a.lockR*q*(this.zi>0?1.3:1);},
   cand(P){const e=this.eye(P),d=e.distanceTo(this.spi),gate=d*Math.tan(this.fov()*D2R*(this.wk()==='agm'?.12:.15));let best=null,bd=1e9;
-    for(const u of GND.units){if(!u.alive)continue;const dd=u.pos.distanceTo(this.spi);if(dd<Math.max(gate,u.T.r*1.5)&&dd<bd&&terrLOS(e,_gsA.copy(u.pos).setY(u.pos.y+2))){bd=dd;best=u;}}return best;},
+    for(const u of GND.units){if(!u.alive)continue;const dd=u.pos.distanceTo(this.spi);if(dd<Math.max(gate,u.T.r*1.5)&&dd<bd&&terrLOS(e,_gsA.copy(u.pos).setY(u.pos.y+2))){bd=dd;best=u;}}
+    // a targeting pod locks anything under the cross: aircraft and helicopters too (the Maverick seeker stays on ground targets)
+    if(this.wk()!=='agm'){for(const u of jets){if(u===P||!u.alive||u.gnd)continue;const dd=u.pos.distanceTo(this.spi);if(dd<Math.max(gate,25)&&dd<bd&&terrLOS(e,u.pos)){bd=dd;best=u;}}}
+    return best;},
+  // what the pod calls its point track: contrast (TV) or IR, chosen by the sensor in use; the ground itself is tracked as AREA
+  trkName(){return this.vmodeFor(true)==='TV'?'CONT':'IR';},
   tms(){const P=player;this.ensure(P);const agm=this.wk()==='agm',a=AGW[game.wsel],ps=this.podSpec(),best=this.cand(P);
     if(agm){if(!best){flash('NO CONTRAST',900);return;}const e=this.eye(P),rng=e.distanceTo(best.pos),eff=this.lockRangeFor(best,a);
       if(a.seek==='LASER'){if(!(this.hasPod(P)&&this.lase)){flash('NO LASER SPOT · ARM (N) AND LASE',1500);return;}}
@@ -9255,6 +9260,8 @@ Object.assign(SNS,{
     const ps=this.podSpec(),e=this.podPos(P),l=this.spi.clone().sub(e).normalize(),u=P.up(new V3()),f=P.fwd(new V3());
     this.masked=l.dot(u)>.26||(l.dot(f)<-.5&&l.dot(u)>-.3);
     const los=!this.masked&&terrLOS(e,_gsA.copy(this.spi).setY(this.spi.y+1.5));
+    if(this.mode==='POINT'&&this.unit&&!this.unit.T){const rr=e.distanceTo(this.unit.pos),tv=this.vmodeFor(true)==='TV',eff=ps.lockR*(tv?clamp(((ENV.el==null?30:ENV.el)+3)/12,.35,1)*(1-.5*(ENV.rain||0)):1)*(this.zi>0?1.3:1);
+      if(rr>eff*1.15){this.lowT=(this.lowT||0)+dt;if(this.lowT>1){this.unit=null;this.mode='AREA';this.lowT=0;flash(tv?'CONTRAST LOST':'IR TRACK LOST',1300);}}else this.lowT=0;}
     if(this.mode==='POINT'&&this.unit){if(!los){this.coast+=dt;if(this.coast>4){this.unit=null;this.mode='AREA';this.coast=0;flash('POD TRACK LOST',1200);}}else this.coast=0;}else this.coast=0;
     let need=false;for(const b of GND.bombs)if(b.w.k==='lgb'){const h=b.p.y-groundAt(b.p.x,b.p.z),tgo=h/Math.max(-b.v.y,1);if(tgo<this.lstT)need=true;}
     for(const m of GND.mavs)if(m.a.seek==='LASER')need=true;
@@ -9315,7 +9322,7 @@ SNS.symbology=function(P,masked){const cvx=this.cv,c=cvx.getContext('2d'),S=320;
   c.beginPath();for(const [dx,dy] of[[1,0],[-1,0],[0,1],[0,-1]]){c.moveTo(S/2+dx*14,S/2+dy*14);c.lineTo(S/2+dx*150,S/2+dy*150);}c.stroke();
   if(this.mode==='POINT'){if(this.coast>0){c.setLineDash([5,4]);}c.strokeRect(S/2-14,S/2-14,28,28);c.setLineDash([]);}
   tx(ps?ps.nm:'TGP',10,16);tx(vm==='TV'?'CCD-TV':'FLIR '+vm,10,34);
-  tx(this.fovName(true),S-10,16,'right');tx(this.coast>0?'COAST':this.mode,S-10,34,'right');
+  tx(this.fovName(true),S-10,16,'right');tx(this.coast>0?'COAST':this.mode==='POINT'?this.trkName()+' TRK':'AREA',S-10,34,'right');
   const lsr=this.lase?(blink?'LASING':''):(this.laseMan?'LASER ARM':'LSR SAFE');if(lsr)tx(lsr,S-10,52,'right');tx('CODE '+LCODES[this.codeI],S-10,70,'right');
   tx((rng/1852).toFixed(1)+' NM '+this.rsrc,S/2,S-16,'center');tx('±'+this.rerr+' M',S/2,S-34,'center');
   tx(SN[game.wsel]+' '+P.count(game.wsel),10,S-16);
@@ -9488,7 +9495,7 @@ window.AGR=AGR;
 Object.assign(SNS,{
   podOsb(){const L=[],lc=this.laseMan;
     L.push({n:2,t:this.vmodeFor(true),act:()=>this.sensKey()});L.push({n:3,t:this.fovName(true),act:()=>this.zoomStep(null,true)});
-    L.push({n:4,t:this.mode==='POINT'?'POINT':'AREA',on:this.mode==='POINT',act:()=>{if(this.mode==='POINT')this.brk();else this.tms();}});
+    L.push({n:4,t:this.mode==='POINT'?this.trkName():'AREA',on:this.mode==='POINT',act:()=>{if(this.mode==='POINT')this.brk();else this.tms();}});
     L.push({n:6,t:lc?'LASER\nARM':'LASER\nSAFE',on:lc,act:()=>{if(this.hasPod(player)){this.laseMan=!this.laseMan;flash(this.laseMan?'LASER ARMED':'LASER SAFE',700);}}});
     L.push({n:7,t:'CODE\n'+LCODES[this.codeI],act:()=>{this.codeI=(this.codeI+1)%LCODES.length;}});
     L.push({n:8,t:'LST\n'+this.lstT,act:()=>{const a=[10,15,20,25,30];this.lstT=a[(a.indexOf(this.lstT)+1)%a.length];}});
