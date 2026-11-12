@@ -2604,13 +2604,14 @@ function drawGauges(){const c=gau,P=player;c.fillStyle='#1d4f4d';c.fillRect(0,0,
 // notch, jamming, terrain) but without the beam sweep.
 // NCTR (F/A-18C): the APG-73 listens to the engine modulation of the one track it is pointed at and, nose-on or tail-on inside its range, names the type after a
 // few seconds of dwell. A beam aspect shows no compressor face or tailpipe, jamming and the look-down notch hide it, and a name once read stays with the track.
+const US_DL=new Set(['F-15C','F-15E','F-15EX','F-15I','F-16C','F-16V','F-16E','F-16I','F-18C','F-18E','F-18F','EA-18G','F-22','F-35A','F-14A','F-14B']);
 const DL_FIT=new Set(['MiG-29','MiG-29S','Su-27','F-14A','F-15C','F-18C']);
 sys.dl={pg:0,ri:2,north:0,hsd:1,lk:1,hsi:1};
 const _dlv1=new V3(),_dlv2=new V3(),_dlv3=new V3();
 const dlPage=()=>!!player&&sys.dl.pg===1&&(player.type==='MiG-29'||player.type==='MiG-29S');  // MiG-29 PAGE switch: HDD <-> the Su-27 scope
 const DL={seen:new Map(),acc:0,
-  on(){return !!player&&player.alive&&DL_FIT.has(player.type);},
-  mates(){const P=player,o=[];if(!P||net.on)return o;for(const F of jets)if(F!==P&&F.alive&&F.side===P.side&&!F.remote&&DL_FIT.has(F.type))o.push(F);return o;},
+  on(){return !!player&&player.alive&&(DL_FIT.has(player.type)||game.era==='modern'&&US_DL.has(player.type));},
+  mates(){const P=player,o=[];if(!P||net.on)return o;for(const F of jets)if(F!==P&&F.alive&&F.side===P.side&&!F.remote&&(DL_FIT.has(F.type)||game.era==='modern'&&US_DL.has(F.type)))o.push(F);return o;},
   // would F's radar have this bandit?
   sees(F,e){const rd=F.ac.radar;if(!rd)return false;const rel=_dlv1.copy(e.pos).sub(F.pos),d=rel.length();if(d>rd.R0*1.5)return false;
     const los=_dlv2.copy(rel).divideScalar(Math.max(d,1));if(Math.acos(clamp(F.fwd(_dlv3).dot(los),-1,1))>(rd.awg?65:60)*D2R)return false;
@@ -2748,7 +2749,10 @@ function nctrTick(dt){const P=player;
   else NCTR.p=Math.max(0,NCTR.p-dt*.5);}
 
 // AIM-120 off the link: the F/A-18C can designate any link contact (SA page: OSB 4 or click it; radar page: click the amber diamond) and fire at it with no radar track
-const dlTgt=()=>{const j=sys.dl.tgt;if(!j||!j.alive||!isHornet()||!DL.on())return null;for(const c of DL.contacts())if(c.j===j)return j;return null;};
+const dlShooter=()=>!!player&&(isHornet()||US_DL.has(player.type)||(player.ac.src&&US_DL.has(player.ac.src)&&player.ac.side==='BLUE'));
+// a US jet that has not hooked a link track by hand shoots the nearest one inside its forward cone
+const dlAuto=()=>{const P=player;let b=null,bd=1e9;for(const c of DL.contacts()){if(c.src!=='LNK'||!c.j||!c.j.alive)continue;const r=c.pos.clone().sub(P.pos),d=r.length();if(d>(P.ac.radar?P.ac.radar.R0*1.5:90000)||Math.acos(clamp(P.fwd(new V3()).dot(r.divideScalar(Math.max(d,1))),-1,1))>60*D2R)continue;if(d<bd){bd=d;b=c.j;}}return b;};
+const dlTgt=()=>{if(!player||!player.alive||!dlShooter()||!DL.on())return null;const j=sys.dl.tgt;if(j&&j.alive){for(const c of DL.contacts())if(c.j===j)return j;}return dlAuto();};
 function dlCycle(){const P=player,l=DL.contacts().sort((a,b)=>a.pos.distanceTo(P.pos)-b.pos.distanceTo(P.pos)),i=l.findIndex(c=>c.j===sys.dl.tgt);
   const nx=l[i+1];sys.dl.tgt=nx?nx.j:null;flash(nx?'LINK TGT '+Math.round(nx.pos.distanceTo(P.pos)/NM)+' NM':'LINK TGT CLEARED',900);}
 // the missile's mid-course update when it was launched on a link track: the same picture the shooter has, a few seconds old, not the truth
@@ -6257,7 +6261,7 @@ function pickle(force){if(!player||!player.alive||game.paused||player.gloc>0)ret
   if(player.count(w)<=0){flash('NO '+SN[w],1200);return;}
   let tg=null,lnk=false;
   if(d.seek==='IR'){tg=irTarget(w);if(!tg&&!force){flash(isMig()?'NO SEEKER LOCK':'NO TONE',1200);return;}}
-  else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(isHornet()&&d.seek==='ARH'&&radar.mode!=='STT'&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
+  else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(dlShooter()&&d.seek==='ARH'&&radar.mode!=='STT'&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
   {const _r=IFF.roeCheck(tg);if(_r&&!force){flash('NO RELEASE · '+_r,1600);radio('Negative, '+_r.toLowerCase()+'.');return;}}
   {const _m=fireMissile(w,player,tg,player.release(w));if(lnk&&_m){_m.dlx=true;flash(SN[w]+' · DATALINK',1200);}}game.pickleCd=.8;
   if(isMig()&&sys.mig.salvo===0&&!force&&player.count(w)>0)setTimeout(()=>{if(player&&player.alive&&!game.paused&&player.count(w)>0)fireMissile(w,player,tg&&tg.alive?tg:null,player.release(w));},280);

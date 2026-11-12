@@ -1,4 +1,5 @@
 ## v315
+- **Datalink fire for US jets**: F-15C/E/EX/I, F-16C/V/E/I, F/A-18C/E/F, EA-18G, F-22 and F-35A (modern era) carry the datalink and can shoot ARH missiles on link-only tracks; with no hooked link target the nearest one in the forward cone is used. Also fixed the sensor registry keeping the datalink off after start-up.
 - **IRST scope**: the Russian-style IRST C-scope now spans the real search volume (-15 to +30 deg) so the bottom quarter is no longer an empty strip; Legion IRST21 pod head-on range raised (22 km).
 - **HMD radar acquisition**: every helmet-equipped jet (F-16C, F-15, F/A-18, F-35A, Typhoon, Rafale, Gripen E, Su-35S, Su-57, J-20, ...) gets the helmet-slaved radar mode in the ACM list; lock what you look at.
 - **F-35 HMD symbology** (js/f35hmd.js): hostile and datalink-only tracks, flight members and friendlies, DAS-seen enemy missiles (triangle with range), own missiles in flight, radar lock brackets with range and closure, helmet acquisition circle.
