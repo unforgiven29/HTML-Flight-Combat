@@ -1632,7 +1632,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     this.cur.r+=dy;
     if(this.cur.r>.98&&this.ri<this.ranges.length-1){this.ri++;this.cur.r=.55;}else if(this.cur.r<.02&&this.ri>0){this.ri--;this.cur.r=.45;}
     this.cur.r=clamp(this.cur.r,.02,.98);},
-  reset(ac){if(ac){const r=ac.radar;this.ranges=r.ranges;this.unit=r.unit;this.ul=r.ul;this.R0=r.R0;this.ecc=r.ecc==null?.5:r.ecc;this.awg=!!r.awg;this.beam=r.beam||3.3*D2R;const q=RGIM[r.name]||[60,60,60,1];this.gl={az:q[0],eu:q[1],ed:q[2],stab:q[3]};}
+  reset(ac){if(ac){const r=ac.radar;this.ranges=r.ranges;this.unit=r.unit;this.ul=r.ul;this.R0=r.R0;this.ecc=r.ecc==null?.5:r.ecc;this.awg=!!r.awg;this.beam=r.beam||3.3*D2R;const q=RGIM[r.name]||[60,60,60,1];this.gl={az:q[0],eu:q[1],ed:q[2],stab:q[3]};if(q[0]>=90&&!(window.MSS&&MSS.hasArrays)){this.scopeAz=q[0];this.azs=[q[0],60,30,10];this.ai=1;}else if(!this.scopeAz||this.scopeAz<=q[0]){if(q[0]<90){this.scopeAz=0;this.azs=[60,30,10];this.ai=Math.min(this.ai,2);}}}
     this.strobes.clear();this.hoj=false;this.pull=0;this.rngErr=0;this.jamLock=null;
     flClutter.v.fill(0);this.mode='RWS';this.sensor='RDR';this.lock=null;this.bug=null;this.bugMan=false;this.fromTWS=false;this.fromACM=false;this.acmBest=null;if(ac)this.acm=ac.cockpit==='fulcrum'?'VERT':this.awg?'PAL':'30x20';this.tracks.clear();this.elCmd=0;this.cur={az:0,r:.5,el:0};this.antAz=0;this.notched=0;if(this.ri>this.ranges.length-1)this.ri=this.ranges.length-1;}
 };
@@ -12661,10 +12661,13 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
      if(TG)TA(tr(hemi),6.6,-5.0,'center');if(radar.mode==='TWS'&&on)TA(tr('СНП'),-7.5,-.1,'center');
      if(on&&!irst)TA(tr('ИЗЛ'),-7.5,-1.4,'center');if(TG||on)TA(tr('А'),8.2,-6.3,'center');}
     // ---- antenna azimuth scale ±70 ----
-    {const y=C-5.7,S=4.4,a=hb(-S,y),b=hb(S,y);if(a&&b){line(a.x,a.y,b.x,b.y);for(const q of[-70,-35,0,35,70]){const p=hb(q/70*S,y),u=hb(q/70*S,y+(q%70?.25:.45));if(p&&u)line(p.x,p.y,u.x,u.y);}
-      T('-70',-S,y-.65,'center',sm);T('70',S,y-.65,'center',sm);
-      let az=radar.antAz||0;if(TG){const d=TG.pos.clone().sub(P.pos);az=Math.atan2(d.dot(P.right(new V3())),d.dot(P.fwd(new V3())));}
-      const p=hb(clamp(az*R2D/70,-1,1)*S,y);if(p){hx.beginPath();hx.moveTo(p.x,p.y-1);hx.lineTo(p.x-7,p.y-11);hx.lineTo(p.x+7,p.y-11);hx.closePath();hx.stroke();line(p.x-k*1.2,p.y+3,p.x+k*1.2,p.y+3);}}}
+    {const y=C-5.7,S=4.4,a=hb(-S,y),b=hb(S,y),SD=P.type==='Su-57'&&window.MSS&&MSS.sideHits,AZR=SD?135:70,xs=q=>q/AZR*S;   // Su-57: the cheek arrays extend the scale to +-135 deg
+      if(a&&b){line(a.x,a.y,b.x,b.y);for(const q of(SD?[-135,-90,-45,0,45,90,135]:[-70,-35,0,35,70])){const p=hb(xs(q),y),u=hb(xs(q),y+(q%AZR&&q?.25:.45));if(p&&u)line(p.x,p.y,u.x,u.y);}
+        if(SD){hx.lineWidth=3;for(const sd of[-1,1]){const p0=hb(xs(sd*45),y),p1=hb(xs(sd*135),y);if(p0&&p1)line(p0.x,p0.y+3,p1.x,p1.y+3);}hx.lineWidth=1.6;   // cheek sectors
+          for(const[j,tk]of radar.tracks){if(!j.alive||!tk.p||now-tk.t>6)continue;const q=radar.ang(radar.trkPos(j,tk,now)),p=hb(xs(clamp(q.az*R2D,-AZR,AZR)),y+.7);if(!p)continue;diamond(p.x,p.y,3.5);if(MSS.sideHits.has(j)){hx.beginPath();hx.arc(p.x,p.y,1.5,0,7);hx.fill();}}}
+        T(String(-AZR),-S,y-.65,'center',sm);T(String(AZR),S,y-.65,'center',sm);
+        let az=radar.antAz||0;if(TG){const d=TG.pos.clone().sub(P.pos);az=Math.atan2(d.dot(P.right(new V3())),d.dot(P.fwd(new V3())));}
+        const p=hb(xs(clamp(az*R2D,-AZR,AZR)),y);if(p){hx.beginPath();hx.moveTo(p.x,p.y-1);hx.lineTo(p.x-7,p.y-11);hx.lineTo(p.x+7,p.y-11);hx.closePath();hx.stroke();line(p.x-k*1.2,p.y+3,p.x+k*1.2,p.y+3);}}}
     if(radar.mode==='ACM'&&radar.acm==='VERT'){for(const sd of[-1,1]){const a=hb(sd*1.7,C+6),b=hb(sd*1.7,C-7);if(a&&b)line(a.x,a.y,b.x,b.y);}TA(RU?'ВЕРТИКАЛЬ':'VERT',6.4,-5.0,'center');}
     // ---- target overlay, steering, TWS ----
     if(L&&!gun){const lead=!noR&&!radar.hoj?ruAim(P,leadPt(dl,L).sub(P.pos),-8,8,-9.5,4.5):null,tp=ruAim(P,L.pos.clone().sub(P.pos),-8,8,-9.5,4.5);
