@@ -44,9 +44,9 @@ function capture(m){const N=S.N;if(!S.rt){S.rt=new THREE.WebGLRenderTarget(N,N);
   if(tg&&tg.pos){const p=tg.pos.clone().project(cam);if(p.z<1)S.tp={x:p.x,y:p.y};}
   // DIRCM dazzle: the laser saturates the array. A glare blob at the jammer, a bloom that spreads along rows and columns, and the whole frame washes out as the dwell proceeds.
   S.dp=null;if(dz>0){const g=S.ctx,src=m._dzSrc&&m._dzSrc.pos?m._dzSrc.pos.clone().project(cam):null;let cx=N/2,cy=N/2;if(src&&src.z<1){cx=cl((src.x*.5+.5)*N,-N*.3,N*1.3);cy=cl((-src.y*.5+.5)*N,-N*.3,N*1.3);}
-    g.save();g.globalCompositeOperation='lighter';const R=N*(.18+.75*dz);let gr=g.createRadialGradient(cx,cy,0,cx,cy,R);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.3,'rgba(255,255,255,'+(.55+.4*dz)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,N,N);
-    g.fillStyle='rgba(255,255,255,'+(.25+.5*dz)+')';g.fillRect(0,cy-1.5-dz*5,N,3+dz*10);g.fillRect(cx-1.5-dz*5,0,3+dz*10,N);                  // blooming streaks
-    g.fillStyle='rgba(255,255,255,'+(.12*dz)+')';g.fillRect(0,0,N,N);g.restore();S.dp={x:cx,y:cy};}}
+    const k=Math.pow(dz,.8);g.save();g.globalCompositeOperation='lighter';const R=N*(.05+.8*k);let gr=g.createRadialGradient(cx,cy,0,cx,cy,R);gr.addColorStop(0,'rgba(255,255,255,'+Math.min(1,.2+k)+')');gr.addColorStop(.3,'rgba(255,255,255,'+(.8*k)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,N,N);
+    g.fillStyle='rgba(255,255,255,'+(.7*k)+')';g.fillRect(0,cy-.5-k*5,N,1+k*10);g.fillRect(cx-.5-k*5,0,1+k*10,N);                  // blooming streaks
+    g.fillStyle='rgba(255,255,255,'+(.4*k*k)+')';g.fillRect(0,0,N,N);g.restore();S.dp={x:cx,y:cy};}}
 function frame(g,txt,x,y,w,h,title,col){g.save();g.fillStyle='rgba(0,8,4,.72)';g.fillRect(x-6,y-22,w+12,h+30);g.strokeStyle=col;g.lineWidth=1.4;g.strokeRect(x,y,w,h);g.fillStyle=col;g.textAlign='left';g.fillText(title,x,y-10);g.restore();}
 function drawIIR(m){const g=hx,fs=Math.round(clamp(Math.min(W,H)*.02,10,16)),sz=Math.round(clamp(Math.min(W,H)*.3,150,300)),x=W-sz-26,y=78,col='rgba(89,255,159,.95)';
   const now=performance.now();if(now-S.t>70){S.t=now;try{capture(m);}catch(e){if(!S.w){S.w=1;console.warn('[mcamseek] IIR video',e);}}}
@@ -98,4 +98,4 @@ function drawARH(m){const g=hx,fs=Math.round(clamp(Math.min(W,H)*.02,10,16)),w=M
   g.fillStyle='rgba(89,255,159,.6)';g.fillText('AZ ±'+(gx/D).toFixed(0)+'°',x+4,y+h-6);g.textAlign='left';}
 const _d=drawMslCam;drawMslCam=function(){_d.apply(this,arguments);try{const m=mcam.m;if(!m||!m.alive||!m.def)return;if(isIIR(m))drawIIR(m);else if(isARH(m))drawARH(m);}catch(e){if(!S.e){S.e=1;console.warn('[mcamseek]',e);}}};
 (function loop(){requestAnimationFrame(loop);try{if(!G&&mcam.m&&isARH(mcam.m))build();worldBeam();}catch(e){if(!S.e2){S.e2=1;console.warn('[mcamseek] beam',e);}}})();
-window.MCAMSEEK={S,isIIR,isARH};console.info('[mcamseek] v319 seeker views loaded');})();
+window.MCAMSEEK={S,isIIR,isARH,capture};console.info('[mcamseek] v319 seeker views loaded');})();
