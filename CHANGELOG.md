@@ -1,3 +1,8 @@
+## v310 — AJS 37 Viggen cockpit rebuilt from the manuals
+- New `js/ajspit.js`: the AJS 37 no longer uses the generic Cold War board. Panel follows the DCS AJS-37 Guide part 3 photographs and component list: airspeed (km/h x100, Mach window), attitude indicator over the course indicator, round central indicator (CI) with its data table, right-hand column (accelerometer, alpha, vertical speed, backup altimeter, N2, EPR, EGT, fuel), clock, backup horizon, destination indicator, left and right warning panels with the real Swedish legends, master caution, SPAK / ATT / HOJD and AFK buttons, two tilted map indicators beside the stick, console panels (engine, radar A0-A2, CK37 navigation, lights, oxygen).
+- Removed: the speed and altitude tapes (the real jet shows those on the HUD, not on the panel).
+- Gameplay-level layout. The identities of the right-hand dials are placed from the photograph and the order of the guide's component list, not from a dimensioned drawing. The map indicators are a stylised scrolling grid with ownship and the base, not a real moving map.
+
 # Changelog
 
 ## v309 — MiG-23ML cockpit rebuilt from the reference photos
