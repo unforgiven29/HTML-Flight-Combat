@@ -67,6 +67,7 @@ function inflow(T,rho,A,Vax,Vh,kappa,seed){
 function heliStep(j,dt){
   if(!j.alive){j.fall(dt);return;}
   const H=j.ac.heli,h=st(j);
+  if(window.HELISYS)HELISYS.pre(j,h,H,dt);
   if(!h.init){h.init=1;if(!j.onGnd){const hg=groundAt(j.pos.x,j.pos.z);if(j.pos.y>hg+H.gh+3){if(j.pos.y>hg+2500)j.pos.y=hg+700;j.thr=.57;if(j.vel.length()<5)j.vel.copy(j.fwd(new V3())).multiplyScalar(45);}}h.Nr=1;h.run=true;h.warm=1;h.gov=j.onGnd?.1:.6;h.vi=j.onGnd?3:15;h.T=j.mass*G*(j.onGnd?.05:1);}
   const sub=dt>1/50?2:1;dt/=sub;
   for(let s=0;s<sub;s++){if(!j.alive)return;sub1(j,H,h,dt,s===sub-1);}
@@ -85,7 +86,7 @@ function sub1(j,H,h,dt,last){
   const fuelOut=j.totalFuel<=0,dmE=j.dm.eng<=0?0:.3+.7*Math.min(1,j.dm.eng/100);
   if(h.start>0){h.start=Math.max(0,h.start-dt);}
   const eOn=h.run&&!fuelOut&&h.start<=0;
-  const Pamax=H.Pa*Math.pow(sig,H.paExp||.7)*dmE*(j.hp<60?.8:1)*(1-.04*Math.max(0,hgt-3000)/1000*0);
+  const Pamax=H.Pa*Math.pow(sig,H.paExp||.7)*(h.pwF==null?dmE:h.pwF)*(j.hp<60?.8:1)*(1-.04*Math.max(0,hgt-3000)/1000*0);
   h.Pa=Pamax;
   const lever=Math.max(0,Math.min(1,j.thr));
   // ---- rotor thrust from the blade pitch and the inflow ----
@@ -179,6 +180,7 @@ function sub1(j,H,h,dt,last){
   if(spdY>0&&!gnd&&upr)rCmd+=Math.tan(Math.max(-1.2,Math.min(1.2,bnk)))*G/Math.max(V,12)*.55*spdY*Math.cos(pit);
   // coaxial collective-yaw coupling: raising the lever shifts torque between the two rotors, a small yaw kick the pedals must trim out
   {const dl=h.lev0==null?0:(lever-h.lev0)/Math.max(dt,1e-4);h.lev0=lever;rCmd+=Math.max(-2,Math.min(2,dl))*(H.yawK||3.2)*DEG*(1-spdY*.6);}
+  if(window.HELISYS)rCmd+=HELISYS.yaw(j,h,H);
   h.qc=qCmd;h.cpIn=cp;const tau=.17/Math.max(.6,Math.min(1.1,Nr)),ka=1-Math.exp(-dt/tau),w=h.w;
   // rotor-disc flapping effects the SAS has to fight: flap-back (speed makes the nose rise), dihedral (sideslip rolls the aircraft away from the wind),
   // and cyclic cross-coupling (a pitch input leaks a little into roll). All three vanish with the rotor unloaded on the ground.
