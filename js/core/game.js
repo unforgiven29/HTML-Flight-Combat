@@ -6312,7 +6312,7 @@ const STN={};
 PLANES.apply('STN',STN);
 const MODERN_ONLY=new Set(['AIM-9X','AIM-120C','R-77','AIM-7P','AIM-54C']);
 const MODERN_AC={};
-const stOpts=(ac,era,k)=>(STN[ac][k]||[]).filter(s=>era==='modern'||!MODERN_ONLY.has(s)&&!(MODERN_AC[ac]&&MODERN_AC[ac].includes(s))&&!(s==='PTB'&&k!=='C'));
+const stOpts=(ac,era,k)=>(STN[ac][k]||[]).filter(s=>era==='modern'||(window.MJ_NOCOLD&&MJ_NOCOLD.has(ac))||!MODERN_ONLY.has(s)&&!(MODERN_AC[ac]&&MODERN_AC[ac].includes(s))&&!(s==='PTB'&&k!=='C'));
 const stOrder=ac=>Object.keys(AC[ac].vst||AC[ac].st).sort((a,b)=>AC[ac].st[a][0]-AC[ac].st[b][0]);
 const stPair=(ac,k)=>{const x=AC[ac].st[k][0];return Object.keys(AC[ac].st).find(o=>o!==k&&Math.abs(AC[ac].st[o][0]+x)<.05)||null;};
 const STORE_NAME={TK:'370 gal tank',PTB:'Drop tank',IRST:'IRST21 + FPU-13/A tank'};
@@ -12666,7 +12666,9 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(1
       const bp=lead||tp;if(bp){diamond(bp.x,bp.y+k*.9,k*.55);hx.font=hfont(sm);txt('1',bp.x-k*.85,bp.y+k*.9,'right');hx.font=hfont(fs);}}
     else if(Tg&&!hmcsOn()){const sp=ruAim(P,Tg.pos.clone().sub(P.pos),-8,8,-9.5,4.5);if(sp){if(sp.cl)hx.setLineDash([2,3]);circ(sp.x,sp.y,k*.45);hx.setLineDash([]);}}
     if(radar.mode==='TWS'&&on){let n=0;for(const[j,tk]of radar.tracks){if(!j.alive)continue;const p=proj(radar.trkPos(j,tk,now));if(!p)continue;n++;
-        if(j===radar.bug)diamond(p.x,p.y,10);line(p.x-9,p.y,p.x-3,p.y);line(p.x+3,p.y,p.x+9,p.y);}}
+        // every TWS track is a diamond with a stem flag (as on the real board); the selected track is boxed and larger
+        const sel=j===radar.bug,R=sel?9:6.5;diamond(p.x,p.y,R);line(p.x,p.y-R,p.x,p.y-R-6);
+        if(sel)hx.strokeRect(p.x-R-4,p.y-R-4,2*R+8,2*R+8);}}
     // ---- bottom: РКЦ range, ПР, time to impact, mode, weapon ----
     if(TG&&!noR)T(tr('РКЦ')+'  '+(r/1000).toFixed(1)+tr('КМ'),-6.0,-6.6,'center');
     const ready=wd?(wd.seek==='IR'?!!Tg:!!L&&radar.sensor==='RDR'):false,inZone=!!dl&&!noR&&r>=dl.rmin&&r<=dl.rmax;
@@ -12685,4 +12687,4 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(1
       [lp,rp].forEach(arr=>{if(arr.length<2)return;hx.beginPath();arr.forEach((q,i)=>i?hx.lineTo(q.x,q.y):hx.moveTo(q.x,q.y));hx.stroke();});}}
   if(typeof S3!=='undefined'&&!S3.gces)T(tr('УВОД ОТКЛ'),6.4,-8.4,'center',sm);
   hx.restore();migWarn(P,agl);}
-{const IK=new Set(['Su-35S','Su-57','Su-30SM']),_d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)){try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
+{const IK=new Set(['Su-35S','Su-57','Su-30SM','Su-27SM','Su-33','Su-30MK2','Su-30MKI','Su-30MKM','Su-34','MiG-29SMT','MiG-35','MiG-29K']),_d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)){try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}

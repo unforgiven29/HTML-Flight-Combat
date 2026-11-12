@@ -103,6 +103,8 @@ function addM(s){try{
   for(const k of Object.keys(A.st))if(!S[k])S[k]=[];
   // loadouts (validated against the station lists)
   const L=s.load||{};
+  // a modern-only jet (Su-57: R-74M2/R-77M, no cold-era stores) is never era-gated, or it spawns empty in the default era
+  if(s.noCold)(window.MJ_NOCOLD=window.MJ_NOCOLD||new Set()).add(id);
   for(const era of['cold','modern'])LOAD[era][id]=validLoad(id,era,Object.assign({},L[era]||L.modern||L.cold||{}));
   LOAD.guns[id]=L.guns||{};STRIKE_LOAD[id]=Object.assign({},L.strike||L.modern||{});
   if(s.cms)for(const era of Object.keys(CMS))CMS[era][id]=s.cms.slice();
@@ -325,7 +327,7 @@ addM({id:'Su-34',src:'Su-30SM',side:'RED',call:'FULLBACK',nctr:'SU-34',foe:'F-16
         strike:{1:'R-73',10:'R-73',3:'R-77-1',8:'R-77-1',4:'KAB-1500L',7:'KAB-1500L',11:'Kh-29L',12:'Kh-29L',5:'Kh-38MT'}},cms:[96,96]});
 
 // ---- Su-57: 2× AL-41F1 (izd. 117: 88.3 / 147.1 kN), 3D TVC, N036 Byelka AESA (nose + cheek arrays), 101KS-V IRST; bays: 4 R-77M + 2 R-74M2 ----
-addM({id:'Su-57',src:'Su-35S',side:'RED',call:'FELON',nctr:'SU-57',foe:'F-22',eng:'2× AL-41F1 (117)',hms:'HMS_ALWAYS',irstn:'101KS-V',ccip:true,
+addM({id:'Su-57',noCold:true,src:'Su-35S',side:'RED',call:'FELON',nctr:'SU-57',foe:'F-22',eng:'2× AL-41F1 (117)',hms:'HMS_ALWAYS',irstn:'101KS-V',ccip:true,
   role:'RUSSIA · 5TH-GEN AIR SUPERIORITY · N036 BYELKA AESA · 101KS-V · 3D TVC · INTERNAL BAYS',
   ac:{name:'Su-57',empty:18000,fuel:10300,S:78.8,CLa:4.6,cd0:.0175,k:.115,mil:176600,ab:294200,gLim:9,aoaLim:40,rcs:.3,irs:1.3,dW:35000,tvc:{pitch:15,yaw:15},
     radar:R('N036 Byelka',130*NM/* 180-200 km vs 1 m2 */,[10,25,50,100,200,400],'KM',.9,{aesa:1,beam:2.4*D}),irst:true,ols:{tail:90000,head:35000,lrf:20000},twsN:8,trkN:60},

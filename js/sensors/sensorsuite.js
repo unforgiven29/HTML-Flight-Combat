@@ -105,7 +105,10 @@ function fitOf(P){if(!P)return null;if(M.fit&&fitType===P.type&&M._ld===JSON.str
   M.fit=out;return out;}
 
 /* ---------------- missile detection ---------------- */
-M.sideHits=new Map();   // aircraft the cheek arrays declared in the last second or so, for the F4 / F7 displays
+M.sideHits=new Map();M.sideLast=new Map();
+// seconds for one cheek-array frame: the sector width over the radar's scan rate, times the bars (the nose array's rate: 720 deg/s for an AESA)
+function sideFrame(ar){const rt=Math.max((radar.rate||0)*180/Math.PI,30),bars=Math.max(1,Math.min(4,(radar.nb?radar.nb():2)));return Math.max(.08,(2*ar.hw/rt)*bars);}
+M.sideFrame=sideFrame;   // aircraft the cheek arrays declared in the last second or so, for the F4 / F7 displays
 const seen=new Map();let acc=0,toneT=0,rowT=0,sideT=0,faT=0,fakeN=0;
 const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v);};
 function plume(m){const d=m.def||{},burning=m.burning||(!(d.ph&&d.ph.gap)&&m.t<((d.burn)||3)+.5);
@@ -198,11 +201,14 @@ function sideTick(P,fit,now){if(!radar.on()||radar.sensor!=='RDR'||!radiating()|
     const a=radar.ang(j.pos),q=arrFor(fit.arrays,a.baz,a.bel,1.5);if(!q||q.a.az===0||Math.abs(a.bel)>radar.gl.eu*D)continue;
     const R=radar.rdet(j,a)*Math.sqrt(q.ap)*Math.pow(Math.cos(Math.min(q.rel,1.4)),.375);
     if(a.d>R*.9||radar.notch(j,a)||!terrLOS(P.pos,j.pos))continue;
-    if(Math.random()<.6){radar.hit(j,a,Math.pow(R/Math.max(a.d,1),4)*20,now);M.sideHits.set(j,{arr:q.a,d:a.d,R:R,t:now});}}}
+    // the cheek arrays are AESAs like the nose array, so they sweep their sector at the nose array's scan rate and revisit a target once a frame
+    const Tf=sideFrame(q.a),L=M.sideLast.get(j)||0;
+    if(now-L>=Tf*.98){M.sideLast.set(j,now);radar.hit(j,a,Math.pow(R/Math.max(a.d,1),4)*20,now);M.sideHits.set(j,{arr:q.a,d:a.d,R:R,t:now});}}
+  for(const[j,t]of M.sideLast)if(!j.alive||now-t>10)M.sideLast.delete(j);}
 M.tick=function(dt){const P=player;if(!P||!P.alive||!M.on){M.warned.length=0;return;}
   const fit=fitOf(P);cfg(P,fit);const now=performance.now()/1000;M.st.ticks++;
   acc+=dt;if(acc<.1)return;const step=acc;acc=0;M.warned.length=0;   // v319: rebuild only on the 10 Hz pass; clearing every frame made the warning blink for one frame in ten
-  if(fit.arrays){sideT+=step;if(sideT>=.4){sideT=0;sideTick(P,fit,now);}}
+  if(fit.arrays){sideT+=step;if(sideT>=.1){sideT=0;sideTick(P,fit,now);}}
   if(fit.das){rowT+=step;if(rowT>=.2){rowT=0;dasTick(P,now);}}
   const list=[];
   if(M.maws&&(fit.maws.length||fit.radarMaws||fit.irstMaws)){
@@ -311,7 +317,7 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
       for(const ar of A){const R=rng*s*Math.sqrt(ar.ap),a0=-Math.PI/2+(ar.az-ar.hw)*D,a1=-Math.PI/2+(ar.az+ar.hw)*D;
         g.fillStyle=act?'rgba(255,170,70,.07)':'rgba(255,170,70,.03)';g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,R,a0,a1);g.closePath();g.fill();
         g.strokeStyle=act?'rgba(255,170,70,.7)':'rgba(255,170,70,.3)';g.beginPath();g.moveTo(cx+Math.cos(a0)*R,cy+Math.sin(a0)*R);g.lineTo(cx,cy);g.lineTo(cx+Math.cos(a1)*R,cy+Math.sin(a1)*R);g.stroke();
-        if(act){const ph=(performance.now()/1000/1.6)%1;      // the electronic beam sweeping the sector
+        if(act){const ph=(performance.now()/1000/(M.sideFrame(ar)/Math.max(1,Math.min(4,radar.nb?radar.nb():2))*2))%1;      // the electronic beam sweeping the sector at the nose array's rate
           const bz=(ar.az-ar.hw+ar.hw*2*(ph<.5?ph*2:2-ph*2))*D;g.strokeStyle='#ffb050';g.lineWidth=1.3;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.sin(bz)*R,cy-Math.cos(bz)*R);g.stroke();g.lineWidth=1;}}
       for(const[j,h]of M.sideHits){const r=j.pos.clone().sub(player.pos).applyQuaternion(player.q.clone().invert());
         g.strokeStyle='#ffb050';g.globalAlpha=Math.max(.2,1-(now-h.t)/1.5);g.beginPath();g.arc(cx+r.x*s,cy+r.z*s,8,0,6.283);g.stroke();g.globalAlpha=1;}};}
@@ -337,7 +343,7 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
         // the fan is the sector seen edge-on from above, thickened by the elevation limit
         pa.setXYZ(1+k,d.x+(k%2?u.x:-u.x),d.y+(k%2?u.y:-u.y),d.z+(k%2?u.z:-u.z));}
       pa.needsUpdate=true;fan.position.copy(org);fan.visible=true;fan.material.opacity=act?.028:.012;
-      const ph=(t/1.6)%1,bz=(ar.az-ar.hw+ar.hw*2*(ph<.5?ph*2:2-ph*2))*D,bd=dirOf(bz,0,new V3()).multiplyScalar(L),bp=beams[i].geometry.attributes.position;
+      const ph=(t/(M.sideFrame(ar)/Math.max(1,Math.min(4,radar.nb?radar.nb():2))*2))%1,bz=(ar.az-ar.hw+ar.hw*2*(ph<.5?ph*2:2-ph*2))*D,bd=dirOf(bz,0,new V3()).multiplyScalar(L),bp=beams[i].geometry.attributes.position;
       bp.setXYZ(1,bd.x,bd.y,bd.z);bp.needsUpdate=true;beams[i].position.copy(org);beams[i].visible=act;});
     const ph2=(t*.7)%1;
     if(act)for(const[j,h]of M.sideHits){const i=A.indexOf(h.arr);if(i<0||i>1||n>=MAXP-8)continue;const org=player.pos.clone().addScaledVector(fw,3).addScaledVector(right,h.arr.az<0?-.9:.9),T=j.pos;
