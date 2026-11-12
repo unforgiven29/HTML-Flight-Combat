@@ -2424,7 +2424,7 @@ function mfdClick(id,x,y){if(id==='sms'&&isEagle()){const n=hornOsbAt(x,y);if(n)
     if(best){const a=radar.ang(best.pos);if(radar.detect(best,a)&&a.off<radar.gimbal())radar.stt(best);else flash('NO TRACK',900);}else sfx.click();return;}
   if(id==='fcr'&&isFlogger()){const S=360,x0=40,x1=S-40,y0=S-34,y1=34;if(x>=x0-8&&x<=x1+8&&y<=y0+8&&y>=y1-8){radar.cur.az=clamp((x-x0)/(x1-x0)*2-1,-1,1)*30*D2R;radar.cur.r=clamp((y0-y)/(y0-y1),0,1);radar.designate();}return;}
   if(id==='fcr'&&isMig()){const r=repScope;if(r&&x>=r.x0-8&&x<=r.x1+8&&y<=r.y0+8&&y>=r.y1-8){
-    radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*(radar.scopeAz||60)*D2R;radar.cur.r=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.designate();}return;}
+    {const ir=radar.sensor==='IRST',v=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*(ir?30:(radar.scopeAz||60))*D2R;if(ir)radar.cur.el=(v*2-1)*30*D2R;else radar.cur.r=v;}radar.designate();}return;}
   if(id==='fcr'&&!isMig())for(const o of FCR_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='sms')for(const o of SMS_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='fcr'&&x>46&&x<314&&y>44&&y<306){radar.cur.az=((x-46)/268*120-60)*D2R;radar.cur.r=(306-y)/262;radar.designate();return;}
@@ -12619,7 +12619,7 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
   const L=radar.mode==='STT'?radar.lock:null,Tg=wd&&wd.seek==='IR'?irTarget(w):null,
      tws=radar.mode==='TWS'&&on&&radar.bugOK()&&radar.tracks.get(radar.bug),   // the bugged TWS track file stands in for a lock: speed, altitude and range follow it
      Tw=tws?{pos:radar.trkPos(radar.bug,tws,now),vel:tws.v,alive:true,type:radar.bug.type}:null,TG=L||Tg||Tw,noR=!!L&&radar.noRng;
-  const scan=on&&(radar.mode==='RWS'||radar.mode==='TWS'),combat=!!TG||scan||radar.mode==='ACM';
+  const scan=on&&(radar.mode==='RWS'||radar.mode==='TWS'),combat=!!TG||scan||radar.mode==='ACM'||irst&&on;
   let r=0,vc=0,dl=null,hemi='ППС';
   if(TG){const dd=TG.pos.clone().sub(P.pos),dist=dd.length(),los=dd.divideScalar(dist);vc=P.vel.dot(los)-TG.vel.dot(los);r=dist+(L?radar.rngErr||0:0);if(!gun)dl=dlzGet(w,TG);
     const sp=TG.vel.length();if(sp>20&&TG.vel.dot(los)/sp>.1)hemi='ЗПС';}
@@ -12665,7 +12665,7 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
       const t=-Math.PI/2-.35+(ad+5)/35*1.95;line(c.x,c.y,c.x+Math.cos(t)*R*.95,c.y+Math.sin(t)*R*.95);}}
   }else{
     // ---- range bar with zone flags and the ⇦ target caret ----
-    const maxR=radar.ranges[radar.ri]*1000,R0=C-3.2,R1=C+3.6,Yr=v=>lerp(R0,R1,clamp(v/maxR,0,1)),X=-3.7;if(!(radar.mode==='ACM'&&radar.acm==='VERT'&&!TG)){/* ACM vertical scan: no range bar until it locks */
+    const maxR=radar.ranges[radar.ri]*1000,R0=C-3.2,R1=C+3.6,Yr=v=>lerp(R0,R1,clamp(v/maxR,0,1)),X=-3.7;if(!(irst||radar.mode==='ACM'&&radar.acm==='VERT'&&!TG)){/* ACM vertical scan: no range bar until it locks */
     {const a=hb(X,R1),b=hb(X,R0);if(a&&b){line(a.x,a.y,b.x,b.y);const nt=Math.round(maxR/1000),st=nt>100?40:nt>50?20:nt>20?5:nt>10?2:1;
       for(let q=0;q<=nt;q+=st){const p=hb(X,Yr(q*1000));if(!p)continue;line(p.x,p.y,p.x+7,p.y);hx.font=hfont(sm);txt(String(q),p.x-4,p.y,'right');hx.font=hfont(fs);}
       line(a.x,a.y,a.x+7,a.y);}
@@ -12694,6 +12694,17 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
         // every TWS track is a diamond with a stem flag (as on the real board); the selected track is boxed and larger
         const sel=j===radar.bug,R=sel?9:6.5;diamond(p.x,p.y,R);line(p.x,p.y-R,p.x,p.y-R-6);
         if(sel)hx.strokeRect(p.x-R-4,p.y-R-4,2*R+8,2*R+8);}}
+    // ---- RWS: contacts are small squares laid out azimuth across, range up the left range bar (as on the real board); IRST: azimuth across, elevation on the right scale ----
+    if(on&&radar.mode!=='ACM'&&(irst||radar.mode==='RWS')){const SAz=irst?30:(radar.scopeAz||60),FX=2.6,maxR=radar.rngM,R0=C-3.2,R1=C+3.6,
+        pz=(az,v)=>irst?hb(clamp(az*R2D/SAz,-1,1)*FX,C+clamp(v,-30,30)*ps):hb(clamp(az*R2D/SAz,-1,1)*FX,lerp(R0,R1,clamp(v/maxR,0,1)));
+      {const f0=irst?hb(-FX,C-30*ps):hb(-FX,R0),f1=irst?hb(FX,C+30*ps):hb(FX,R1);if(f0&&f1)hudScope={x0:f0.x,x1:f1.x,y0:f0.y,y1:f1.y};}
+      if(!irst)for(const[j,sg]of radar.strobes){if(Math.abs(sg.az)>SAz*D2R)continue;const a=pz(sg.az,0),b=pz(sg.az,maxR);if(a&&b){hx.save();hx.globalAlpha*=clamp(1-(now-sg.t)/4.5,.25,1);hx.setLineDash([4,5]);line(a.x,a.y,b.x,b.y);hx.restore();}}
+      for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj)continue;
+        if(irst){const vv=irVis(j,tk,now);if(vv<=0||Math.abs(tk.az)>SAz*D2R)continue;const p=pz(tk.az,tk.el*R2D);if(!p)continue;hx.save();hx.globalAlpha*=vv;irBlob(hx,p.x,p.y,j,1.2);hx.restore();}
+        else{const td=radar.trkR(j,tk);if(td>maxR||Math.abs(tk.az)>SAz*D2R)continue;const p=pz(tk.az,td);if(!p)continue;hx.save();hx.globalAlpha*=clamp(1-(now-tk.t)/10,.3,1);hx.strokeRect(p.x-4,p.y-4,8,8);hx.restore();}}
+      {const cp=irst?pz(radar.cur.az,(radar.cur.el||0)*R2D):pz(radar.cur.az,radar.cur.r*maxR);if(cp){hx.strokeRect(cp.x-8,cp.y-5,16,10);line(cp.x-14,cp.y,cp.x-8,cp.y);line(cp.x+8,cp.y,cp.x+14,cp.y);}}
+      {const y=C-5.7,S=4.4,SD=P.type==='Su-57'&&window.MSS&&MSS.sideHits,AZR=SD?135:70,W=Math.min((radar.azs[radar.ai]||60)*D2R,radar.gimbal())*R2D,c0=(radar.scanC||0)*R2D,a=hb(clamp(c0-W,-AZR,AZR)/AZR*S,y-.3),b=hb(clamp(c0+W,-AZR,AZR)/AZR*S,y-.3);
+        if(a&&b&&!irst){hx.lineWidth=3;line(a.x,a.y,b.x,b.y);hx.lineWidth=1.6;}}}
     // ---- bottom: РКЦ range, ПР, time to impact, mode, weapon ----
     if(TG&&!noR)TA((r/1000).toFixed(1)+tr('КМ'),-4.4,C-3.9*ZH-.1,'center');
     const ready=wd?(wd.seek==='IR'?!!Tg:!!L&&radar.sensor==='RDR'):false,inZone=!!dl&&!noR&&r>=dl.rmin&&r<=dl.rmax;
@@ -12712,4 +12723,4 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
       [lp,rp].forEach(arr=>{if(arr.length<2)return;hx.beginPath();arr.forEach((q,i)=>i?hx.lineTo(q.x,q.y):hx.moveTo(q.x,q.y));hx.stroke();});}}
   if(typeof S3!=='undefined'&&!S3.gces)TA(tr('УВОД ОТКЛ'),6.8,-9.1,'center',sm);
   hx.restore();migWarn(P,agl);}
-{const IK=new Set(['Su-35S','Su-57','Su-30SM','Su-27SM','Su-33','Su-30MK2','Su-30MKI','Su-30MKM','Su-34','MiG-29SMT','MiG-35','MiG-29K']),_d=drawHudSym;window.IKSET=IK;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)&&!((radar.mode==='RWS'||radar.sensor==='IRST')&&radar.on())){/* RWS keeps the original search HUD; TWS / STT / ACM / nav use the IKSh board */try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
+{const IK=new Set(['Su-35S','Su-57','Su-30SM','Su-27SM','Su-33','Su-30MK2','Su-30MKI','Su-30MKM','Su-34','MiG-29SMT','MiG-35','MiG-29K']),_d=drawHudSym;window.IKSET=IK;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)){/* every mode (RWS, TWS, STT, ACM, IRST, nav) is drawn on the IKSh board */try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
