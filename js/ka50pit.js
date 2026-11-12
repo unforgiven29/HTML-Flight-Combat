@@ -306,7 +306,7 @@ out.stk=stick;out.thr=col;out.sg=.12;
 out.panelMats=[panelM,consM,wing];out.panel0=[panelM.color.getHex(),consM.color.getHex(),wing.color.getHex()];
 out.vars={ka50:{stk:stick,thr:col,sg:.12,ped:ped.set,on:[],off:[]}};
 let gt=0;
-out.tick=(P,dt)=>{gt+=dt;if(gt<1/15)return;gt=0;for(const g of gauges){try{g.draw(g.c,g.S);if(g.t)g.t.needsUpdate=true;}catch(e){if(!g.err){g.err=1;console.warn('[ka50pit] gauge',e);}}}};
+out.tick=(P,dt)=>{gt+=dt;if(gt<1/30)return;gt=0;for(const g of gauges){try{g.draw(g.c,g.S);if(g.t)g.t.needsUpdate=true;}catch(e){if(!g.err){g.err=1;console.warn('[ka50pit] gauge',e);}}}};
 out.redrawAll=()=>{for(const g of gauges){try{g.draw(g.c,g.S);if(g.t)g.t.needsUpdate=true;}catch(e){}}};
 root.traverse(o=>{if(!o.isMesh)return;const m=o.material,tr=m.transparent||m.opacity<1;o.castShadow=!tr&&!m.isMeshBasicMaterial;o.receiveShadow=!m.isMeshBasicMaterial;});
 root.visible=false;

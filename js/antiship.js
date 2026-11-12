@@ -210,7 +210,7 @@ try{if(Array.isArray(STORE_CATS)&&!STORE_CATS.includes('ANTI-SHIP MISSILES'))STO
 try{const _sc=storeCat;storeCat=function(s){const a=AGW[s];if(a&&a.as)return'ANTI-SHIP MISSILES';return _sc(s);};}catch(e){}
 
 /* ---- who carries the Harpoon: every wing station that already takes a Maverick on the US / Israeli / Korean F-16s, Hornets, Strike Eagles, Intruder ---- */
-for(const ac of ['F-16C','F-16V','F-16E','F-16I','F-18C','F-18F','F-15E','F-15I','F-15EX','A-6E']){const T=STN[ac];if(!T)continue;
+for(const ac of ['F-16C','F-16V','F-16E','F-16I','F-18C','F-18F','F-15E','F-15EX','A-6E']){const T=STN[ac];if(!T)continue;
   for(const k of Object.keys(T))if(T[k].includes('AGM-65D')||T[k].includes('Mk-84'))if(!T[k].includes('AGM-84D')&&Math.abs((AC[ac].st[k]||[0])[0])>1.8)T[k].push('AGM-84D');}
 
 /* ---- the mission: a task group under way, Harpoon / Exocet / Sea Eagle on the wings ---- */

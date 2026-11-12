@@ -622,6 +622,6 @@ for(const kind of['viper','fulcrum']){const o=ck[kind];if(!o||!o.anims)continue;
     {const B=cur.B,cp=(src,dst)=>{if(!src)return;src.updateMatrixWorld(true);src.matrixWorld.decompose(dst.position,dst.quaternion,_sc);if(src.visible){src.visible=false;if(!cur.hid.includes(src))cur.hid.push(src);}};
       cp(o.stk,B.stkG);cp(o.thr,B.thrG);}
     if(!cur.B.g.visible)cur.B.g.visible=true;o.glass=cur.B.glass;
-    const B=cur.B;if(B.upd){try{B.upd(player);}catch(e){console.warn('[cwpit] upd',e);B.upd=null;}return;}if((B.t^=1))return;try{paint(B,player);B.tx.needsUpdate=true;}catch(e){}});}
+    const B=cur.B;if(B.upd){try{B.upd(player);}catch(e){console.warn('[cwpit] upd',e);B.upd=null;}return;}if(gfx.panelHz<=30&&(B.t^=1))return;try{paint(B,player);B.tx.needsUpdate=true;}catch(e){}});}
 window.CW_PIT=PIT;
 })();

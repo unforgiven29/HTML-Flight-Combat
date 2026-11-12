@@ -174,7 +174,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   box(board,(725-488)*K,(330-85)*K,.05,dk,bx(606),by(207),.025);
   {const IP=window.F8IP626,cv=document.createElement('canvas');cv.width=IP?IP.W:260;cv.height=IP?IP.H:380;const sct=new THREE.CanvasTexture(cv);sct.generateMipmaps=false;sct.minFilter=THREE.LinearFilter;ctx.o.tex.push(sct);
     const m=new THREE.MeshBasicMaterial({map:sct,toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.PlaneGeometry(130*K,190*K),m);sc.position.set(bx(606),by(212),.051);sc.userData.screen='phscope';board.add(sc);
-    {let lt=0;upd.push(()=>{const n=performance.now();if(n-lt<90)return;lt=n;try{if(IP)IP.draw(cv.getContext('2d'),PL());sct.needsUpdate=true;}catch(e){}});}
+    {let lt=0;upd.push(()=>{const n=performance.now();if(n-lt<40)return;lt=n;try{if(IP)IP.draw(cv.getContext('2d'),PL());sct.needsUpdate=true;}catch(e){}});}
     box(board,(130)*K,(190)*K,.004,blk,bx(606),by(212),.049);
     // six scope knobs on the bezel
     [[505,130,'INT'],[505,190,'STORE'],[505,250,'CURSOR'],[707,130,'GAIN'],[707,190,'MKR'],[707,250,'FOCUS']].forEach(([x,y,n])=>knob(board,bx(x),by(y),.055,13*K,'SCOPE · '+n,['1','2','3','4','5'],'scope'+n));}
@@ -402,7 +402,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   box(stkG,.026,.34,.026,LM(0x1a1a1a,30),0,.17,0);box(stkG,.042,.12,.048,LM(0x2a2a2a,20),0,.39,-.004,-.25);box(stkG,.014,.016,.014,LM(0x777777,30),0,.455,.004);box(stkG,.012,.022,.012,LM(0xb02020,30),-.018,.43,0);box(stkG,.006,.03,.022,LM(0x888888,30),0,.37,-.03);
   // per-frame: instruments ~15 Hz, lamps and switch positions every frame
   let t=0,fr=0;
-  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;fr++;
+  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;for(const l of lamps)l(P);const tn=now();if(tn-t<.025)return;t=tn;fr++;
         {const E=P.eng&&!P.eng.done?P.eng.e[0]:null;let h=0;try{h=q(P.pos.y-groundAt(P.pos.x,P.pos.z),.66);}catch(e){}let b=0;try{b=q(brgField(P),2)+q(distField(P),4);}catch(e){}
      FKA=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV];FK=FKA.join();
      SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.gearPos,20),q(P.flapPos!=null?P.flapPos:P.flapCmd,20),q(P.sb,20),Math.floor(now()),lampTest>now()?1:0,STV,E?q(E.rpm,2)+'/'+q(E.egt,40)+(E.lit?1:0):'',(P.fire||0)>0?1:0,q(P._trimP,20),q(P.ctl?P.ctl.r:0,20),(typeof cautions==='function'?cautions(P).join('.'):''),P.hook?1:0,P.onGnd?1:0].join();}

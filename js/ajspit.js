@@ -158,7 +158,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const fm=new THREE.Mesh(sq?new THREE.PlaneGeometry(r*1.8,r*1.8):new THREE.CircleGeometry(r*.9,48),m);fm.position.set(bx(x),by(y),.0245);fm.userData.cwFx=1;board.add(fm);
     if(!sq){const gl=new THREE.Mesh(new THREE.CircleGeometry(r*.92,40),glsM);gl.position.set(bx(x),by(y),.026);gl.userData.cwFx=1;gl.renderOrder=2;board.add(gl);
       const ring=new THREE.Mesh(new THREE.TorusGeometry(r*.92,r*.05,8,40),LM(0x0a0a0a,30));ring.position.set(bx(x),by(y),.0245);ring.userData.cwFx=1;board.add(ring);}
-    let last=-1,lt=0;upd.push(P=>{const tn=now();if(tn-lt<(k==='adi'||k==='hsi'||k==='fart'||k==='sby'?.05:.25))return;lt=tn;if(k!=='dest'){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
+    let last=-1,lt=0;upd.push(P=>{const tn=now();if(tn-lt<(k==='adi'||k==='hsi'||k==='fart'||k==='sby'?.025:.1))return;lt=tn;if(k!=='dest'){face(c,S);c.scale(S/256,S/256);}draw(c,P);t.needsUpdate=true;});}
   INST.forEach(([k,x,y,hs,d,sq])=>inst(k,x,y,hs,d,sq));
   function lampAt(par,x,y,z,w,h,lg,col,lit,ww,hh){const cv=document.createElement('canvas');cv.width=128;cv.height=Math.max(32,Math.round(128*hh/ww));const c=cv.getContext('2d'),t=new THREE.CanvasTexture(cv);ctx.o.tex.push(t);
     const m=new THREE.MeshBasicMaterial({map:t,toneMapped:false});ctx.o.faces.push(m);const lm=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);lm.position.set(x,y,z);lm.userData.cwFx=1;par.add(lm);let last=null;

@@ -336,7 +336,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   const stkG=new THREE.Group(),thrG=new THREE.Group();g.add(stkG);g.add(thrG);thrG.visible=false;stkG.scale.set(1,.55,1);
   box(stkG,.026,.34,.026,LM(0x1a1a1a,30),0,.17,0);box(stkG,.042,.12,.048,LM(0x2a2a2a,20),0,.39,-.004,-.25);box(stkG,.014,.016,.014,LM(0x777777,30),0,.455,.004);box(stkG,.012,.022,.012,LM(0xb02020,30),-.018,.43,0);box(stkG,.006,.03,.022,LM(0x888888,30),0,.37,-.03);
   let t=0;
-  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;
+  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;for(const l of lamps)l(P);const tn=now();if(tn-t<.025)return;t=tn;
         {const E=P.eng&&!P.eng.done?P.eng.e[0]:null;
      FKA=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),q(P.pos.x,.02),q(P.pos.z,.02),STV];FK=FKA.join();
      SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.ab,10),Math.floor(now()),lampTest>now()?1:0,STV,E?q(E.rpm,2)+'/'+q(E.egt,40)+(E.lit?1:0):'',(P.fire||0)>0?1:0,P.onGnd?1:0,qtyTest>now()?1:0].join();}

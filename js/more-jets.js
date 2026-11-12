@@ -267,8 +267,12 @@ addM({id:'F-16I',src:'F-16C',side:'BLUE',call:'SUFA',nctr:'F-16',foe:'Su-30MKI',
 addM({id:'F-15I',src:'F-15E',side:'BLUE',call:'RAAM',nctr:'F-15',foe:'Su-30MKI',eng:'2× F100-PW-229',crew:'WSO',ccip:true,hms:'HMS_ALWAYS',
   role:'ISRAEL · LONG-RANGE STRIKE · APG-70I · PYTHON 5 · GBU-28',
   ac:{name:'F-15I Ra\'am',radar:R('APG-70I',56*NM,[10,20,40,80,160],'NM',.6)},
-  add:{'2A':['Python 5'],'8A':['Python 5'],'2B':['Python 5'],'8B':['Python 5']},
-  load:{modern:{'2A':'Python 5','8A':'Python 5','2B':'AIM-120C','8B':'AIM-120C','3C':'AIM-120C','7C':'AIM-120C',2:'TK',8:'TK',5:'GBU-28',TP:'SNIPER'}}});
+  add:{'2A':['Python 5'],'8A':['Python 5'],'2B':['Python 5'],'8B':['Python 5'],2:['Spice-1000'],8:['Spice-1000'],
+       LC1:['Spice-1000'],LC2:['Spice-1000'],LC3:['Spice-1000'],RC1:['Spice-1000'],RC2:['Spice-1000'],RC3:['Spice-1000']},
+  // Israeli inventory: Python 5 / AIM-9M and AIM-120C only (no AIM-9X, AIM-120D, AIM-7, JSOW); Spice-1000 and GBU-28 for the strike role
+  drop:['AIM-9X','AIM-120D','AIM-120A','AIM-120B','AIM-7M','AIM-7P','AIM-9L','AGM-154A'],
+  load:{modern:{'2A':'Python 5','8A':'Python 5','2B':'AIM-120C','8B':'AIM-120C','3C':'AIM-120C','4C':'AIM-120C','6C':'AIM-120C','7C':'AIM-120C',5:'TK',TP:'SNIPER'},
+        strike:{'2A':'Python 5','8A':'Python 5','2B':'AIM-120C','8B':'AIM-120C',2:'TK',8:'TK',5:'GBU-28',LC1:'Spice-1000',LC2:'Spice-1000',RC1:'Spice-1000',RC2:'Spice-1000',TP:'SNIPER'}}});
 
 // Tornado ECR: SEAD Tornado, ELS emitter locator, AGM-88 HARM
 addM({id:'Tornado ECR',src:'Tornado GR.4',side:'BLUE',call:'TORNADO',nctr:'TORNADO',foe:'MiG-29S',eng:'2× RB199 Mk 105',crew:'WSO',

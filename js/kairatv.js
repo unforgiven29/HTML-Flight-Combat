@@ -49,7 +49,7 @@ function symbols(P){
   c2.restore();
 }
 function tick(){
-  const P=player,now=performance.now();if(!isK()||now-K.t<90)return;K.t=now;
+  const P=player,now=performance.now();if(!isK()||now-K.t<40)return;K.t=now;
   if(P.totalFuel<=0){c2.fillStyle='#050400';c2.fillRect(0,0,N,N);}
   else{try{capture(P);symbols(P);}catch(e){if(!K._w){K._w=1;console.warn('[kaira]',e);}}}
   if(cv._cwTex)cv._cwTex.needsUpdate=true;
