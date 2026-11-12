@@ -6283,7 +6283,7 @@ PLANES.apply('STN',STN);
 const MODERN_ONLY=new Set(['AIM-9X','AIM-120C','R-77','AIM-7P','AIM-54C']);
 const MODERN_AC={};
 const stOpts=(ac,era,k)=>(STN[ac][k]||[]).filter(s=>era==='modern'||!MODERN_ONLY.has(s)&&!(MODERN_AC[ac]&&MODERN_AC[ac].includes(s))&&!(s==='PTB'&&k!=='C'));
-const stOrder=ac=>Object.keys(AC[ac].st).sort((a,b)=>AC[ac].st[a][0]-AC[ac].st[b][0]);
+const stOrder=ac=>Object.keys(AC[ac].vst||AC[ac].st).sort((a,b)=>AC[ac].st[a][0]-AC[ac].st[b][0]);
 const stPair=(ac,k)=>{const x=AC[ac].st[k][0];return Object.keys(AC[ac].st).find(o=>o!==k&&Math.abs(AC[ac].st[o][0]+x)<.05)||null;};
 const STORE_NAME={TK:'370 gal tank',PTB:'Drop tank',IRST:'IRST21 + FPU-13/A tank'};
 game.custom={};try{const v=JSON.parse(localStorage.getItem('viper.loads')||'{}');if(v&&typeof v==='object')game.custom=v;}catch(e){}

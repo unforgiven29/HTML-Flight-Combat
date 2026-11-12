@@ -325,7 +325,7 @@ window.makeKa50=makeKa50;
   for(const era of Object.keys(CMS))CMS[era][id]=[128,128];
   ENGN[id]='2× TV3-117VMA';CALLS[id]='SHARK';NCTR_ID[id]='KA-50';FOE[id]='F-4E';ACROLE[id]='ATTACK HELICOPTER';RWR_OF[id]='SPO-15LM';
   // head-on picture for the loadout screen: coaxial rotors, narrow fuselage, two engine intakes, stub wings with the outer pylons, twin tail fins
-  FV[id]={hw:7.4,y1:3.2,span:14.5,d:()=>{let s='';
+  FV[id]={hw:7.4,y1:3.2,span:'14.5 m (rotor)',d:()=>{let s='';
     s+=ell(0,-1.05,.2,.2,'sk-dark')+ell(-1.35,-1.0,.22,.22,'sk-dark')+ell(1.35,-1.0,.22,.22,'sk-dark');
     s+=one([[-.1,.9],[.1,.9],[.12,2.55],[-.12,2.55]],'sk-body');
     s+=bth([[0,2.62],[7.2,2.5],[7.2,2.44],[0,2.52]],'sk-wing')+bth([[0,3.08],[7.2,2.96],[7.2,2.9],[0,2.98]],'sk-wing');
