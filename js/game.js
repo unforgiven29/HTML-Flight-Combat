@@ -2530,7 +2530,7 @@ function drawSPO10(c,S,th,brg,msl,NOW){const P=player;const cx=S/2,cy=S/2,test=N
 function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=performance.now()/1000;c.fillStyle=mig?'#0a0d0c':'#020604';c.fillRect(0,0,S,S);if(!P||!P.alive||!sys.rwr.pwr)return;   // a destroyed aircraft has no warner: rwrUpdate clears its system, and the scope code below reads it
   const qi=P.q.clone().invert(),bl=performance.now()%400<220;rwrState.launchT-=dt;
   const brg=p=>{const r=p.clone().sub(P.pos).applyQuaternion(qi);return Math.atan2(r.x,-r.z);};
-  rwrUpdate(dt);const th=RW.list,sy=RW.sy,msl=RW.msl.map(x=>x.m);
+  rwrUpdate(dt);const th=RW.list,sy=RW.sy,msl=RW.msl.map(x=>x.m);if(!sy)return;   // v319: a type with no warner profile has no scope to draw (AH-64A crashed here on RW.sy===null)
   if((isFlogger()||isFishbed())&&P.type!=='MiG-31'){drawSPO10(c,S,th,brg,msl,NOW);return;}
   if(mig){// SPO-15LM (manual fig. 103): numbered main-threat lamps, small green threat lamps, red track light, power ring, type letters
     c.fillStyle='#1b1a17';c.fillRect(0,0,S,S);const test=NOW<sys.rwr.testT||NOW<sys.mig.lamp,bl2=performance.now()%250<125;
@@ -7788,10 +7788,12 @@ const GND={units:[],bombs:[],rkts:[],sites:[],zsus:[],kills:0,targets:0,
     const agl=P.pos.y-groundAt(P.pos.x,P.pos.z);if(agl<floor)return false;
     return terrLOS(_gwA.copy(u.pos).setY(u.pos.y+4),P.pos);},
   /* ---- 2K12 Kub battery: search -> acquire (reaction time) -> CW illumination -> two-round salvo ---- */
-  sam(S,dt,now){const R=S.surn,P=player;if(!R.alive){R.ai.radarLock=false;return;}
+  // v316: nearest hostile aircraft (the player included) inside R metres
+  pickT(u,R){let best=null,bd=R;for(const j of jets){if(!j.alive||j.gone)continue;if(j.side===u.side&&!(j===player&&IFF.sam(j,u)))continue;const d=j.pos.distanceTo(u.pos);if(d<bd){bd=d;best=j;}}return best;},
+  sam(S,dt,now){const R=S.surn,P=player,NM_=S.nm||'SA-6';if(!R.alive){R.ai.radarLock=false;return;}
     S.sweep=(S.sweep+dt*Math.PI*2/4)%(Math.PI*2);// 1S11 antenna turns at 15 rpm
     const ant=R.mesh.userData.ant;
-    const tgt=P&&P.alive&&(P.side!==R.side||IFF.sam(P,R))?P:null;
+    const tgt=S.st==='track'&&S.trk&&S.trk.alive?S.trk:this.pickT(R,GTY.SURN.R0*1.5);
     const rel=tgt?_gwB.copy(tgt.pos).sub(R.pos):null,d=rel?rel.length():1e9,brg=rel?Math.atan2(rel.x,-rel.z):0;
     const vis=tgt&&this.canSee(R,tgt,GTY.SURN.R0*1.5,20);
     // radial (Doppler) speed: the CW tracker and the missile's seeker both need a closing or opening rate
@@ -7801,7 +7803,7 @@ const GND={units:[],bombs:[],rkts:[],sites:[],zsus:[],kills:0,targets:0,
       // the beam paints the target once a turn
       if(vis&&!jam){let db=Math.abs(((brg-S.sweep)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI);if(db<.08){S.det=Math.max(S.det,now);if(!S.acq)S.acq=now;S.lastPaint=now;}}
       if(S.acq&&now-(S.lastPaint||0)>9)S.acq=0;
-      if(S.acq&&d<28000&&now-S.acq>22+Math.random()*.5){S.st='track';S.trk=tgt;S.lostT=0;if(SET.calls==='ON'&&P===tgt&&!isMig())radio('Spike! SA-6 tracking.');}}
+      if(S.acq&&d<28000&&now-S.acq>22+Math.random()*.5){S.st='track';S.trk=tgt;S.lostT=0;if(SET.calls==='ON'&&P===tgt&&!isMig())radio('Spike! '+NM_+' tracking.');}}
     if(S.st==='track'){const T=S.trk;R.aim.copy(rel||R.aim).normalize();if(ant)ant.rotation.y=-brg+R.hdg*D2R;
       const ok=T&&T.alive&&vis&&d<30000&&!jam;
       if(ok&&notch){S.notchT+=dt;}else S.notchT=0;
@@ -7817,14 +7819,14 @@ const GND={units:[],bombs:[],rkts:[],sites:[],zsus:[],kills:0,targets:0,
     L.n--;const rd=L.mesh.userData.rounds;if(rd&&rd[L.n])rd[L.n].visible=false;
     const tt=L.mesh.userData.tt;if(tt){tt.rotation.y=-Math.atan2(to.x,-to.z)+L.hdg*D2R;const rl=L.mesh.userData.rail;if(rl)rl.rotation.x=el;}
     // the missile flies off the launcher rail but homes on the SURN's illumination: the radar vehicle is its 'shooter'
-    const sh={gnd:true,side:R.side,get alive(){return R.alive;},ai:R.ai,pos:L.pos,vel:new V3(),ac:R.ac,type:'SA-6',callsign:'SA-6',fwd:v=>v.copy(dir),up:v=>v.set(-dir.x*dir.y,1-dir.y*dir.y,-dir.z*dir.y).normalize()};
+    const sh={gnd:true,side:R.side,get alive(){return R.alive;},ai:R.ai,pos:L.pos,vel:new V3(),ac:R.ac,type:S.nm||'SA-6',callsign:S.nm||'SA-6',fwd:v=>v.copy(dir),up:v=>v.set(-dir.x*dir.y,1-dir.y*dir.y,-dir.z*dir.y).normalize()};
     const m=new Missile('3M9',sh,T,lp);m.vel.copy(dir).multiplyScalar(25);S.msl.push(m);
     for(let i=0;i<14;i++)smoke.emit(lp,GV.set(rnd(-6,6),rnd(0,4),rnd(-6,6)),rnd(4,8),4,18,.85,.84,.8,.6,.3);
     if(T===player&&SET.calls==='ON'&&!isMig())radio('SAM launch!');},
   /* ---- ZSU-23-4: RPK-2 radar or optical tracking, 1A7 computed lead, bursts from four barrels ---- */
   zsu(Z,dt,now){const P=player;if(!Z.alive){Z.ai.radarLock=false;return;}
     Z.ammo=Z.ammo==null?2000:Z.ammo;Z.sw=((Z.sw||0)+dt*Math.PI*2/1.8)%(Math.PI*2);
-    const tgt=P&&P.alive&&P.side!==Z.side?P:null;if(!tgt){Z.ai.radarLock=false;return;}
+    const tgt=this.pickT(Z,20000);if(!tgt){Z.ai.radarLock=false;return;}
     const rel=_gwB.copy(tgt.pos).sub(Z.pos),d=rel.length(),agl=tgt.pos.y-groundAt(tgt.pos.x,tgt.pos.z);
     const los=d<20000&&terrLOS(_gwA.copy(Z.pos).setY(Z.pos.y+3.5),tgt.pos);
     const jm=jamOfMsl(tgt,MSL['3M9'],Z.pos),jam=!!(jm&&jm.noise&&jm.far&&d>4000);
@@ -8301,7 +8303,7 @@ const CAMP={st:null,on:false,mapOn:false,client:false,air:[],phys:new Map(),adPh
     if(!first){const r=st.hot.filter(i=>st.hs[i]===1).map(i=>i+1),b=st.hot.filter(i=>st.hs[i]===0).map(i=>i+1);
       this.log('Red attacks at sector'+(r.length>1?'s ':' ')+r.join(' & ')+(b.length?'; we counter-attack at sector '+b.join(', '):'')+'.','r');this.placeAD(false);}},
   placeAD(first){const st=this.st,hots=st.hot.filter(i=>st.hs[i]===1).concat(st.hot);let q=0;
-    for(const a of st.ad){if(a.k==='ZSU'&&a.al[0]){const i=hots[q%hots.length];q++;if(first||Math.random()<.6){a.x=CFX[i]+rnd(-5000,5000);a.z=this.frontZ(a.x)-rnd(3200,4600);a.mv=1;}}
+    for(const a of st.ad){if(a.s===0)continue;if(a.k==='ZSU'&&a.al[0]){const i=hots[q%hots.length];q++;if(first||Math.random()<.6){a.x=CFX[i]+rnd(-5000,5000);a.z=this.frontZ(a.x)-rnd(3200,4600);a.mv=1;}}
       if(a.k==='SITE'){const fz=this.frontZ(a.x);if(first||fz-a.z<10000){a.z=fz-rnd(20000,26000);a.mv=1;}}}},
   log(txt,c){const st=this.st;if(!st)return;st.log.unshift({t:st.t,txt,c:c||''});if(st.log.length>40)st.log.length=40;
     if(this.on&&game.active&&!this.client)radio(txt,c==='r');if(net.coop&&net.isHost&&net.on)net.r.emit('clog',{txt,c}).catch(()=>{});},
@@ -8412,10 +8414,10 @@ const CAMP={st:null,on:false,mapOn:false,client:false,air:[],phys:new Map(),adPh
       let dh=((u.hd-g.hdg+540)%360)-180;g.hdg=(g.hdg+dh*Math.min(1,dt*1.2)+360)%360;g.mesh.rotation.y=-g.hdg*D2R;g.aim.set(Math.sin(g.hdg*D2R),0,-Math.cos(g.hdg*D2R));}},
   // air defence and airfield targets exist everywhere (SA-6 batteries, Shilkas, hangars and fuel at red fields)
   buildAD(){for(const a of this.st.ad)this.mkAD(a);},
-  mkAD(a){const parts=[];if(a.k==='SITE'){const s=GND.add('SURN',1,a.x,a.z,a.hd),tels=[];parts.push(s);
-      for(const [dx,dz] of [[220,0],[-220,0],[0,220]]){const t=GND.add('TEL',1,a.x+dx,a.z+dz,a.hd);t.n=3;tels.push(t);parts.push(t);}
-      const S={surn:s,tels,st:'search',det:0,trk:null,salvo:0,nextL:0,sweep:0,notchT:0,msl:[],lostT:0};GND.sites.push(S);a._S=S;}
-    else if(a.k==='ZSU'){const z=GND.add('ZSU',1,a.x,a.z,a.hd);GND.zsus.push(z);parts.push(z);}
+  mkAD(a){const parts=[],sd=a.s==null?1:a.s;if(a.k==='SITE'){const s=GND.add('SURN',sd,a.x,a.z,a.hd),tels=[];parts.push(s);if(a.nm){s.callsign=s.type=a.nm+' radar';}
+      for(const [dx,dz] of [[220,0],[-220,0],[0,220]]){const t=GND.add('TEL',sd,a.x+dx,a.z+dz,a.hd);if(a.nm)t.callsign=t.type=a.nm+' launcher';t.n=3;tels.push(t);parts.push(t);}
+      const S={surn:s,tels,st:'search',det:0,trk:null,salvo:0,nextL:0,sweep:0,notchT:0,msl:[],lostT:0,nm:a.nm};GND.sites.push(S);a._S=S;}
+    else if(a.k==='ZSU'){const z=GND.add('ZSU',sd,a.x,a.z,a.hd);if(a.nm)z.callsign=z.type=a.nm;GND.zsus.push(z);parts.push(z);}
     else if(a.k==='BT'){const b=this.baseRec(a.b),g=GND.add('BLDG',b?b.side:1,a.x,a.z,a.hd);g.callsign='Hangar · '+cbDef(a.b).name;parts.push(g);}
     parts.forEach((g,i)=>{g.ad=[a.id,i];if(!a.al[i])this.wreck(g,0);});this.adPhys.set(a.id,parts);a.mv=0;},
   adSync(){for(const a of this.st.ad){const P=this.adPhys.get(a.id);if(!P){this.mkAD(a);continue;}
@@ -8425,7 +8427,7 @@ const CAMP={st:null,on:false,mapOn:false,client:false,air:[],phys:new Map(),adPh
   adKilled(g,src){const a=this.st.ad.find(q=>q.id===g.ad[0]);if(!a)return;a.al[g.ad[1]]=0;
     if(this.client){net.r.emit('adk',{id:a.id,i:g.ad[1]}).catch(()=>{});return;}
     if(a.k==='BT'){const b=this.baseRec(a.b);if(b){b.pool=Math.max(0,b.pool-2.5);b.dmg=Math.min(100,b.dmg+28);this.log(cbDef(b.id).name+' hit: hangars burning, sorties reduced.','b');}}
-    else if(a.k==='SITE'&&g.ad[1]===0)this.log('SA-6 radar destroyed east of '+Math.round(a.x/1000)+' km. The battery is blind.','b');
+    else if(a.k==='SITE'&&g.ad[1]===0)this.log((a.s===0?'Our '+(a.nm||'SAM')+' radar lost':(a.nm||'SA-6')+' radar destroyed')+' at '+Math.round(a.x/1000)+' km. The battery is blind.',a.s===0?'r':'b');
     if(src===player||(src&&src.peer))this.st.score.gk++;},
   // ---------- the air war ----------
   loadFor(type,role,side){const era=this.st.era;
