@@ -296,6 +296,13 @@ test('nctr_jem: reads class, engine, then type nose-on; refuses beam-on','F-15C'
 
 for(const ac of ['Su-35S','J-20'])test('nctr_fit_'+ac+': modern Russian/Chinese jets run NCTR','' +ac,async p=>{
   const r=await p.evaluate(()=>({fit:NCTRX.FIT.has(player.type)}));ok('NCTR fitted',r.fit,r);});
+test('f35_cockpit: F-35A uses its own pit, display draws, no HUD glass, tab click changes page','F-35A',async p=>{
+  const r=await p.evaluate(()=>{const o=ck.f35;if(!o)return{built:false};selectCockpit(player.ac.cockpit,player.ac.pit);
+    const vis=o.root.visible,viper=ck.viper.root.visible;F35PIT.click(120/1000*360*1+0,0);
+    const before=F35PIT.WIN[0].page;F35PIT.click(40/2000*360,(800-30)/800*360);const after=F35PIT.WIN[0].page;
+    o.tick(player,.2);o.tick(player,.2);const g=o.glass[0];return{built:true,vis,viper,cockpit:player.ac.cockpit,before,after,visor:isFinite(g.x),errs:0};});
+  ok('f35 pit built and selected',r.built&&r.vis&&!r.viper&&r.cockpit==='f35',r);ok('tab click cycles the page',r.after!==r.before,{b:r.before,a:r.after});ok('visor clip finite',r.visor);ok('no page errors',p.errs.length===0,p.errs);});
+
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

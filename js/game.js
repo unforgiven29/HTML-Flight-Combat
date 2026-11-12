@@ -5983,7 +5983,7 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
   root.traverse(o=>{if(!o.isMesh)return;const m=o.material,tr=m.transparent||m.opacity<1;o.castShadow=!tr&&!m.isMeshBasicMaterial;o.receiveShadow=!m.isMeshBasicMaterial;});
   root.visible=false;return out;}
 ck.viper=buildCockpit('viper');ck.fulcrum=buildCockpit('fulcrum');ck.cur=ck.viper;
-function selectCockpit(kind,pit){if(_ckSh)_ckSh.force=true;ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';if(ck.ka50)ck.ka50.root.visible=kind==='ka50';const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
+function selectCockpit(kind,pit){if(_ckSh)_ckSh.force=true;ck.viper.root.visible=kind==='viper';ck.fulcrum.root.visible=kind==='fulcrum';for(const k of Object.keys(ck))if(ck[k]&&ck[k].root&&k!=='viper'&&k!=='fulcrum'&&k!=='cur')ck[k].root.visible=kind===k;const c=ck.cur=ck[kind],v=c.vars[pit||kind]||{};
   (v.off||[]).forEach(o=>o.visible=false);(v.on||[]).forEach(o=>o.visible=true);if(v.stk){c.stk=v.stk;c.thr=v.thr;}c.sg=v.sg||c.sg;c.ped=v.ped||null;
   c.panelMats.forEach((m,i)=>m.color.setHex(v.panel?v.panel[i]:c.panel0[i]));c.glass=v.glass||c.glass0;}
 PLANES.run('f15','L6543');

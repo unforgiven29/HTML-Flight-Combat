@@ -1,3 +1,7 @@
+## v314
+- **F-35A cockpit** (js/f35pit.js): built from reference photos. Panoramic display with four touch windows (TSD, HSI, SMS, EW, EOTS, ENG, FUEL, GEAR; tabs below each window), ICAWS/AP/AT strip, HMD/screen brightness strip, master arm, standby ADI, console panels (jettison, gear handle, parking brake, auto recovery, B/U batt, FTA, CM doors), stick, throttle, ejection handle, seat, canopy bow. No HUD glass: symbology clips to a head-following helmet visor field.
+- `selectCockpit` now toggles every registered cockpit.
+
 ## v312 — Ka-50: flips, Shkval TV sight, Vikhr launchers
 - Flight model: the pitch/roll walls are gone; the SAS attitude hold only works inside the normal envelope, so the Ka-50 can roll, loop and fly inverted (faster roll/pitch response). Negative-g blade-collision limit relaxed.
 - Shkval-V: built-in nose TV sight (no thermal, no polarity modes) with a laser ranger for the Ka-50, Su-25T and Su-25SM3 (js/shkval.js).
