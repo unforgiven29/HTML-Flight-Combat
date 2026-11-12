@@ -1,13 +1,13 @@
-/* v314 — HELICOPTER STRIKE: the STRIKE mission (depot, trucks and tanks behind an SA-6 battery and two Shilkas) flown in a Ka-50 that starts about 15 km short of the target,
+/* v314 — HELICOPTER STRIKE: the STRIKE mission (depot, trucks and tanks behind an SA-6 battery and two Shilkas) flown in a helicopter (the Ka-50, or the AH-64A if you picked it) that starts about 15 km short of the target,
    low and already at cruise, so the fight begins in a minute instead of after a long transit. Vikhr beam riders and B-8M1 rockets. Distances and speeds are gameplay-level choices. */
 (function(){
 'use strict';
 if(typeof start0!=='function'||typeof GND==='undefined'||typeof AC==='undefined'){console.warn('[helistrike] game missing');return;}
-const HELI=()=>Object.keys(AC).find(t=>AC[t]&&AC[t].heli);
+const HELI=()=>AC['Ka-50']?'Ka-50':Object.keys(AC).find(t=>AC[t]&&AC[t].heli);
 const _s=start0;
 start0=async function(scen){
   if(scen!=='HELISTK')return _s(scen);
-  const ht=HELI();if(!ht){return _s('STRIKE');}
+  const ht=AC[game.ac]&&AC[game.ac].heli?game.ac:HELI();if(!ht){return _s('STRIKE');}
   const old=game.ac;game.ac=ht;
   try{await _s('STRIKE');}finally{game.ac=old;}   // the hangar selection is left as it was
   if(!player||game.scen!=='STRIKE')return;

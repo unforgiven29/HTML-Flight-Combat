@@ -178,7 +178,7 @@ function sub1(j,H,h,dt,last){
   if(upr)rCmd+=j.beta*1.6*Math.max(0,spdY)*(j.onGnd?0:1);
   if(spdY>0&&!gnd&&upr)rCmd+=Math.tan(Math.max(-1.2,Math.min(1.2,bnk)))*G/Math.max(V,12)*.55*spdY*Math.cos(pit);
   // coaxial collective-yaw coupling: raising the lever shifts torque between the two rotors, a small yaw kick the pedals must trim out
-  {const dl=h.lev0==null?0:(lever-h.lev0)/Math.max(dt,1e-4);h.lev0=lever;rCmd+=Math.max(-2,Math.min(2,dl))*3.2*DEG*(1-spdY*.6);}
+  {const dl=h.lev0==null?0:(lever-h.lev0)/Math.max(dt,1e-4);h.lev0=lever;rCmd+=Math.max(-2,Math.min(2,dl))*(H.yawK||3.2)*DEG*(1-spdY*.6);}
   h.qc=qCmd;h.cpIn=cp;const tau=.17/Math.max(.6,Math.min(1.1,Nr)),ka=1-Math.exp(-dt/tau),w=h.w;
   // rotor-disc flapping effects the SAS has to fight: flap-back (speed makes the nose rise), dihedral (sideslip rolls the aircraft away from the wind),
   // and cyclic cross-coupling (a pitch input leaks a little into roll). All three vanish with the rotor unloaded on the ground.
