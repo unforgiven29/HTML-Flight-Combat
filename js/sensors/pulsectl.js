@@ -35,7 +35,13 @@ PRC.tier=tier;PRC.has=k=>{if(!player||!player.ac||!player.ac.pulse)return false;
 PRC.opts=k=>{const c=CAPS[tier()];return c&&c[k]&&Array.isArray(c[k])?c[k]:null;};
 const fitted=()=>!!(player&&player.alive&&player.ac&&player.ac.pulse&&!player.ac.noRdr);
 const twoSeat=()=>!!(player&&player.ac&&player.ac.rio);
-const gainK=()=>.55+.9*(.7*PRC.gC+.3*PRC.gF);          // 0.55 .. 1.45
+// RCVR GAIN is the set's existing receiver-gain knob (sys.mig.fgain on the MiG / Sapfir sets, sys.fcr.gain on the rest, which the raw video and the scope noise read),
+// so this panel, the cockpit knob, the clutter / noise on the scope and the detection range all move together. COARSE is the knob, FINE trims +-10 %.
+const migPit=()=>{const p=player&&player.ac&&player.ac.pit;return p==='flogger'||p==='foxbat'||p==='fishbed';};
+const knob=()=>migPit()?sys.mig.fgain:sys.fcr.gain;
+const gainVal=()=>clamp_(PRC.gC+(PRC.gF-.5)*.2,0,1);
+function pushGain(){const v=gainVal();if(migPit())sys.mig.fgain=v;else{sys.fcr.gain=v;sys.mig.fgain=v;}PRC._gw=knob();}
+PRC.pushGain=pushGain;
 function applyScan(){const idx=radar.barsL.indexOf(PRC.has('mode')&&PRC.mode===2?1:PRC.scan);if(idx>=0)radar.bi=idx;}
 function applyDw(){const idx=radar.azs.indexOf(PRC.dw===0?30:60);if(idx>=0)radar.ai=idx;}
 // ----- power -----
@@ -46,12 +52,11 @@ function applyPower(){const p=PRC.POWER[PRC.pwr];
 // ----- the effects: wrap the range model and the track loop -----
 const _rdet=radar.rdet;
 radar.rdet=function(j,a){let R=_rdet.call(this,j,a);if(!R||!fitted()||this.sensor!=='RDR')return R;
-  R*=Math.pow(PRC.has('gain')?gainK():1,.5);                                    // gain: fourth-root of power -> range
   if(PRC.has('pulse')&&PRC.pulse===1)R*=1.1;                                    // long pulse: more energy on target
   const rain=(typeof ENV!=='undefined'&&ENV.P&&ENV.P.rain)?ENV.P.rain:0;
   if(PRC.has('pol')&&PRC.pol>0)R*=.93;                                        // circular polarization costs a few dB on the aircraft return
   if(rain>0&&PRC.has('pol')&&PRC.pol===0)R*=1-Math.min(.4,rain*.35);          // rain eats a linear-polarized set
-  if(PRC.has('gain')&&PRC.gC>.8)R*=1-(PRC.gC-.8)*.9;                           // gain run up high: the receiver floods and small targets vanish into noise
+  if(PRC.has('gain')&&gainVal()>.8)R*=1-(gainVal()-.8)*.9;                           // gain run up high: the receiver floods and small targets vanish into noise
   if(PRC.has('mode')&&PRC.mode===2&&a.el<-2*D)R*=.8;
   return R;};
 const _snr1=radar.snr1;
@@ -76,6 +81,7 @@ radar.update=function(dt){
         this.rngErr=clamp_(this._pcE,-3000,3000);if(Math.abs(this._pcE)>1800){this._pcE=0;this.drop('LOST');}}
       else this._pcE=0;}
     else{this._pcE=0;this._pcJ=0;}
+    if(PRC._gw==null){PRC.gC=knob();PRC.gF=.5;PRC._gw=knob();}else if(Math.abs(knob()-PRC._gw)>.001){PRC.gC=knob();PRC.gF=.5;PRC._gw=knob();}   // the cockpit knob was turned: the panel follows
     PRC.hold=Math.max(0,PRC.hold-dt);
   }
   return _upd.apply(this,arguments);};
@@ -109,7 +115,7 @@ function crew(dt){const T=tier();if(!fitted()||!twoSeat()||!PRC.auto||!rio.activ
   // display and sweep: narrow when he has a priority target, wide otherwise
   const wdw=(rio.prio&&!stt)?0:1;if(PRC.has('dw')&&PRC.dw!==wdw&&!stt){PRC.dw=wdw;applyDw();say(wdw?'Wide sweep.':'Narrow sweep.','prc-dw',20);}
   // gain: back it off if the picture is full of ground clutter (look-down at low level), raise it at range
-  if(PRC.has('gain')){const alt=player.pos.y*3.281,wg=(radar.antEl<-3*D&&alt<12000)?.35:.5;PRC.gC+=clamp_(wg-PRC.gC,-.05,.05);if(Math.abs(wg-PRC.gC)>.06)say(wg<.4?'Gain down, clutter.':'Gain up.','prc-g',20);}
+  if(PRC.has('gain')){const alt=player.pos.y*3.281,wg=(radar.antEl<-3*D&&alt<12000)?.35:.5;PRC.gC+=clamp_(wg-PRC.gC,-.05,.05);pushGain();if(Math.abs(wg-PRC.gC)>.06)say(wg<.4?'Gain down, clutter.':'Gain up.','prc-g',20);}
   // long pulse for long range search, short pulse inside 20 miles
   if(PRC.has('pulse')){const wp=radar.ranges[radar.ri]*(radar.unit/NM_)>30?1:0;if(PRC.pulse!==wp)PRC.pulse=wp;}}
 const _rup=rio.update;rio.update=function(dt){_rup.apply(this,arguments);try{crew(dt);}catch(e){}};
@@ -148,7 +154,7 @@ function render(){if(!root)return;const ok=fitted();root.style.display=PRC.show&
 function onClick(e){const t=e.target;if(!t.dataset)return;if(t.dataset.k){const k=t.dataset.k,v=+t.dataset.v;PRC[k]=v;PRC.hold=25;if(k==='pwr')applyPower();if(k==='scan'||k==='mode')applyScan();if(k==='dw')applyDw();if(k==='mode'){if(v===1&&radar.mode!=='STT'){radar.fromACM=false;radar.mode='ACM';radar.acm='BORE';flashMsg('BORESIGHT');}else if(v!==1&&radar.mode==='ACM'&&radar.acm==='BORE')radar.mode='RWS';}}
   else if(t.dataset.a==='rp'){stepRange(1);PRC.hold=25;}else if(t.dataset.a==='rm'){stepRange(-1);PRC.hold=25;}
   else if(t.dataset.a==='auto'){PRC.auto=!PRC.auto;PRC.hold=0;}render();}
-function onInput(e){const t=e.target;if(!t.dataset||!t.dataset.s)return;const v=+t.value;PRC.hold=25;if(t.dataset.i)PRC[t.dataset.s]=v;else PRC[t.dataset.s]=v/100;}
+function onInput(e){const t=e.target;if(!t.dataset||!t.dataset.s)return;const v=+t.value;PRC.hold=25;if(t.dataset.i)PRC[t.dataset.s]=v;else{PRC[t.dataset.s]=v/100;if(t.dataset.s==='gC'||t.dataset.s==='gF')pushGain();}}
 const flashMsg=s=>{try{flash(s,900);}catch(e){}};
 document.addEventListener('DOMContentLoaded',()=>{build();root.addEventListener('click',onClick);root.addEventListener('input',onInput);});
 if(document.readyState!=='loading'){build();root.addEventListener('click',onClick);root.addEventListener('input',onInput);}

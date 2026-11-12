@@ -1066,7 +1066,7 @@ class Missile{
         if(best){this.track=best;this.maddog=false;if(best===player)rwrEvent('active');}}
       if(!this.track&&d.seek==='IR'&&d.loal&&this.maddog&&tb>.6&&!(this.noReacq>this.t)){let best=null,bd=1e9;   // v325 LOAL: the head looks ahead and takes the nearest hot target
         for(const j of jets){if(!j.alive||j===this.sh||j.side===this.sh.side||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
-          if(dd<irLockRange(d,j,this.pos)&&vd.angleTo(r)<(d.search||.6)&&dd<bd){bd=dd;best=j;}}
+          if(dd<irLockRange(d,j,this.pos)&&vd.angleTo(r)<(d.acq||d.search||.6)&&dd<bd){bd=dd;best=j;}}
         if(best){this.track=best;this.target=best;this.maddog=false;this.lastP.copy(best.pos);this.lastV.copy(best.vel);if(best===player)rwrEvent('active');}}
       if(this.track){const los=_mr.copy(this.track.pos).sub(this.pos),dd=los.length();los.divideScalar(dd);
         if(vd.dot(los)<Math.cos(d.gimbal))this.track=null;
@@ -1108,7 +1108,7 @@ class Missile{
     if(d.seek==='IR'&&this.active&&!this.track&&tb>-1&&!(this._dzT>performance.now()/1000)){   // v320: a head being dazzled by a DIRCM cannot reacquire
     let best=null,bd=1e9;
       for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
-        if(vd.angleTo(r)<Math.max(d.search,8*D2R,d.gimbal*.35)&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
+        if(vd.angleTo(r)<(d.acq?d.acq*1.5:Math.max(d.search,8*D2R,d.gimbal*.35))&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
       if(best){this.track=best;P=_mP.copy(best.pos);Vt=_mVt.copy(best.vel);}}
     // imaging / doppler CCM: a decoy that separates from the real target in speed gets rejected
     if(this.track&&this.track.isDecoy&&d.ccm&&this.track.src&&this.track.src.alive){const tgt=this.track.src;
@@ -1459,7 +1459,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   // the cursor, so the rest of the picture is not lost the moment the lock is taken
   esaRetain(dt,gim,now){const W=Math.min(30*D2R,gim),c=clamp(this.cur.az||0,-gim+W,gim-W),az=this.antAz,el=this.antEl;
     const keep=this.esaAz;this.esaSearch(dt*.45,c-W,c+W,gim,now,true);this.esaAz=this.antAz;this._esaBeam=this.antAz;this._esaBeamEl=this.antEl;this.antAz=az;this.antEl=el;
-    for(const [j,tk] of this.tracks)if(!tk.lnk&&j!==this.lock&&(!SEEN(j)||now-tk.t>8))this.tracks.delete(j);},
+    for(const [j,tk] of this.tracks)if(!tk.lnk&&j!==this.lock&&(!SEEN(j)||now-tk.t>(this.awg&&this.mode==='TWS'?(this.awgHold?120:14):8)))this.tracks.delete(j);},
   on(){return this.sensor==='IRST'||this.power==='ON'&&this.warm<=0;},
   // COOP (MiG-29 PU-S31 switch): the radar and the IRST work as one sensor. A target is seen if either of them sees it, the IRST fills in what the
   // Doppler notch and look-down lose, the radar gives the IRST track its range, and the tracking dwell holds on whichever return is better.
@@ -1573,9 +1573,9 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
         if(q.d>Rm||Math.abs(q.az-b.az)>b.w+this.beam/2||Math.abs(q.el-b.el)>b.h+this.beam/2)continue;
         const a=this.ang(j.pos);if(a.off<gim&&this.acmDet(j,a)&&q.d<bd){bd=q.d;best=j;}}
       this.acmBest=best;if(best&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
-    const mg=player.ac.cockpit==='fulcrum',tws=this.mode==='TWS';if(tws&&this.awg&&this.bi===2)this.bi=1;
+    const mg=player.ac.cockpit==='fulcrum',tws=this.mode==='TWS';if(tws&&this.awg&&!window.AWG&&this.bi===2)this.bi=1;
     // AWG-9 TWS: ±20° in 4 bars or ±40° in 2 bars, about a 2 s frame
-    const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,tws?60*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
+    const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:this.awg&&this.awgAz!=null?Math.min(this.awgAz,gim):tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,tws?60*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
     if(mg)this.elCmd=Math.atan2(MDH[sys.mig.dh]*1000,this.sensor==='IRST'?Math.max(this.rngM*.5,4000):Math.max(this.cur.r*this.rngM,2500));{const g=this.glim();if(this.sensor==='IRST'&&!this.rotor())this.elCmd=(this.spin()?6:7.5)*D2R;/* the IRST drives its own elevation pattern; nothing the pilot does changes it */this.elCmd=clamp(this.elCmd,-(g.ed-2)*D2R,(g.eu-2)*D2R);}
     const lo=this.scanC-W,hi=this.scanC+W,prev=this.antAz;if(this.esaOn())this.esaSearch(dt,lo,hi,gim,now,tws);else{{const dE=this.dir>0?hi-this.antAz:this.antAz-lo,kk=this.aesa?1:clamp(dE/(8*D2R)+.22,.28,1);this.antAz+=this.dir*this.rate*(this.sensor==='IRST'?(this.spin()?1.1:this.rotor()?1.7:2.1):1)*kk*dt;}
     if(player.ac.pulse){flClutterSweep(prev,clamp(this.antAz,lo,hi));ghostSweep(prev,clamp(this.antAz,lo,hi),now);}if(this.sensor==='IRST')irCSweep(prev,clamp(this.antAz,lo,hi),now);
@@ -1589,7 +1589,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}}
-    for(const [j,tk] of this.tracks)if(tk.lnk?(!j.alive||now-tk.t>7):(!SEEN(j)||now-tk.t>(tws?8:10)))this.tracks.delete(j);
+    for(const [j,tk] of this.tracks)if(tk.lnk?(!j.alive||now-tk.t>7):(!SEEN(j)||now-tk.t>(this.awg&&tws?(this.awgHold?120:14):tws?8:10)))this.tracks.delete(j);
     if(tws&&mg){// N019 / N001 TWS: a jammer on the scope throws the set back to search, ten track files at most, the most dangerous closing track is bugged until the pilot takes over
       {const TN=(player&&player.ac.trkN)||10;if(this.tracks.size>TN){const l=[...this.tracks].sort((a,b)=>a[1].d-b[1].d);for(let i=TN;i<l.length;i++)if(l[i][0]!==this.bug)this.tracks.delete(l[i][0]);}}
       this._thT=(this._thT||0)-dt;
@@ -3528,7 +3528,7 @@ const rio={on:true,hold:0,prio:null,acc:0,seen:new Map(),calls:[],last:{},said:n
     if(radar.mode==='ACM'||radar.sensor!=='RDR')return;// ACM is the pilot's
     const tk=this.prio&&radar.tracks.get(this.prio);
     // TID scale: the smallest one that holds the whole picture with some room
-    if(this.hold<=0){let far=0;for(const [,t] of hs)far=Math.max(far,t.d);let i=0;while(i<radar.ranges.length-1&&radar.ranges[i]*radar.unit<far*1.25)i++;if(!hs.length)i=Math.max(i,2);radar.ri=i;}
+    if(this.hold<=0){let far=0;for(const [,t] of hs)far=Math.max(far,t.d);let i=0;while(i<radar.ranges.length-1&&radar.ranges[i]*radar.unit<far*1.25)i++;if(!hs.length)i=Math.max(i,radar.awg?4:2);radar.ri=i;}
     // antenna: elevation onto the priority target's altitude and azimuth centred on him; with nothing out there, walk the elevation through the likely band
     if(radar.mode!=='STT'){
       if(tk){radar.elCmd=clamp(Math.atan2(tk.alt-P.pos.y,Math.max(tk.d,1500)),-30*D2R,30*D2R);radar.cur.az=clamp(tk.az,-45*D2R,45*D2R);}
@@ -3678,7 +3678,7 @@ function drawTcHsd(P){const c=tcHsdC.getContext('2d'),S=512,cx=256,cy=256,R=246,
   // scan pattern limits: dashed lines, each dash and each gap 20 nm, from the ownship symbol; one strobe in STT
   const dash=Math.max(3,20*NM*PX);
   if(radar.mode==='STT'&&radar.lock){const a=radar.ang(radar.lock.pos),ab=a.az+hdR,[x,y]=pt(ab,Math.min(a.d,2000*NM));c.setLineDash([]);c.lineWidth=2;c.beginPath();c.moveTo(own[0],own[1]);c.lineTo(own[0]+Math.sin(ab-fr)*900,own[1]-Math.cos(ab-fr)*900);c.stroke();}
-  else if(radar.mode!=='ACM'){const W=radar.mode==='TWS'&&radar.awg?(radar.bi===0?20:40)*D2R:Math.min(radar.azs[radar.ai]*D2R,radar.gimbal());c.setLineDash([dash,dash]);c.lineWidth=2;
+  else if(radar.mode!=='ACM'){const W=radar.awg&&radar.awgAz!=null?Math.min(radar.awgAz,radar.gimbal()):radar.mode==='TWS'&&radar.awg?(radar.bi===0?20:40)*D2R:Math.min(radar.azs[radar.ai]*D2R,radar.gimbal());c.setLineDash([dash,dash]);c.lineWidth=2;
     [radar.scanC-W,radar.scanC+W].forEach(a=>{const ab=a+hdR;c.beginPath();c.moveTo(own[0],own[1]);c.lineTo(own[0]+Math.sin(ab-fr)*900,own[1]-Math.cos(ab-fr)*900);c.stroke();});c.setLineDash([]);}
   else{const W=({PAL:20,VSLH:7,VSLL:7,PLM:3})[radar.acm]*D2R||7*D2R;c.setLineDash([dash,dash]);[radar.scanC-W,radar.scanC+W].forEach(a=>{const ab=a+hdR;c.beginPath();c.moveTo(own[0],own[1]);c.lineTo(own[0]+Math.sin(ab-fr)*900,own[1]-Math.cos(ab-fr)*900);c.stroke();});c.setLineDash([]);}
   // jamming strobes, solid, from the ownship symbol to the rim
@@ -6286,7 +6286,7 @@ function pickle(force){if(!player||!player.alive||game.paused||player.gloc>0)ret
     const f=player.fwd(new V3());let bd=1e9;for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||j.side===player.side)continue;const r=j.pos.clone().sub(player.pos),dd=r.length();
       if(f.angleTo(r)<60*D2R&&dd<bd&&dlLinkEst(j)){bd=dd;tg=j;}}
     if(tg){lnk=true;flash(SN[w]+' · LOAL · TRACK '+Math.round(bd/NM)+' NM',1000);}else flash(SN[w]+' · LOAL · SEARCH',1000);}
-  {const _r=IFF.roeCheck(tg);if(_r&&!force){flash('NO RELEASE · '+_r,1600);radio('Negative, '+_r.toLowerCase()+'.');return;}}
+  {const _r=IFF.roeCheck(tg);if(_r){flash('IFF ADVISORY · '+_r,1600);radio('Advisory, '+_r.toLowerCase()+'.');}}   // v331: IFF / ROE only advise; the shooter decides
   {const _m=fireMissile(w,player,tg,player.release(w));if(lnk&&_m){_m.dlx=true;flash(SN[w]+' · DATALINK',1200);}}game.pickleCd=.8;
   if(isMig()&&sys.mig.salvo===0&&!force&&player.count(w)>0)setTimeout(()=>{if(player&&player.alive&&!game.paused&&player.count(w)>0)fireMissile(w,player,tg&&tg.alive?tg:null,player.release(w));},280);
 }

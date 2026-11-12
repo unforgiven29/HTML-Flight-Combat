@@ -48,7 +48,7 @@ const IFF=(function(){
   // radar filter: only positively identified friends are suppressed from the scope; everyone else is a contact
   const hide=j=>(!net.on||!!net.coop)&&j.side===player.side&&known(j);
   // a gun round / non-guided hit may strike a friendly the shooter did not identify
-  function hitSkip(sh,j){if(!isFr(j,sh))return false;if(sh!==player)return !IFF.badFor(sh,j);return known(j);}
+  function hitSkip(sh,j){if(!isFr(j,sh))return false;if(sh!==player)return !IFF.badFor(sh,j);return false;}   // v331: the player's rounds hit what they hit; IFF only advises
   // missiles: a seeker skips friends unless the shooter has no positive ID, or it's the intended target
   function mslSkip(m,j){if(!isFr(j,m.sh))return false;if(j===m.track)return false;return m.sh!==player||known(j);}
   // AI/SAM treat a friend as hostile when it has been squawking wrong for long enough under ROE FREE
