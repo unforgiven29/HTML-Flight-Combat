@@ -10,6 +10,13 @@ const ID='AH-64A',DEG=Math.PI/180;
 /* ---------- weapons ---------- */
 const agd=(k,base,over,sn,name)=>{if(AGW[k]||!AGW[base])return;AGW[k]=Object.assign({},AGW[base],over||{});SN[k]=sn;STORE_NAME[k]=name;};
 agd('AGM-114K','Kh-25ML',{mass:45,L:1.63,R:.09,dmg:60,soft:8,hard:6,range:8000,lockR:8000},'HFIR','AGM-114K Hellfire II · semi-active laser');
+// v320: the Hellfire keeps its Maverick-class flight model, but a Hellfire is fired from a hover and at targets well off the nose. It inherited the Kh-25ML numbers, so it left the rail
+// along the helicopter's velocity (none in a hover), and guidance dropped any target more than 35 deg off that direction. Real Hellfires are launched lock-on-before-launch with the
+// designator already on, then pitch over towards the spot (the K model flies a lofted or direct profile with a wide seeker field), so: eject toward the spot and widen the cone.
+Object.assign(AGW['AGM-114K'],{cone:110,nav:4.2,maxG:22,dv:260,burn:2.6});
+{const _l=GND.launchMav;GND.launchMav=function(w,P,pos,tgt){_l.apply(this,arguments);if(w!=='AGM-114K')return;const k=this.mavs[this.mavs.length-1];if(!k)return;
+  const aim=tgt&&tgt.pos?tgt.pos:(typeof SNS!=='undefined'&&SNS.spi?SNS.spi:null);if(!aim)return;
+  const d=aim.clone().sub(k.p);if(d.lengthSq()<1)return;d.normalize();k.v.copy(P.vel).addScaledVector(d,45);if(k.mesh)k.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),d);};}
 agd('M261','B-8M1',{cap:19,mass:300,L:2.1,R:.2},'HYD70','M261 · 19× Hydra 70');
 if(AGW['AGM-114K']){AGW['AGM-114K'].beam=1;AGW['AGM-114K'].cone=120;}   // follows the laser spot (beamrider.js flies it)
 
