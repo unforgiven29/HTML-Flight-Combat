@@ -321,12 +321,12 @@ test('sar_expand: SAR EXP state cycles and renders','F-35A',async p=>{
 test('sea_ships: ASM mission ships are SHIP class on the SEA scope','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await start('ASHM');const P=player;radar.power='ON';radar.warm=0;AGR.mode='SEA';P.pos.set(-60000,350,5000);await new Promise(r=>setTimeout(r,8000));const e=AGR.ents.filter(e=>AGR.entVal(e)>0);return{n:e.length,ships:GND.units.filter(u=>typeof SDEF!=='undefined'&&SDEF[u.kind]).length};});
   ok('ships visible in SEA',r.n>0,r);});
-test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16C',async p=>{
+test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16V',async p=>{
   const r=await p.evaluate(()=>{const P=player;radar.power='OFF';const t=jets.find(j=>j!==P&&j.side!==P.side);
     for(const j of jets)if(j!==P&&j!==t)j.pos.set(1e7,6000,1e7);
     game.era='modern';SENSOR_FUSE.reg.datalinkEnabled=true;const o=DL.contacts;DL.contacts=()=>[{j:t,src:'LNK',by:null,pos:t.pos.clone(),vel:t.vel.clone(),hdg:t.hdg,age:0}];
     P.pos.set(0,6000,0);P.q.set(0,0,0,1);t.pos.set(0,6000,-40000);const g=dlTgt();DL.contacts=o;return{shooter:dlShooter(),on:DL.on(),g:g===t};});
-  ok('F-16C datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
+  ok('F-16V datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}

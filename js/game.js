@@ -2604,7 +2604,7 @@ function drawGauges(){const c=gau,P=player;c.fillStyle='#1d4f4d';c.fillRect(0,0,
 // notch, jamming, terrain) but without the beam sweep.
 // NCTR (F/A-18C): the APG-73 listens to the engine modulation of the one track it is pointed at and, nose-on or tail-on inside its range, names the type after a
 // few seconds of dwell. A beam aspect shows no compressor face or tailpipe, jamming and the look-down notch hide it, and a name once read stays with the track.
-const US_DL=new Set(['F-15C','F-15E','F-15EX','F-15I','F-16C','F-16V','F-16E','F-16I','F-18C','F-18E','F-18F','EA-18G','F-22','F-35A','F-14A','F-14B']);
+const US_DL=new Set(['F-15C','F-15E','F-15EX','F-15I','F-16V','F-16E','F-16I','F-18C','F-18E','F-18F','EA-18G','F-22','F-35A','F-14D']);
 const DL_FIT=new Set(['MiG-29','MiG-29S','Su-27','F-14A','F-15C','F-18C']);
 sys.dl={pg:0,ri:2,north:0,hsd:1,lk:1,hsi:1};
 const _dlv1=new V3(),_dlv2=new V3(),_dlv3=new V3();
