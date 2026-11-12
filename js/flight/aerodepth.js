@@ -38,8 +38,9 @@ const hasTuck=ac=>{if(!ac)return false;let v=_ss.get(ac);if(v!==undefined)return
   const V=this.vel.length(),q=.5*(window.rho?rho(this.pos.y):1.225)*V*V;if(q<AERO.q0)return o;
   const loss=(o.fbw?AERO.rollLossFbw:AERO.rollLoss)*sm((q-AERO.q0)/AERO.dq);if(loss<.005)return o;
   // cache per (ac object, 5 % loss step) so we do not allocate every frame
+  // NOTE: other layers return prototype-chained tables, so never copy own keys (Object.assign drops ff, S, ...): chain with Object.create
   const kq=Math.round(loss*20),c=this._adC;if(c&&c.o===o&&c.k===kq)return c.r;
-  const r=Object.assign({},o);r.roll=o.roll*(1-kq/20);this._adC={o:o,k:kq,r:r};return r;};}
+  const r=Object.create(o);r.roll=o.roll*(1-kq/20);this._adC={o:o,k:kq,r:r};return r;};}
 
 {const st=Jet.prototype.step;Jet.prototype.step=function(dt){const r=st.call(this,dt);
   if(this.alive&&!this.remote&&dt>0){const eh=this.pos.y+this.vel.lengthSq()/19.62;
