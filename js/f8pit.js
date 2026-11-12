@@ -173,9 +173,12 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   // scope hood (15): raised box, rectangular CRT window
   box(board,(725-488)*K,(330-85)*K,.05,dk,bx(606),by(207),.025);
   {const IP=window.F8IP626,cv=document.createElement('canvas');cv.width=IP?IP.W:260;cv.height=IP?IP.H:380;const sct=new THREE.CanvasTexture(cv);sct.generateMipmaps=false;sct.minFilter=THREE.LinearFilter;ctx.o.tex.push(sct);
-    const m=new THREE.MeshBasicMaterial({map:sct,toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.PlaneGeometry(130*K,190*K),m);sc.position.set(bx(606),by(212),.051);sc.userData.screen='phscope';board.add(sc);
+    const m=new THREE.MeshBasicMaterial({map:sct,toneMapped:false});ctx.o.faces.push(m);const sc=new THREE.Mesh(new THREE.PlaneGeometry(130*K,190*K),m);sc.position.set(bx(606),by(212),.062);sc.userData.screen='phscope';sc.renderOrder=3;m.polygonOffset=true;m.polygonOffsetFactor=-2;m.polygonOffsetUnits=-2;board.add(sc);
     {let lt=0;upd.push(()=>{const n=performance.now();if(n-lt<90)return;lt=n;try{if(IP)IP.draw(cv.getContext('2d'),PL());sct.needsUpdate=true;}catch(e){}});}
-    box(board,(130)*K,(190)*K,.004,blk,bx(606),by(212),.049);
+    {const fw=130*K,fh=190*K,t=9*K,d=.04;   // v310: raised bezel ring round the CRT window (proud of the screen) and a black tube behind it, no coplanar faces
+      box(board,fw+2*t,t,d,blk,bx(606),by(212)-fh/2-t/2,.07);box(board,fw+2*t,t,d,blk,bx(606),by(212)+fh/2+t/2,.07);
+      box(board,t,fh,d,blk,bx(606)-fw/2-t/2,by(212),.07);box(board,t,fh,d,blk,bx(606)+fw/2+t/2,by(212),.07);
+      box(board,fw,fh,.004,blk,bx(606),by(212),.057);}
     // six scope knobs on the bezel
     [[505,130,'INT'],[505,190,'STORE'],[505,250,'CURSOR'],[707,130,'GAIN'],[707,190,'MKR'],[707,250,'FOCUS']].forEach(([x,y,n])=>knob(board,bx(x),by(y),.055,13*K,'SCOPE · '+n,['1','2','3','4','5'],'scope'+n));}
   // instruments: square cases, live faces, glass

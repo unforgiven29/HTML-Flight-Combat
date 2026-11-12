@@ -37,7 +37,7 @@ const B=window.BEAM={on:true,mp:true,df:true,vis:false,kcal:2,dw:new Map(),fr:0,
 function ant(){const bw=radar.beam||3.3*D,bwE=radar.bmV?radar.bmV():bw,w=S.wfOf?S.wfOf():null;return{bwA:bw,bwE:bwE,sll:(w&&w.sll)||-28};}
 function pat1(dAz,dEl,bwA,bwE,sll){if(S.pattern)return S.pattern(dAz,dEl,bwA,bwE,sll);const u2=(dAz/bwA)*(dAz/bwA)+(dEl/bwE)*(dEl/bwE);return Math.exp(-2.7726*u2);}
 // steering loss and widening of an electronic array; mechanical antennas return {w:1,g:1}
-function scanOf(a){if(!S.scan||a.baz==null)return{w:1,g:1};return S.scan(Math.acos(cl(Math.cos(a.baz)*Math.cos(a.bel),-1,1)));}
+function scanOf(a){if(!S.scan||a.baz==null)return{w:1,g:1};return S.scan(Math.acos(cl(Math.cos(a.baz)*Math.cos(a.bel),-1,1)),a.baz,a.bel);}
 B.ant=ant;
 
 /* ---------- propagation: multipath + diffraction along the real terrain ---------- */

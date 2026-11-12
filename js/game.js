@@ -2327,7 +2327,7 @@ function drawFCR(){const c=fcr,S=360,P=player,mig=isMig(),col=mig?'#8dffb4':MF;i
     if(radar.power!=='OFF'){c.fillText(radar.power==='ON'?'WARM-UP '+Math.ceil(radar.warm):'STBY',S/2,S/2);if(!isHornet())osb(c,radar.power==='ON'?'WARM':'STBY',60,18,true);}if(isHornet())hornOsbs(c,'RDR');return;}
   c.globalAlpha=.35+.65*sys.fcr.sym;
   c.font=MFONT;c.fillStyle=col;c.strokeStyle=mig?'rgba(141,255,180,.35)':MFD;c.lineWidth=1;
-  const x0=46,x1=314,y0=44,y1=306,gim=radar.gimbal(),X=az=>x0+(az*R2D+60)/120*(x1-x0),rng=radar.rngM,Y=d=>y1-clamp(d/rng,0,1)*(y1-y0);
+  const x0=46,x1=314,y0=44,y1=306,gim=radar.gimbal(),SA=radar.scopeAz||60,X=az=>x0+(az*R2D+SA)/(2*SA)*(x1-x0),rng=radar.rngM,Y=d=>y1-clamp(d/rng,0,1)*(y1-y0);
   c.strokeRect(x0,y0,x1-x0,y1-y0);
   [-30,0,30].forEach(a=>{const x=X(a*D2R);c.beginPath();c.moveTo(x,y0);c.lineTo(x,y0+10);c.moveTo(x,y1);c.lineTo(x,y1-10);c.stroke();});
   [.25,.5,.75].forEach(k=>{const y=Y(rng*k);c.beginPath();c.moveTo(x0,y);c.lineTo(x0+10,y);c.moveTo(x1,y);c.lineTo(x1-10,y);c.stroke();});
@@ -9161,7 +9161,7 @@ const PODS={
   SNIPER: {nm:'SNIPER XR',fovs:[3.5,1.2,.5,.25],fn:['WIDE','MED','NARO','ZOOM'],tv:1,res:256,lrf:30000,lockR:26000},
   ATFLIR: {nm:'ATFLIR',fovs:[4,1.4,.7,.35],fn:['WIDE','MED','NARO','ZOOM'],tv:1,res:224,lrf:26000,lockR:22000},
   LANTIRN:{nm:'LANTIRN',fovs:[6,1.7],fn:['WIDE','NARO'],tv:0,res:160,lrf:16000,lockR:12000}};
-const POD_KEYS=Object.keys(PODS);
+const POD_KEYS=Object.keys(PODS);window.TGP_PODS=PODS;
 Object.assign(AGW,{
   'SNIPER': {k:'tgp',mass:200,L:2.3,R:.19,col:0x8a9096},
   'ATFLIR': {k:'tgp',mass:191,L:2.2,R:.19,col:0x7f868c},

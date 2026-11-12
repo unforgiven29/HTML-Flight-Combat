@@ -76,30 +76,9 @@ try{const _h=ARM.hts.bind(ARM);ARM.hts=function(P){return _h(P)||(!!P&&Object.va
   for(const z of[-L*.3,L*.3]){const f=new THREE.Mesh(new THREE.BoxGeometry(R*.7,R*.5,L*.12),dk);f.position.set(0,-R*.95,z);g.add(f);}
   return g;};}
 // ---------------- MAWS ----------------
-const MAWS={'Su-24M':{n:'Mak-UL',r:9000,cov:Math.PI},
+// The warning logic itself moved to js/sensorsuite.js (MSS): it runs every frame from the aircraft step instead of from inside drawRWR,
+// which the Mirage's own VCM display replaces (that is why the SAMIR never warned), and it covers DAS / UV / IR / AESA / IRST sensors.
+// MAWS_FIT stays here as the table of pod-dependent fits that MSS reads.
+window.MAWS_FIT={'Su-24M':{n:'Mak-UL',r:9000,cov:Math.PI},
   'Mirage 2000':{n:'DDM SAMIR',r:7000,cov:Math.PI*.85,need:P=>['1P','9P'].some(k=>P.load[k]==='DDM SAMIR')}};
-window.MAWS_FIT=MAWS;
-const seen=new Map();let warnT=0;const warned=[];
-function mawsOn(P){const f=MAWS[P.type];return!!f&&(!f.need||f.need(P));}
-function mawsTick(dt){const P=player;warned.length=0;if(!P||!P.alive||!mawsOn(P))return;const f=MAWS[P.type],now=performance.now()/1000;
-  const fw=P.fwd(new V3());
-  for(const m of missiles){if(!m.alive||m.sh===P)continue;const d=m.pos.distanceTo(P.pos);if(d>f.r)continue;
-    const to=m.vel.clone().normalize(),rel=P.pos.clone().sub(m.pos).normalize();if(to.dot(rel)<.6)continue;// not coming at us
-    const burning=m.burning||(!(m.def&&m.def.ph&&m.def.ph.gap)&&m.t<((m.def&&m.def.burn)||3)+.5);if(!burning&&d>f.r*.35)continue;// plume detection, or very close
-    warned.push(m);if(!seen.has(m.id)){seen.set(m.id,now);try{sfx.rwr('launch');}catch(e){}warnT=now+2;}}
-  if(warned.length){try{sys.rwr.lampT=now+.6;rwrState.launchT=Math.max(rwrState.launchT,.6);}catch(e){}}
-  for(const[id,t]of seen)if(now-t>60)seen.delete(id);}
-// draw: red M at the missile bearing on the RWR scope, and a MAWS legend
-{const _d=drawRWR;drawRWR=function(dt){_d(dt);try{mawsTick(dt);const P=player;if(!P||!mawsOn(P))return;const c=rwc,S=240,cx=S/2,cy=S/2,qi=P.q.clone().invert(),bl=performance.now()%300<170;
-  c.save();c.font='700 11px "B612 Mono",monospace';c.textAlign='left';c.fillStyle=warned.length?'#ff4030':'rgba(160,200,170,.6)';c.fillText(MAWS[P.type].n,6,S-8);
-  for(const m of warned){const r=m.pos.clone().sub(P.pos).applyQuaternion(qi),a=Math.atan2(r.x,-r.z),rr=S*.36;
-    const x=cx+Math.sin(a)*rr,y=cy-Math.cos(a)*rr;c.strokeStyle=c.fillStyle='#ff3a24';c.lineWidth=2;
-    c.beginPath();c.moveTo(x,y-11);c.lineTo(x+11,y);c.lineTo(x,y+11);c.lineTo(x-11,y);c.closePath();bl?c.fill():c.stroke();
-    c.fillStyle=bl?'#000':'#ff3a24';c.font='700 12px "B612 Mono",monospace';c.textAlign='center';c.textBaseline='middle';c.fillText('M',x,y+1);}
-  c.restore();}catch(e){}};}
-// HUD cue: blinking MISSILE with a bearing caret at the top of the screen
-{const _h=drawHUD;drawHUD=function(){_h.apply(this,arguments);try{const P=player;if(!P||!warned.length||!mawsOn(P))return;const cv=document.getElementById('hud');if(!cv)return;const c=cv.getContext('2d');
-  if(performance.now()%400>250)return;c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
-  const qi=P.q.clone().invert(),m=warned[0],r=m.pos.clone().sub(P.pos).applyQuaternion(qi),clk=Math.round(((Math.atan2(r.x,-r.z)*180/Math.PI+360)%360)/30)||12;
-  c.font='700 16px "B612 Mono",monospace';c.fillText(clk+' O\'CLOCK',cv.width/2,cv.height*.16+22);c.restore();}catch(e){}};}
 })();

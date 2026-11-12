@@ -35,6 +35,17 @@
 - Pulse-radar scopes draw the raw echo as a single-bin return, not blobs/bars. The lock-select cursor is thin and dim, brightening for 3 s after a slew (F-4E, MiG-23, Flogger).
 - RP-5 Izumrud scope (MiG-19P) now paints raw video clipped to the scope instead of bar contacts.
 - Tests: 51/51. Visual check done on F-4E and RP-5; MiG-23/Flogger cursors changed but not screenshotted. Gameplay-level estimates, not published data.
+## v309 — Modern sensor suite (js/sensorsuite.js, window.MSS)
+- Mirage 2000 MAWS fixed. The warning ran inside drawRWR; m2kdisp.js replaces drawRWR for the Mirage, so it never ran. MAWS now ticks every frame from the aircraft step and feeds RW.msl, so the RWR scope, Mirage VCM, tone, HUD cue and auto-dispenser all react. m2000c.js also stopped counting the SAMIR pod as an air-to-ground store (it deleted the pod whenever a bomb was loaded).
+- Missile detection by sensor: DAS / AAR-56 / 101KS-U / DDM-NG / PAWS-2 / EPAWSS plume sensors (all round), the AESA radar as a warner (radar equation with the missile's own RCS, needs the radar radiating and the missile inside the field of regard, look-down penalty), and the IRST (plume inside its field of regard). Generic rules cover every AESA / IRST jet.
+- Su-57: nose array plus two cheek arrays, field of regard +-135 deg, array-relative steering loss, small side aperture, blind rear sector, cheek arrays search on their own, FCR scope widens (radar.scopeAz), scan widths 120/60/30/10. 101KS-U MAWS and 101KS-O DIRCM (acquire 0.9 s, kill chance 0.55/s scaled by seeker CCM, 300 m to 5.2 km).
+- F-35A and J-35: built-in EOTS counts as a targeting pod (SNS.hasPod/podKind/podPos); DAS is a staring spherical IRST (IRG 180/90/90) that tracks without a scan.
+- More fits (from maws_dircm_plan_1): MAWS on A-10C, Harrier GR.9, Su-30SM/MKI/MKM, MiG-35, Su-25SM3, Su-25T, Cargo, Su-35S, Su-34, F/A-18F, EA-18G, JAS-39E, J-10C, KF-21; DIRCM on Su-25SM3/T (wingtip turrets), Cargo, F/A-18F and EA-18G (pod approximated as fitted), Su-35S and Su-34 (IR jammer, weaker). Ka-50 and the optional bombers are not done.
+- MAWS realism: UV sees only a burning motor, IR also the heated nose at high speed; rain, fog and the sun in the field of view cut range; each sensor has its own bearing error (DAS 0.5 deg, UV 4 deg) that jitters; false alarms (more below 1500 m AGL) that can fire the auto-dispenser.
+- DIRCM realism: per-turret slew, acquisition and laser dwell; the dwell needed and the chance of a break depend on the seeker generation (old / rosette / imaging), a failed dwell is retried once, nothing in the last second, one missile per turret, IR seekers only.
+- Pulse radars (ac.pulse) lock the strongest ground return under the cursor when no aircraft track is there, like any target (a ground echo, it fades). Operator's job to pick the right blip.
+- F-16 Block 70 is now "F-16V Block 70". F-4B / F-4J / F-4E: Sidewinders only on 2 / 2b / 8 / 8b (four), js/jetfixes.js.
+- Tests: 63 checks. Gameplay-level estimates, not published data. Limits: the DAS passive range error is the existing IRST model; the F-35 cockpit pages are the F-16C ones.
 
 ## v306 — Electronic beam steering (js/esasteer.js, window.ESAS)
 - PESA / AESA sets only; mechanical sets unchanged. The registry already held the array numbers (spacing, phase-shifter bits, time-delay units, agility, steering limit, blind angle) but nothing read them.
