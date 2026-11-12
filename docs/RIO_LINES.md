@@ -789,3 +789,11 @@ Temperament is picked from the airframe, so the same jet always has the same cre
 - Heads up:
 - Pilot,
 - Note:
+
+## Sterile cockpit (combat runs)
+
+A combat run is on while a hostile is within 40 NM, the radar is in STT, or one of our missiles or a missile at us is in the air. During one, the crew says only what the pilot needs:
+
+- **Kept, in plain words:** "Splash." · "Bingo." · "Joker." · "Hit." · "Damage." · "Eject, eject." · "Altitude." · "Multiple bandits." · "Tone." · "Wave off." · "Radar." · "No lock." · missile and spike warnings (with weapon, range and time) · contact, lock, lost-lock and shot calls · engine stall calls · EWO/ESM calls without the lead-in.
+- **Dropped:** the intro, kill-streak talk, idle banter, high-G chatter, and all radar housekeeping calls ("Narrow scan", "Range 80", "Four bar", "TWS", "Vc norm", polarization, gain and so on). The action still happens silently.
+- **Switch:** `CREWV.sterileOff = true` in the console turns the rule off.

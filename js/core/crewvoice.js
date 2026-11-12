@@ -19,6 +19,18 @@ const nowS=()=>performance.now()/1000,rnd=a=>a[Math.floor(Math.random()*a.length
 const hash=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;};
 const natOf=t=>/^(J-|JH-|JF-|FC-)/.test(t)?'CN':/^(Su-|MiG-|Yak-|Tu-)/.test(t)?'RU':/Rafale|Mirage|Etendard/.test(t)?'FR':/^(JAS|AJS|J 35)/.test(t)?'SE':/Tornado|Lightning|Jaguar|EF-2000|Typhoon|Harrier/.test(t)?'GB':'US';
 const PERS=['d','c','n','v'];
+/* STERILE COCKPIT: in a combat run the back-seater says only what the pilot needs, in as few words as possible. No banter, no jokes, no intro, no streak talk, no radar housekeeping.
+   A combat run is on while a hostile is inside 40 NM, the radar is in STT, or a missile of ours or at us is in the air. CREWV.sterileOff = true turns the rule off. */
+CV.sterileOff=false;
+CV.sterile=()=>{if(CV.sterileOff||CV.off)return false;const t=nowS();if(CV._st&&t-CV._st.t<.5)return CV._st.v;let v=false;
+  try{const P=player;if(P&&P.alive){if(radar.mode==='STT')v=true;
+    if(!v)for(const j of jets){if(j!==P&&j.alive&&j.ai&&!j.ai.friend&&j.pos.distanceTo(P.pos)<40*1852){v=true;break;}}
+    if(!v)for(const m of missiles){if(m.alive&&(m.sh===P||m.track===P)){v=true;break;}}}}catch(e){}
+  CV._st={t:t,v:v};return v;};
+// housekeeping calls from the set-handling code: dropped in a combat run (the action still happens, silently)
+const CHATTER=/^(awg-(az|bars|vc|asp|tgts|ri|rm|th)|prc-|rc-)/;
+const TERSE={kill:'Splash.',streak:'Splash.',bingo:'Bingo.',joker:'Joker.',hit:'Hit.',hurt:'Damage.',dying:'Eject, eject.',lowalt:'Altitude.',outn:'Multiple bandits.',tone:'Tone.',waveoff:'Wave off.',radarup:'Radar.',nolock:'No lock.'};
+
 const NAMES={US:[['Ice','Mitchell'],['Goose','Bradshaw'],['Slider','Kerner'],['Hollywood','Wilson'],['Merlin','Guiness'],['Sundown','Mills'],['Jester','Jones'],['Viper','Nash']],
   RU:[['Medved','Sokolov'],['Volk','Orlov'],['Yastreb','Petrov'],['Sokol','Vasiliev'],['Lis','Kuznetsov'],['Zhuk','Morozov']],
   CN:[['Qingniao','Li'],['Hongying','Zhang'],['Yinhe','Wang'],['Fengbao','Chen'],['Longwei','Liu']],
@@ -134,7 +146,7 @@ function setup(P){
 const L=(cat,sub)=>{const V1=V[CV.nat][cat]||V.US[cat];if(!V1)return null;
   const same=V1.filter(e=>Array.isArray(e)&&e[1]===CV.pers);const e=same.length?rnd(same):rnd(V1);return Array.isArray(e)?e[0]:e;};
 const fill=(s,o)=>s.replace(/\{k\}([.!?…])/g,'{k} kills$1').replace(/\{(\w+)\}/g,(m,k)=>o[k]!=null?o[k]:'');
-const say=(cat,o={},key,cd=25)=>{if(CV.off)return;const s=L(cat);if(!s)return;const t=nowS();if((CV.last[key||cat]||0)>t)return;CV.last[key||cat]=t+cd;
+const say=(cat,o={},key,cd=25)=>{if(CV.off)return;let s;if(CV.sterile()){if(!TERSE[cat]&&cat!=='miss'&&cat!=='spike')return;s=TERSE[cat]||L(cat);}else s=L(cat);if(!s)return;const t=nowS();if((CV.last[key||cat]||0)>t)return;CV.last[key||cat]=t+cd;
   rio.say(fill(s,Object.assign({cs:CV.cs},o)),null);};
 
 // ---------- context for missile / spike calls
@@ -147,6 +159,10 @@ function spkCtx(P){let best=null,bd=1e9;for(const j of jets)if(j!==P&&j.alive&&j
 
 // ---------- rewrite the stock lines
 function rewrite(s){if(CV.off||!player||!player.ac.rio)return s;const V1=V[CV.nat]||V.US,P=player;let m;
+  if(CV.sterile()){if(/^Splash! Good kill\.$/.test(s)){CV.kills++;return 'Splash.';}if(/^Bingo fuel, time to go home\.$/.test(s))return 'Bingo.';
+    if(m=s.match(/^Missile, (\d+) o'clock! Break (\w+), (flares|chaff)!$/))return fill((V1.miss||V.US.miss)[0],{c:m[1],side:m[2],cm:m[3],ctx:mslCtx(P)});
+    if(m=s.match(/^Spiked, (\d+) o'clock\.$/))return fill((V1.spike||V.US.spike)[0],{c:m[1],ctx:spkCtx(P)});
+    if(/^Good tone, take the shot\.$/.test(s))return 'Tone.';if(/^(Radar coming up\.|Back on the radar\.)$/.test(s))return 'Radar.';if(/^(Can't get a lock on him\.|Nothing to lock\.)$/.test(s))return 'No lock.';return s;}
   if(/^Splash! Good kill\.$/.test(s)){CV.kills++;return CV.kills>=3&&CV.kills%3===0?fill(L('streak'),{k:CV.kills}):fill(L('kill'),{});}
   if(/^Bingo fuel, time to go home\.$/.test(s))return fill(L('bingo'),{});
   if(m=s.match(/^Missile, (\d+) o'clock! Break (\w+), (flares|chaff)!$/)){const t=(V1.miss||V.US.miss)[0];return fill(t,{c:m[1],side:m[2],cm:m[3],ctx:mslCtx(P)});}
@@ -158,7 +174,7 @@ function rewrite(s){if(CV.off||!player||!player.ac.rio)return s;const V1=V[CV.na
   if(/^(ESM|Radar|Airborne radar|[\w\- ]+ is tracking us)/.test(s)&&Math.random()<.35)return rnd(V1.lead||V.US.lead)+' '+(/^[A-Z][a-z]/.test(s)?s.charAt(0).toLowerCase():s.charAt(0))+s.slice(1);
   return s;}
 CV.rewrite=rewrite;
-{const _s=rio.say;rio.say=function(s,key,cd){if(typeof s==='string'){const r=rewrite(s);if(r)s=r;}return _s.call(this,s,key,cd);};}
+{const _s=rio.say;rio.say=function(s,key,cd){if(key&&CHATTER.test(key)&&CV.sterile()&&player&&player.ac&&player.ac.rio)return;if(typeof s==='string'){const r=rewrite(s);if(r)s=r;}return _s.call(this,s,key,cd);};}
 // the crew name replaces the generic tag on the HUD
 CV.label=()=>LAB[CV.nat]||'RIO';
 
