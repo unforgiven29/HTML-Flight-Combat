@@ -50,19 +50,20 @@ const FIT={
     dircm:{n:'101KS-O',R:5200,rmin:300,slew:140,acq:.8,pk:.6,turrets:TWO_UD}},
   'Rafale':{maws:['DDMNG']},'EF-2000':{maws:['PAWS']},'F-15EX':{maws:['EPAWS']},
   'A-10C':{maws:['AAR47']},'Harrier GR.9':{maws:['EOW']},
-  'Su-30SM':{maws:['SUW']},'Su-30MKI':{maws:['SUW']},'Su-30MKM':{maws:['MAW300']},'MiG-35':{maws:['MAKUL']},
+  'Su-30SM':{maws:['SUW']},'Su-30MKM':{maws:['MAW300']},'MiG-35':{maws:['MAKUL']},
   'JAS-39E':{maws:['EOW']},'J-10C':{maws:['EOW']},'KF-21':{maws:['EOW']},
-  'Su-25SM3':{maws:['VIT'],dircm:{n:'Vitebsk-25',R:4200,rmin:250,slew:150,acq:.7,pk:.55,turrets:WTIP}},
   'Su-25T':{maws:['VIT'],dircm:{n:'Vitebsk',R:4000,rmin:250,slew:130,acq:.8,pk:.5,turrets:WTIP}},
+  'Su-25SM3':{maws:['VIT'],dircm:{n:'Vitebsk-25',R:4200,rmin:250,slew:150,acq:.7,pk:.55,turrets:WTIP}},
   'Cargo':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'Su-35S':{maws:['MAKUL']},                                    // v313: no DIRCM (the Su-35S carries the Khibiny ECM, not a laser)
-  'Su-34':{maws:['MAKUL'],dircm:{n:'IR jammer',R:3500,rmin:250,slew:120,acq:1.0,pk:.4,turrets:[[[180,0,110]]]}},
+  'Su-34':{maws:['MAKUL'],dircm:{n:'IR jammer',kind:'lamp',R:3500,rmin:250,slew:120,acq:1.0,pk:.4,turrets:[[[180,0,110]]]}},
   'Ka-50':{maws:['VIT']},                                       // MAWS only, no DIRCM (per plan: A-10C and Ka-50 got MAWS only)
   'E-3A':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'A-50':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
   'Tu-95MS':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
   'B-52H':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'F-18F':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}},
+  'F-18E':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}},
   'EA-18G':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}}};
 /* ---------------- v313: Legion IRST pod (IRST21) for the F-15C/E/EX/I (centreline) and the F-16 family (left intake station) ----------------
    Carrying it gives the player's aircraft an IRST with the TWS-style IRST track mode. Gameplay-level numbers, not published data. */
@@ -100,8 +101,7 @@ function fitOf(P){if(!P)return null;if(M.fit&&fitType===P.type&&M._ld===JSON.str
     if(has&&!base.ols&&!base.irst&&!mine){P.ac.irst=true;P.ac.ols=LEGION;if(F())F().owner=null;}
     else if(!has&&mine){delete P.ac.irst;delete P.ac.ols;if(F())F().owner=null;}}
   const rd=P.ac&&P.ac.radar;
-  if(rd&&rd.aesa)out.radarMaws=true;                                   // an AESA is also a missile warner
-  if(P.ac&&(P.ac.ols||P.ac.irst))out.irstMaws=true;                    // so is an IRST
+  // v320: no generic fallbacks. An AESA radar or an IRST does not by itself make a missile warner; only the aircraft listed in FIT (or the pod-dependent MAWS_FIT) carry one.
   M.fit=out;return out;}
 
 /* ---------------- missile detection ---------------- */
@@ -148,7 +148,7 @@ function sense(P,m,fit,now){
    still not break), the chance of a break when the dwell completes falls with generation, haze and a laser that is aimed through weather, and a
    failed dwell is tried once more. A missile in the last second cannot be stopped, a second missile needs a second turret, and it does nothing
    against radar-guided rounds. */
-const PK_GEN={1:.92,2:.78,3:.4},DW_GEN={1:1.5,2:2.5,3:5};
+const PK_GEN={1:.92,2:.78,3:.2},LAMP_GEN={1:.8,2:.2,3:0}   // v320: laser jam codes beat reticle seekers; staring-array seekers rarely lose the target to a few-watt DIRCM (open literature: 100 W+ to damage the array); a lamp jammer only works on simple heads,DW_GEN={1:1.5,2:2.5,3:5};
 function dircmTick(P,fit,list,dt,now){const dc=fit.dircm;if(!dc||!M.dircm){M.dir.state='OFF';return;}
   const T=dc.turrets;if(!dc._st)dc._st=T.map(c=>({tgt:null,az:c[0][0]*D,el:c[0][1]*D,state:'RDY',t:0}));
   const taken=new Set();
@@ -168,7 +168,10 @@ function dircmTick(P,fit,list,dt,now){const dc=fit.dircm;if(!dc||!M.dircm){M.dir
     // lasing
     if(w.d/Math.max(m.vel.length(),1)<1){u.state='LATE';return;}
     j.got+=dt*wx('IR',null);
-    if(j.got>=j.need){j.tries++;const pk=dc.pk*PK_GEN[j.g]/ .92*(1-.15*(j.tries-1));
+    // v320: an imaging (staring-array) head is not jammed by a modulation code. The laser dazzles the array: the glare spot grows as the square of the missile's closing range, and it only
+    // takes the track away once it covers nearly the whole field (below that the head still sees the target at the edge of the glare and homes on it). A lamp jammer does nothing to it.
+    if(j.g===3&&dc.kind!=='lamp'){const R0=dc.R*.25,sat=cl(Math.pow(R0/Math.max(w.d,R0*.5),2)*(.35+.65*j.got/j.need)*(1-.5*(P.ab||0)),0,1);m._dzT=now+.3;m._dzK=sat;m._dzSrc=P;if(sat>.8&&m.track)m.track=null;}
+    if(j.got>=j.need){j.tries++;const pk=dc.pk*PK_GEN[j.g]/ .92*(1-.15*(j.tries-1))*(dc.kind==='lamp'?LAMP_GEN[j.g]:1)*(1-.35*(P.ab||0));   // afterburner raises the aircraft's own signature, so the jam-to-signal ratio falls
       if(Math.random()<pk){m.track=null;m.target=null;m.maddog=true;m.active=false;j.done=true;u.state='JAM';M.dir.n++;try{flash('DIRCM · SEEKER DEFEATED',1500);}catch(e){}}
       else if(j.tries>=2){j.done=true;u.state='FAIL';try{flash('DIRCM · NO EFFECT',1200);}catch(e){}}
       else{j.got=0;j.need*=1.3;}}});
@@ -234,10 +237,8 @@ M.tick=function(dt){const P=player;if(!P||!P.alive||!M.on){M.warned.length=0;ret
   }catch(e){}
   return r;};}
 {const _h=drawHUD;drawHUD=function(){_h.apply(this,arguments);try{const P=player;if(!P||!M.warned.length)return;const cv=document.getElementById('hud');if(!cv)return;const c=cv.getContext('2d');
-  c.save();c.setTransform(1,0,0,1,0,0);c.font='700 22px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';c.fillText('MISSILE',cv.width/2,cv.height*.16);
-  const w=M.warned[0],qi=P.q.clone().invert(),r=w.m.pos.clone().sub(P.pos).applyQuaternion(qi),clk=Math.round(((Math.atan2(r.x,-r.z)*180/Math.PI+360)%360)/30)||12;
-  c.font='700 16px "B612 Mono",monospace';c.fillText(clk+' O\'CLOCK',cv.width/2,cv.height*.16+22);
-  const st=M.dir.state;if(M.fit&&M.fit.dircm&&st!=='OFF'&&st!=='RDY'){c.fillStyle='#ffd24a';c.fillText('DIRCM '+st,cv.width/2,cv.height*.16+42);}
+  c.save();c.setTransform(1,0,0,1,0,0);c.font='700 16px "B612 Mono",monospace';c.textAlign='center';c.fillStyle='#ff3a24';   // v320: the MISSILE / n O'CLOCK HUD text is gone; the RWR, tone and MFD alerts remain
+  const st=M.dir.state;if(M.fit&&M.fit.dircm&&st!=='OFF'&&st!=='RDY'){c.fillStyle='#ffd24a';c.fillText('DIRCM '+st,cv.width/2,cv.height*.16);}
   c.restore();}catch(e){}};}
 
 /* ---------------- v313: IRST track-while-scan ----------------

@@ -1101,7 +1101,8 @@ class Missile{
       this.slip=lr>d.trk*(d.spec&&d.spec.seekerTrackRateMult||1)?(this.slip||0)+dt:Math.max(0,(this.slip||0)-dt*2);
       if(this.slip>.25&&r.length()>150){this.track=null;this.slip=0;if(d.seek==='SARH')this.seekLost=true;P=null;}}
     // an IR head whose flare burned out, or that lost the target, sweeps a small cone to reacquire
-    if(d.seek==='IR'&&this.active&&!this.track&&tb>-1){let best=null,bd=1e9;
+    if(d.seek==='IR'&&this.active&&!this.track&&tb>-1&&!(this._dzT>performance.now()/1000)){   // v320: a head being dazzled by a DIRCM cannot reacquire
+    let best=null,bd=1e9;
       for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
         if(vd.angleTo(r)<Math.max(d.search,8*D2R,d.gimbal*.35)&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
       if(best){this.track=best;P=_mP.copy(best.pos);Vt=_mVt.copy(best.vel);}}
@@ -2420,14 +2421,15 @@ function osbAct(a){switch(a){
    mem = seconds a contact is held after the last hit; arh = range at which it hears an active missile seeker; sarh / sam = chance it can
    tell a radar-guided launch from an aircraft / from a ground radar; lim = contacts shown in PRIORITY / OPEN. */
 const RWRF={
-  'ALR-67(V)3':{fam:'W',k:3.6,sd:3,pd:1,lpi:.85,id:1,mem:6,arh:14000,sarh:1,sam:1,lim:[6,16],ring:'lethal',dia:0,tone:'N'},
+  'ALR-67(V)3':{fam:'W',k:3.6,sd:2,pd:1,lpi:.85,id:1,mem:6,arh:14000,sarh:1,sam:1,lim:[6,16],ring:'lethal',dia:0,tone:'N'},
   'ALR-67(V)2':{fam:'W',k:3.1,sd:4.5,pd:.95,lpi:.6,id:.97,mem:6,arh:9000,sarh:1,sam:1,lim:[6,16],ring:'lethal',dia:0,tone:'N'},
   'ALR-67(V)1':{fam:'W',k:3.0,sd:5,pd:.9,lpi:.5,id:.95,mem:5,arh:8000,sarh:1,sam:1,lim:[6,16],ring:'critOut',dia:0,tone:'N'},
-  'ALR-56M':{fam:'W',k:3.3,sd:4,pd:1,lpi:.7,id:.97,mem:5,arh:10000,sarh:1,sam:1,lim:[5,12],ring:'state',dia:1,tone:'N'},
+  'ALR-56M':{fam:'W',k:3.3,sd:3,pd:1,lpi:.7,id:.97,mem:5,arh:10000,sarh:1,sam:1,lim:[5,12],ring:'state',dia:1,tone:'N'},
   'ALR-56C':{fam:'W',k:3.1,sd:5,pd:.95,lpi:.55,id:.95,mem:5,arh:7000,sarh:1,sam:1,lim:[5,12],ring:'state',dia:1,tone:'N'},
   'ALR-69':{fam:'W',k:2.5,sd:9,pd:.8,lpi:.4,id:.85,mem:4,arh:4500,sarh:.6,sam:1,lim:[5,12],ring:'power',dia:1,tone:'L'},
   'ALR-46':{fam:'W',k:2.4,sd:11,pd:.7,lpi:.3,id:.8,mem:4,arh:0,sarh:0,sam:.7,lim:[5,16],ring:'lethal',dia:1,tone:'L',srch0:0},
   'ALR-45/50':{fam:'W',k:2,sd:14,pd:.45,lpi:.25,id:.6,mem:3.5,arh:0,sarh:0,sam:.6,lim:[4,8],ring:'lethal',dia:0,tone:'L'},
+  'APR-39':{fam:'W',k:2.2,sd:13,pd:.62,lpi:.25,id:.7,mem:3.5,arh:0,sarh:.5,sam:.85,lim:[4,6],ring:'lethal',dia:0,tone:'L'},   // v320: AN/APR-39(V) helicopter warner: crystal video, coarse bearings, short library, no ARH ID
   'SPO-15LM':{fam:'S15',k:2.7,sd:6,pd:.9,lpi:.5,id:.75,mem:6,arh:3000,sarh:0,sam:0,rear:.75,side:.55,lim:[99,99]},
   'SPO-10':{fam:'S10',k:2,sd:22,pd:.4,lpi:.2,id:0,mem:3.8,arh:2500,sarh:0,sam:0,rear:.85,side:.7,lim:[99,99]}};
 const RWR_OF={};
