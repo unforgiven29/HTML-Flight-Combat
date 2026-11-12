@@ -2019,7 +2019,23 @@ function drawHornetHud(P,fs,lh){
 
 // MiG-29 (N019 + ILS-31): the radar picture is on the HUD (DCS manual fig. 87): range scale left, azimuth zone line below, capture strobe
 const MSC={AZ:4.6,E0:-9.4,E1:3.8};let hudScope=null;
-function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}const{AZ,E0,E1}=MSC,rng=radar.rngM,X=az=>clamp(az*R2D/60,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
+function drawRwsB(P){const AZ=4.6,E0=-4.6,E1=1.8,SA=radar.scopeAz||60,rng=radar.rngM,X=az=>clamp(az*R2D/SA,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
+  const a=hb(-AZ,E0),b=hb(AZ,E1);if(!a||!b)return;hudScope={x0:a.x,x1:b.x,y0:a.y,y1:b.y};const now=performance.now()/1000;
+  hx.save();hx.globalAlpha*=.6;hx.lineWidth=1;hx.strokeRect(a.x,b.y,b.x-a.x,a.y-b.y);hx.restore();
+  // range scale (left): ticks every fifth, labels with the unit
+  {const s0=hb(-AZ-.5,E0),s1=hb(-AZ-.5,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(10);for(let i=0;i<=5;i++){const y=lerp(s0.y,s1.y,i/5);line(s0.x,y,s0.x+(i%5?5:8),y);txt(String(Math.round(radar.ranges[radar.ri]*i/5)),s0.x-4,y,'right');}hx.restore();}}
+  // azimuth scale (bottom): ticks every SA/3 with the limits labelled, scan sector bar and antenna caret
+  {const y0=Ye(0);hx.save();hx.font=hfont(10);for(let q=-3;q<=3;q++){const p=hb(q/3*AZ,E0-.35);if(!p)continue;line(p.x,p.y,p.x,p.y+(q%3?4:7));}
+    const l=hb(-AZ,E0-1.1),r=hb(AZ,E0-1.1);if(l&&r){txt(String(Math.round(SA)),l.x,l.y,'center');txt(String(Math.round(SA)),r.x,r.y,'center');}
+    const W=Math.min(radar.azs[radar.ai]*D2R,radar.gimbal()),c0=radar.scanC||0,za=hb(X(c0-W),E0-.35),zb=hb(X(c0+W),E0-.35);hx.lineWidth=3;if(za&&zb)line(za.x,za.y,zb.x,zb.y);hx.lineWidth=1.4;
+    const an=hb(X(radar.antAz),E0-.35);if(an){line(an.x,an.y-6,an.x,an.y+6);}hx.restore();}
+  irNoise(hx,(u,v)=>hb(u*AZ,lerp(E0,E1,v)),1,hx.globalAlpha,SA*D2R,1,false);
+  for(const[j,s]of radar.strobes){if(Math.abs(s.az)>SA*D2R)continue;const p=pt(s.az,0),q=pt(s.az,rng);if(p&&q){hx.save();hx.globalAlpha*=clamp(1-(now-s.t)/4.5,.25,1);hx.setLineDash([4,5]);line(p.x,p.y,q.x,q.y);hx.setLineDash([]);hx.restore();}}
+  const tws=radar.mode==='TWS';
+  for(const[j,tk]of radar.tracks){const q=tws&&tk.p?radar.ang(radar.trkPos(j,tk,now)):null,td=q?q.d:radar.trkR(j,tk);if(!j.alive||td>rng||tk.hoj)continue;const p=pt(q?q.az:tk.az,td);if(!p)continue;
+    hx.save();hx.globalAlpha*=clamp(1-(now-tk.t)/(tws?8:10),.25,1);line(p.x-6,p.y,p.x+6,p.y);line(p.x,p.y,p.x,p.y-6);hx.restore();}
+  const cp=pt(radar.cur.az,radar.cur.r*rng);if(cp){hx.strokeRect(cp.x-8,cp.y-5,16,10);line(cp.x-16,cp.y,cp.x-8,cp.y);line(cp.x+8,cp.y,cp.x+16,cp.y);}}
+function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}if(window.IKSET&&IKSET.has(P.type)){drawRwsB(P);return;}const{AZ,E0,E1}=MSC,rng=radar.rngM,X=az=>clamp(az*R2D/60,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
   const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
   const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);
     for(let i=0;i<=5;i++){const y=lerp(s0.y,s1.y,i/5);line(s0.x,y,s0.x+6,y);txt(String(Math.round(radar.ranges[radar.ri]*i/5)),s0.x-4,y,'right');}hx.restore();}
@@ -2408,7 +2424,7 @@ function mfdClick(id,x,y){if(id==='sms'&&isEagle()){const n=hornOsbAt(x,y);if(n)
     if(best){const a=radar.ang(best.pos);if(radar.detect(best,a)&&a.off<radar.gimbal())radar.stt(best);else flash('NO TRACK',900);}else sfx.click();return;}
   if(id==='fcr'&&isFlogger()){const S=360,x0=40,x1=S-40,y0=S-34,y1=34;if(x>=x0-8&&x<=x1+8&&y<=y0+8&&y>=y1-8){radar.cur.az=clamp((x-x0)/(x1-x0)*2-1,-1,1)*30*D2R;radar.cur.r=clamp((y0-y)/(y0-y1),0,1);radar.designate();}return;}
   if(id==='fcr'&&isMig()){const r=repScope;if(r&&x>=r.x0-8&&x<=r.x1+8&&y<=r.y0+8&&y>=r.y1-8){
-    radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*60*D2R;radar.cur.r=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.designate();}return;}
+    radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*(radar.scopeAz||60)*D2R;radar.cur.r=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.designate();}return;}
   if(id==='fcr'&&!isMig())for(const o of FCR_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='sms')for(const o of SMS_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='fcr'&&x>46&&x<314&&y>44&&y<306){radar.cur.az=((x-46)/268*120-60)*D2R;radar.cur.r=(306-y)/262;radar.designate();return;}
@@ -2992,13 +3008,13 @@ function suIRHDD(c,S,br){const G=SU_G,x0=S*.22,x1=S*.8,y0=S*.08,y1=S*.84,m=(u,v)
   c.font='700 20px "B612",sans-serif';c.fillText(String(radar.ranges[radar.ri]),26,S-34);c.beginPath();c.moveTo(20,S-36);c.lineTo(20,S-22);c.lineTo(76,S-22);c.lineTo(76,S-36);c.stroke();
   c.textAlign='center';c.strokeRect(S-90,S-50,70,30);c.fillText(String(Math.round(P.vel.length()*3.6)),S-55,S-35);
   if(!radar.on())c.fillText(radar.power==='OFF'?'OFF':'READY',S/2,S/2);}
-function drawMigC(){const{AZ}=MSC,E0=-4.2,E1=1.6,k=KPX*D2R;const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
+function drawMigC(){const{AZ}=MSC,E0=-5.9,E1=1.6,k=KPX*D2R;const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
   const EL0=-30,EL1=30,m=(u,v)=>hb(u*AZ,lerp(E0,E1,v));
   const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);for(let e=-30;e<=30;e+=10){const y=lerp(s0.y,s1.y,(e-EL0)/(EL1-EL0));line(s0.x,y,s0.x+(e%30?4:7),y);if(!(e%30))txt(String(e),s0.x-4,y,'right');}hx.restore();}
   {const a=hb(-AZ,E0),b=hb(AZ,E0),c2=hb(-AZ,E1),d=hb(AZ,E1);if(a&&b&&c2&&d){hx.save();hx.globalAlpha*=.6;hx.lineWidth=1;line(a.x,a.y,b.x,b.y);line(c2.x,c2.y,d.x,d.y);line(a.x,a.y,c2.x,c2.y);line(b.x,b.y,d.x,d.y);hx.restore();}}
   const hz=-player.pitch*R2D;if(hz>EL0&&hz<EL1){const a=m(-1,(hz-EL0)/(EL1-EL0)),b=m(1,(hz-EL0)/(EL1-EL0));if(a&&b){hx.save();hx.setLineDash([6,6]);hx.globalAlpha*=.5;line(a.x,a.y,b.x,b.y);hx.restore();}}
   irC(hx,m,1.15,hx.globalAlpha,30*D2R,EL0,EL1,false);
-  const za=hb(clamp(radar.antAz/(30*D2R),-1,1)*AZ,E0-.9);if(za){line(za.x,za.y-5,za.x,za.y+5);}
+  const za=hb(clamp(radar.antAz/(30*D2R),-1,1)*AZ,E1+.7);if(za){line(za.x,za.y-5,za.x,za.y+5);}
   const now=performance.now()/1000,ga=hx.globalAlpha;
   for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj)continue;const v=(tk.el*R2D-EL0)/(EL1-EL0);if(Math.abs(tk.az)>30*D2R||v<0||v>1)continue;const p=m(tk.az/(30*D2R),v);if(!p)continue;{const vv=irVis(j,tk,now);if(vv<=0)continue;hx.globalAlpha=ga*vv;irBlob(hx,p.x,p.y,j,1.2);}}
   hx.globalAlpha=ga;
@@ -12696,4 +12712,4 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
       [lp,rp].forEach(arr=>{if(arr.length<2)return;hx.beginPath();arr.forEach((q,i)=>i?hx.lineTo(q.x,q.y):hx.moveTo(q.x,q.y));hx.stroke();});}}
   if(typeof S3!=='undefined'&&!S3.gces)TA(tr('УВОД ОТКЛ'),6.8,-9.1,'center',sm);
   hx.restore();migWarn(P,agl);}
-{const IK=new Set(['Su-35S','Su-57','Su-30SM','Su-27SM','Su-33','Su-30MK2','Su-30MKI','Su-30MKM','Su-34','MiG-29SMT','MiG-35','MiG-29K']),_d=drawHudSym;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)&&!((radar.mode==='RWS'||radar.sensor==='IRST')&&radar.on())){/* RWS keeps the original search HUD; TWS / STT / ACM / nav use the IKSh board */try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
+{const IK=new Set(['Su-35S','Su-57','Su-30SM','Su-27SM','Su-33','Su-30MK2','Su-30MKI','Su-30MKM','Su-34','MiG-29SMT','MiG-35','MiG-29K']),_d=drawHudSym;window.IKSET=IK;drawHudSym=function(P,fs,lh){if(P&&IK.has(P.type)&&!((radar.mode==='RWS'||radar.sensor==='IRST')&&radar.on())){/* RWS keeps the original search HUD; TWS / STT / ACM / nav use the IKSh board */try{ikshHud(P,fs);}catch(e){if(!ikshHud._w){ikshHud._w=1;console.warn('IKSh HUD',e);}return _d.apply(this,arguments);}try{gciHud(P,fs);}catch(e){}return;}return _d.apply(this,arguments);};}
