@@ -57,7 +57,7 @@ const FIT={
   'Cargo':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'Su-35S':{maws:['MAKUL']},                                    // v313: no DIRCM (the Su-35S carries the Khibiny ECM, not a laser)
   'Su-34':{maws:['MAKUL'],dircm:{n:'IR jammer',R:3500,rmin:250,slew:120,acq:1.0,pk:.4,turrets:[[[180,0,110]]]}},
-  'Ka-50':{maws:['VIT'],dircm:{n:'Vitebsk-class',R:4000,rmin:250,slew:130,acq:.8,pk:.5,turrets:TWO_UD}},
+  'Ka-50':{maws:['VIT']},                                       // MAWS only, no DIRCM (per plan: A-10C and Ka-50 got MAWS only)
   'E-3A':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'A-50':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
   'Tu-95MS':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
