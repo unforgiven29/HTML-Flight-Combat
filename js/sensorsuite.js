@@ -105,6 +105,7 @@ function fitOf(P){if(!P)return null;if(M.fit&&fitType===P.type&&M._ld===JSON.str
   M.fit=out;return out;}
 
 /* ---------------- missile detection ---------------- */
+M.sideHits=new Map();   // aircraft the cheek arrays declared in the last second or so, for the F4 / F7 displays
 const seen=new Map();let acc=0,toneT=0,rowT=0,sideT=0,faT=0,fakeN=0;
 const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v);};
 function plume(m){const d=m.def||{},burning=m.burning||(!(d.ph&&d.ph.gap)&&m.t<((d.burn)||3)+.5);
@@ -192,7 +193,7 @@ function sideTick(P,fit,now){if(!radar.on()||radar.sensor!=='RDR'||!radiating()|
     const a=radar.ang(j.pos),q=arrFor(fit.arrays,a.baz,a.bel,1.5);if(!q||q.a.az===0||Math.abs(a.bel)>radar.gl.eu*D)continue;
     const R=radar.rdet(j,a)*Math.sqrt(q.ap)*Math.pow(Math.cos(Math.min(q.rel,1.4)),.375);
     if(a.d>R*.9||radar.notch(j,a)||!terrLOS(P.pos,j.pos))continue;
-    if(Math.random()<.6)radar.hit(j,a,Math.pow(R/Math.max(a.d,1),4)*20,now);}}
+    if(Math.random()<.6){radar.hit(j,a,Math.pow(R/Math.max(a.d,1),4)*20,now);M.sideHits.set(j,{arr:q.a,d:a.d,R:R,t:now});}}}
 M.tick=function(dt){const P=player;M.warned.length=0;if(!P||!P.alive||!M.on)return;
   const fit=fitOf(P);cfg(P,fit);const now=performance.now()/1000;M.st.ticks++;
   acc+=dt;if(acc<.1)return;const step=acc;acc=0;
@@ -286,6 +287,63 @@ if(typeof SNS!=='undefined'&&window.TGP_PODS){
   const _k=SNS.podKind;SNS.podKind=function(P){return own(P)?'EOTS':_k.call(this,P);};
   const _p=SNS.podPos;SNS.podPos=function(P){if(!own(P))return _p.call(this,P);
     return P.pos.clone().addScaledVector(P.fwd(new THREE.Vector3()),4.2).addScaledVector(P.up(new THREE.Vector3()),-1.1);};
+}
+
+/* ---------------- cheek arrays on the F4 overlay and the F7 beam view ---------------- */
+{const R2=180/Math.PI,V3=THREE.Vector3;
+  const arrs=()=>{const f=M.fit;return f&&f.arrays?f.arrays.filter(a=>a.az!==0):[];};
+  const live=()=>{const now=performance.now()/1000;for(const[j,h]of M.sideHits)if(!j.alive||now-h.t>1.5)M.sideHits.delete(j);return now;};
+  const on=()=>!!player&&player.alive&&radar.on()&&radar.sensor==='RDR'&&radiating()&&radar.mode!=='ACM';
+  // F4: text block and the cheek sectors on the plan view
+  const RD=window.RADARDBG;
+  if(RD){const _r=RD.extraRows;RD.extraRows=()=>{const L=_r?_r():[],A=arrs();if(!A.length)return L;const now=live();
+    L.push('','CHEEK ARRAYS  '+(on()?'searching':'idle (radar not radiating)')+'  field of regard +-'+Math.round(radar.gl.az)+' deg');
+    for(const ar of A){let inSec=0;const hits=[];
+      for(const j of jets){if(j===player||!j.alive)continue;const a=radar.ang(j.pos),q=arrFor(M.fit.arrays,a.baz,a.bel,1.5);if(q&&q.a===ar)inSec++;}
+      for(const[j,h]of M.sideHits)if(h.arr===ar)hits.push(j.type+' '+(h.d/1852).toFixed(0)+'NM');
+      L.push('  '+ar.n.padEnd(20)+' az '+String(ar.az).padStart(4)+' +-'+ar.hw+'  aperture '+(ar.ap*100).toFixed(0)+'%  in sector '+inSec+(hits.length?'  declared: '+hits.slice(0,3).join(', '):''));}
+    return L;};
+    RD.lift=H=>arrs().length?H*.3:0;    // the plan view moves the antenna up so the sectors behind the wing line show
+    RD.planExtra=(g,cx,cy,s,rng)=>{const A=arrs();if(!A.length)return;const now=live(),act=on();
+      for(const ar of A){const R=rng*s*Math.sqrt(ar.ap),a0=-Math.PI/2+(ar.az-ar.hw)*D,a1=-Math.PI/2+(ar.az+ar.hw)*D;
+        g.fillStyle=act?'rgba(255,170,70,.07)':'rgba(255,170,70,.03)';g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,R,a0,a1);g.closePath();g.fill();
+        g.strokeStyle=act?'rgba(255,170,70,.7)':'rgba(255,170,70,.3)';g.beginPath();g.moveTo(cx+Math.cos(a0)*R,cy+Math.sin(a0)*R);g.lineTo(cx,cy);g.lineTo(cx+Math.cos(a1)*R,cy+Math.sin(a1)*R);g.stroke();
+        if(act){const ph=(performance.now()/1000/1.6)%1;      // the electronic beam sweeping the sector
+          const bz=(ar.az-ar.hw+ar.hw*2*(ph<.5?ph*2:2-ph*2))*D;g.strokeStyle='#ffb050';g.lineWidth=1.3;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.sin(bz)*R,cy-Math.cos(bz)*R);g.stroke();g.lineWidth=1;}}
+      for(const[j,h]of M.sideHits){const r=j.pos.clone().sub(player.pos).applyQuaternion(player.q.clone().invert());
+        g.strokeStyle='#ffb050';g.globalAlpha=Math.max(.2,1-(now-h.t)/1.5);g.beginPath();g.arc(cx+r.x*s,cy+r.z*s,8,0,6.283);g.stroke();g.globalAlpha=1;}};}
+  // F7: the cheek beams out to the sides, a sweeping beam in each, pulses to what they declared
+  let G=null,fans=[],beams=[],pts,pp,pc;const MAXP=96;
+  function build(){G=new THREE.Group();G.frustumCulled=false;G.renderOrder=40;
+    for(let i=0;i<2;i++){const g=new THREE.BufferGeometry(),n=14,pos=[0,0,0];
+      for(let k=0;k<=n;k++){pos.push(0,0,0);}g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+      const idx=[];for(let k=1;k<=n;k++)idx.push(0,k,k+1);g.setIndex(idx);
+      const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:false}));m.frustumCulled=false;m.renderOrder=40;G.add(m);fans.push(m);
+      const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,0,0,-1],3));
+      const l=new THREE.Line(bg,new THREE.LineBasicMaterial({color:0xffc070,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,fog:false}));l.frustumCulled=false;l.renderOrder=41;G.add(l);beams.push(l);}
+    pp=new Float32Array(MAXP*3);pc=new Float32Array(MAXP*3);const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));pg.setAttribute('color',new THREE.BufferAttribute(pc,3));pg.setDrawRange(0,0);
+    pts=new THREE.Points(pg,new THREE.PointsMaterial({size:8,sizeAttenuation:false,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,fog:false}));pts.frustumCulled=false;pts.renderOrder=42;G.add(pts);scene.add(G);}
+  const dirOf=(az,el,o)=>o.set(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el)).applyQuaternion(player.q);
+  function frame(){requestAnimationFrame(frame);
+    const A=arrs();if(!window.BEAM||!BEAM.vis||!player||!player.alive||!A.length||radar.sensor!=='RDR'||!radar.on()){if(G)G.visible=false;return;}
+    if(!G)build();G.visible=true;const act=on(),now=live(),t=performance.now()/1000;
+    const right=new V3(1,0,0).applyQuaternion(player.q),fw=player.fwd(new V3()),eu=Math.min(radar.gl.eu,50)*D;let n=0;
+    A.forEach((ar,i)=>{if(i>1)return;const org=player.pos.clone().addScaledVector(fw,3).addScaledVector(right,ar.az<0?-.9:.9),L=Math.min(radar.rngM*Math.sqrt(ar.ap),30000);
+      const fan=fans[i],pa=fan.geometry.attributes.position;
+      for(let k=0;k<=14;k++){const az=(ar.az-ar.hw+ar.hw*2*k/14)*D,d=dirOf(az,0,new V3()).multiplyScalar(L),u=new V3(0,1,0).applyQuaternion(player.q).multiplyScalar(L*Math.tan(Math.min(eu,8*D))*.5);
+        // the fan is the sector seen edge-on from above, thickened by the elevation limit
+        pa.setXYZ(1+k,d.x+(k%2?u.x:-u.x),d.y+(k%2?u.y:-u.y),d.z+(k%2?u.z:-u.z));}
+      pa.needsUpdate=true;fan.position.copy(org);fan.visible=true;fan.material.opacity=act?.028:.012;
+      const ph=(t/1.6)%1,bz=(ar.az-ar.hw+ar.hw*2*(ph<.5?ph*2:2-ph*2))*D,bd=dirOf(bz,0,new V3()).multiplyScalar(L),bp=beams[i].geometry.attributes.position;
+      bp.setXYZ(1,bd.x,bd.y,bd.z);bp.needsUpdate=true;beams[i].position.copy(org);beams[i].visible=act;});
+    const ph2=(t*.7)%1;
+    if(act)for(const[j,h]of M.sideHits){const i=A.indexOf(h.arr);if(i<0||i>1||n>=MAXP-8)continue;const org=player.pos.clone().addScaledVector(fw,3).addScaledVector(right,h.arr.az<0?-.9:.9),T=j.pos;
+      const u=ph2<.5?ph2*2:1-(ph2-.5)*2;for(let k=0;k<4&&n<MAXP;k++){const uu=ph2<.5?u-k*.012:u+k*.012;if(uu<0||uu>1)continue;const w=1-k*.22;
+        pp[n*3]=org.x+(T.x-org.x)*uu;pp[n*3+1]=org.y+(T.y-org.y)*uu;pp[n*3+2]=org.z+(T.z-org.z)*uu;
+        if(ph2<.5){pc[n*3]=.9*w;pc[n*3+1]=.6*w;pc[n*3+2]=.25*w;}else{pc[n*3]=1*w;pc[n*3+1]=.85*w;pc[n*3+2]=.4*w;}n++;}
+      pp[n*3]=T.x;pp[n*3+1]=T.y;pp[n*3+2]=T.z;pc[n*3]=1;pc[n*3+1]=.7;pc[n*3+2]=.3;n++;}
+    pts.geometry.attributes.position.needsUpdate=pts.geometry.attributes.color.needsUpdate=true;pts.geometry.setDrawRange(0,n);}
+  requestAnimationFrame(frame);
 }
 console.info('[sensorsuite] v309 MAWS / DAS / EOTS / side arrays / DIRCM');
 })();

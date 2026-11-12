@@ -68,7 +68,7 @@ function rows(){const F=window.SENSOR_FUSE,r=F&&F.reg,now=performance.now()/1000
     L.push(`${j===radar.lock?'*':j===radar.bug?'b':' '} ${String(j.type||'?').padEnd(8).slice(0,8)} ${f(tk.d/1852,1).padStart(5)}NM az${f(tk.az*R2).padStart(4)}° hit ${f(now-tk.t,1)}s n${tk.n||0} err ${f(err)}m${tk.hoj?' HOJ':''}${j.alive?'':' DEAD'}`);}
   try{if(RD.extraRows)for(const x of RD.extraRows())L.push(x);}catch(e){}return L.join('\n');}
 
-function plan(){const W=cv.width,H=cv.height,cx=W/2,cy=H-28,rng=radar.ranges[radar.ri]*radar.unit,s=(H-48)/rng,gim=radar.gimbal();
+function plan(){const W=cv.width,H=cv.height,lift=RD.lift?RD.lift(H):0,cx=W/2,cy=H-28-lift,rng=radar.ranges[radar.ri]*radar.unit,s=(H-48-lift)/rng,gim=radar.gimbal();
   const rel=(p)=>{const r=p.clone().sub(player.pos).applyQuaternion(player.q.clone().invert());return{x:r.x,fw:-r.z,y:r.y};};
   g.clearRect(0,0,W,H);g.font='600 10px "B612 Mono",monospace';g.textBaseline='middle';
   // range rings
@@ -83,6 +83,7 @@ function plan(){const W=cv.width,H=cv.height,cx=W/2,cy=H-28,rng=radar.ranges[rad
   // the beam
   g.fillStyle='rgba(255,255,255,.28)';g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,rng*s,-Math.PI/2+radar.antAz-radar.beam/2,-Math.PI/2+radar.antAz+radar.beam/2);g.closePath();g.fill();
   g.strokeStyle='#fff';g.lineWidth=1.3;ray(radar.antAz,rng*s);g.lineWidth=1;
+  try{if(RD.planExtra)RD.planExtra(g,cx,cy,s,rng);}catch(e){}
   // own aircraft
   g.fillStyle='#cfe8d4';g.beginPath();g.moveTo(cx,cy-7);g.lineTo(cx-5,cy+5);g.lineTo(cx+5,cy+5);g.closePath();g.fill();
   // real aircraft with their verdicts
