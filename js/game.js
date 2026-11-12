@@ -1064,6 +1064,10 @@ class Missile{
         for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;{const jm=jamOfMsl(j,d,this.pos);if(jm&&jm.noise&&jm.far&&!d.hoj)continue;}const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
           if(dd<18000&&vd.angleTo(r)<(this.maddog?d.search:d.gimbal*.5)&&dd<bd){bd=dd;best=j;}}
         if(best){this.track=best;this.maddog=false;if(best===player)rwrEvent('active');}}
+      if(!this.track&&d.seek==='IR'&&d.loal&&this.maddog&&tb>.6&&!(this.noReacq>this.t)){let best=null,bd=1e9;   // v325 LOAL: the head looks ahead and takes the nearest hot target
+        for(const j of jets){if(!j.alive||j===this.sh||j.side===this.sh.side||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
+          if(dd<irLockRange(d,j,this.pos)&&vd.angleTo(r)<(d.search||.6)&&dd<bd){bd=dd;best=j;}}
+        if(best){this.track=best;this.target=best;this.maddog=false;this.lastP.copy(best.pos);this.lastV.copy(best.vel);if(best===player)rwrEvent('active');}}
       if(this.track){const los=_mr.copy(this.track.pos).sub(this.pos),dd=los.length();los.divideScalar(dd);
         if(vd.dot(los)<Math.cos(d.gimbal))this.track=null;
         // pulse-Doppler seeker: a beaming target below the missile sits in the main-lobe clutter notch
@@ -1455,7 +1459,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   // the cursor, so the rest of the picture is not lost the moment the lock is taken
   esaRetain(dt,gim,now){const W=Math.min(30*D2R,gim),c=clamp(this.cur.az||0,-gim+W,gim-W),az=this.antAz,el=this.antEl;
     const keep=this.esaAz;this.esaSearch(dt*.45,c-W,c+W,gim,now,true);this.esaAz=this.antAz;this._esaBeam=this.antAz;this._esaBeamEl=this.antEl;this.antAz=az;this.antEl=el;
-    for(const [j,tk] of this.tracks)if(j!==this.lock&&(!SEEN(j)||now-tk.t>8))this.tracks.delete(j);},
+    for(const [j,tk] of this.tracks)if(!tk.lnk&&j!==this.lock&&(!SEEN(j)||now-tk.t>8))this.tracks.delete(j);},
   on(){return this.sensor==='IRST'||this.power==='ON'&&this.warm<=0;},
   // COOP (MiG-29 PU-S31 switch): the radar and the IRST work as one sensor. A target is seen if either of them sees it, the IRST fills in what the
   // Doppler notch and look-down lose, the radar gives the IRST track its range, and the tracking dwell holds on whichever return is better.
@@ -1491,7 +1495,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     _rp1.set(-los.z,0,los.x);if(_rp1.lengthSq()<1e-6)_rp1.set(1,0,0);_rp1.normalize();_rp2.copy(los).cross(_rp1);
     return out.copy(j.pos).addScaledVector(los,gauss()*sr).addScaledVector(_rp1,gauss()*sa*a.d).addScaledVector(_rp2,gauss()*sa*a.d);},
   // a track file: alpha-beta filter on the hits; the first hit seeds the velocity from the Doppler range rate only
-  hit(j,a,snr,now){let tk=this.tracks.get(j);
+  hit(j,a,snr,now){let tk=this.tracks.get(j);if(tk&&tk.lnk){this.tracks.delete(j);tk=null;}   // v325: own radar now sees it: the link track is replaced
     // one detection per pass of the beam: the frames while the beam dwells on the target are one look, not several
     if(tk&&tk.p&&!tk.hoj&&now-tk.t<.35){tk.snr=Math.max(tk.snr||0,snr);return;}
     const pm=this.meas(j,a,snr,_rpm),q=this.ang(pm);
@@ -1542,7 +1546,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     for(const [j,s] of this.strobes)if(!j.alive||now-s.t>4.5)this.strobes.delete(j);
     if(this.power!=='OFF'&&this.warm>0)this.warm-=dt;
     if(isFlanker()&&mw()==='CC'&&this.mode!=='STT'){const want=this.power==='ON'&&this.warm<=0?'RDR':'IRST';if(this.sensor!==want){this.sensor=want;this.tracks.clear();this.acmBest=null;flash(want==='IRST'?'CC · IRST':'CC · RADAR',900);}}
-    if(!this.on()){this.strobes.clear();this.hoj=false;if(this.lock){this.lock=null;if(this.mode==='STT')this.mode=this.fromACM?'ACM':'RWS';}this.antAz*=.9;for(const [j,tk] of this.tracks)if(!j.alive||now-tk.t>10)this.tracks.delete(j);return;}
+    if(!this.on()){this.strobes.clear();this.hoj=false;if(this.lock){this.lock=null;if(this.mode==='STT')this.mode=this.fromACM?'ACM':'RWS';}this.antAz*=.9;for(const [j,tk] of this.tracks)if(!j.alive||tk.lnk||now-tk.t>10)this.tracks.delete(j);return;}
     if(this.mode==='STT'){const L=this.lock;if(!L||!L.alive){this.drop();return;}
       const a=this.ang(L.pos);this.antAz=a.az;this.antEl=a.el;
       // COOP: the radar and the IRST hand the lock to each other. When the one that has it can no longer see the target (notch, range, heat, gimbal) and the other can, the lock moves over
@@ -1585,7 +1589,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       if(ra<a0-CR||ra>a1+CR||Math.abs(re-this.antEl)>(CR?CR+.4*D2R:this.bmV()/2)||a.off>gim+2*D2R)continue;
       {const J=this.jam(j);if(J&&J.noise&&!J.esc&&a.d>J.bt&&terrLOS(player.pos,j.pos)&&a.d<this.rdet(j,a)*1.5)this.strobes.set(j,{az:a.az,el:a.el,d:a.d,t:now});}
       const de=CR?.35:(re-this.antEl)/this.bmV(),sn=this.snr(j,a,Math.exp(-5.55*de*de));if(sn>0&&Math.random()<pdOf(sn)*(this.sensor==='IRST'?(this.spin()?.5:this.rotor()?.65:.75):1))this.hit(j,a,sn,now);}}
-    for(const [j,tk] of this.tracks)if(!SEEN(j)||now-tk.t>(tws?8:10))this.tracks.delete(j);
+    for(const [j,tk] of this.tracks)if(tk.lnk?(!j.alive||now-tk.t>7):(!SEEN(j)||now-tk.t>(tws?8:10)))this.tracks.delete(j);
     if(tws&&mg){// N019 / N001 TWS: a jammer on the scope throws the set back to search, ten track files at most, the most dangerous closing track is bugged until the pilot takes over
       {const TN=(player&&player.ac.trkN)||10;if(this.tracks.size>TN){const l=[...this.tracks].sort((a,b)=>a[1].d-b[1].d);for(let i=TN;i<l.length;i++)if(l[i][0]!==this.bug)this.tracks.delete(l[i][0]);}}
       this._thT=(this._thT||0)-dt;
@@ -2025,7 +2029,7 @@ function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}const{AZ,E
   for(const[j,s]of radar.strobes){if(Math.abs(s.az)>60*D2R)continue;const a=pt(s.az,0),b=pt(s.az,rng);if(a&&b){hx.save();hx.globalAlpha*=clamp(1-(now-s.t)/4.5,.25,1);hx.setLineDash([4,5]);line(a.x,a.y,b.x,b.y);hx.setLineDash([]);hx.restore();}}
   const tws=radar.mode==='TWS';
   for(const[j,tk]of radar.tracks){const q=tws&&tk.p?radar.ang(radar.trkPos(j,tk,now)):null,td=q?q.d:radar.trkR(j,tk);if(!j.alive||td>rng||tk.hoj)continue;const p=pt(q?q.az:tk.az,td);if(!p)continue;
-    hx.globalAlpha*=clamp(1-(now-tk.t)/(tws?8:10),.25,1);if(radar.sensor==='IRST')irBlob(hx,p.x,p.y,j,1);else{line(p.x-6,p.y,p.x+6,p.y);line(p.x,p.y,p.x,p.y-6);
+    hx.globalAlpha*=clamp(1-(now-tk.t)/(tws?8:10),.25,1);if(radar.sensor==='IRST')irBlob(hx,p.x,p.y,j,1);else{line(p.x-6,p.y,p.x+6,p.y);line(p.x,p.y,p.x,p.y-6);if(tk.lnk){hx.save();hx.setLineDash([2,2]);hx.strokeRect(p.x-8,p.y-8,16,16);hx.restore();}
       if(tws&&j===radar.bug&&radar.bugOK()){if(now<(radar.curMan||0))hx.strokeRect(p.x-10,p.y-10,20,20);}else if(tws&&j===radar.bug2&&player.ac.twsN){hx.save();hx.setLineDash([3,3]);hx.strokeRect(p.x-10,p.y-10,20,20);hx.restore();}}hx.globalAlpha=clamp(sys.mig.setka*1.15,0,1);}
   const cp=pt(radar.cur.az,radar.cur.r*rng);if(cp){hx.strokeRect(cp.x-8,cp.y-5,16,10);line(cp.x-16,cp.y,cp.x-8,cp.y);line(cp.x+8,cp.y,cp.x+16,cp.y);}
   }
@@ -2632,10 +2636,16 @@ const DL={seen:new Map(),acc:0,
     if(!M.length)return;
     for(const e of jets){if(e===P||!e.alive||e.side===P.side||e.remote)continue;
       for(const F of M){if(!this.sees(F,e))continue;
-        this.seen.set(e,{t:now,by:F,pos:e.pos.clone().add(new V3((Math.random()-.5)*160,(Math.random()-.5)*80,(Math.random()-.5)*160)),vel:e.vel.clone(),hdg:e.hdg});break;}}},
+        this.seen.set(e,{t:now,by:F,pos:e.pos.clone().add(new V3((Math.random()-.5)*160,(Math.random()-.5)*80,(Math.random()-.5)*160)),vel:e.vel.clone(),hdg:e.hdg});break;}}
+    this.inject(now);},
+  // v325: what only the flight has seen becomes a real track on every radar page (flagged lnk), with speed, heading and altitude, so it can be bugged and shot
+  inject(now){if(!radar.on())return;for(const [j,tk] of radar.tracks)if(tk.lnk&&(!this.seen.has(j)||!j.alive))radar.tracks.delete(j);
+    for(const [j,s] of this.seen){if(!j.alive||now-s.t>7)continue;const o=radar.tracks.get(j);if(o&&!o.lnk&&now-o.t<8)continue;
+      const p=s.pos.clone().addScaledVector(s.vel,now-s.t),q=radar.bang(p),hv=Math.hypot(s.vel.x,s.vel.z);
+      radar.tracks.set(j,{p,v:s.vel.clone(),n:3,az:q.az,el:q.el,d:q.d,t:s.t,alt:p.y,hdg:hv>40?(Math.atan2(s.vel.x,-s.vel.z)*R2D+360)%360:s.hdg,hoj:false,snr:18,lnk:true,by:s.by});}},
   // the picture this jet has: its own radar tracks first, then what only the flight has seen
   contacts(){const P=player;if(!this.on())return[];const now=performance.now()/1000,out=[],own=new Set();
-    for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||!tk.p||j.side===P.side||now-tk.t>10)continue;own.add(j);
+    for(const [j,tk] of radar.tracks){if(!j.alive||tk.hoj||tk.lnk||!tk.p||j.side===P.side||now-tk.t>10)continue;own.add(j);
       out.push({j,src:'OWN',pos:tk.p.clone().addScaledVector(tk.v,Math.min(now-tk.t,6)),vel:tk.v,hdg:tk.hdg,age:now-tk.t,id:j._nctrId});}
     for(const [j,s] of this.seen){if(own.has(j)||!j.alive||now-s.t>7)continue;
       out.push({j,src:'LNK',by:s.by,pos:s.pos.clone().addScaledVector(s.vel,now-s.t),vel:s.vel,hdg:s.hdg,age:now-s.t,id:j._nctrId});}
@@ -2760,7 +2770,7 @@ function nctrTick(dt){const P=player;
 const dlShooter=()=>!!player&&(isHornet()||US_DL.has(player.type)||(player.ac.src&&US_DL.has(player.ac.src)&&player.ac.side==='BLUE'));
 // a US jet that has not hooked a link track by hand shoots the nearest one inside its forward cone
 const dlAuto=()=>{const P=player;let b=null,bd=1e9;for(const c of DL.contacts()){if(c.src!=='LNK'||!c.j||!c.j.alive)continue;const r=c.pos.clone().sub(P.pos),d=r.length();if(d>(P.ac.radar?P.ac.radar.R0*1.5:90000)||Math.acos(clamp(P.fwd(new V3()).dot(r.divideScalar(Math.max(d,1))),-1,1))>60*D2R)continue;if(d<bd){bd=d;b=c.j;}}return b;};
-const dlTgt=()=>{if(!player||!player.alive||!dlShooter()||!DL.on())return null;const j=sys.dl.tgt;if(j&&j.alive){for(const c of DL.contacts())if(c.j===j)return j;}return dlAuto();};
+const dlTgt=()=>{if(!player||!player.alive||!DL.on())return null;const j=sys.dl.tgt;if(j&&j.alive){for(const c of DL.contacts())if(c.j===j)return j;}return dlShooter()?dlAuto():null;};
 function dlCycle(){const P=player,l=DL.contacts().sort((a,b)=>a.pos.distanceTo(P.pos)-b.pos.distanceTo(P.pos)),i=l.findIndex(c=>c.j===sys.dl.tgt);
   const nx=l[i+1];sys.dl.tgt=nx?nx.j:null;flash(nx?'LINK TGT '+Math.round(nx.pos.distanceTo(P.pos)/NM)+' NM':'LINK TGT CLEARED',900);}
 // the missile's mid-course update when it was launched on a link track: the same picture the shooter has, a few seconds old, not the truth
@@ -2812,7 +2822,7 @@ function drawSuHDD(c,S){const P=player,G=SU_G;c.setTransform(1,0,0,1,0,0);c.setL
     c.globalAlpha=br*(L||B?1:clamp(1-(now-t.t)/(tws?8:10),.3,1));if(radar.sensor==='IRST')irBlob(c,x,y,j,1.4);else suTgt(c,x,y,((t.hdg||j.hdg)-P.hdg)*D2R,sp,al,false);
     if(B){if(now<(radar.curMan||0)){c.save();c.setLineDash([5,4]);c.strokeRect(x-12,y-12,24,24);c.restore();}c.fillText(String(Math.round(al/100)/10),x+14,y-16);}
     if(L){c.beginPath();c.moveTo(x-7,y-20);c.lineTo(x+7,y-20);c.lineTo(x,y-9);c.closePath();c.fill();c.fillText(String(Math.round(al/100)/10),x+14,y-16);}
-    c.fillText(String(i+1),x+9,y+9);});
+    c.fillText(String(i+1),x+9,y+9);if(t.lnk){c.save();c.setLineDash([3,3]);c.strokeRect(x-9,y-9,18,18);c.restore();c.fillText('L',x-16,y+4);}});
   for(const [j,s] of radar.strobes){if(Math.abs(s.az)>AZ)continue;const[x,y]=at(s.az,rng);c.globalAlpha=br*clamp(1-(now-s.t)/4.5,.2,1);
     c.setLineDash([7,6]);c.beginPath();c.moveTo(ox,oy);c.lineTo(x,y);c.stroke();c.setLineDash([]);c.fillText(radar.lock===j&&radar.hoj?'HOJ':'JAM',x+8,y+14);}
   c.globalAlpha=br;suLink(c,at,rng,now);
@@ -6268,8 +6278,9 @@ function pickle(force){if(!player||!player.alive||game.paused||player.gloc>0)ret
   if(game.pickleCd>0)return;if(!game.arm){flash('MASTER ARM SIM',1200);return;}
   if(player.count(w)<=0){flash('NO '+SN[w],1200);return;}
   let tg=null,lnk=false;
-  if(d.seek==='IR'){tg=irTarget(w);if(!tg&&!force){flash(isMig()?'NO SEEKER LOCK':'NO TONE',1200);return;}}
-  else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(dlShooter()&&d.seek==='ARH'&&radar.mode!=='STT'&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
+  if(d.seek==='IR'){tg=irTarget(w);if(!tg&&d.loal)flash(SN[w]+' · LOAL',1000);else if(!tg&&!force){flash(isMig()?'NO SEEKER LOCK':'NO TONE',1200);return;}}
+  else{if(isMig()&&d.seek==='SARH'&&radar.mode==='TWS'&&radar.bugOK()&&radar.sensor==='RDR')radar.bugSTT();tg=(DL.on()&&d.seek==='ARH'&&radar.mode!=='STT'&&!(radar.mode==='TWS'&&radar.bugOK()&&!radar.tracks.get(radar.bug).lnk)&&dlTgt()&&(lnk=true))?dlTgt():radar.sensor!=='RDR'?null:radar.mode==='STT'?radar.lock:d.seek==='ARH'?(radar.awg&&radar.mode==='TWS'?awgNext():radar.tgt()):null;if(!tg&&d.seek==='SARH'&&!force){flash(isMig()?'NO LOCK':radar.mode==='TWS'?'AIM-7 NEEDS STT':'NO RADAR LOCK',1200);return;}}
+  if(tg&&d.seek==='ARH'&&!lnk){const _tk=radar.tracks.get(tg);if(_tk&&_tk.lnk&&radar.mode!=='STT')lnk=true;}
   {const _r=IFF.roeCheck(tg);if(_r&&!force){flash('NO RELEASE · '+_r,1600);radio('Negative, '+_r.toLowerCase()+'.');return;}}
   {const _m=fireMissile(w,player,tg,player.release(w));if(lnk&&_m){_m.dlx=true;flash(SN[w]+' · DATALINK',1200);}}game.pickleCd=.8;
   if(isMig()&&sys.mig.salvo===0&&!force&&player.count(w)>0)setTimeout(()=>{if(player&&player.alive&&!game.paused&&player.count(w)>0)fireMissile(w,player,tg&&tg.alive?tg:null,player.release(w));},280);
