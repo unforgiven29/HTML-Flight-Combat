@@ -14,24 +14,50 @@ const S={N:160,rt:null,buf:null,cv:null,ctx:null,img:null,cam:null,t:0,bs:new TH
 function boresight(m,out){const ax=m.vel.lengthSq()>1?m.vel.clone().normalize():new THREE.Vector3(0,0,-1),tg=m.track||m.target;out.copy(ax);S.lim=false;S.off=0;
   if(tg&&tg.pos&&tg.alive!==false){const to=tg.pos.clone().sub(m.pos).normalize(),a=Math.acos(cl(ax.dot(to),-1,1));S.off=a;const g=(m.def.gimbal||.5);
     if(a<=g)out.copy(to);else{S.lim=true;out.copy(ax).lerp(to,g/a).normalize();}}return out;}
-function capture(m){const N=S.N;if(!S.rt){S.rt=new THREE.WebGLRenderTarget(N,N);S.buf=new Uint8Array(N*N*4);S.cv=document.createElement('canvas');S.cv.width=S.cv.height=N;S.ctx=S.cv.getContext('2d');S.img=S.ctx.createImageData(N,N);S.cam=new THREE.PerspectiveCamera(S.fov,1,3,120000);}
+// v320: white-hot thermal picture. The visible render supplies the terrain and cloud tone; the sky is switched to black (cold), haze goes dark, and the hot things are added as heat blobs:
+// jet exhausts (stronger with afterburner), flares (they saturate the pixel), engine decks of ground vehicles, the burning missile motor of any rounds in view. Sensor noise and fixed-pattern columns on top.
+const _bl=(g,x,y,r,a,warm)=>{if(r<.6)r=.6;const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(255,255,255,'+Math.min(1,a)+')');gr.addColorStop(.35,'rgba(235,235,235,'+Math.min(1,a*.55)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);};
+function heat(m,cam){const g=S.ctx,N=S.N,tn=Math.tan(S.fov*D/2),pr=new THREE.Vector3(),ps=(w,sz,amp,lng)=>{pr.copy(w).project(cam);if(pr.z>=1||Math.abs(pr.x)>1.4||Math.abs(pr.y)>1.4)return;
+    const d=w.distanceTo(cam.position),r=Math.max(.7,sz/Math.max(d,10)/(2*tn)*N);_bl(g,(pr.x*.5+.5)*N,(-pr.y*.5+.5)*N,r*(lng||1),amp);};
+  g.save();g.globalCompositeOperation='lighter';const f=new THREE.Vector3();
+  for(const j of jets){if(!j.alive||j===m.sh)continue;const d=j.pos.distanceTo(cam.position);if(d>30000)continue;j.fwd(f);
+    const ab=j.ab||j.afterburner||j.ABon||(j.thr>1.0),ir=(j.ac&&j.ac.irs)||1;
+    ps(j.pos,9*ir,.28);                                                  // airframe: skin heating and reflected sun
+    ps(new THREE.Vector3().copy(j.pos).addScaledVector(f,-7),(ab?7:3.5)*Math.sqrt(ir),ab?1:.8,1);   // exhaust nozzle(s) and plume
+  }
+  for(const dcy of decoys){if(!dcy.alive||dcy.type!=='flare')continue;if(dcy.pos.distanceTo(cam.position)>30000)continue;ps(dcy.pos,16,1,1.4);}
+  if(typeof GND!=='undefined'&&GND.units)for(const u of GND.units){if(!u.alive||u.pos.distanceTo(cam.position)>9000)continue;ps(new THREE.Vector3(u.pos.x,u.pos.y+1.2,u.pos.z),5,.35);}
+  g.restore();}
+function capture(m){const N=S.N;if(!S.rt){S.rt=new THREE.WebGLRenderTarget(N,N);S.buf=new Uint8Array(N*N*4);S.cv=document.createElement('canvas');S.cv.width=S.cv.height=N;S.ctx=S.cv.getContext('2d');S.img=S.ctx.createImageData(N,N);S.cam=new THREE.PerspectiveCamera(S.fov,1,20,90000);}
   const cam=S.cam,d=boresight(m,S.bs);cam.position.copy(m.pos).addScaledVector(d,1.2);cam.up.set(0,1,0);cam.lookAt(cam.position.clone().add(d));cam.updateMatrixWorld(true);
-  const vis=m.mesh&&m.mesh.visible;if(m.mesh)m.mesh.visible=false;const prev=renderer.getRenderTarget();renderer.setRenderTarget(S.rt);renderer.setClearColor(0x6a7680,1);renderer.clear(true,true,false);
-  renderer.render(scene,cam);readRTAsync(S.rt,N,N,S.buf);renderer.setRenderTarget(prev);if(m.mesh)m.mesh.visible=vis;
-  const b=S.buf,o=S.img.data;for(let y=0;y<N;y++){const sr=(N-1-y)*N*4,dr=y*N*4;for(let x=0;x<N*4;x+=4){let g=.3*b[sr+x]+.59*b[sr+x+1]+.11*b[sr+x+2];g=cl((g-50)*1.7+40+(Math.random()-.5)*16,0,255);o[dr+x]=o[dr+x+1]=o[dr+x+2]=g;o[dr+x+3]=255;}}
+  const vis=m.mesh&&m.mesh.visible;if(m.mesh)m.mesh.visible=false;const prev=renderer.getRenderTarget();
+  const bg=scene.background,fg=scene.fog?scene.fog.color.getHex():null,sk=window.SKY&&window.SKY.visible;           // thermal: cold sky, no bright haze
+  if(window.SKY)window.SKY.visible=false;scene.background=new THREE.Color(0x000000);if(scene.fog)scene.fog.color.setHex(0x0b0b0b);
+  renderer.setRenderTarget(S.rt);renderer.setClearColor(0x000000,1);renderer.clear(true,true,false);
+  try{renderer.render(scene,cam);readRTAsync(S.rt,N,N,S.buf);}finally{renderer.setRenderTarget(prev);if(m.mesh)m.mesh.visible=vis;scene.background=bg;if(scene.fog&&fg!=null)scene.fog.color.setHex(fg);if(window.SKY)window.SKY.visible=sk;}
+  const dz=m._dzT>performance.now()/1000?cl(m._dzK||0,0,1):0;S.dz=dz;
+  const b=S.buf,o=S.img.data,col=new Float32Array(N);for(let x=0;x<N;x++)col[x]=(Math.random()-.5)*7;   // fixed-pattern column offsets
+  for(let y=0;y<N;y++){const sr=(N-1-y)*N*4,dr=y*N*4;for(let x=0;x<N*4;x+=4){let g=.3*b[sr+x]+.59*b[sr+x+1]+.11*b[sr+x+2];
+    g=cl(Math.pow(g/255,1.25)*205+26+col[x>>2]+(Math.random()-.5)*(10+dz*60),0,255);o[dr+x]=o[dr+x+1]=o[dr+x+2]=g;o[dr+x+3]=255;}}
   S.ctx.putImageData(S.img,0,0);const tg=m.track||m.target;S.tp=null;
-  if(tg&&tg.pos){const p=tg.pos.clone().project(cam);if(p.z<1)S.tp={x:p.x,y:p.y};}}
+  try{heat(m,cam);}catch(e){if(!S.hw){S.hw=1;console.warn('[mcamseek] heat',e);}}
+  if(tg&&tg.pos){const p=tg.pos.clone().project(cam);if(p.z<1)S.tp={x:p.x,y:p.y};}
+  // DIRCM dazzle: the laser saturates the array. A glare blob at the jammer, a bloom that spreads along rows and columns, and the whole frame washes out as the dwell proceeds.
+  S.dp=null;if(dz>0){const g=S.ctx,src=m._dzSrc&&m._dzSrc.pos?m._dzSrc.pos.clone().project(cam):null;let cx=N/2,cy=N/2;if(src&&src.z<1){cx=cl((src.x*.5+.5)*N,-N*.3,N*1.3);cy=cl((-src.y*.5+.5)*N,-N*.3,N*1.3);}
+    g.save();g.globalCompositeOperation='lighter';const R=N*(.18+.75*dz);let gr=g.createRadialGradient(cx,cy,0,cx,cy,R);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.3,'rgba(255,255,255,'+(.55+.4*dz)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,N,N);
+    g.fillStyle='rgba(255,255,255,'+(.25+.5*dz)+')';g.fillRect(0,cy-1.5-dz*5,N,3+dz*10);g.fillRect(cx-1.5-dz*5,0,3+dz*10,N);                  // blooming streaks
+    g.fillStyle='rgba(255,255,255,'+(.12*dz)+')';g.fillRect(0,0,N,N);g.restore();S.dp={x:cx,y:cy};}}
 function frame(g,txt,x,y,w,h,title,col){g.save();g.fillStyle='rgba(0,8,4,.72)';g.fillRect(x-6,y-22,w+12,h+30);g.strokeStyle=col;g.lineWidth=1.4;g.strokeRect(x,y,w,h);g.fillStyle=col;g.textAlign='left';g.fillText(title,x,y-10);g.restore();}
 function drawIIR(m){const g=hx,fs=Math.round(clamp(Math.min(W,H)*.02,10,16)),sz=Math.round(clamp(Math.min(W,H)*.3,150,300)),x=W-sz-26,y=78,col='rgba(89,255,159,.95)';
   const now=performance.now();if(now-S.t>70){S.t=now;try{capture(m);}catch(e){if(!S.w){S.w=1;console.warn('[mcamseek] IIR video',e);}}}
   g.font=hfont(fs);frame(g,null,x,y,sz,sz,'SEEKER  '+(m.type||'')+'  IIR',col);
   if(S.cv){g.save();g.beginPath();g.rect(x,y,sz,sz);g.clip();g.imageSmoothingEnabled=true;g.drawImage(S.cv,x,y,sz,sz);
     g.strokeStyle='rgba(120,255,170,.55)';g.lineWidth=1;g.beginPath();g.moveTo(x+sz/2,y+sz/2-12);g.lineTo(x+sz/2,y+sz/2-4);g.moveTo(x+sz/2,y+sz/2+4);g.lineTo(x+sz/2,y+sz/2+12);g.moveTo(x+sz/2-12,y+sz/2);g.lineTo(x+sz/2-4,y+sz/2);g.moveTo(x+sz/2+4,y+sz/2);g.lineTo(x+sz/2+12,y+sz/2);g.stroke();
-    if(S.tp&&Math.abs(S.tp.x)<1&&Math.abs(S.tp.y)<1){const px=x+(S.tp.x*.5+.5)*sz,py=y+(-S.tp.y*.5+.5)*sz,k=Math.max(10,sz*.07);g.strokeStyle=m.alive?'#ffd24a':'#888';g.lineWidth=1.6;
+    if(!(S.dz>.8)&&S.tp&&Math.abs(S.tp.x)<1&&Math.abs(S.tp.y)<1){const px=x+(S.tp.x*.5+.5)*sz,py=y+(-S.tp.y*.5+.5)*sz,k=Math.max(10,sz*.07);g.strokeStyle=m.alive?'#ffd24a':'#888';g.lineWidth=1.6;
       g.beginPath();for(const[a,b]of[[-1,-1],[1,-1],[1,1],[-1,1]]){g.moveTo(px+a*k,py+b*k*.4);g.lineTo(px+a*k,py+b*k);g.lineTo(px+a*k*.4,py+b*k);}g.stroke();}
     g.restore();}
   g.fillStyle=col;g.textAlign='left';const tg=m.track||m.target,rng=tg&&tg.pos?(tg.pos.distanceTo(m.pos)/1000).toFixed(1)+' km':'--';
-  g.fillText('FOV '+S.fov.toFixed(1)+'°  WHOT',x,y+sz+14);g.textAlign='right';g.fillStyle=S.lim?'#ff7a4a':col;g.fillText(S.lim?'GIMBAL LIMIT':'TRACK  '+(S.off/D).toFixed(0)+'° off axis',x+sz,y+sz+14);
+  g.fillText('FOV '+S.fov.toFixed(1)+'°  IIR  WHOT',x,y+sz+14);if(S.dz>.04){g.fillStyle=(performance.now()%400<240)?'#ff4a3a':col;g.textAlign='center';g.fillText(S.dz>.8?'LASER · SEEKER BLIND':'LASER DAZZLE',x+sz/2,y+18);g.textAlign='left';g.fillStyle=col;}g.textAlign='right';g.fillStyle=S.lim?'#ff7a4a':col;g.fillText(S.lim?'GIMBAL LIMIT':'TRACK  '+(S.off/D).toFixed(0)+'° off axis',x+sz,y+sz+14);
   g.textAlign='left';g.fillStyle=col;g.fillText('RNG '+rng+(m.track&&m.track.isDecoy?'  DECOY':''),x,y+sz+14+fs*1.3);g.textAlign='left';}
 /* ---- ARH: world cone like the F7 beam view, and a B-scope ---- */
 let G=null,cone,edge,pts,pp,pc;const MAXP=24,_q=new THREE.Quaternion(),_z=new THREE.Vector3(0,0,-1),_b=new THREE.Vector3();

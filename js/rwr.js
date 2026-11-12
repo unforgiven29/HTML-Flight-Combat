@@ -17,7 +17,7 @@ const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),un=x=>Math.pow(10,x/10),D=Math.PI/18
 const curve=(t,x)=>{if(!t||!t.length)return 0;if(x<=t[0][0])return t[0][1];for(let i=1;i<t.length;i++)if(x<=t[i][0]){const a=t[i-1],b=t[i],f=(x-a[0])/Math.max(b[0]-a[0],1e-9);return a[1]+f*(b[1]-a[1]);}return t[t.length-1][1];};
 const gn=()=>(Math.random()+Math.random()+Math.random()+Math.random()-2)*1.73;
 // per-warner hardware: [arch, DF, TSS dBm, id s, track s, lock ms, displayed, bearing quant deg, warmup s, antennas, band split]
-const HW={'ALR-67(V)3':['Digital','Phase_Interferometer',-68,.6,.4,400,16,1,5,4],'ALR-67(V)2':['Superheterodyne','Amplitude_Comparison',-65,.9,.6,600,12,2,6,4],'ALR-67(V)1':['Superheterodyne','Amplitude_Comparison',-63,1.2,.8,700,12,3,6,4],
+const HW={'APR-39':['Crystal_Video','Amplitude_Comparison',-55,2.2,1.2,1000,6,10,4,4],'ALR-67(V)3':['Digital','Phase_Interferometer',-68,.6,.4,400,16,1,5,4],'ALR-67(V)2':['Superheterodyne','Amplitude_Comparison',-65,.9,.6,600,12,2,6,4],'ALR-67(V)1':['Superheterodyne','Amplitude_Comparison',-63,1.2,.8,700,12,3,6,4],
   'ALR-56M':['Superheterodyne','Phase_Interferometer',-66,.8,.5,500,16,2,5,4],'ALR-56C':['Superheterodyne','Amplitude_Comparison',-63,1.1,.7,700,12,3,6,4],'ALR-69':['Crystal_Video','Amplitude_Comparison',-58,1.8,1,900,8,5,8,4],
   'ALR-46':['Crystal_Video','Amplitude_Comparison',-55,2.5,1.4,1200,8,5,10,4],'ALR-45/50':['Crystal_Video','Amplitude_Comparison',-52,4,2,1500,6,10,10,4],'SPO-15LM':['Crystal_Video','Amplitude_Comparison',-52,2,.15,190,8,10,10,4],'SPO-10':['Crystal_Video','Amplitude_Comparison',-48,0,.5,1500,4,90,15,4]};
 const X=window.RWRX={r:RWR_REG.create(),on:true,nm:'',t0:-99,pwrT:-99,pwrWas:null,load:0,blank:0,flt:null,fltT:0,hp0:100,lastCM:-99,cmQ:[],dump(){return this.r;},
@@ -123,10 +123,14 @@ X.gate=function(rc,mode,clk,dt,d,e,sy,lk){if(r.rwrPowerState==='Warmup'||r.rwrPo
 X.post=function(list,sy,P){if(r.rwrPowerState==='Warmup'||r.rwrPowerState==='Failed'||r.rwrPowerState==='Off'){list.length=0;RW.msl.length=0;return;}
   const q=r.dfBearingQuantizationDeg,agl=P.pos.y-(typeof groundAt==='function'?groundAt(P.pos.x,P.pos.z):0);
   for(const t of list){const rc=RW.recs.get(t.j);if(!rc)continue;let a=t.a;
-    a+=(r.dfSystematicBiasDeg+gn()*r.dfBearingJitterDeg)*D;if(agl<400)a+=gn()*r.dfMultipathErrorLowAlt*D*.5;a+=gn()*r.dfAirframeReflectionError*D*.3;
+    // v320: the noise terms were redrawn on every frame, so symbols shivered at frame rate. A real warner's bearing wanders over a fraction of a second, so each contact keeps one noise sample for 0.25 s.
+    {const now=performance.now();if(!(now<rc.nT)){rc.nT=now+250;rc.nz=r.dfSystematicBiasDeg+gn()*r.dfBearingJitterDeg+(agl<400?gn()*r.dfMultipathErrorLowAlt*.5:0)+gn()*r.dfAirframeReflectionError*.3;}a+=rc.nz*D;}
     if(rc.sl&&r.pdwSideLobeFalseBearing){if(rc.slOff===undefined)rc.slOff=(Math.random()<.5?-1:1)*(15+Math.random()*40)*D;a+=rc.slOff;}
     if(X.flt&&X.flt.mode==='Wrong_Bearing')a+=X.flt.off*D;
-    if(r.dfBearingFlipAtBoundary){const aa=((a*R2%90)+90)%90;if(Math.abs(aa-45)<3&&Math.random()<.02)a+=Math.PI/2*Math.sign(Math.random()-.5);}      // amplitude-comparison sets jump between adjacent spirals
+    // v320: the spiral-boundary ambiguity was a 2 % chance on every frame (about one 90 degree jump a second near a boundary). It is now an occasional ambiguity that holds for about a second.
+    if(r.dfBearingFlipAtBoundary){const now=performance.now();
+      if(now<(rc.flipUntil||0))a+=rc.flipOff;
+      else{const aa=((a*R2%90)+90)%90;if(Math.abs(aa-45)<3&&now>(rc.flipNext||0)){rc.flipNext=now+5000;if(Math.random()<.3){rc.flipOff=Math.PI/2*Math.sign(Math.random()-.5);rc.flipUntil=now+1000;a+=rc.flipOff;}}}}      // amplitude-comparison sets jump between adjacent spirals
     if(q>0)a=Math.round(a*R2/q)*q*D;t.a=a;
     // range from received power with the library's ERP; sidelobe hits are assumed mainbeam, so they read too far
     let k=Math.pow(rc.dErr||1,r.rngErrorFraction/.28);if(rc.sl&&r.rngMainbeamAssumed)k*=1/Math.max(.12,.4);t.dEst=t.d*k;if(r.rngMethod==='None')t.dEst=t.e.R0*sy.k*.5;

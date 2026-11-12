@@ -110,7 +110,7 @@ window.makeAH64=makeAH64;
   for(const era of['cold','modern'])LOAD[era][ID]=validLoad(ID,era,Object.assign({},ld,full));
   LOAD.guns[ID]={};STRIKE_LOAD[ID]=Object.assign({},LOAD.modern[ID]);
   for(const era of Object.keys(CMS))CMS[era][ID]=[30,30];
-  ENGN[ID]='2× T700-GE-701';CALLS[ID]='APACHE';NCTR_ID[ID]='AH-64';FOE[ID]='F-4E';ACROLE[ID]='ATTACK HELICOPTER';RWR_OF[ID]='ALR-56C';
+  ENGN[ID]='2× T700-GE-701';CALLS[ID]='APACHE';NCTR_ID[ID]='AH-64';FOE[ID]='F-4E';ACROLE[ID]='ATTACK HELICOPTER';RWR_OF[ID]='APR-39';
   if(typeof RUS!=='undefined')RUS.delete(ID);
   A.name='AH-64A';A.role='USA · ATTACK HELICOPTER · TADS/PNVS · M230 · HELLFIRE · HYDRA 70';
   HELI.ids.push(ID);
