@@ -2524,7 +2524,7 @@ function drawSPO10(c,S,th,brg,msl,NOW){const P=player;const cx=S/2,cy=S/2,test=N
   c.lineTo(cx+8,cy+40);c.lineTo(cx+26,cy+56);c.lineTo(cx+26,cy+64);c.lineTo(cx,cy+58);c.lineTo(cx-26,cy+64);c.lineTo(cx-26,cy+56);c.lineTo(cx-8,cy+40);c.lineTo(cx-8,cy+16);
   c.lineTo(cx-52,cy+26);c.lineTo(cx-52,cy+16);c.lineTo(cx-8,cy-6);c.lineTo(cx-8,cy-30);c.closePath();c.fill();
   c.fillStyle='#e8eae4';c.font='700 16px "B612",sans-serif';c.textAlign='center';c.fillText('I',cx-60,24);c.fillText('D',cx+60,24);}
-function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=performance.now()/1000;c.fillStyle=mig?'#0a0d0c':'#020604';c.fillRect(0,0,S,S);if(!P||!sys.rwr.pwr)return;
+function drawRWR(dt){const c=rwc,S=240,P=player,cx=S/2,cy=S/2,mig=isMig(),NOW=performance.now()/1000;c.fillStyle=mig?'#0a0d0c':'#020604';c.fillRect(0,0,S,S);if(!P||!P.alive||!sys.rwr.pwr)return;   // a destroyed aircraft has no warner: rwrUpdate clears its system, and the scope code below reads it
   const qi=P.q.clone().invert(),bl=performance.now()%400<220;rwrState.launchT-=dt;
   const brg=p=>{const r=p.clone().sub(P.pos).applyQuaternion(qi);return Math.atan2(r.x,-r.z);};
   rwrUpdate(dt);const th=RW.list,sy=RW.sy,msl=RW.msl.map(x=>x.m);
