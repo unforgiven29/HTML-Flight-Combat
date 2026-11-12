@@ -194,9 +194,9 @@ function sideTick(P,fit,now){if(!radar.on()||radar.sensor!=='RDR'||!radiating()|
     const R=radar.rdet(j,a)*Math.sqrt(q.ap)*Math.pow(Math.cos(Math.min(q.rel,1.4)),.375);
     if(a.d>R*.9||radar.notch(j,a)||!terrLOS(P.pos,j.pos))continue;
     if(Math.random()<.6){radar.hit(j,a,Math.pow(R/Math.max(a.d,1),4)*20,now);M.sideHits.set(j,{arr:q.a,d:a.d,R:R,t:now});}}}
-M.tick=function(dt){const P=player;M.warned.length=0;if(!P||!P.alive||!M.on)return;
+M.tick=function(dt){const P=player;if(!P||!P.alive||!M.on){M.warned.length=0;return;}
   const fit=fitOf(P);cfg(P,fit);const now=performance.now()/1000;M.st.ticks++;
-  acc+=dt;if(acc<.1)return;const step=acc;acc=0;
+  acc+=dt;if(acc<.1)return;const step=acc;acc=0;M.warned.length=0;   // v319: rebuild only on the 10 Hz pass; clearing every frame made the warning blink for one frame in ten
   if(fit.arrays){sideT+=step;if(sideT>=.4){sideT=0;sideTick(P,fit,now);}}
   if(fit.das){rowT+=step;if(rowT>=.2){rowT=0;dasTick(P,now);}}
   const list=[];

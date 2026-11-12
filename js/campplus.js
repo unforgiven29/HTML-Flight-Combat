@@ -157,3 +157,162 @@ function fpvTick(dt){for(let k=FPV.vis.length-1;k>=0;k--){const f=FPV.vis[k],m=f
 window.CAMPPLUS={SH,FPV,farps,TOWNS,NAMES,launchRaid};
 console.info('[campplus] loaded');
 })();
+
+/* ---------------------------------------------------------------- v316: more air defence on both sides
+   The campaign already fields S-300 / SA-6 / Tor / Tunguska / Pantsir / ZSU-23-4 for red and Patriot / I-Hawk or IRIS-T SLM /
+   Roland or NASAMS / Gepard for blue (the v182 faction mapping turns each entry into its own side's equivalent, by era).
+   This adds a second belt: per side one long-range battery, two medium SAM batteries, two short-range SAMs, two gun / missile
+   SPAAGs and two AAA guns, spread along the front at the usual depths. Every SA-6 and ZSU-23-4 now also engages the nearest
+   hostile aircraft, not only the player. */
+(()=>{const rr=(a,b)=>a+Math.random()*(b-a);
+ const BELT=[['S300',5,38000,42000,[10000]],['SITE',4,19000,25000,[-70000,30000]],['TOR',1,9000,14000,[-40000,60000]],
+             ['TUNG',1,3500,5000,[-60000,20000]],['ZSU',1,3200,4600,[-20000,75000]]];
+ function addAD(st){if(st.adPlus)return;st.adPlus=1;let id=st.ad.reduce((m,a)=>Math.max(m,a.id),0)+1;
+   for(const s of[1,0])for(const [k,n,d0,d1,xs] of BELT)for(const x0 of xs){const x=x0+rr(-6000,6000)+(s?0:9000),fz=CAMP.frontZ(x);
+     st.ad.push({id:id++,k,s,x,z:fz+(s?-1:1)*rr(d0,d1),hd:s?180:0,al:Array(n).fill(1)});}}
+ const _ns=CAMP.newState;CAMP.newState=function(){const st=_ns.apply(this,arguments);addAD(st);return st;};
+ const _ld=CAMP.load;CAMP.load=function(){const ok=_ld.apply(this,arguments);if(ok&&this.st)addAD(this.st);return ok;};
+ // our own SA-6-slot and gun-slot sites pull back when the front closes on them
+ const _pa=CAMP.placeAD;CAMP.placeAD=function(first){_pa.apply(this,arguments);for(const a of this.st.ad){if(a.s!==0||a.k!=='SITE'&&a.k!=='ZSU')continue;const fz=this.frontZ(a.x),d=a.k==='SITE'?19000:3200;
+     if(a.z-fz<d*.5){a.z=fz+rr(d,d*1.3);a.mv=1;}}};})();
+
+/* ---------------------------------------------------------------- v317: more SAM types (red)
+   COLD (mid-1980s): S-75 Dvina (SA-2 'Guideline', SNR-75 'Fan Song' + 6 launchers), S-125 Neva (SA-3 'Goa', SNR-125 'Low Blow' + 4 launchers),
+   9K37 Buk (SA-11 'Gadfly' TELAR) and 9K33 Osa (SA-8 'Gecko').
+   MODERN: S-400 (SA-21 'Growler', 92N6 'Grave Stone' + 4 TELs, 48N6DM) and Buk-M2 (SA-17 'Grizzly', 9M317).
+   Engagement envelopes from public figures (rounded); missile kinematics are gameplay-level. SA-2 / SA-3 are command-guided in reality;
+   here they use the game's semi-active homing model, which is the closest it has. On a REDFOR war each one maps to the NATO
+   counterpart on the blue side (S-400 -> Patriot, SA-2 / SA-3 / SA-11 / SA-17 -> Hawk or IRIS-T SLM, SA-8 -> Roland or NASAMS). */
+(()=>{if(typeof PROF==='undefined'||typeof addMsl!=='function'){console.warn('[campplus] SAM engine missing');return;}
+const rr=(a,b)=>a+Math.random()*(b-a),D=Math.PI/180;
+const T5=MSL['5V55R'];
+addMsl('V-750','V-750 (SA-2)',Object.assign({},T5,{burn:26,acc:85,maxG:12,fuse:65,life:90,rmin:7000,mass:2300,aiR:40000,trk:.4,res:.55}),{b:4,s:22,f:.6},.5,10.6);
+addMsl('5V27','5V27 (SA-3)',Object.assign({},T5,{burn:23,acc:100,maxG:15,fuse:12,life:60,rmin:3500,mass:950,aiR:25000,trk:.5,res:.6}),{b:3,s:20,f:.6},.38,6.1);
+addMsl('9M38M1','9M38M1 (SA-11)',Object.assign({},T5,{burn:15,acc:120,maxG:24,fuse:17,life:60,rmin:3000,mass:690,aiR:32000,trk:.6,res:.7}),{b:3,s:12,f:.6},.4,5.55);
+addMsl('9M317','9M317 (SA-17)',Object.assign({},T5,{burn:15,acc:125,maxG:26,fuse:17,life:70,rmin:3000,mass:715,aiR:45000,trk:.65,res:.72}),{b:3,s:12,f:.6},.4,5.55);
+addMsl('9M33','9M33 (SA-8)',Object.assign({},T5,{burn:12,acc:110,maxG:25,fuse:6,life:25,rmin:1500,mass:130,aiR:10000,trk:.6,res:.7}),{b:2,s:10,f:.65},.21,3.16);
+addMsl('48N6DM','48N6DM (S-400)',Object.assign({},T5,{burn:18,acc:130,maxG:22,fuse:24,life:180,rmin:5000,mass:1900,aiR:150000,trk:.6,res:.7}),{b:4,s:14,f:.6},.52,7.5);
+if(typeof MSL_KEYS!=='undefined')for(const k of Object.keys(MSL))if(!MSL_KEYS.includes(k))MSL_KEYS.push(k);
+Object.assign(PROF,{
+  S75:{nm:'SA-2',msl:'V-750',R0:110000,rmin:7000,rmax:40000,amin:300,amax:25000,floor:300,acq:12,sw:5,salvo:2,gap:6,reload:60,maxAir:2,el:60,am:1},
+  S125:{nm:'SA-3',msl:'5V27',R0:80000,rmin:3500,rmax:25000,amin:20,amax:18000,floor:25,acq:9,sw:4,salvo:2,gap:5,reload:50,maxAir:2,el:60,am:2},
+  BUK:{nm:'SA-11',msl:'9M38M1',R0:85000,rmin:3000,rmax:32000,amin:15,amax:22000,floor:20,acq:5,sw:4,salvo:2,gap:4,reload:12,maxAir:2,el:60,am:4,self:1},
+  OSA:{nm:'SA-8',msl:'9M33',R0:30000,rmin:1500,rmax:10000,amin:10,amax:5000,floor:10,acq:3.5,sw:1.2,salvo:2,gap:3,reload:10,maxAir:2,el:60,am:6,self:1},
+  S400:{nm:'S-400',msl:'48N6DM',R0:250000,rmin:5000,rmax:150000,amin:10,amax:27000,floor:15,acq:8,sw:6,salvo:2,gap:5,reload:30,maxAir:6,el:60,am:4}});
+Object.assign(GTY,{
+  FANS:{n:'SNR-75 Fan Song (SA-2)',hp:60,arm:0,r:5,rcs:0,emit:1,rwr:'2',spo:2,R0:110000},S75L:{n:'SM-63 launcher (SA-2)',hp:50,arm:0,r:4.5},
+  LOWB:{n:'SNR-125 Low Blow (SA-3)',hp:60,arm:0,r:5,rcs:0,emit:1,rwr:'3',spo:2,R0:80000},S125L:{n:'5P73 launcher (SA-3)',hp:50,arm:0,r:4.5},
+  BUKT:{n:'9A310 TELAR (SA-11)',hp:70,arm:1,r:4.5,emit:1,rwr:'11',spo:2,R0:85000},
+  OSAV:{n:'9A33 Osa (SA-8)',hp:55,arm:1,r:4.2,emit:1,rwr:'8',spo:3,R0:30000},
+  S4R:{n:'92N6 Grave Stone (S-400)',hp:60,arm:1,r:5,rcs:0,emit:1,rwr:'21',spo:1,R0:250000},S4L:{n:'5P85TE2 TEL (S-400)',hp:70,arm:1,r:4.8}});
+{const mt={},M=c=>mt[c]||(mt[c]=SKIN(c,14)),ol=0x56603e,dk=0x23262a,cr=0xb8b4a0;
+ const B=(g,w,h,l,m,x,y,z,rx=0,ry=0)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,l),m);b.position.set(x,y,z);b.rotation.set(rx,ry,0);g.add(b);return b;};
+ const C=(g,r,l,m,x,y,z,rx=Math.PI/2)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,10),m);c.rotation.x=rx;c.position.set(x,y,z);g.add(c);return c;};
+ const trk=(g,w,l)=>{B(g,.6,.95,l,M(dk),-w/2+.3,.48,0);B(g,.6,.95,l,M(dk),w/2-.3,.48,0);};
+ const truck=(g,len)=>{B(g,2.6,1.1,len,M(dk),0,.9,0);B(g,2.6,1.7,2.2,M(ol),0,1.9,-len/2+1.4);for(const z of[-len/2+1.6,0,len/2-1.6])for(const x of[-1.25,1.25]){const w=C(g,.6,.45,M(dk),x,.6,z,0);w.rotation.z=Math.PI/2;}};
+ const fin=g=>{g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});return g;};
+ const ant=(g,y)=>{const a=new THREE.Group();a.position.set(0,y,0);g.add(a);g.userData.ant=a;return a;};
+ const rail=(g,len,r,el,y)=>{const p=new THREE.Group();p.position.set(0,y,0);p.rotation.x=el;g.add(p);B(p,.5,.3,len*.9,M(ol),0,-.3,0);C(p,r,len,M(0xd8d6cc),0,0,0);C(p,r*1.3,len*.25,M(0xd8d6cc),0,0,len*.38);return p;};
+ Object.assign(CMESH,{
+  FANS(){const g=new THREE.Group();B(g,3,2.4,6,M(ol),0,1.2,0);const a=ant(g,2.6);B(a,.6,1.6,.6,M(dk),0,.8,0);B(a,7,.8,.25,M(cr),0,2,0);B(a,.8,5,.25,M(cr),1.5,2,0,0,0).rotation.z=0;B(a,1.6,1.6,.4,M(cr),-1.8,1.2,.3);return fin(g);},
+  S75L(){const g=new THREE.Group();B(g,3.2,.8,3.2,M(ol),0,.4,0);C(g,.9,.5,M(ol),0,1,0,0);rail(g,10.6,.25,-.45,2.2);return fin(g);},
+  LOWB(){const g=new THREE.Group();B(g,3,2.4,6,M(ol),0,1.2,0);const a=ant(g,2.6);B(a,.6,1.4,.6,M(dk),0,.7,0);B(a,4,.6,.3,M(cr),0,1.8,0,-.3);B(a,.6,3,.3,M(cr),0,2.2,.2,0,.0);return fin(g);},
+  S125L(){const g=new THREE.Group();B(g,3,.8,3,M(ol),0,.4,0);C(g,.8,.5,M(ol),0,1,0,0);for(const x of[-.6,.6])for(const y of[0,.9]){const p=rail(g,6.1,.19,-.5,1.8+y);p.position.x=x;}return fin(g);},
+  BUKT(){const g=new THREE.Group();trk(g,3.2,7.2);B(g,3.1,1.2,7,M(ol),0,1.3,0);const t=new THREE.Group();t.position.set(0,2,.6);g.add(t);B(t,2.4,.6,2.4,M(ol),0,.3,0);
+    for(const x of[-.5,-.17,.17,.5]){const p=rail(t,5.5,.2,-.35,1);p.position.x=x;}const a=ant(g,2.4);a.position.z=-2;B(a,2,1.6,.3,M(cr),0,.9,0);return fin(g);},
+  OSAV(){const g=new THREE.Group();B(g,2.8,1.8,8.5,M(ol),0,1.5,0);for(let i=0;i<3;i++)for(const x of[-1.25,1.25]){const w=C(g,.65,.5,M(dk),x,.65,-2.5+i*2.5,0);w.rotation.z=Math.PI/2;}
+    const t=new THREE.Group();t.position.set(0,2.4,.5);g.add(t);B(t,1.8,1,1.8,M(ol),0,.5,0);for(const x of[-1.4,1.4])for(const y of[0,.45])C(t,.11,3.1,M(0xd8d6cc),x,1+y,0);const a=ant(g,3.4);B(a,1.6,.9,.2,M(cr),0,.6,.5);return fin(g);},
+  S4R(){const g=new THREE.Group();truck(g,9);B(g,2.6,2,3.8,M(ol),0,2.6,2);const a=ant(g,3.6);a.position.z=2;B(a,3.8,3.2,.35,M(cr),0,1.8,0,-.25);return fin(g);},
+  S4L(){const g=new THREE.Group();truck(g,11);for(const x of[-.7,.7])for(const y of[0,1])C(g,.4,7.5,M(0x6a6846),x,2.6+y*.9,1.3,Math.PI/2+.0);return fin(g);}});}
+const PARTS={S75:['FANS','S75L','S75L','S75L','S75L','S75L','S75L'],S125:['LOWB','S125L','S125L','S125L','S125L'],BUK:['BUKT'],OSA:['OSAV'],S400:['S4R','S4L','S4L','S4L','S4L']};
+const OFF={S75:[[0,0]].concat([0,1,2,3,4,5].map(i=>[Math.cos(i*1.047)*170,Math.sin(i*1.047)*170])),S125:[[0,0],[140,0],[-140,0],[0,140],[0,-140]],
+  S400:[[0,0],[-260,-140],[260,-140],[-260,180],[260,180]],BUK:[[0,0]],OSA:[[0,0]]};
+// REDFOR wars: the blue side fields NATO counterparts
+if(typeof effK==='function'){const _e=effK;effK=function(a){if(a&&PARTS[a.k]&&a.s!=null&&!redSide(a.s)){const mod=CAMP.st&&CAMP.st.era==='modern';return{S400:'PATR',S75:mod?'IRIS':'HAWK',S125:mod?'IRIS':'HAWK',BUK:mod?'IRIS':'HAWK',OSA:mod?'NASM':'ROL'}[a.k];}return _e(a);};}
+const own=a=>PARTS[a.k]&&(typeof effK!=='function'||effK(a)===a.k);
+{const _mk=CAMP.mkAD;CAMP.mkAD=function(a){if(!own(a))return _mk.call(this,a);
+   const parts=PARTS[a.k].map((t,i)=>{const o=OFF[a.k][i],g=GND.add(t,a.s==null?1:a.s,a.x+o[0],a.z+o[1],a.hd);g.callsign=GTY[t].n;return g;});
+   parts.forEach((g,i)=>{g.ad=[a.id,i];if(!a.al[i])this.wreck(g,0);});this.adPhys.set(a.id,parts);a.mv=0;this.mkS2(a,parts,PROF[a.k]);};
+ const _of=CAMP.adOff;CAMP.adOff=function(a){return own(a)?OFF[a.k]:_of.call(this,a);};
+ const _ak=CAMP.adKilled;CAMP.adKilled=function(g,src){_ak.call(this,g,src);const a=this.st&&this.st.ad.find(q=>q.id===g.ad[0]);if(!a||this.client||!own(a))return;
+   if(g.ad[1]===0&&PARTS[a.k].length>1)this.log(PROF[a.k].nm+' radar destroyed. The battery is blind.',a.s===0?'r':'b');};}
+const eraNames=()=>{const m=CAMP.st&&CAMP.st.era==='modern';PROF.BUK.nm=m?'SA-17':'SA-11';PROF.BUK.msl=m?'9M317':'9M38M1';PROF.BUK.rmax=m?45000:32000;GTY.BUKT.n=m?'9A317 TELAR (SA-17)':'9A310 TELAR (SA-11)';GTY.BUKT.rwr=m?'17':'11';};
+function add3(st){if(st.ad3)return;st.ad3=1;eraNames();let id=st.ad.reduce((m,a)=>Math.max(m,a.id),0)+1;const P=(k,x,d0,d1)=>{const fz=CAMP.frontZ(x);st.ad.push({id:id++,k,s:1,x,z:fz-rr(d0,d1),hd:180,al:Array(PARTS[k].length).fill(1)});};
+  if(st.era==='modern'){P('S400',-5000,60000,70000);for(const x of[-65000,-5000,55000])P('BUK',x+rr(-5000,5000),16000,24000);}
+  else{for(const x of[-55000,40000])P('S75',x,32000,42000);for(const x of[-25000,70000])P('S125',x,15000,22000);for(const x of[-80000,10000])P('BUK',x,15000,24000);for(const x of[-45000,25000,85000])P('OSA',x,5000,9000);}}
+{const _ns=CAMP.newState;CAMP.newState=function(){const st=_ns.apply(this,arguments);add3(st);return st;};
+ const _ld=CAMP.load;CAMP.load=function(){const ok=_ld.apply(this,arguments);if(ok&&this.st){eraNames();add3(this.st);}return ok;};}
+window.CAMPSAM={PROF,PARTS,OFF};})();
+
+/* ---------------------------------------------------------------- v318: MANPADS
+   Shoulder-fired IR missile teams on both sides, in the campaign (around every airfield and along the front) and in the STRIKE mission.
+   COLD:   red 9K32M Strela-2M (SA-7b: uncooled seeker, tail-chase only, easily flared) and 9K34 Strela-3 (SA-14: cooled seeker, still mostly rear aspect);
+           blue FIM-43C Redeye (rear aspect) and FIM-92A Stinger (all-aspect, UV / IR).
+   MODERN: red 9K338 Igla-S (SA-24, all-aspect, flare rejection); blue FIM-92J Stinger RMP (all-aspect, better rejection).
+   A team has no radar and gives no RWR warning: it sees the aircraft by eye (day about 9 km, night about 2.5 km), needs line of sight, waits for the
+   seeker tone (several seconds), and fires only inside the missile's envelope; rear-aspect missiles need you flying away from the team, all-aspect ones
+   have a shorter range head-on. Two or three missiles per team and a reload of 7-8 s. Ranges, ceilings, speeds and seeker figures are rounded public data;
+   the flight model is the game's IR missile with these parameters. Teams engage any hostile aircraft (the player, AI jets, helicopters). */
+(()=>{if(typeof addMsl!=='function'||typeof Missile==='undefined'){console.warn('[campplus] MANPADS: engine missing');return;}
+const rr=(a,b)=>a+Math.random()*(b-a),D=Math.PI/180,T9=MSL['AIM-9P'];
+const def=(o)=>Object.assign({},T9,{seek:'IR',ign:0,search:2.5*D,smoke:.5},o);
+addMsl('9M32M','Strela-2M (SA-7b)',def({trk:.25,ccm:0,burn:1.9,acc:230,cd:1.25e-4,maxG:9,gimbal:20*D,fuse:4,life:15,N:3,res:.3,rmin:500,stop:160,mass:9.8,irR:3800,front:.02,aiR:3600,aiOff:14*D}),{b:.3,s:1.6,f:.35},.072,1.44);
+addMsl('9M36','Strela-3 (SA-14)',def({trk:.4,ccm:.12,burn:2.2,acc:215,cd:1.3e-4,maxG:14,gimbal:28*D,fuse:4,life:16,N:3.3,res:.45,rmin:500,stop:170,mass:10.3,irR:5200,front:.1,aiR:4800,aiOff:18*D}),{b:.35,s:1.85,f:.4},.072,1.47);
+addMsl('9M342','Igla-S (SA-24)',def({trk:.6,ccm:.35,burn:2.4,acc:240,cd:1.4e-4,maxG:20,gimbal:30*D,fuse:4,life:18,N:3.6,res:.6,rmin:400,stop:180,mass:11.1,irR:7000,front:.4,aiR:6000,aiOff:22*D}),{b:.4,s:2,f:.4},.072,1.7);
+addMsl('FIM-43C','Redeye',def({trk:.28,ccm:.05,burn:1.8,acc:260,cd:1.2e-4,maxG:10,gimbal:22*D,fuse:4,life:14,N:3,res:.35,rmin:600,stop:170,mass:8.3,irR:4000,front:.03,aiR:3600,aiOff:14*D}),{b:.3,s:1.5,f:.35},.07,1.4);
+addMsl('FIM-92A','Stinger',def({trk:.55,ccm:.3,burn:2.2,acc:440,cd:1.4e-4,maxG:20,gimbal:30*D,fuse:4,life:16,N:3.5,res:.55,rmin:300,stop:200,mass:10.1,irR:6000,front:.4,aiR:5200,aiOff:25*D}),{b:.35,s:1.85,f:.4},.07,1.5);
+addMsl('FIM-92J','Stinger RMP',def({trk:.7,ccm:.45,burn:2.3,acc:450,cd:1.4e-4,maxG:24,gimbal:32*D,fuse:4,life:18,N:3.8,res:.65,rmin:300,stop:200,mass:10.1,irR:8000,front:.6,aiR:6500,aiOff:28*D}),{b:.35,s:1.95,f:.4},.07,1.5);
+if(typeof MSL_KEYS!=='undefined')for(const k of Object.keys(MSL))if(!MSL_KEYS.includes(k))MSL_KEYS.push(k);
+// per-weapon employment envelope: range m, min range, ceiling above the team, time to seeker tone, missiles per team, reload s, rear-aspect only
+const WP={'9M32M':{nm:'9K32M Strela-2M (SA-7b)',rmax:3700,rmin:500,amax:2300,acq:4.5,ammo:2,rl:8,rear:1},'9M36':{nm:'9K34 Strela-3 (SA-14)',rmax:4000,rmin:500,amax:2300,acq:4,ammo:2,rl:8,rear:1},
+  '9M342':{nm:'9K338 Igla-S (SA-24)',rmax:5200,rmin:400,amax:3500,acq:3.5,ammo:3,rl:7},'FIM-43C':{nm:'FIM-43C Redeye',rmax:4000,rmin:600,amax:2700,acq:4.5,ammo:2,rl:8,rear:1},
+  'FIM-92A':{nm:'FIM-92A Stinger',rmax:4800,rmin:300,amax:3800,acq:3.5,ammo:3,rl:7},'FIM-92J':{nm:'FIM-92J Stinger RMP',rmax:6000,rmin:300,amax:4800,acq:3.2,ammo:3,rl:7}};
+const ERAK=(side)=>{const m=(CAMP.on&&CAMP.st?CAMP.st.era:game.era)==='modern';
+  if(side===1)return m?['9M342']:['9M32M','9M32M','9M36'];return m?['FIM-92J']:['FIM-43C','FIM-92A','FIM-92A'];};
+Object.assign(GTY,{MPDR:{n:'MANPADS team',hp:25,arm:0,r:5,mp:1},MPDB:{n:'MANPADS team',hp:25,arm:0,r:5,mp:1}});
+{const mt={},M=c=>mt[c]||(mt[c]=SKIN(c,8)),fin=g=>{g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});return g;};
+ const B=(g,w,h,l,m,x,y,z)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,l),m);b.position.set(x,y,z);g.add(b);return b;};
+ const team=(c1,c2)=>{const g=new THREE.Group(),a=M(c1),b=M(c2),d=M(0x23262a);
+   for(const [x,z,k] of[[0,0,1],[2.2,.8,0],[-2,1.2,0]]){B(g,.55,.9,.4,a,x,.55,z);B(g,.3,.3,.3,b,x,1.2,z);B(g,.5,.5,.35,b,x,.25,z+.1);if(!k)B(g,.5,.7,.3,b,x,.9,z+.1);}
+   const tu=new THREE.Group();tu.position.set(0,1.05,0);g.add(tu);g.userData.tube=tu;const t=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,1.5,8),M(0x4a4f3a));t.rotation.x=Math.PI/2;t.position.z=-.55;tu.add(t);
+   const gp=new THREE.Mesh(new THREE.BoxGeometry(.14,.3,.2),d);gp.position.set(0,-.1,-.2);tu.add(gp);g.userData.rounds=[tu];
+   B(g,1.2,.5,.6,M(0x5a5a3a),-.9,.25,-1.2);return fin(g);};
+ CMESH.MPDR=()=>team(0x56603e,0x434a34);CMESH.MPDB=()=>team(0x6d6b4c,0x4f4f3a);}
+const MP={t:0,cache:[],nU:-1,list(){if(this.nU!==GND.units.length){this.nU=GND.units.length;this.cache=GND.units.filter(u=>u.T&&u.T.mp);}return this.cache;}};
+function init(u){const ks=ERAK(u.side),k=ks[(Math.random()*ks.length)|0],w=WP[k];u._mp={k,w,ammo:w.ammo,nextT:0,acq:0,cnd:null,selT:rr(0,.5),msl:[]};u.callsign=u.type=w.nm+' team';u.ac.irs=.3;}
+function pick(u,s){const w=s.w,out=[],eye=new V3(u.pos.x,u.pos.y+1.6,u.pos.z),night=typeof ENV!=='undefined'&&ENV.nightK>.5,vis=night?2500:9000;let best=null,bd=1e12;
+  const c=[];if(player&&player.alive&&player.side!==u.side)c.push(player);if(!CAMP.client)for(const j of jets)if(j.alive&&!j.gone&&!j.remote&&!j.peer&&j!==player&&j.side!==u.side&&j.ai)c.push(j);
+  for(const j of c){const d=eye.distanceTo(j.pos);if(d>Math.min(w.rmax*1.05,vis*Math.pow(Math.max(.5,j.ac&&j.ac.rcs||5)/6,.18)))continue;const alt=j.pos.y-u.pos.y;if(alt<-50||alt>w.amax||d<w.rmin)continue;
+    if(!terrLOS(eye,j.pos))continue;if(d<bd){bd=d;best=j;}}return best;}
+function tone(u,s,T){// is there a seeker tone: aspect and range scaling
+  const w=s.w,to=new V3().copy(T.pos).sub(u.pos),d=to.length();to.divideScalar(d||1);const f=T.fwd?T.fwd(new V3()):new V3(0,0,-1),c=f.dot(to);   // c = 1 when the aircraft flies directly away
+  const fr=MSL[s.k].front;let mult;if(w.rear&&fr<=.12){if(c<.2)return false;mult=.5+.5*c;}else mult=fr+(1-fr)*(c+1)/2;
+  if(T.ac&&T.ac.heli)mult*=.9;return d<w.rmax*mult&&d>w.rmin;}
+function fire(u,s,T){const w=s.w,lp=new V3(u.pos.x,u.pos.y+1.7,u.pos.z),d0=T.pos.distanceTo(lp),tof=d0/430,to=T.pos.clone().addScaledVector(T.vel,Math.min(tof,5)).sub(lp),hz=Math.hypot(to.x,to.z)||1,
+    el=Math.max(Math.atan2(to.y,hz),8*D),dir=new V3(to.x/hz*Math.cos(el),Math.sin(el),to.z/hz*Math.cos(el)).normalize();
+  const sh={gnd:true,side:u.side,get alive(){return u.alive;},ai:{radarLock:false,hojLock:false,t:null},pos:u.pos,vel:new V3(),ac:u.ac,type:w.nm,callsign:w.nm,fwd:v=>v.copy(dir),up:v=>v.set(-dir.x*dir.y,1-dir.y*dir.y,-dir.z*dir.y).normalize()};
+  const m=new Missile(s.k,sh,T,lp);m.vel.copy(dir).multiplyScalar(28);s.msl.push(m);s.ammo--;
+  const tu=u.mesh.userData.tube;if(tu){tu.rotation.set(el,-Math.atan2(to.x,-to.z)+u.hdg*D,0,'YXZ');}
+  for(let i=0;i<10;i++)smoke.emit(lp,GV.set(rnd(-4,4),rnd(0,3),rnd(-4,4)),rnd(3,6),4,12,.85,.84,.8,.55,.3);glow.emit(lp,null,.3,5,6,1,.7,.3,1);
+  if(T===player&&SET.calls==='ON'&&!isMig())radio('Missile launch! Shoulder-fired, '+w.nm+'.');}
+MP.tick=function(dt){this.t+=dt;const now=this.t;for(const u of this.list()){if(!u.alive){continue;}if(!u._mp)init(u);const s=u._mp,w=s.w;s.msl=s.msl.filter(m=>m.alive);
+    s.selT-=dt;if(s.selT<=0){s.selT=.4+Math.random()*.2;s.cnd=pick(u,s);}
+    const T=s.cnd;if(!T||!T.alive){s.acq=Math.max(0,s.acq-dt*2);continue;}
+    const rel=T.pos.clone().sub(u.pos);u.aim.copy(rel).normalize();const tu=u.mesh.userData.tube;if(tu){const hz=Math.hypot(rel.x,rel.z)||1;tu.rotation.set(Math.atan2(rel.y,hz),-Math.atan2(rel.x,-rel.z)+u.hdg*D,0,'YXZ');}
+    if(tone(u,s,T))s.acq+=dt;else s.acq=Math.max(0,s.acq-dt*1.5);
+    if(s.acq>w.acq&&s.ammo>0&&now>=s.nextT&&!s.msl.length){fire(u,s,T);s.nextT=now+w.rl;s.acq=w.acq*.4;}}};
+{const _t=GND.tick;GND.tick=function(dt){_t.call(this,dt);try{MP.tick(dt);}catch(e){if(!MP.err){MP.err=1;console.warn('[campplus] MANPADS',e);}}};}
+{const _c=GND.clear;GND.clear=function(){MP.nU=-1;return _c.apply(this,arguments);};}
+// STRIKE mission: three teams around the depot
+{const _s=GND.setup;GND.setup=function(P){_s.apply(this,arguments);const C=this.center;if(!C)return;const hd=P.hdg*D,fx=Math.sin(hd),fz=-Math.cos(hd),rx=-fz,rz=fx;
+   for(const [f,r] of[[120,-110],[120,110],[-180,0]]){const x=C.x+fx*f+rx*r,z=C.z+fz*f+rz*r;this.add('MPDR',1,x,z,P.hdg+180);}MP.nU=-1;};}
+// campaign: teams at every airfield and along the front
+function add4(st){if(st.ad4)return;st.ad4=1;let id=st.ad.reduce((m,a)=>Math.max(m,a.id),0)+1;
+  for(const b of st.bases){const d=cbDef(b.id);for(let i=0;i<2;i++)st.ad.push({id:id++,k:'MANP',s:b.side,x:d.x+(i?-1:1)*rr(450,900),z:d.z+(i?-1:1)*rr(900,1600),hd:b.side?180:0,al:[1],b:b.id});}
+  for(const s of[1,0])for(const x0 of[-75000,-35000,5000,45000,80000]){const x=x0+rr(-6000,6000),fz=CAMP.frontZ(x);st.ad.push({id:id++,k:'MANP',s,x,z:fz+(s?-1:1)*rr(1500,3200),hd:s?180:0,al:[1],fr:1});}}
+{const _mk=CAMP.mkAD;CAMP.mkAD=function(a){if(a.k!=='MANP')return _mk.call(this,a);const g=GND.add(a.s?'MPDR':'MPDB',a.s,a.x,a.z,a.hd);g.ad=[a.id,0];if(!a.al[0])this.wreck(g,0);this.adPhys.set(a.id,[g]);a.mv=0;MP.nU=-1;};
+ const _pa=CAMP.placeAD;CAMP.placeAD=function(first){_pa.apply(this,arguments);const st=this.st;let q=0;const hots=st.hot.slice();if(!hots.length)return;
+   for(const a of st.ad){if(a.k!=='MANP'||!a.fr||!a.al[0])continue;if(first||Math.random()<.5){const i=hots[q++%hots.length];a.x=CFX[i]+rr(-5000,5000);a.z=this.frontZ(a.x)+(a.s?-1:1)*rr(1500,3200);a.mv=1;}}};
+ const _ns=CAMP.newState;CAMP.newState=function(){const st=_ns.apply(this,arguments);add4(st);return st;};
+ const _ld=CAMP.load;CAMP.load=function(){const ok=_ld.apply(this,arguments);if(ok&&this.st)add4(this.st);return ok;};}
+window.MANPADS={MP,WP};})();
