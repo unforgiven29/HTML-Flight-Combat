@@ -2424,7 +2424,7 @@ function mfdClick(id,x,y){if(id==='sms'&&isEagle()){const n=hornOsbAt(x,y);if(n)
     if(best){const a=radar.ang(best.pos);if(radar.detect(best,a)&&a.off<radar.gimbal())radar.stt(best);else flash('NO TRACK',900);}else sfx.click();return;}
   if(id==='fcr'&&isFlogger()){const S=360,x0=40,x1=S-40,y0=S-34,y1=34;if(x>=x0-8&&x<=x1+8&&y<=y0+8&&y>=y1-8){radar.cur.az=clamp((x-x0)/(x1-x0)*2-1,-1,1)*30*D2R;radar.cur.r=clamp((y0-y)/(y0-y1),0,1);radar.designate();}return;}
   if(id==='fcr'&&isMig()){const r=repScope;if(r&&x>=r.x0-8&&x<=r.x1+8&&y<=r.y0+8&&y>=r.y1-8){
-    {const ir=radar.sensor==='IRST',v=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*(ir?30:(radar.scopeAz||60))*D2R;if(ir)radar.cur.el=(v*2-1)*30*D2R;else radar.cur.r=v;}radar.designate();}return;}
+    {const ir=radar.sensor==='IRST',v=clamp((r.y0-y)/(r.y0-r.y1),0,1);radar.cur.az=clamp((x-r.x0)/(r.x1-r.x0)*2-1,-1,1)*(ir?30:Math.round(radar.gimbal()*R2D))*D2R;if(ir)radar.cur.el=(v*2-1)*30*D2R;else radar.cur.r=v;}radar.designate();}return;}
   if(id==='fcr'&&!isMig())for(const o of FCR_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='sms')for(const o of SMS_OSB)if(Math.abs(x-o.x)<28&&Math.abs(y-o.y)<22){osbAct(o.a);sfx.click();return;}
   if(id==='fcr'&&x>46&&x<314&&y>44&&y<306){radar.cur.az=((x-46)/268*120-60)*D2R;radar.cur.r=(306-y)/262;radar.designate();return;}
@@ -12695,9 +12695,15 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
         const sel=j===radar.bug,R=sel?9:6.5;diamond(p.x,p.y,R);line(p.x,p.y-R,p.x,p.y-R-6);
         if(sel)hx.strokeRect(p.x-R-4,p.y-R-4,2*R+8,2*R+8);}}
     // ---- RWS: contacts are small squares laid out azimuth across, range up the left range bar (as on the real board); IRST: azimuth across, elevation on the right scale ----
-    if(on&&radar.mode!=='ACM'&&(irst||radar.mode==='RWS')){const SAz=irst?30:(radar.scopeAz||60),FX=2.6,maxR=radar.rngM,R0=C-3.2,R1=C+3.6,
+    if(on&&radar.mode!=='ACM'&&(irst||radar.mode==='RWS')){const SAz=irst?30:Math.round(radar.gimbal()*R2D),FX=2.0,maxR=radar.rngM,R0=C-3.2,R1=C+3.6,
         pz=(az,v)=>irst?hb(clamp(az*R2D/SAz,-1,1)*FX,C+clamp(v,-30,30)*ps):hb(clamp(az*R2D/SAz,-1,1)*FX,lerp(R0,R1,clamp(v/maxR,0,1)));
-      {const f0=irst?hb(-FX,C-30*ps):hb(-FX,R0),f1=irst?hb(FX,C+30*ps):hb(FX,R1);if(f0&&f1)hudScope={x0:f0.x,x1:f1.x,y0:f0.y,y1:f1.y};}
+      {const f0=irst?hb(-FX,C-30*ps):hb(-FX,R0),f1=irst?hb(FX,C+30*ps):hb(FX,R1);if(f0&&f1){hudScope={x0:f0.x,x1:f1.x,y0:f0.y,y1:f1.y};
+        // the scan volume: the frame is the radar's full azimuth limit (or the IRST's 60x60 field) up to the selected range; the dashed pair is the current scan sector
+        hx.save();hx.lineWidth=1.2;hx.globalAlpha*=.85;hx.strokeRect(f0.x,f1.y,f1.x-f0.x,f0.y-f1.y);
+        const zt=(irst?hb(0,C-30*ps):hb(0,R0)),zu=(irst?hb(0,C-30*ps+.35):hb(0,R0+.35));if(zt&&zu)line(zt.x,zt.y,zu.x,zu.y);
+        hx.font=hfont(sm);txt(String(SAz),f0.x+3,f1.y+sm*.9,'left');txt(String(SAz),f1.x-3,f1.y+sm*.9,'right');
+        if(!irst){const W=Math.min((radar.azs[radar.ai]||60)*D2R,radar.gimbal()),c0=radar.scanC||0;hx.setLineDash([3,4]);for(const sd of[-1,1]){const z=clamp(c0+sd*W,-SAz*D2R,SAz*D2R),a=pz(z,0),b=pz(z,maxR);if(a&&b)line(a.x,a.y,b.x,b.y);}}
+        hx.restore();}}
       if(!irst)for(const[j,sg]of radar.strobes){if(Math.abs(sg.az)>SAz*D2R)continue;const a=pz(sg.az,0),b=pz(sg.az,maxR);if(a&&b){hx.save();hx.globalAlpha*=clamp(1-(now-sg.t)/4.5,.25,1);hx.setLineDash([4,5]);line(a.x,a.y,b.x,b.y);hx.restore();}}
       for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj)continue;
         if(irst){const vv=irVis(j,tk,now);if(vv<=0||Math.abs(tk.az)>SAz*D2R)continue;const p=pz(tk.az,tk.el*R2D);if(!p)continue;hx.save();hx.globalAlpha*=vv;irBlob(hx,p.x,p.y,j,1.2);hx.restore();}
