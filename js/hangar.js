@@ -39,6 +39,7 @@ const FAMS=[
  ['PVO INTERCEPTORS','RU',['Su-15TM','Yak-28P','Tu-128']],
  ['YAKOVLEV','RU',['Yak-38','Yak-141','Yak-130']],
  ['ROTORCRAFT · KAMOV','RU',['Ka-50']],
+ ['ROTORCRAFT · APACHE','US',['AH-64A']],
  ['J-11 / J-15 / J-16','CN',['J-11','J-11B','J-15T','J-16']],
  ['J-20 / J-35','CN',['J-20','J-35']],
  ['J-10 / JF-17','CN',['J-10C','JF-17']],
@@ -56,7 +57,7 @@ const ROLE={'F-16':'AS','F-16C':'MR','F-16V':'MR','F-16E':'MR','F-16I':'MR','F-1
  'Su-27':'AS','Su-27SM':'AS','Su-30SM':'MR','Su-30MK2':'MR','Su-30MKI':'MR','Su-30MKM':'MR','Su-33':'AS','Su-35S':'MR','Su-34':'ST','Su-57':'MR',
  'MiG-29':'AS','MiG-29S':'AS','MiG-29SMT':'MR','MiG-29K':'MR','MiG-35':'MR','MiG-25':'IN','MiG-31':'IN','MiG-31BM':'IN',
  'MiG-21':'AS','MiG-21MF':'AS','MiG-23':'AS','MiG-27K':'ST','MiG-15':'AS','MiG-17F':'AS','MiG-19':'AS','Su-25':'CS','Su-25T':'CS','Su-25SM3':'CS',
- 'Su-24M':'ST','Su-22M4':'ST','Su-7BMK':'ST','Su-15TM':'IN','Yak-28P':'IN','Tu-128':'IN','Yak-38':'ST','Yak-141':'MR','Yak-130':'LT','Ka-50':'HC',
+ 'Su-24M':'ST','Su-22M4':'ST','Su-7BMK':'ST','Su-15TM':'IN','Yak-28P':'IN','Tu-128':'IN','Yak-38':'ST','Yak-141':'MR','Yak-130':'LT','Ka-50':'HC','AH-64A':'HC',
  'J-11':'AS','J-11B':'AS','J-15T':'MR','J-16':'MR','J-20':'AS','J-35':'MR','J-10C':'MR','JF-17':'MR','J-7G':'AS','J-8F':'IN','J-6':'AS','JH-7':'ST','JH-7A':'ST','Q-5':'CS'};
 const ROLES=[['AS','AIR SUPERIORITY'],['MR','MULTIROLE'],['ST','STRIKE'],['CS','CLOSE SUPPORT'],['IN','INTERCEPTOR'],['EW','ELECTRONIC ATTACK'],['LT','LIGHT / TRAINER'],['HC','ATTACK HELICOPTER']];
 const NATS=[['US','US'],['EU','EUROPE'],['RU','RUSSIA'],['CN','CHINA'],['OT','OTHER']];
