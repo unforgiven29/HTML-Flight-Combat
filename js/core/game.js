@@ -2035,14 +2035,14 @@ function drawRwsB(P){const AZ=4.6,E0=-5.6,E1=2.0,SA=radar.scopeAz||60,rng=radar.
   for(const[j,tk]of radar.tracks){const q=tws&&tk.p?radar.ang(radar.trkPos(j,tk,now)):null,td=q?q.d:radar.trkR(j,tk);if(!j.alive||td>rng||tk.hoj)continue;const p=pt(q?q.az:tk.az,td);if(!p)continue;
     hx.save();hx.globalAlpha*=clamp(1-(now-tk.t)/(tws?8:10),.25,1);line(p.x-6,p.y,p.x+6,p.y);line(p.x,p.y,p.x,p.y-6);hx.restore();}
   const cp=pt(radar.cur.az,radar.cur.r*rng);if(cp){hx.strokeRect(cp.x-8,cp.y-5,16,10);line(cp.x-16,cp.y,cp.x-8,cp.y);line(cp.x+8,cp.y,cp.x+16,cp.y);}}
-function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}const{AZ,E0,E1}=MSC,rng=radar.rngM,X=az=>clamp(az*R2D/60,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
+function drawMigScope(P){if(radar.sensor==='IRST'){drawMigC();return;}const{AZ,E0,E1}=MSC,rng=radar.rngM,SA=radar.scopeAz||60,X=az=>clamp(az*R2D/SA,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
   const c00=hb(-AZ,E0),c11=hb(AZ,E1);if(!c00||!c11)return;hudScope={x0:c00.x,x1:c11.x,y0:c00.y,y1:c11.y};
   const s0=hb(-AZ-.6,E0),s1=hb(-AZ-.6,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(11);
     for(let i=0;i<=5;i++){const y=lerp(s0.y,s1.y,i/5);line(s0.x,y,s0.x+6,y);txt(String(Math.round(radar.ranges[radar.ri]*i/5)),s0.x-4,y,'right');}hx.restore();}
-  const Wd=40*D2R,za=hb(X(radar.scanC-Wd),E0-1.4),zb=hb(X(radar.scanC+Wd),E0-1.4);if(za&&zb){line(za.x,za.y,zb.x,zb.y);
+  const Wd=Math.min(radar.azs[radar.ai]*D2R,radar.gimbal()),za=hb(X(radar.scanC-Wd),E0-1.4),zb=hb(X(radar.scanC+Wd),E0-1.4);if(za&&zb){line(za.x,za.y,zb.x,zb.y);
     const an=hb(X(radar.antAz),E0-1.4);if(an)line(an.x,an.y-5,an.x,an.y+5);}
-  const now=performance.now()/1000;irNoise(hx,(u,v)=>hb(u*AZ,lerp(E0,E1,v)),1,hx.globalAlpha,60*D2R,1,false);
-  for(const[j,s]of radar.strobes){if(Math.abs(s.az)>60*D2R)continue;const a=pt(s.az,0),b=pt(s.az,rng);if(a&&b){hx.save();hx.globalAlpha*=clamp(1-(now-s.t)/4.5,.25,1);hx.setLineDash([4,5]);line(a.x,a.y,b.x,b.y);hx.setLineDash([]);hx.restore();}}
+  const now=performance.now()/1000;irNoise(hx,(u,v)=>hb(u*AZ,lerp(E0,E1,v)),1,hx.globalAlpha,SA*D2R,1,false);
+  for(const[j,s]of radar.strobes){if(Math.abs(s.az)>SA*D2R)continue;const a=pt(s.az,0),b=pt(s.az,rng);if(a&&b){hx.save();hx.globalAlpha*=clamp(1-(now-s.t)/4.5,.25,1);hx.setLineDash([4,5]);line(a.x,a.y,b.x,b.y);hx.setLineDash([]);hx.restore();}}
   const tws=radar.mode==='TWS';
   for(const[j,tk]of radar.tracks){const q=tws&&tk.p?radar.ang(radar.trkPos(j,tk,now)):null,td=q?q.d:radar.trkR(j,tk);if(!j.alive||td>rng||tk.hoj)continue;const p=pt(q?q.az:tk.az,td);if(!p)continue;
     hx.globalAlpha*=clamp(1-(now-tk.t)/(tws?8:10),.25,1);if(radar.sensor==='IRST')irBlob(hx,p.x,p.y,j,1);else{line(p.x-6,p.y,p.x+6,p.y);line(p.x,p.y,p.x,p.y-6);if(tk.lnk){hx.save();hx.setLineDash([2,2]);hx.strokeRect(p.x-8,p.y-8,16,16);hx.restore();}
