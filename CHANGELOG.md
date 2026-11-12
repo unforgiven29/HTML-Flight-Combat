@@ -1,3 +1,9 @@
+## v312 — Ka-50: flips, Shkval TV sight, Vikhr launchers
+- Flight model: the pitch/roll walls are gone; the SAS attitude hold only works inside the normal envelope, so the Ka-50 can roll, loop and fly inverted (faster roll/pitch response). Negative-g blade-collision limit relaxed.
+- Shkval-V: built-in nose TV sight (no thermal, no polarity modes) with a laser ranger for the Ka-50, Su-25T and Su-25SM3 (js/shkval.js).
+- 9K121 Vikhr as one weapon per pylon with a fixed full launcher: APU-6 (6) on Ka-50 pylons 1 and 4, APU-8 (8) on Su-25T / SM3 pylons 3 and 8 (js/vikhr.js). Figures are game-level estimates.
+- Loadout screen: new Ka-50 head-on picture, launcher shown as one store with a count; sub-rail labels no longer overlap.
+
 # Changelog
 
 ## v311 — helicopters: the Ka-50 "Black Shark" (stage 1 of 4)

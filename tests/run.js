@@ -195,6 +195,32 @@ test('ka50_flight: forward flight at the cruise attitude, hover ceiling at 4,000
   ok('cruise 220-320 km/h at 5-12 degrees nose down, level, not overstressed',r.cruise>220&&r.cruise<320&&r.cruisePitch<-5&&r.cruisePitch>-12&&r.cruiseAlive,{kmh:Math.round(r.cruise),pitch:+r.cruisePitch.toFixed(1)});
   ok('can still hover at 4,000 m at light weight (full collective)',r.vy4000>-.6,+r.vy4000.toFixed(2));
   ok('a full collective pull droops the rotor but the aircraft climbs',r.nrMin<.97&&r.nrMin>.7&&r.climb>3,{Nr:+r.nrMin.toFixed(3),vy:+r.climb.toFixed(1)});});
+test('ka50_aerobatics: rolls through inverted and loops with no attitude walls, and survives it','Ka-50',async p=>{
+  const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player,o={};
+    const fly=()=>{kaSet(groundAt(0,0)+1500);P.thr=.5;P.vel.set(0,0,-60);};
+    fly();let minUp=1;kaRun(30*3);P.ctl.r=1;kaRun(30*6,()=>{minUp=Math.min(minUp,P.up(new THREE.Vector3()).y);});P.ctl.r=0;
+    o.rollInverted=minUp;o.rollAlive=P.alive;
+    fly();let minUp2=1,maxPit=-9,minPit=9;kaRun(30*2);P.ctl.p=1;kaRun(30*12,()=>{minUp2=Math.min(minUp2,P.up(new THREE.Vector3()).y);maxPit=Math.max(maxPit,P.pitch);minPit=Math.min(minPit,P.pitch);});P.ctl.p=0;
+    o.loopInverted=minUp2;o.maxPit=maxPit*57.3;o.alive=P.alive;return o;},KA_SETUP);
+  ok('a full roll input takes it through the inverted attitude',r.rollInverted<-.8&&r.rollAlive,+r.rollInverted.toFixed(2));
+  ok('holding back stick carries it over the top of a loop (pitch beyond 60 degrees, upside down) without breaking up',r.loopInverted<-.5&&r.maxPit>60&&r.alive,{up:+r.loopInverted.toFixed(2),pit:Math.round(r.maxPit)});});
+test('shkval: the Ka-50, Su-25T and Su-25SM3 carry a TV-only sight with a laser ranger, no thermal polarity','Ka-50',async p=>{
+  const r=await p.evaluate(()=>{const P=player,o={};o.pod=SNS.podKind(P);o.tv=SNS.vmodeFor(true);const s0=SNS.sens;SNS.sensKey();o.sensSame=SNS.sens===s0;o.vm=SNS.vmodeFor(true);
+    o.spec=SNS.podSpec();o.pos=SNS.podPos(P).distanceTo(P.pos);return o;});
+  ok('the built-in sight is the Shkval',r.pod==='SHKVAL'&&r.spec&&r.spec.tvOnly,r.pod);
+  ok('video is TV in every case and the polarity key does nothing',r.tv==='TV'&&r.vm==='TV'&&r.sensSame,{tv:r.tv,vm:r.vm});
+  ok('the sight sits in the nose',r.pos>2&&r.pos<6,+r.pos.toFixed(2));});
+test('vikhr: APU-6 launchers give the Ka-50 12 Vikhr (6 per outer pylon) and fire through the Shkval laser','Ka-50',async p=>{
+  const r=await p.evaluate(()=>{const P=player,o={};o.n=P.count('Vikhr');o.st=Object.keys(P.load).filter(k=>P.load[k]==='Vikhr').sort().join();
+    o.meshes=Object.keys(P.stMesh).filter(k=>P.load[k]==='Vikhr').length;
+    const bad=validLoad('Ka-50','modern',{2:'Vikhr','1b':'B-8M1',1:'Vikhr','1g':'Vikhr'});o.fixed=Object.keys(bad).sort().join();
+    o.su=['Su-25T','Su-25SM3'].map(id=>{const L=validLoad(id,'modern',Object.assign(vikhrFull(['3','8'],8),{4:'Kh-29T'}));return Object.values(L).filter(x=>x==='Vikhr').length;});
+    o.stn4=STN['Su-25T']['4'].includes('Vikhr');
+    return o;});
+  ok('12 Vikhr on the default load, on stations 1 and 4 and their sub-rails',r.n===12&&/^1,1b,1c,1d,1e,1f,4,4b/.test(r.st),{n:r.n,st:r.st});
+  ok('every round has a model hanging on the aircraft',r.meshes===12,r.meshes);
+  ok('the launcher is one weapon: any Vikhr on a pylon is filled to the full six, never a partial set',(r.fixed.match(/Vikhr|1/g)||[]).length>0&&/1b,1c,1d,1e,1f/.test(r.fixed)&&!/1g/.test(r.fixed),r.fixed);
+  ok('Su-25T / Su-25SM3 hold 16 Vikhr on two APU-8 launchers and none on pylons 4 and 7',r.su[0]===16&&r.su[1]===16&&!r.stn4,{su:r.su,stn4:r.stn4});});
 test('ka50_autorotation: engines out, lever down, forward speed: rotor stays turning and the descent is survivable','Ka-50',async p=>{
   const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player;kaSet(groundAt(0,0)+1500);const h=HELI.st(P);h.run=false;P.thr=.1;P.vel.set(0,0,-45);kaRun(30*12);
     const o={Nr:h.Nr,vy:P.vel.y,alive:P.alive};

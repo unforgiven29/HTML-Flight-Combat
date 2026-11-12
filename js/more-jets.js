@@ -369,7 +369,7 @@ addM({id:'Su-25SM3',src:'Su-25',side:'RED',call:'FROGFOOT',nctr:'SU-25',foe:'A-1
 // Su-25T: Shkval TV / laser, 16 Vikhr ATGMs, Kh-25ML / Kh-29T / Kh-58U
 addM({id:'Su-25T',src:'Su-25',side:'RED',call:'FROGFOOT',nctr:'SU-25',foe:'A-10C',eng:'2× R-195',ccip:true,
   role:'RUSSIA · ANTI-TANK · SHKVAL · VIKHR · Kh-25ML / Kh-29T / Kh-58U',
-  ac:{name:'Su-25T',empty:10600},add:{1:['R-73'],10:['R-73'],3:['Vikhr','Kh-29T','Kh-58U'],8:['Vikhr','Kh-29T','Kh-58U'],4:['Vikhr','Kh-29T'],7:['Vikhr','Kh-29T']},
+  ac:{name:'Su-25T',empty:10600},add:{1:['R-73'],10:['R-73'],3:['Vikhr','Kh-29T','Kh-58U'],8:['Vikhr','Kh-29T','Kh-58U'],4:['Kh-29T'],7:['Kh-29T']},
   load:{cold:{1:'R-60M',10:'R-60M',3:'Vikhr',8:'Vikhr',4:'Kh-25ML',7:'Kh-25ML',5:'TK',6:'TK'},modern:{1:'R-73',10:'R-73',3:'Vikhr',8:'Vikhr',4:'Kh-29T',7:'Kh-29T',5:'TK',6:'TK'}}});
 
 // J-11B: indigenous Flanker, WS-10A, Type 1474 PD radar, PL-12 / PL-8

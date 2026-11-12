@@ -6343,7 +6343,9 @@ function frontSVG(ac,load,sel,mini){const fv=FV[ac],st=AC[ac].vst||AC[ac].st,ks=
     if(t){g+=`<line class="py" x1="${x}" y1="${-y+.02}" x2="${x}" y2="${-cy}"/>`+missileGlyph(t,x,cy);}
     else g+=`<circle cx="${x}" cy="${-cy}" r=".15" fill="none" stroke="#4f7080" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/><path d="M${x-.07},${-cy}h.14M${x},${-cy-.07}v.14" stroke="#4f7080" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
     g+=`<circle class="ring" cx="${x}" cy="${-cy}" r="${Math.max(r,.2)+.16}"/><circle class="hit" cx="${x}" cy="${-cy}" r="${Math.max(r,.22)+.2}"/>`;
-    g+=`<text class="stn" transform="translate(${x},${-cy+r+.48}) scale(-.05,.05)">${k}</text></g>`;}
+    if(!SUBK.test(k)){const R=RACKS[ac],big=t&&R&&R.st.includes(k)&&R.cats.some(c=>c.n>3&&c.t.includes(t)),nn=big?1+Object.keys(load).filter(q=>q.length===k.length+1&&q.startsWith(k)&&SUBK.test(q)).length:0;
+      g+=`<text class="stn" transform="translate(${x},${-cy+r+.48}) scale(-.05,.05)">${k}${big?' \u00d7'+nn:''}</text>`;}
+    g+=`</g>`;}
   g+=`</g>`;
   return `<svg viewBox="${-hw-.5} ${-top} ${W} ${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
 const miniSVG=ac=>{const fv=FV[ac],hw=fv.hw+.3;return `<svg viewBox="${-hw} ${-fv.y1-.2} ${hw*2} ${fv.y1+1.6}" xmlns="http://www.w3.org/2000/svg"><g transform="scale(-1,1)">${fv.d()}</g></svg>`;};
@@ -7956,7 +7958,7 @@ PLANES.run('f16','L8540');
 const AAMS=['AIM-120A','AIM-120B','AIM-120C','AIM-9L','AIM-9M','AIM-9X'];
 const RACKS={};
 PLANES.apply('RACKS',RACKS);
-const SUBK=/[a-z]$/,subN=sx=>sx==='b'?2:3;
+const SUBK=/[a-z]$/,subN=sx=>sx.charCodeAt(0)-96;   // 'b' = the 2nd round on a rack, 'c' = the 3rd ... 'h' = the 8th
 for(const [ac,R] of Object.entries(RACKS)){const st=AC[ac].st;
   for(const k of R.st){const p=st[k];if(!p)continue;for(const [sx,[dx,dy,dz]] of Object.entries(R.subs)){const sk=k+sx,side=Math.sign(p[0])||1,n=subN(sx);
       st[sk]=[p[0]+dx*side,p[1]+dy,p[2]+dz];STN[ac][sk]=[...new Set(R.cats.filter(c=>c.n>=n&&(!c.st||c.st.includes(k))).flatMap(c=>c.t))];}}}
