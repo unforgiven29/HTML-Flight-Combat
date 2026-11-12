@@ -243,10 +243,10 @@ addM({id:'Q-5',src:'MiG-19',side:'RED',call:'FANTAN',nctr:'Q-5',foe:'F-5E',eng:'
 /* ======================================================================================================================
    MODERN — BLUE
    ====================================================================================================================== */
-// F-16 Block 70 (F-16V): APG-83 SABR AESA, F110-GE-129, CFT-capable
+// F-16V Block 70: APG-83 SABR AESA, F110-GE-129, CFT-capable
 addM({id:'F-16V',src:'F-16C',side:'BLUE',call:'VIPER',nctr:'F-16',foe:'J-10C',eng:'F110-GE-129',ccip:true,hms:'HMS_MODERN',
   role:'USAF EXPORT · BLOCK 70 · APG-83 SABR AESA · CENTER PEDESTAL DISPLAY',
-  ac:{name:'F-16 Block 70',empty:9200,fuel:3175,radar:R('APG-83 SABR',78*NM,[10,20,40,80,160],'NM',.9,{aesa:1,beam:3*D}),twsN:8,trkN:20},
+  ac:{name:'F-16V Block 70',empty:9200,fuel:3175,radar:R('APG-83 SABR',78*NM,[10,20,40,80,160],'NM',.9,{aesa:1,beam:3*D}),twsN:8,trkN:20},
   load:{modern:{1:'AIM-9X',9:'AIM-9X',2:'AIM-120D',8:'AIM-120D',3:'AIM-120D',7:'AIM-120D',4:'TK',6:'TK',5:'ALQ-184'}}});
 
 // F-16E Block 60 'Desert Falcon': APG-80 AESA, F110-GE-132 (144.6 kN), CFTs, internal FLIR (IFTS)

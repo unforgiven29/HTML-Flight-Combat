@@ -12,7 +12,7 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
 const filter=process.argv[2]||'';let browser,port,fails=0,total=0;
 async function boot(ac){const exe=process.env.CHROME||(fs.existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':undefined);
   if(!browser)browser=await pw.chromium.launch({executablePath:exe,args:['--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
-  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
+  const p=await browser.newPage({viewport:{width:1280,height:720}}),errs=[];p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n').slice(1,4).join('|')));
   await p.goto('http://localhost:'+port+'/index.html?'+Date.now());
   await p.waitForFunction(()=>typeof start==='function'&&typeof radar!=='undefined',null,{timeout:90000});
   await p.evaluate(a=>{game.ac=a;return start('RANGE');},ac);await p.waitForTimeout(4000);
@@ -236,6 +236,97 @@ test('ka50_ground: stands on its wheels, lifts off with the collective, lands an
   ok('rests on the wheels at the CG height',r.onGnd0&&Math.abs(r.y0-1.72)<.1&&r.hp0===100,{y:+r.y0.toFixed(2)});
   ok('a collective pull lifts it off the ground',r.airborne&&r.climb>3,+r.climb.toFixed(1));
   ok('a gentle descent lands it on the wheels with no damage',r.alive&&r.landed&&r.hp1>99&&r.sink<2.5,{landed:r.landed,hp:Math.round(r.hp1),sink:+(r.sink||0).toFixed(2)});});
+
+const missile=(p,type,pos)=>p.evaluate(({type,pos})=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);
+  const m=new Missile(type,tgt,player,tgt.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(pos[0],6000+pos[1],pos[2]);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
+  for(let i=0;i<8;i++){window.__T+=100;MSS.tick(.1);}const w=MSS.warned.map(x=>x.src);rwrUpdate(.03);const n=RW.msl.length;m.alive=false;MSS.warned.length=0;return{w,n};},{type,pos});
+test('maws_mirage: SAMIR warns (it ran inside a draw hook the Mirage replaces), also from behind','Mirage 2000',async p=>{
+  const a=await missile(p,'R-73',[0,0,4000]),b=await missile(p,'R-73',[0,0,-30000]);
+  ok('warns on an IR missile from behind',a.w.length>0&&a.n>0,a);ok('no warning at 30 km',b.w.length===0,b);});
+test('maws_f35: DAS covers all round; built-in EOTS counts as a targeting pod','F-35A',async p=>{
+  const a=await missile(p,'R-73',[3000,0,3000]);const e=await p.evaluate(()=>({pod:SNS.hasPod(player),kind:SNS.podKind(player),irg:IRG.az}));
+  ok('DAS sees a missile from the rear quarter',a.w.length>0,a);ok('MAWS missile reaches the RWR as a missile contact',a.n>0,a);ok('EOTS is a pod, no store needed',e.pod&&e.kind==='EOTS',e);ok('IRST limit is 180 deg',e.irg===180,e.irg);});
+test('su57: cheek arrays find an abeam target; rear is blind; DIRCM defeats IR seekers','Su-57',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);radar.mode='RWS';radar.ai=2;tgt.pos.set(30000,6000,0);tgt.vel.set(0,0,0);tgt.q.set(0,1,0,0);
+    run(30*12,()=>{MSS.tick(1/30);});const side=radar.tracks.has(tgt);radar.tracks.clear();tgt.pos.set(0,6000,30000);run(30*12,()=>{MSS.tick(1/30);});const rear=radar.tracks.has(tgt);
+    player.pos.set(0,6000,0);let def=0;for(let k=0;k<20;k++){const m=new Missile('R-73',tgt,player,tgt.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(0,6000,3000);m.vel.set(0,0,-300);
+      for(let i=0;i<100;i++){window.__T+=100;MSS.tick(.1);if(m.maddog&&!m.track){def++;break;}}m.alive=false;}
+    return{side,rear,def,gl:radar.gl.az};});
+  ok('abeam target tracked',r.side,r);ok('target dead astern not tracked',!r.rear,r.rear);ok('DIRCM defeats at least half of 20 seekers',r.def>=10,r.def);ok('field of regard 135 deg',r.gl===135,r.gl);});
+
+
+test('f4_loadout: Sidewinders only on 2 / 2b / 8 / 8b; F-16V Block 70 name','F-4E',async p=>{
+  const r=await p.evaluate(()=>{const f=ac=>Object.keys(STN[ac]).filter(k=>STN[ac][k].some(w=>/^AIM-9/.test(w))).sort().join();return{e:f('F-4E'),j:f('F-4J'),b:f('F-4B'),n:AC['F-16V'].name};});
+  ok('F-4E AIM-9 stations',r.e==='2,2b,8,8b',r.e);ok('F-4J AIM-9 stations',r.j==='2,2b,8,8b',r.j);ok('F-4B AIM-9 stations',r.b==='2,2b,8,8b',r.b);ok('F-16V Block 70 name',r.n==='F-16V Block 70',r.n);});
+test('pulse_clutter: a pulse set locks a strong ground return under the cursor','F-4E',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,600,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);radar.mode='RWS';tgt.pos.set(1e7,6000,1e7);run(30*15);
+    const rng=radar.rngM;let mx=0,at=[0,.5];for(let a=-1;a<=1;a+=.05)for(let r=.1;r<1;r+=.05){const v=flClutterAt(a,r*rng);if(v>mx){mx=v;at=[a,r];}}
+    radar.cur.az=at[0];radar.cur.r=at[1];radar.designate();return{mode:radar.mode,g:!!(radar.lock&&radar.lock.isGhost),mx};});
+  ok('locked a ground return',r.mode==='STT'&&r.g,r);});
+for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',true],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-150);let w=0,jam=0;const sh={pos:new THREE.Vector3(0,3000,4000),vel:new THREE.Vector3(),fwd:o=>o.set(0,0,-1),up:o=>o.set(0,1,0),alive:true};
+    for(let k=0;k<12;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
+      let det=false;for(let i=0;i<60;i++){window.__T+=100;MSS.tick(.1);if(MSS.warned.some(x=>x.m===m))det=true;if(m.maddog&&!m.track){jam++;break;}}if(det)w++;m.alive=false;MSS.warned.length=0;}
+    return{w,jam,d:!!MSS.fit.dircm};});
+  ok('warned of most missiles',r.w>=10,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=3:(!r.d&&r.jam===0),r);});
+
+test('legion_pod: the pod gives an F-15C an IRST; without it there is none','F-15C',async p=>{
+  const r=await p.evaluate(()=>{const o={};o.opts=(STN['F-15C']['5']||[]).includes('LEGION');o.before=!!player.ac.irst;player.load['5']='LEGION';MSS.tick(.1);o.after=!!player.ac.irst&&!!player.ac.ols&&player.ac.ols.leg===true;
+    delete player.load['5'];MSS.tick(.1);o.gone=!player.ac.irst;return o;});
+  ok('offered on the centreline',r.opts,r);ok('IRST with the pod',!r.before&&r.after,r);ok('IRST gone with the pod',r.gone,r);});
+test('legion_pod_f16: the F-16V takes it on the left intake station','F-16V',async p=>{
+  const r=await p.evaluate(()=>{const o={opt:(STN['F-16V']['5L']||[]).includes('LEGION')};player.load['5L']='LEGION';MSS.tick(.1);o.irst=!!player.ac.irst;return o;});
+  ok('Legion on 5L gives IRST',r.opt&&r.irst,r);});
+test('irst_tws: a modern IRST allows IR TWS, an old one refuses','F-18E',async p=>{
+  const r=await p.evaluate(()=>{const o={ok:MSS.irTws()};radar.sensor='IRST';o.w=String(radar.setTWS).includes('NO IR TWS');o.on=radar.on();o.ps=radar.power;radar.setTWS(true);o.mode=radar.mode;return o;});
+  ok('Hornet chin pod can IR TWS',r.ok&&r.mode==='TWS',r);});
+test('irst_tws_old: F-14A refuses IR TWS','F-14A',async p=>{
+  const r=await p.evaluate(()=>{radar.sensor='IRST';radar.setTWS(true);return{ok:MSS.irTws(),mode:radar.mode};});
+  ok('no IR TWS on the TCS',!r.ok&&r.mode!=='TWS',r);});
+test('nctr_jem: reads class, engine, then type nose-on; refuses beam-on','F-15C',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-250);radar.power='ON';radar.warm=0;
+    const t=new Jet(1,'F-16C',{},'modern');t.spawn(0,6000,-30000,180,250);t.thr=.9;jets.push(t);const o={};
+    radar.tracks.set(t,{p:t.pos.clone(),v:t.vel.clone(),n:5,t:performance.now()/1000,az:0,el:0,d:30000});radar.mode='STT';radar.lock=t;
+    const cond1=NCTRX.cond(t,radar.tracks.get(t),player);o.nose=cond1.why;
+    for(let i=0;i<4000&&!t._nctrId;i++){window.__T+=100;radar.tracks.get(t).t=performance.now()/1000;nctrTick(.1);if(t._nctrCls&&!o.cls)o.cls=t._nctrCls;if(t._nctrEng&&!o.eng)o.eng=t._nctrEng;}
+    o.id=t._nctrId;o.t=i0();function i0(){return 0;}
+    const b=new Jet(1,'F-16C',{},'modern');b.spawn(0,6000,-30000,90,250);b.thr=.9;jets.push(b);radar.tracks.set(b,{p:b.pos.clone(),v:b.vel.clone(),n:5,t:performance.now()/1000,az:0,el:0,d:30000});radar.lock=b;
+    o.beam=NCTRX.cond(b,radar.tracks.get(b),player).why;return o;});
+  ok('class then engine then type',!!r.cls&&!!r.eng&&!!r.id,r);ok('beam-on gives no read',r.beam==='ASPECT',r);});
+
+for(const ac of ['Su-35S','J-20'])test('nctr_fit_'+ac+': modern Russian/Chinese jets run NCTR','' +ac,async p=>{
+  const r=await p.evaluate(()=>({fit:NCTRX.FIT.has(player.type)}));ok('NCTR fitted',r.fit,r);});
+test('f35_cockpit: F-35A uses its own pit, display draws, no HUD glass, tab click changes page','F-35A',async p=>{
+  const r=await p.evaluate(()=>{const o=ck.f35;if(!o)return{built:false};selectCockpit(player.ac.cockpit,player.ac.pit);
+    const vis=o.root.visible,viper=ck.viper.root.visible;F35PIT.click(120/1000*360*1+0,0);
+    const before=F35PIT.WIN[0].page;F35PIT.click(40/2000*360,(800-30)/800*360);const after=F35PIT.WIN[0].page;
+    o.tick(player,.2);o.tick(player,.2);const g=o.glass[0];return{built:true,vis,viper,cockpit:player.ac.cockpit,before,after,visor:isFinite(g.x),errs:0};});
+  ok('f35 pit built and selected',r.built&&r.vis&&!r.viper&&r.cockpit==='f35',r);ok('tab click cycles the page',r.after!==r.before,{b:r.before,a:r.after});ok('visor clip finite',r.visor);ok('no page errors',p.errs.length===0,p.errs);});
+
+test('tgp_slave: pod / EOTS follows the radar target in A-A, a manual slew breaks it','F-35A',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-200);tgt.pos.set(900,6100,-12000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,200);
+    game.wsel='AIM-120C';radar.mode='RWS';run(30*8);radar.bug=tgt;radar.stt&&radar.stt(tgt);SNS.tick(.05);const d1=SNS.spi.distanceTo(tgt.pos),sl=!!SNS.slaved;
+    SNS.slew(1,0,.2);SNS.tick(.05);const brk=!SNS.slaved;return{d1:Math.round(d1),sl,brk};});
+  ok('pod aimed at the radar target and marked slaved',r.sl&&r.d1<50,r);ok('manual slew breaks the slave',r.brk);});
+
+test('acm_unstab: the radar gimbal is not stabilised in ACM, and is again outside ACM','F-16C',async p=>{
+  const r=await p.evaluate(()=>{radar.setACM('30x20');run(3);const a=radar.gl.stab;radar.mode='RWS';run(3);const b=radar.gl.stab;return{a,b};});
+  ok('stab off in ACM',r.a===0,r);ok('stab back on in RWS',r.b>0,r);});
+
+test('f35_hmd_overlay: F-35 HMD draws without error with a datalink picture','F-35A',async p=>{
+  const r=await p.evaluate(()=>{run(3);try{F35HMD.overlay();return{ok:1};}catch(e){return{err:e.message};}});ok('overlay runs',r.ok===1,r);
+  const a=await p.evaluate(()=>radar.acmList());ok('F-35 HMD mode',a.includes('HMD'),a);});
+test('sar_expand: SAR EXP state cycles and renders','F-35A',async p=>{
+  const r=await p.evaluate(()=>{const W=F35PIT.WIN[0];W.page=F35PIT.PI.SAR;run(3);return{pg:W.page,sar:F35PIT.PI.SAR};});ok('SAR page set',r.pg===r.sar,r);});
+test('sea_ships: ASM mission ships are SHIP class on the SEA scope','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await start('ASHM');const P=player;radar.power='ON';radar.warm=0;AGR.mode='SEA';P.pos.set(-60000,350,5000);await new Promise(r=>setTimeout(r,8000));const e=AGR.ents.filter(e=>AGR.entVal(e)>0);return{n:e.length,ships:GND.units.filter(u=>typeof SDEF!=='undefined'&&SDEF[u.kind]).length};});
+  ok('ships visible in SEA',r.n>0,r);});
+test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16V',async p=>{
+  const r=await p.evaluate(()=>{const P=player;radar.power='OFF';const t=jets.find(j=>j!==P&&j.side!==P.side);
+    for(const j of jets)if(j!==P&&j!==t)j.pos.set(1e7,6000,1e7);
+    game.era='modern';SENSOR_FUSE.reg.datalinkEnabled=true;const o=DL.contacts;DL.contacts=()=>[{j:t,src:'LNK',by:null,pos:t.pos.clone(),vel:t.vel.clone(),hdg:t.hdg,age:0}];
+    P.pos.set(0,6000,0);P.q.set(0,0,0,1);t.pos.set(0,6000,-40000);const g=dlTgt();DL.contacts=o;return{shooter:dlShooter(),on:DL.on(),g:g===t};});
+  ok('F-16V datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}

@@ -23,7 +23,7 @@ const E=window.ESAS={on:true,sq:true,gl:true,blind:true,cur:null,st:{lobes:0}};
 const isE=r=>!!r&&!!r.antennaType&&r.antennaType!=='Mechanical_Slotted_Planar';
 const hs=n=>{const s=Math.sin(n*127.1+311.7)*43758.5453;return s-Math.floor(s);};
 E.state=function(force){const r=F.reg;if(!E.on||!isE(r))return null;const b=Math.floor(performance.now()/50);if(!force&&E.cur&&E.cur.b===b)return E.cur;
-  const az=radar.antAz||0,el=radar.antEl||0,pe=r.antennaType==='PESA',agile=!!r.frequencyAgilityEnabled,ttd=!!r.arrTimeDelayUnitsEnabled,d=r.arrElementSpacingLambdaAz||.55,bits=r.arrPhaseShifterBits||0;
+  const el=radar.antEl||0,A=E.arrOf&&E.arrOf(radar.antAz||0,el),az=A?A.relAz:(radar.antAz||0),pe=r.antennaType==='PESA',agile=!!r.frequencyAgilityEnabled,ttd=!!r.arrTimeDelayUnitsEnabled,d=r.arrElementSpacingLambdaAz||.55,bits=r.arrPhaseShifterBits||0;
   const frac=(agile?(pe?.035:.015):.006)*(ttd?.1:1),df=(hs(b)*2-1)*frac;
   const bw=(radar.beam||3.5*D);
   const q=bits>0?(hs(b+.5)*2-1)*bw/Math.pow(2,bits):0;                                   // phase-shifter rounding of the beam position
