@@ -55,10 +55,22 @@ const FIT={
   'Su-25SM3':{maws:['VIT'],dircm:{n:'Vitebsk-25',R:4200,rmin:250,slew:150,acq:.7,pk:.55,turrets:WTIP}},
   'Su-25T':{maws:['VIT'],dircm:{n:'Vitebsk',R:4000,rmin:250,slew:130,acq:.8,pk:.5,turrets:WTIP}},
   'Cargo':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
-  'Su-35S':{maws:['MAKUL'],dircm:{n:'IR jammer',R:3500,rmin:250,slew:120,acq:1.0,pk:.4,turrets:[[[180,0,110]]]}},
+  'Su-35S':{maws:['MAKUL']},                                    // v313: no DIRCM (the Su-35S carries the Khibiny ECM, not a laser)
   'Su-34':{maws:['MAKUL'],dircm:{n:'IR jammer',R:3500,rmin:250,slew:120,acq:1.0,pk:.4,turrets:[[[180,0,110]]]}},
+  'Ka-50':{maws:['VIT'],dircm:{n:'Vitebsk-class',R:4000,rmin:250,slew:130,acq:.8,pk:.5,turrets:TWO_UD}},
+  'E-3A':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
+  'A-50':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
+  'Tu-95MS':{maws:['MAKUL'],dircm:{n:'Geran-class',R:4200,rmin:300,slew:100,acq:1.0,pk:.55,turrets:TWO_UD}},
+  'B-52H':{maws:['AAR47'],dircm:{n:'LAIRCM class',R:4500,rmin:300,slew:100,acq:1.0,pk:.6,turrets:TWO_UD}},
   'F-18F':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}},
   'EA-18G':{maws:['AAR57'],dircm:{n:'DIRCM pod',R:4500,rmin:300,slew:120,acq:.9,pk:.55,turrets:[[[0,-90,100]]]}}};
+/* ---------------- v313: Legion IRST pod (IRST21) for the F-15C/E/EX/I (centreline) and the F-16 family (left intake station) ----------------
+   Carrying it gives the player's aircraft an IRST with the TWS-style IRST track mode. Gameplay-level numbers, not published data. */
+const LEGION={name:'IRST21 Legion',tail:50000,head:16000,lrf:0,leg:true};
+M.LEGION=LEGION;
+try{AGW.LEGION={k:'hts',mass:240,L:3.9,R:.17,col:0x7d858c,rcs:.1,irsB:.05,irsC:.05};SN.LEGION='IRST';STORE_NAME.LEGION='Legion IRST21 pod · long-range IRST, TWS';MODERN_ONLY.add('LEGION');
+  for(const [ac,sts] of [['F-15C',['5']],['F-15E',['5']],['F-15EX',['5']],['F-15I',['5']],['F-16C',['5L']],['F-16V',['5L']],['F-16E',['5L']],['F-16I',['5L']]]){
+    if(!STN[ac])continue;for(const k of sts){if(!STN[ac][k])STN[ac][k]=[];if(!STN[ac][k].includes('LEGION'))STN[ac][k].push('LEGION');}}}catch(e){console.warn('[sensorsuite] legion',e);}
 M.SEN=SEN;
 M.FIT=FIT;
 
@@ -84,6 +96,9 @@ function fitOf(P){if(!P)return null;if(M.fit&&fitType===P.type&&M._ld===JSON.str
   const legacy=window.MAWS_FIT&&window.MAWS_FIT[P.type];       // pod-dependent fits (SAMIR on the Mirage, Mak-UL on the Su-24M)
   if(legacy&&(!legacy.need||legacy.need(P))){const sam=/SAMIR/.test(legacy.n);
     out.maws.push({id:'LEG',k:'IR',n:legacy.n,R:legacy.r,lat:.3,cones:sam?[[-110,0,110],[110,0,110]]:SPH});}
+  if(P===player&&P.ac){const base=AC[P.type]||{},has=Object.values(P.load||{}).includes('LEGION'),mine=P.ac.ols===LEGION;
+    if(has&&!base.ols&&!base.irst&&!mine){P.ac.irst=true;P.ac.ols=LEGION;if(F())F().owner=null;}
+    else if(!has&&mine){delete P.ac.irst;delete P.ac.ols;if(F())F().owner=null;}}
   const rd=P.ac&&P.ac.radar;
   if(rd&&rd.aesa)out.radarMaws=true;                                   // an AESA is also a missile warner
   if(P.ac&&(P.ac.ols||P.ac.irst))out.irstMaws=true;                    // so is an IRST
@@ -223,6 +238,21 @@ M.tick=function(dt){const P=player;M.warned.length=0;if(!P||!P.alive||!M.on)retu
   c.font='700 16px "B612 Mono",monospace';c.fillText(clk+' O\'CLOCK',cv.width/2,cv.height*.16+22);
   const st=M.dir.state;if(M.fit&&M.fit.dircm&&st!=='OFF'&&st!=='RDY'){c.fillStyle='#ffd24a';c.fillText('DIRCM '+st,cv.width/2,cv.height*.16+42);}
   c.restore();}catch(e){}};}
+
+/* ---------------- v313: IRST track-while-scan ----------------
+   Modern IRST systems (staring DAS, Legion / IRST21, the Hornet's chin pod, PIRATE, OLS-35, OLS-50M, J-20 EOTS) keep a track file on every
+   contact the scan crosses, without a lock: TWS on the IRST page. Angles are good (a fraction of a milliradian), range is passive and
+   converges as the tracks age (intensity + own-ship manoeuvre triangulation, irstphys.js); a laser or a radar cue gives real range.
+   Older IRSTs (F-14 TCS, MiG-29 OLS-29, F-4 ...) stay search-and-lock only. */
+const IRTWS_T=new Set(['F-18E','F-18F','EA-18G','EF-2000','Rafale','Su-35S','Su-57','MiG-35','J-20','F-35A','J-35','F-16E','Su-30SM','JAS-39E','J-10C','KF-21']);
+M.irTws=function(P){P=P||player;if(!P||!P.ac)return false;const o=P.ac.ols;if(!(o||P.ac.irst))return false;return !!(IRTWS_T.has(P.type)||(o&&o.leg)||(M.fit&&M.fit.das));};
+{const _t=radar.setTWS;radar.setTWS=function(on){
+  if(on&&this.sensor==='IRST'){if(!M.irTws()){flash('NO IR TWS',800);return;}
+    this.lock=null;this.bug=null;this.bugMan=false;this.fromACM=this.fromTWS=false;this.mode='TWS';sfx.click();flash('IR TWS',800);return;}
+  return _t.apply(this,arguments);};}
+{const _r=radar.rngShown;radar.rngShown=function(r){
+  if(this.sensor==='IRST'&&this.mode==='TWS'&&M.irTws()){const L=this.bug||this.lock,tk=L&&this.tracks.get(L);if(tk&&(tk.n||0)>=4&&!this.hoj)return r+this.rngErr;}
+  return _r.apply(this,arguments);};}
 {const _s=Jet.prototype.step;Jet.prototype.step=function(dt){const r=_s.apply(this,arguments);if(this===player&&!game.paused)M.tick(dt);return r;};}
 
 

@@ -6,6 +6,15 @@
 
 # Changelog
 
+## v313 — sensors round 3 (on top of v309), NCTR rebuilt, IRST TWS
+- Ported v309 (MAWS/DIRCM suite, Su-57 cheek arrays, F-35 EOTS + DAS, pulse-radar ground-clutter locks, F-16V Block 70 name, F-4 Sidewinders on 2/2b/8/8b) onto the Ka-50 line.
+- DIRCM: Ka-50, E-3A, A-50, Tu-95MS, B-52H added (with MAWS); Su-35S no longer has one.
+- Legion IRST pod (IRST21) as a store: F-15C/E/EX/I centreline, F-16C/V/E/I left intake. Carrying it gives the player an IRST; removing it takes it away.
+- IRST TWS: modern IRSTs (Legion, DAS, Hornet pod, PIRATE, OLS-35/50M, J-20 ...) can run IR TWS; old ones (F-14 TCS, OLS-29) refuse. IRST contacts now draw in TWS too; range shows once a track has aged.
+- NCTR rebuilt as a jet-engine-modulation classifier (js/nctr.js): aspect window, throttle, dwell, class -> engine family -> type stages, sibling confusion, finite library, names expire with the track. Fitted only to radars with a documented NCTR: F-15C/E/EX, F-16C/E/V, F-18C/E/F, EA-18G, F-22, F-35, Typhoon, Rafale.
+- F-8E radar indicator: hood is no longer coplanar with the screen (z-fight); raised bezel round the CRT.
+- Gameplay-level estimates, not published data. Tests: 115 checks.
+
 ## v311 — helicopters: the Ka-50 "Black Shark" (stage 1 of 4)
 - New `js/heli.js`: rotorcraft flight model hooked into `Jet.step` (aircraft with `ac.heli` skip the fixed-wing model), plus the Ka-50 airframe, procedural model (coaxial contra-rotating rotors, twin-fin stabiliser, stub wings, 2A42 pod, Shkval nose) and registration (Su-25 tables cloned, then overridden; stores B-8M1 on the inner pylons).
 - Rotor: blade-element thrust coefficient with blade-stall saturation, Glauert induced velocity with ground effect, Johnson vortex-ring branch and windmill brake, power from T(vi + Vc) + profile + parasite, rotor speed from the energy equation with an engine governor. Hover, translational lift, power droop, vortex ring and autorotation come out of the model, none is scripted.

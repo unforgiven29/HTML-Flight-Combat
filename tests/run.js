@@ -263,12 +263,36 @@ test('pulse_clutter: a pulse set locks a strong ground return under the cursor',
     const rng=radar.rngM;let mx=0,at=[0,.5];for(let a=-1;a<=1;a+=.05)for(let r=.1;r<1;r+=.05){const v=flClutterAt(a,r*rng);if(v>mx){mx=v;at=[a,r];}}
     radar.cur.az=at[0];radar.cur.r=at[1];radar.designate();return{mode:radar.mode,g:!!(radar.lock&&radar.lock.isGhost),mx};});
   ok('locked a ground return',r.mode==='STT'&&r.g,r);});
-for(const [ac,dc] of [['A-10C',false],['Cargo',true]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
+for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',true],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
   const r=await p.evaluate(()=>{player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-150);let w=0,jam=0;const sh={pos:new THREE.Vector3(0,3000,4000),vel:new THREE.Vector3(),fwd:o=>o.set(0,0,-1),up:o=>o.set(0,1,0),alive:true};
     for(let k=0;k<12;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
       let det=false;for(let i=0;i<60;i++){window.__T+=100;MSS.tick(.1);if(MSS.warned.some(x=>x.m===m))det=true;if(m.maddog&&!m.track){jam++;break;}}if(det)w++;m.alive=false;MSS.warned.length=0;}
     return{w,jam,d:!!MSS.fit.dircm};});
   ok('warned of most missiles',r.w>=10,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=3:(!r.d&&r.jam===0),r);});
+
+test('legion_pod: the pod gives an F-15C an IRST; without it there is none','F-15C',async p=>{
+  const r=await p.evaluate(()=>{const o={};o.opts=(STN['F-15C']['5']||[]).includes('LEGION');o.before=!!player.ac.irst;player.load['5']='LEGION';MSS.tick(.1);o.after=!!player.ac.irst&&!!player.ac.ols&&player.ac.ols.leg===true;
+    delete player.load['5'];MSS.tick(.1);o.gone=!player.ac.irst;return o;});
+  ok('offered on the centreline',r.opts,r);ok('IRST with the pod',!r.before&&r.after,r);ok('IRST gone with the pod',r.gone,r);});
+test('legion_pod_f16: the F-16V takes it on the left intake station','F-16V',async p=>{
+  const r=await p.evaluate(()=>{const o={opt:(STN['F-16V']['5L']||[]).includes('LEGION')};player.load['5L']='LEGION';MSS.tick(.1);o.irst=!!player.ac.irst;return o;});
+  ok('Legion on 5L gives IRST',r.opt&&r.irst,r);});
+test('irst_tws: a modern IRST allows IR TWS, an old one refuses','F-18E',async p=>{
+  const r=await p.evaluate(()=>{const o={ok:MSS.irTws()};radar.sensor='IRST';o.w=String(radar.setTWS).includes('NO IR TWS');o.on=radar.on();o.ps=radar.power;radar.setTWS(true);o.mode=radar.mode;return o;});
+  ok('Hornet chin pod can IR TWS',r.ok&&r.mode==='TWS',r);});
+test('irst_tws_old: F-14A refuses IR TWS','F-14A',async p=>{
+  const r=await p.evaluate(()=>{radar.sensor='IRST';radar.setTWS(true);return{ok:MSS.irTws(),mode:radar.mode};});
+  ok('no IR TWS on the TCS',!r.ok&&r.mode!=='TWS',r);});
+test('nctr_jem: reads class, engine, then type nose-on; refuses beam-on','F-15C',async p=>{
+  const r=await p.evaluate(()=>{player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-250);radar.power='ON';radar.warm=0;
+    const t=new Jet(1,'F-16C',{},'modern');t.spawn(0,6000,-30000,180,250);t.thr=.9;jets.push(t);const o={};
+    radar.tracks.set(t,{p:t.pos.clone(),v:t.vel.clone(),n:5,t:performance.now()/1000,az:0,el:0,d:30000});radar.mode='STT';radar.lock=t;
+    const cond1=NCTRX.cond(t,radar.tracks.get(t),player);o.nose=cond1.why;
+    for(let i=0;i<4000&&!t._nctrId;i++){window.__T+=100;radar.tracks.get(t).t=performance.now()/1000;nctrTick(.1);if(t._nctrCls&&!o.cls)o.cls=t._nctrCls;if(t._nctrEng&&!o.eng)o.eng=t._nctrEng;}
+    o.id=t._nctrId;o.t=i0();function i0(){return 0;}
+    const b=new Jet(1,'F-16C',{},'modern');b.spawn(0,6000,-30000,90,250);b.thr=.9;jets.push(b);radar.tracks.set(b,{p:b.pos.clone(),v:b.vel.clone(),n:5,t:performance.now()/1000,az:0,el:0,d:30000});radar.lock=b;
+    o.beam=NCTRX.cond(b,radar.tracks.get(b),player).why;return o;});
+  ok('class then engine then type',!!r.cls&&!!r.eng&&!!r.id,r);ok('beam-on gives no read',r.beam==='ASPECT',r);});
 
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}

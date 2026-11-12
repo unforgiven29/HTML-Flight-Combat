@@ -2119,7 +2119,7 @@ function drawFlogScope(c,S){const P=player;const FX=!!P&&P.ac.pit==='foxbat';c.s
   c.globalAlpha=b;c.lineWidth=2;c.strokeRect(x0,y1,x1-x0,y0-y1);
   c.font='700 16px "B612 Mono",monospace';c.textAlign='right';c.textBaseline='middle';c.fillText(String(radar.ranges[radar.ri]),x1+30,y1-14);
   if(radar.on()&&radar.sensor==='RDR'&&radar.mode==='RWS'){flPaint(c,m,1.6,b);jamPaint(c,m,b);}
-  if(radar.sensor==='IRST'&&radar.mode==='RWS'){irC(c,m,1.6,b,30*D2R,-30,30,false);irTracksC(c,m,b,30*D2R,-30,30,1.6);}
+  if(radar.sensor==='IRST'&&(radar.mode==='RWS'||radar.mode==='TWS')){irC(c,m,1.6,b,30*D2R,-30,30,false);irTracksC(c,m,b,30*D2R,-30,30,1.6);}
   c.globalAlpha=b;c.lineWidth=2;
   if(radar.mode==='RWS'&&radar.on()){const p=m(radar.cur.az/(30*D2R),radar.sensor==='IRST'?((radar.cur.el||0)*R2D+30)/60:radar.cur.r);{const sv=c.globalAlpha;c.globalAlpha=sv*(performance.now()/1000<(radar.curMan||0)?.95:.45);c.lineWidth=1.4;[-6,6].forEach(d=>{c.beginPath();c.moveTo(p.x+d,p.y-9);c.lineTo(p.x+d,p.y+9);c.stroke();});c.globalAlpha=sv;}
     const an=m(radar.antAz/(30*D2R),0).x;c.beginPath();c.moveTo(an,y0+4);c.lineTo(an,y0+16);c.stroke();}
