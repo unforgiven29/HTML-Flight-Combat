@@ -303,7 +303,7 @@ function pgSARx(c,w,h,P){const{s,x0,y0}=sarGeom(w,h),rng=TS.rngs[TS.rng]*1852*.5
   rows.sort((a,b)=>a[2]-b[2]);rows.slice(0,4).forEach((r,i)=>NS(c,(r[1]?'H ':'F ')+r[0],14,y0+34+i*18,14,r[1]?RD:CY));if(!rows.length)NS(c,'NO TARGETS IN PATCH',14,y0+34,14,GD);
   NS(c,'MODE SAR EXP',14,h*.9,17,AM);NS(c,'TAP MAP: MOVE PATCH',w-14,h*.9,15,GD,'right');NS(c,'EXP: ZOOM / OFF',w-14,h*.95,15,GD,'right');sarBtn(c,w,h);}
 const _sar=mkCv(112,112);let _sarT=-9,_sarR=0;
-function pgSAR(c,w,h,P){if(SX.exp)return pgSARx(c,w,h,P);hdr(c,w,'SAR1','NAV',1);const rng=TS.rngs[TS.rng]*1852*.5,now=performance.now()/1000;
+function pgSAR0(c,w,h,P){if(SX.exp)return pgSARx(c,w,h,P);hdr(c,w,'SAR1','NAV',1);const rng=TS.rngs[TS.rng]*1852*.5,now=performance.now()/1000;
   if(now-_sarT>1||_sarR!==rng){_sarT=now;_sarR=rng;const g=_sar.getContext('2d'),N=112,im=g.createImageData(N,N),hd=P.hdg*D,sx=Math.sin(hd),sz=-Math.cos(hd),rx=Math.cos(hd),rz=Math.sin(hd),st=rng/N,hh=(x,z)=>groundAt(x,z);
     for(let j=0;j<N;j++)for(let i=0;i<N;i++){const f=(N-1-j)*st,l=(i-N/2)*st,X=P.pos.x+sx*f+rx*l,Z=P.pos.z+sz*f+rz*l,y=hh(X,Z),dx=hh(X+st,Z)-hh(X-st,Z),dz=hh(X,Z+st)-hh(X,Z-st),sh=Math.max(0,Math.min(1,.5+(dx*.6-dz*.4)/(st*1.6))),v=y<=.5?14:Math.round(40+sh*150+Math.min(40,y/30)),o=(j*N+i)*4;im.data[o]=v;im.data[o+1]=v;im.data[o+2]=v;im.data[o+3]=255;}g.putImageData(im,0,0);}
   const s=Math.min(w-20,h-130),x0=(w-s)/2,y0=60;c.imageSmoothingEnabled=true;c.drawImage(_sar,x0,y0,s,s);c.strokeStyle=G;c.lineWidth=2;c.strokeRect(x0,y0,s,s);
@@ -321,6 +321,43 @@ function pgSAR(c,w,h,P){if(SX.exp)return pgSARx(c,w,h,P);hdr(c,w,'SAR1','NAV',1)
     const pr=r=>r[1][0]==='SAM'?0:r[1][0]==='AAA'?1:2;rows.sort((a,b)=>pr(a)-pr(b)||a[0]-b[0]);rows.slice(0,5).forEach(([f,k,hos],i)=>NS(c,(hos?'H ':'F ')+k[1]+'  '+(f/1852).toFixed(1)+' NM',14,y0+14+i*20,15,hos?RD:CY));NS(c,'ATR '+rows.length+' CONTACTS',w-14,y0+14,15,G,'right');}catch(e){}
   {const q=sarGeom(w,h);c.strokeStyle=AM;c.lineWidth=1.5;const cx=q.x0+SX.fx*q.s,cy=q.y0+SX.fy*q.s;c.strokeRect(cx-q.s/SX.Z[0]/2,cy-q.s/SX.Z[0]/2,q.s/SX.Z[0],q.s/SX.Z[0]);}sarBtn(c,w,h);
   NS(c,'MODE SAR',14,h*.9,19,G);NS(c,'RNG '+Math.round(rng/1852)+' NM',14,h*.95,18,G);NS(c,'HDG '+String(Math.round((P.hdg%360+360)%360)).padStart(3,'0'),w-14,h*.9,19,G,'right');NS(c,'ALT '+Math.round(ft(P.pos.y)),w-14,h*.95,18,G,'right');}
+/* ---- AN/APG-81 ground modes on the SAR page: RBM (real-beam map), SAR (+EXP), GMTI, SEA, AGR (air-to-ground ranging). OSB-style mode column inside the map; the cursor is the tapped point in every mode. */
+SX.mode='SAR';SX.MODES=['RBM','SAR','GMTI','SEA','AGR'];
+const _sm=mkCv(112,112),_prev=new WeakMap();let _smT=-9,_smK='';
+function sarModeBtn(w,h,i){const q=sarGeom(w,h);return{x:q.x0+q.s-76,y:q.y0+34+i*27,w:72,h:23};}
+function sarModes(c,w,h){SX.MODES.forEach((m,i)=>{const b=sarModeBtn(w,h,i),on=SX.mode===m;c.fillStyle='rgba(0,0,0,.55)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle=on?AM:G;c.lineWidth=on?2.5:1.5;c.strokeRect(b.x,b.y,b.w,b.h);NS(c,m,b.x+b.w/2,b.y+b.h/2,16,on?AM:G,'center');});}
+function sarCursor(P,rng){const hd=P.hdg*D,f=(1-SX.fy)*rng,l=(SX.fx-.5)*rng,X=P.pos.x+Math.sin(hd)*f+Math.cos(hd)*l,Z=P.pos.z-Math.cos(hd)*f+Math.sin(hd)*l,y=groundAt(X,Z),gr=Math.hypot(f,l);
+  return{X,Z,y,gr,sl:Math.hypot(gr,P.pos.y-y),brg:((P.hdg+Math.atan2(l,f)/D)%360+360)%360,dep:Math.atan2(P.pos.y-y,gr)/D};}
+function sarCursorDraw(c,w,h,P,rng,q){const k=sarCursor(P,rng),cx=q.x0+SX.fx*q.s,cy=q.y0+SX.fy*q.s;c.strokeStyle=WH;c.lineWidth=1.5;c.beginPath();c.moveTo(cx-14,cy);c.lineTo(cx-5,cy);c.moveTo(cx+5,cy);c.lineTo(cx+14,cy);c.moveTo(cx,cy-14);c.lineTo(cx,cy-5);c.moveTo(cx,cy+5);c.lineTo(cx,cy+14);c.stroke();
+  NS(c,'CSR '+String(Math.round(k.brg)).padStart(3,'0')+'/'+(k.gr/1852).toFixed(1)+' NM',14,h*.85,15,WH);NS(c,'ELV '+Math.round(ft(Math.max(0,k.y)))+' FT',w-14,h*.85,15,WH,'right');return k;}
+function pgSARm(c,w,h,P){const q=sarGeom(w,h),{s,x0,y0}=q,rng=TS.rngs[TS.rng]*1852*.5,now=performance.now()/1000,m=SX.mode,hd=P.hdg*D,sx=Math.sin(hd),sz=-Math.cos(hd),rx=Math.cos(hd),rz=Math.sin(hd);
+  hdr(c,w,'SAR1 '+m,'NAV',1);
+  const key=m+TS.rng+Math.round(P.pos.x/80)+Math.round(P.pos.z/80)+Math.round(P.hdg/2);
+  if(now-_smT>1||key!==_smK){_smT=now;_smK=key;const g=_sm.getContext('2d'),N=112,im=g.createImageData(N,N),st=rng/N;
+    for(let j=0;j<N;j++)for(let i=0;i<N;i++){const f=(N-1-j)*st,l=(i-N/2)*st,X=P.pos.x+sx*f+rx*l,Z=P.pos.z+sz*f+rz*l,y=groundAt(X,Z),o=(j*N+i)*4;let r,gn,b;
+      if(m==='SEA'){const wat=y<=.5,sp=(Math.sin(i*12.9898+j*78.233)*43758.5453%1+1)%1;r=wat?20+sp*30:4;gn=wat?60+sp*70:6;b=wat?40+sp*40:5;}
+      else{const dx=groundAt(X+st,Z)-groundAt(X-st,Z),dz=groundAt(X,Z+st)-groundAt(X,Z-st),sh=Math.max(0,Math.min(1,.5+(dx*.6-dz*.4)/(st*1.6))),v=y<=.5?14:Math.round(40+sh*150+Math.min(40,y/30)),k=m==='GMTI'?.3:m==='RBM'?.85:1;r=gn=b=v*k;}
+      im.data[o]=r;im.data[o+1]=gn;im.data[o+2]=b;im.data[o+3]=255;}g.putImageData(im,0,0);}
+  c.imageSmoothingEnabled=true;if(m==='RBM'){try{c.filter='blur(2.5px)';}catch(e){}}c.save();c.beginPath();c.rect(x0,y0,s,s);c.clip();c.drawImage(_sm,x0,y0,s,s);c.restore();c.filter='none';c.strokeStyle=G;c.lineWidth=2;c.strokeRect(x0,y0,s,s);
+  for(let i=1;i<4;i++){c.strokeStyle='rgba(71,245,138,.55)';c.beginPath();c.arc(x0+s/2,y0+s,s*i/4,Math.PI*1.2,Math.PI*1.8);c.stroke();NS(c,String(Math.round(rng/1852*i/4)),x0+s/2+4,y0+s-s*i/4+16,16,G);}
+  c.strokeStyle=WH;c.lineWidth=2;c.beginPath();c.moveTo(x0+s/2,y0+s);c.lineTo(x0+s/2,y0);c.stroke();jet(c,x0+s/2,y0+s-14,12,WH);
+  const at=(wx,wz)=>{const dx=wx-P.pos.x,dz=wz-P.pos.z,f=dx*sx+dz*sz,l=dx*rx+dz*rz;return(f<0||f>rng||Math.abs(l)>rng/2)?null:{f,x:x0+s/2+l/rng*s,y:y0+s-f/rng*s};};
+  let n=0;const rows=[];
+  try{for(const u of(typeof GND!=='undefined'?GND.units:[])){if(!u.alive)continue;const p=at(u.pos.x,u.pos.z);
+      // ground speed from frame-to-frame motion (Doppler: a unit moving across the beam stays in the notch, so use the along-line component)
+      const pv=_prev.get(u);let sp=0,vx=0,vz=0;if(pv&&now>pv.t){const dt=now-pv.t;if(dt>.05){vx=(u.pos.x-pv.x)/dt;vz=(u.pos.z-pv.z)/dt;sp=Math.hypot(vx,vz);_prev.set(u,{x:u.pos.x,z:u.pos.z,t:now,sp});}else sp=pv.sp||0;}else _prev.set(u,{x:u.pos.x,z:u.pos.z,t:now,sp:0});
+      if(!p)continue;const hos=u.side!==P.side,col=hos?RD:CY;
+      if(m==='RBM'){c.fillStyle='rgba(235,255,235,.9)';c.beginPath();c.arc(p.x,p.y,4,0,7);c.fill();n++;}
+      else if(m==='GMTI'){if(sp<1.5)continue;c.strokeStyle=col;c.lineWidth=2.5;c.save();c.translate(p.x,p.y);c.rotate(Math.atan2(vx,-vz)-hd);c.beginPath();c.moveTo(0,-9);c.lineTo(7,7);c.lineTo(-7,7);c.closePath();c.stroke();c.beginPath();c.moveTo(0,-9);c.lineTo(0,-9-Math.min(26,sp*2.2));c.stroke();c.restore();rows.push([p.f,(hos?'H ':'F ')+Math.round(sp*1.944)+' KT',hos]);n++;}
+      else if(m==='AGR'){c.strokeStyle=col;c.lineWidth=2;c.strokeRect(p.x-5,p.y-5,10,10);n++;}}
+    if(m==='SEA'){const nv=(typeof CAMP!=='undefined'&&CAMP.st&&CAMP.st.nav)||[];for(const v of nv){if(v.dead)continue;const p=at(v.x,v.z);if(!p)continue;const hos=!!v.s!==(P.side===1),col=hos?RD:CY;c.strokeStyle=col;c.lineWidth=2.5;c.save();c.translate(p.x,p.y);c.rotate((v.hd||0)*D-hd);c.beginPath();c.moveTo(0,-11);c.lineTo(6,9);c.lineTo(-6,9);c.closePath();c.stroke();c.restore();rows.push([p.f,(hos?'H ':'F ')+(v.k||'SHIP'),hos]);n++;}}
+  }catch(e){}
+  rows.sort((a,b)=>a[0]-b[0]);rows.slice(0,5).forEach((r,i)=>NS(c,r[1]+'  '+(r[0]/1852).toFixed(1)+' NM',14,y0+14+i*20,15,r[2]?RD:CY));
+  NS(c,{RBM:'RBM  '+n+' RETURNS',GMTI:'GMTI '+n+' MOVERS',SEA:'SEA '+n+' SHIPS',AGR:'AGR '+n+' TGTS'}[m],w-14,y0+14,15,G,'right');
+  const k=sarCursorDraw(c,w,h,P,rng,q);
+  if(m==='AGR'){c.strokeStyle=AM;c.lineWidth=1.5;c.setLineDash([5,4]);c.beginPath();c.moveTo(x0+s/2,y0+s);c.lineTo(x0+SX.fx*s,y0+SX.fy*s);c.stroke();c.setLineDash([]);NS(c,'SLANT '+(k.sl/1852).toFixed(2)+' NM',14,h*.8,17,AM);NS(c,'DEP '+k.dep.toFixed(1)+' DEG',w-14,h*.8,17,AM,'right');}
+  NS(c,'MODE '+m,14,h*.9,19,G);NS(c,'RNG '+Math.round(rng/1852)+' NM',14,h*.95,18,G);NS(c,'HDG '+String(Math.round((P.hdg%360+360)%360)).padStart(3,'0'),w-14,h*.9,19,G,'right');NS(c,'ALT '+Math.round(ft(P.pos.y)),w-14,h*.95,18,G,'right');NS(c,'TAP MAP: MOVE CURSOR',w/2,h*.99,12,GD,'center');sarModes(c,w,h);}
+function pgSAR(c,w,h,P){if(SX.mode!=='SAR')return pgSARm(c,w,h,P);pgSAR0(c,w,h,P);const q=sarGeom(w,h),rng=TS.rngs[TS.rng]*1852*.5;if(!SX.exp)sarCursorDraw(c,w,h,P,rng,q);sarModes(c,w,h);}
 const live=(cv,fb)=>(c,w,h,P)=>{try{if(cv()&&cv().width){hdr(c,w,'FCR','NAV',1);const k=Math.min(w/cv().width,(h-60)/cv().height),dw=cv().width*k,dh=cv().height*k;c.drawImage(cv(),(w-dw)/2,56,dw,dh);return;}}catch(e){}fb(c,w,h,P);};
 const DRAW={EFI:pgEFI,TSD:pgTSD,VSD:pgVSD,RCS:pgRCS,FCR:live(()=>fcrC,pgTSD),SAR:pgSAR,SMS:pgSMS,FCS:pgFCS,ENG:pgENG,FUEL:pgFUEL,DAS:pgDAS,EOTS:pgEOTS,GEAR:pgGEAR,EW:pgEW,MENU:pgMENU};
 function icaws(P){const m=[];if(!P)return m;if(P.hp<35)m.push(['DAMAGE',RD]);if(P.totalFuel<(P.ac.fuel||8000)*.15)m.push(['FUEL LOW',AM]);if(window.MSS&&MSS.warned.length)m.push(['MISSILE',RD]);if(RW.list.some(t=>t.mode==='L'))m.push(['LAUNCH',RD]);
@@ -345,13 +382,14 @@ function drawPCD(){const P=PL(),c=pcv.getContext('2d');c.setTransform(1,0,0,1,0,
   if(k<1){c.globalAlpha=1-k;c.fillStyle='#000';c.fillRect(0,0,PW,PH);c.globalAlpha=1;}}
 out.redraw.push(()=>{drawPCD();ptex.needsUpdate=true;});
 // touch: side tabs step pages, centre tab opens the MENU for that window; TSD / VSD arrows change range; FCR click locks; RCS toggles upper / lower hemisphere
-window.F35PIT={S2,WIN,PAGES,PI,TS,click(x,y){const px=x/360*PW,py=y/360*PH;
+window.F35PIT={S2,WIN,PAGES,PI,TS,SX,click(x,y){const px=x/360*PW,py=y/360*PH;
   if(py>=PH-66){for(const W of WIN)if(px>=W.x&&px<W.x+W.w){const j=Math.floor((px-W.x)/(W.w/3));if(j===1){if(PAGES[W.page]==='MENU'){W.page=W.prev!=null?W.prev:0;W.menu=0;}else{W.prev=W.page;W.page=PI.MENU;W.menu=1;}}else W.page=(W.page+(j-1)+PAGES.length)%PAGES.length;sfx.click();return true;}}
   if(py<74){if(px>PW*.79&&px<PW*.79+110){const W=WIN[3];W.prev=W.page;W.page=PI.MENU;W.menu=1;sfx.click();return true;}return false;}
   for(const W of WIN){if(!(py>WY&&py<WY+WH_&&px>=W.x&&px<W.x+W.w))continue;const lx=px-W.x,ly=py-WY,pg=PAGES[W.page];
     if(pg==='MENU'){const cols=4,cw=(W.w-20)/cols,ch=Math.min(100,(WH_-70)/6),q=Math.floor((lx-10)/cw),r=Math.floor((ly-50)/ch),i=r*cols+q;if(q>=0&&q<cols&&r>=0&&PAGES[i]&&PAGES[i]!=='MENU'){W.page=i;W.menu=0;sfx.click();return true;}return false;}
     if(pg==='TSD'||pg==='VSD'){if(lx<50&&ly>190&&ly<235){TS.rng=Math.min(TS.rngs.length-1,TS.rng+1);sfx.click();return true;}if(lx<50&&ly>=240&&ly<320){TS.rng=Math.max(0,TS.rng-1);sfx.click();return true;}if(lx<W.w*.2&&ly<56){radar.setTWS&&radar.setTWS(radar.mode!=='TWS');sfx.click();return true;}if(lx>W.w-90&&ly>WH_*.14&&ly<WH_*.26){W.page=W.page===PI.TSD?PI.VSD:PI.TSD;sfx.click();return true;}}
-    if(pg==='SAR'){if(Math.abs(lx-W.w/2)<48&&ly>WH_*.88&&ly<WH_*.98){if(!SX.exp){SX.exp=1;SX.zi=0;}else if(SX.zi<SX.Z.length-1)SX.zi++;else SX.exp=0;sfx.click();return true;}
+    if(pg==='SAR'){for(let i=0;i<SX.MODES.length;i++){const b=sarModeBtn(W.w,WH_,i);if(lx>=b.x&&lx<=b.x+b.w&&ly>=b.y&&ly<=b.y+b.h){SX.mode=SX.MODES[i];if(SX.mode!=='SAR')SX.exp=0;sfx.click();return true;}}
+      if(SX.mode==='SAR'&&Math.abs(lx-W.w/2)<48&&ly>WH_*.88&&ly<WH_*.98){if(!SX.exp){SX.exp=1;SX.zi=0;}else if(SX.zi<SX.Z.length-1)SX.zi++;else SX.exp=0;sfx.click();return true;}
       const q=sarGeom(W.w,WH_);if(lx>=q.x0&&lx<=q.x0+q.s&&ly>=q.y0&&ly<=q.y0+q.s){const ax=(lx-q.x0)/q.s,ay=(ly-q.y0)/q.s;
         if(SX.exp){const E=1/SX.Z[SX.zi];SX.fx=Math.max(0,Math.min(1,SX.fx+(ax-.5)*E));SX.fy=Math.max(0,Math.min(1,SX.fy+(ay-.5)*E));}else{SX.fx=ax;SX.fy=ay;}sfx.click();return true;}}
     if(pg==='RCS'){S2.rcsLow=S2.rcsLow?0:1;sfx.click();return true;}
@@ -360,7 +398,7 @@ window.F35PIT={S2,WIN,PAGES,PI,TS,click(x,y){const px=x/360*PW,py=y/360*PH;
   return false;}};
 // hit-test uses the plane's own UV (0..1 -> 0..360 in the generic handler), so remap through the game's mfdClick hook
 {const _m=mfdClick;mfdClick=function(id,x,y){if(id==='f35pcd'){F35PIT.click(x,y);return;}return _m(id,x,y);};}
-{const _t=screenTip;screenTip=function(id,x,y){if(id==='f35pcd')return'PCD · side tabs step pages, centre tab opens MENU · TSD/VSD: arrows set range · RCS: tap to flip upper/lower · FCR: tap a contact to lock';return _t(id,x,y);};}
+{const _t=screenTip;screenTip=function(id,x,y){if(id==='f35pcd')return'PCD · SAR: RBM/SAR/GMTI/SEA/AGR column, tap map for cursor · side tabs step pages, centre tab opens MENU · TSD/VSD: arrows set range · RCS: tap to flip upper/lower · FCR: tap a contact to lock';return _t(id,x,y);};}
 
 /* ---------------- required members for the cockpit system ---------------- */
 out.stk=stick;out.thr=thr;out.sg=.14;out.panelMats=[panelM,consM,grey];out.panel0=[panelM.color.getHex(),consM.color.getHex(),grey.color.getHex()];
