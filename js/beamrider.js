@@ -7,6 +7,8 @@
 'use strict';
 if(typeof SNS==='undefined'||typeof GND==='undefined'||typeof AGW==='undefined'){console.warn('[beamrider] game missing');return;}
 for(const k of['Vikhr','Kh-25ML'])if(AGW[k])AGW[k].beam=1;
+// a beam rider is steered by the designator, not by a seeker with a narrow view, so the cone limit is wide
+for(const k of Object.keys(AGW))if(AGW[k].beam)AGW[k].cone=120;
 const isBeam=w=>{const a=AGW[w];return!!(a&&a.beam);};
 // the pod, not a missile seeker, is the sensor while a beam rider is selected
 {const _w=SNS.wk;SNS.wk=function(){const k=_w.call(this);if(k==='agm'&&isBeam(game.wsel)&&this.hasPod(player))return'lgb';return k;};}
@@ -17,7 +19,9 @@ const isBeam=w=>{const a=AGW[w];return!!(a&&a.beam);};
   if(rp>ps.lrf){flash('SPOT BEYOND LASER RANGE '+(ps.lrf/1852).toFixed(1)+' NM',1500);return;}
   if(rp>a.range*1.15){flash('OUT OF RANGE',1000);return;}
   const p=P.release(w);if(!p){flash('NO '+SN[w],1000);return;}
-  GND.launchMav(w,P,p,null);const k=GND.mavs[GND.mavs.length-1];if(k){k.beam=1;k.t=0;}
+  GND.launchMav(w,P,p,null);const k=GND.mavs[GND.mavs.length-1];
+  // ejected towards the laser spot: a missile fired from a hover has no velocity of its own and so no heading, which sent it off in any direction
+  if(k){k.beam=1;k.t=0;const d=SNS.spi.clone().sub(k.p).normalize();k.v.copy(P.vel).addScaledVector(d,40);if(k.mesh)k.mesh.quaternion.setFromUnitVectors(new V3(0,0,-1),d);}
   if(!SNS.laseMan){SNS.laseMan=true;SNS._auto=true;}game.pickleCd=1;sfx.click();if(SET.calls==='ON')radio('Rifle.');};}
 // the laser spot is the target: a proxy that always reads the current spot, until the beam is lost
 const spot={get pos(){return SNS.spi;},alive:true,T:{r:0}};

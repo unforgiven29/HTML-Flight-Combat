@@ -11,7 +11,7 @@ const ID='AH-64A',DEG=Math.PI/180;
 const agd=(k,base,over,sn,name)=>{if(AGW[k]||!AGW[base])return;AGW[k]=Object.assign({},AGW[base],over||{});SN[k]=sn;STORE_NAME[k]=name;};
 agd('AGM-114K','Kh-25ML',{mass:45,L:1.63,R:.09,dmg:60,soft:8,hard:6,range:8000,lockR:8000},'HFIR','AGM-114K Hellfire II · semi-active laser');
 agd('M261','B-8M1',{cap:19,mass:300,L:2.1,R:.2},'HYD70','M261 · 19× Hydra 70');
-if(AGW['AGM-114K'])AGW['AGM-114K'].beam=1;   // follows the laser spot (beamrider.js flies it)
+if(AGW['AGM-114K']){AGW['AGM-114K'].beam=1;AGW['AGM-114K'].cone=120;}   // follows the laser spot (beamrider.js flies it)
 
 /* ---------- TADS / PNVS in the nose ---------- */
 V121.PODS.TADS={nm:'TADS/PNVS',fovs:[4,1.6,.7],fn:['WIDE','MED','NARO'],tv:1,res:224,lrf:12000,lockR:14000};
