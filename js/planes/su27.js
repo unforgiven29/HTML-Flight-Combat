@@ -64,7 +64,7 @@ PLANES.add('su27',{
         clt:[[-20,-1],[-10,-.6],[0,.03],[5,.38],[10,.74],[15,1.07],[20,1.34],[25,1.55],[30,1.68],[35,1.74],[40,1.72],[50,1.55],[60,1.25],[90,0]],
         abM:[[0,1],[.5,1.195],[1,1.36],[1.5,1.495],[2,1.6498],[2.5,1.7345],[3,1.7693]],cdm:[[0,0],[.8,0],[.9,.005],[1,.021],[1.1,.029],[1.3,.028],[1.6,.0197],[2,.0175],[2.5,.0132],[3,.0107]],dW:23000,tkG:[9,9],dep:{a:37,rock:.5,spin:2.0},
         ff:[.35,2.7,12.5],gLim:9,aoaLim:26,roll:4.0,fbw:true,ovrOK:true,rcs:12,irs:1.4,ols:{tail:22000,head:10000,lrf:9000},cockpit:'fulcrum',pit:'flanker',units:'met',
-        radar:{name:'N001',R0:46*NM,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.5},irst:true,
+        radar:{name:'N001',R0:48*NM/* 80-100 km vs 3 m2 head-on (~100 km vs 5 m2) after the HPRF closing-target gain of x1.15 */,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.5},irst:true,
         gun:{name:'GSh-30-1',rate:25,v:860,dmg:26,ammo:150,spread:.003},rel:[1,10,2,9,3,8,4,7,5,6],migRel:['3','8','4','7','5','6','2','9','1','10'],rwr:'27',spo:5,tankName:'—'}
   }),
   ENG_SUP:()=>({
@@ -492,7 +492,7 @@ PLANES.add('su27',{
     AC[T30]=Object.assign({},B,{name:'Su-30SM',model:makeSu30SM,st:S30ST,empty:18800,fuel:9400,dW:26000,mil:149000,ab:245200,S:62,CLa:4.6,cd0:.0198,k:.118,
       gLim:9,aoaLim:26,fbw:true,ovrOK:false,rcs:13,irs:1.42,dep:{a:40,rock:.45,spin:1.8},tkG:[9,9],tvc:{pitch:15,yaw:10},s30:true,
       ols:{tail:38000,head:18000,lrf:12000},irst:true,rio:true,wso:true,twsN:4,trkN:15,
-      radar:Object.assign({},B.radar,{name:'N011M',R0:66*NM,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.78,pesa:1,beam:2.8*D2R}),
+      radar:Object.assign({},B.radar,{name:'N011M',R0:75*NM/* 140 km head-on vs a MiG-29-size target, 60 km pursuit */,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.78,pesa:1,beam:2.8*D2R}),
       rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
     RGIM['N011M']=[90,56,40,1];
     // copy the per-type tables
@@ -1012,7 +1012,7 @@ PLANES.add('su27',{
       const S30=AC['Su-30SM'],B=AC['Su-27SM'];
       cloneType('Su-27SM','Su-35S',{name:'Su-35S',tvc:{pitch:15,yaw:15},empty:19000,fuel:11500,dW:27500,mil:172600,ab:284400,S:62,CLa:4.6,cd0:.0188,k:.118,gLim:9,aoaLim:28,fbw:true,rcs:3,irs:1.4,
         dep:{a:42,rock:.4,spin:1.7},ols:{tail:90000,head:35000,lrf:20000},irst:true,twsN:4,trkN:30,ff:[.35,2.9,13.4],
-        radar:Object.assign({},B.radar,{name:'Irbis-E',R0:110*NM,ranges:[10,25,50,100,200,400],unit:1000,ul:'KM',ecc:.85,pesa:1,beam:2.5*D2R}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
+        radar:Object.assign({},B.radar,{name:'Irbis-E',R0:104*NM/* 200 km vs 3 m2 wide search (350-400 km in a 100 sq-deg sector) */,ranges:[10,25,50,100,200,400],unit:1000,ul:'KM',ecc:.85,pesa:1,beam:2.5*D2R}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
       RGIM['Irbis-E']=[120,60,60,1];
       if(S30&&STN['Su-30SM']){STN['Su-35S']={};for(const k of Object.keys(STN['Su-30SM']))STN['Su-35S'][k]=STN['Su-30SM'][k].filter(w=>w!=='T220');}
       if(MSL['R-77-1']&&LOAD.modern)LOAD.modern['Su-35S']={1:'R-74M',10:'R-74M',2:'R-74M',9:'R-74M',3:'R-77-1',8:'R-77-1',11:'R-77M',12:'R-77M',4:'R-37M',7:'R-37M',5:'R-77-1',6:'R-77-1'};

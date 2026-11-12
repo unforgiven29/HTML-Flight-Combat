@@ -52,10 +52,10 @@ radar.rdet=function(j,a){let R=_rdet.call(this,j,a);if(!R||!fitted()||this.senso
   const vc=closure(j),nm=this.ranges[this.ri]*(this.unit/NM_),down=a.el<-1.5*D,pulse=isPulse();
   if(!AWG.paramp)R*=.65;
   if(AWG.agc===1)R*=.95;
-  if(pulse){R*=nm>=20?.9:.8;if(down)R*=.55;}                       // no doppler to pull the target out of the ground return
+  if(pulse){R*=this.mode==='STT'?49/90:(nm>=20?60/90:.55);if(down)R*=.55;}   // manual: pulse search 60 NM, P STT 49 NM (RWS 90)                       // no doppler to pull the target out of the ground return
   else{
     if(this.mode!=='STT'&&!inWindow(vc))return 0;                  // outside the rate scale / aspect window: no detection
-    R*=[1,1.04,1.08][AWG.vc];if(AWG.rm===0)R*=1.06;
+    R*=[1,1.04,1.08][AWG.vc];if(AWG.rm===0)R*=110/90;   // PD search 110 NM vs RWS 90
     const mlcOn=AWG.mlc===1||AWG.mlc===2&&this.antEl<3*D;
     if(down)R*=mlcOn?1:.7;else if(AWG.mlc===1)R*=.95;
     const th=down?AWG.thL:AWG.thC;R*=th>.5?1-(th-.5)*.5:th<.25?.85:1+(.5-th)*.16;}

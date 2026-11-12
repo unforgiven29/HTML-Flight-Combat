@@ -46,7 +46,7 @@ PLANES.add('mig29',{
         clt:[[-20,-1],[-10,-.58],[0,.04],[5,.4],[10,.76],[15,1.08],[20,1.33],[25,1.5],[30,1.6],[35,1.63],[40,1.58],[50,1.38],[60,1.1],[90,0]],
         cdm:[[0,0],[.8,0],[.9,.005],[1,.022],[1.1,.031],[1.3,.03],[1.6,.022],[2,.0197],[2.5,.0149],[3,.0121]],gHi:7,dW:15300,tkG:[5,7],dep:{a:34,rock:.6,spin:2.2},
         ff:[.3,2.2,9.5],gLim:9,aoaLim:26,roll:4.0,fbw:false,rcs:5,irs:1.25,ols:{tail:15000,head:7000,lrf:7000},cockpit:'fulcrum',units:'met',
-        radar:{name:'N019',R0:38*NM,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.55},irst:true,
+        radar:{name:'N019',R0:32*NM/* 50-70 km vs 3 m2 head-on (N019EB manual) -> ~68 km vs 5 m2 after the HPRF x1.15 */,ranges:[10,25,50,100],unit:1000,ul:'KM',ecc:.55},irst:true,
         gun:{name:'GSh-30-1',rate:25,v:860,dmg:26,ammo:150,spread:.003},rel:[1,6,2,5,3,4],migRel:['3','4','2','5','1','6'],rwr:'29',spo:5,tankName:'Drop tank'}
   }),
   ENG_SUP:()=>({
@@ -140,7 +140,7 @@ PLANES.add('mig29',{
     // a fighter, ±85° in azimuth, ten track files, four engaged with the R-77), OEPS-29 with the laser, R-27ER / ET, R-77, R-73.
     try{
       cloneType('MiG-29S','MiG-29SMT',{name:'MiG-29SMT',empty:11600,fuel:4700,dW:17000,twsN:4,trkN:10,rcs:5,
-        radar:{name:'Zhuk-ME',R0:65*NM,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.72}});
+        radar:{name:'Zhuk-ME',R0:57*NM/* 120 km vs 5 m2 (export) */,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.72}});
       RGIM['Zhuk-ME']=[85,60,40,1];ENGN['MiG-29SMT']='2× RD-33 ser. 3';CALLS['MiG-29SMT']='FULCRUM-F';NCTR_ID['MiG-29SMT']='MIG-29';HMS_ALWAYS.add('MiG-29SMT');
       ACROLE['MiG-29SMT']='RUSSIA · FRONTLINE MULTIROLE · ZHUK-ME · 4-TARGET TWS · LONG LEGS';
       if(LOAD.modern&&LOAD.modern['MiG-29SMT'])Object.assign(LOAD.modern['MiG-29SMT'],{3:'R-27ER',4:'R-27ER'});
