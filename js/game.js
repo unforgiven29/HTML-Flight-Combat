@@ -9437,7 +9437,6 @@ const AGR={NC:96,NB:96,val:null,sh:null,colT:null,cv:null,ictx:null,img:null,mod
     if((mode==='GMT'||mode==='SEA')&&sp){c.lineWidth=2;for(const e of this.ents){if(this.entVal(e)<=0||now-(e.u._gT||-99)>4.5)continue;const q=this.proj(e.az,e.g,G);if(!q)continue;
       c.strokeStyle=c.fillStyle=SNS.unit===e.u?MA:col;c.globalAlpha=clamp(1.2-(now-e.u._gT)/4.5,.25,1);c.strokeRect(q.x-5,q.y-5,10,10);
       if(e.v>1){const hr=Math.atan2(e.vx,-e.vz)-this.h;c.beginPath();c.moveTo(q.x,q.y);c.lineTo(q.x+Math.sin(hr)*clamp(e.v*3,8,34),q.y-Math.cos(hr)*clamp(e.v*3,8,34));c.stroke();c.font='700 12px "B612 Mono",monospace';c.textAlign='left';c.fillText(String(Math.round(e.v*1.944)),q.x+8,q.y+12);}
-      if(mode==='SEA'&&e.u.callsign){c.font='700 11px "B612 Mono",monospace';c.textAlign='left';c.fillText(e.u.callsign+' '+(e.g/1852).toFixed(1),q.x+8,q.y-9);}
       if(SNS.unit===e.u){c.beginPath();c.arc(q.x,q.y,11,0,7);c.stroke();}c.globalAlpha=1;}c.lineWidth=1;c.strokeStyle=c.fillStyle=col;}
     // anti-ship missiles in flight from this jet, on the surface-search picture
     if(sp&&window.ASM&&mode!=='AGR'){c.lineWidth=1.6;c.font='700 12px "B612 Mono",monospace';c.textAlign='left';for(const k of ASM.list){if(k.src!==P)continue;const dx=k.p.x-P.pos.x,dz=k.p.z-P.pos.z,q=this.proj(wrapA(Math.atan2(dx,-dz)-this.h),Math.hypot(dx,dz),G);if(!q)continue;
