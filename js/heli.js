@@ -33,8 +33,8 @@ const KA50={
   fuelK:8.4e-5,                  // kg per kW s
   fPar:[3.6,6.5,3.2],            // fuselage drag areas CdA: forward, side, vertical (m²)
   gh:1.72,                       // CG height above the ground on the wheels (m)
-  rateP:50,rateR:60,rateY:80,    // peak pitch / roll / yaw rates (°/s)
-  gLim:3.5,gNeg:-.5,vne:350,     // km/h
+  rateP:65,rateR:115,rateY:90,    // peak pitch / roll / yaw rates (°/s)
+  gLim:3.5,gNeg:-.9,vne:350,     // km/h
 };
 HELI.H['Ka-50']=KA50;
 
@@ -144,7 +144,7 @@ function sub1(j,H,h,dt,last){
   _va.copy(vel).normalize();_ax.crossVectors(rt,_va).normalize();a.addScaledVector(_ax,Lw/m*(V>20?1:0));
   j.nz=Math.max(-3,Math.min(8,(a.dot(u)+G*u.y)/G));if(j===player)j.maxNz=Math.max(j.maxNz,j.nz);
   if(!(window.STRUCT&&STRUCT.on)&&j.nz>H.gLim*1.4){j.hp-=(j.nz-H.gLim*1.4)*8*dt;if(j===player&&Math.random()<dt*2)flash('OVER-G',800);if(j.hp<=0){j.kill('AIRFRAME FAILURE');return;}}
-  if(j.nz<H.gNeg-.4&&h.Nr>.5){h.lowg=(h.lowg||0)+dt;if(h.lowg>.6){if(j===player)flash('ROTORS · NEGATIVE G',900);if(h.lowg>1.6){j.kill('ROTOR BLADE COLLISION');return;}}}else h.lowg=Math.max(0,(h.lowg||0)-dt);
+  if(j.nz<H.gNeg-.4&&h.Nr>.5){h.lowg=(h.lowg||0)+dt;if(h.lowg>.6){if(j===player)flash('ROTORS · NEGATIVE G',900);if(h.lowg>2.4){j.kill('ROTOR BLADE COLLISION');return;}}}else h.lowg=Math.max(0,(h.lowg||0)-dt);
   // Vne
   const ias=j.cas*1.852;if(ias>H.vne*1.04){const ov=ias-H.vne*1.04;j.hp-=ov*.03*dt;if(j===player&&Math.random()<dt*2)flash('OVERSPEED',800);if(j.hp<=0){j.kill('AIRFRAME FAILURE');return;}}
   j.vel.addScaledVector(a,dt);
@@ -155,25 +155,27 @@ function sub1(j,H,h,dt,last){
   const pit=j.pitch,bnk=j.bank;
   let cp=ctl.p,cr=ctl.r,cy=ctl.y,hdg=j.hdg*DEG;
   const gnd=j.onGnd;
-  // pitch
+  // SAS attitude hold works inside the normal envelope only; outside it (and while the stick is moved) the SAS just damps the body rates,
+  // so the aircraft can be rolled, looped and flown inverted without Euler-angle limits fighting the pilot
+  const envP=Math.abs(pit)<32*DEG&&Math.abs(bnk)<48*DEG,envR=envP;
   let qCmd;
-  if(Math.abs(cp)>.04){h.hold.p=null;qCmd=cp*H.rateP*DEG;}
-  else{if(h.hold.p===null)h.hold.p=pit;qCmd=Math.max(-24*DEG,Math.min(24*DEG,(h.hold.p-pit)*2.4));h.hold.p+=((gnd?0:0)-h.hold.p)*0;}
+  if(Math.abs(cp)>.04||!envP){h.hold.p=null;qCmd=cp*H.rateP*DEG;}
+  else{if(h.hold.p===null)h.hold.p=pit;qCmd=Math.max(-24*DEG,Math.min(24*DEG,(h.hold.p-pit)*2.4));}
   let pCmd;
-  if(Math.abs(cr)>.04){h.hold.r=null;pCmd=cr*H.rateR*DEG;}
+  if(Math.abs(cr)>.04||!envR){h.hold.r=null;pCmd=cr*H.rateR*DEG;}
   else{if(h.hold.r===null)h.hold.r=bnk;pCmd=Math.max(-30*DEG,Math.min(30*DEG,(h.hold.r-bnk)*2.4));}
-  // limits: do not let the stick roll or pitch the aircraft past sensible angles
-  if(pit>38*DEG&&qCmd>0)qCmd=0;if(pit<-40*DEG&&qCmd<0)qCmd=0;
-  if(Math.abs(bnk)>62*DEG&&pCmd*bnk>0)pCmd=0;
-  // yaw: pedals command rate; centred pedals hold heading in a hover and weathercock into the wind at speed (twin fins)
+  // on the wheels the skids / wheels still limit the angles
+  if(gnd){if(pit>25*DEG&&qCmd>0)qCmd=0;if(pit<-25*DEG&&qCmd<0)qCmd=0;if(Math.abs(bnk)>25*DEG&&pCmd*bnk>0)pCmd=0;}
+  // yaw: pedals command rate; centred pedals hold heading in a hover and weathercock into the wind at speed (twin fins). The heading hold and the
+  // coordinated-turn term use Euler angles, so they are switched off when the aircraft is steeply pitched or banked
+  const upr=j.up(_u).y>.55&&Math.abs(pit)<55*DEG;
   const spdY=Math.min(1,Math.max(0,(V-12)/30));
   let rCmd=cy*H.rateY*DEG*(1-.25*spdY);
-  if(Math.abs(cy)>.04){h.hold.y=null;}
+  if(Math.abs(cy)>.04||!upr){h.hold.y=null;}
   else{if(h.hold.y===null)h.hold.y=hdg;let e=h.hold.y-hdg;e=Math.atan2(Math.sin(e),Math.cos(e));rCmd+=Math.max(-30*DEG,Math.min(30*DEG,e*2.0))*(1-spdY);}
-  rCmd+=j.beta*1.6*Math.max(0,spdY)*(j.onGnd?0:1);
-  // turn coordination: a banked aircraft turns on its bank in forward flight
-  if(spdY>0&&!gnd)rCmd+=Math.tan(Math.max(-1.2,Math.min(1.2,bnk)))*G/Math.max(V,12)*.55*spdY*Math.cos(pit);
-  h.qc=qCmd;h.cpIn=cp;const tau=.22,ka=1-Math.exp(-dt/tau),w=h.w;
+  if(upr)rCmd+=j.beta*1.6*Math.max(0,spdY)*(j.onGnd?0:1);
+  if(spdY>0&&!gnd&&upr)rCmd+=Math.tan(Math.max(-1.2,Math.min(1.2,bnk)))*G/Math.max(V,12)*.55*spdY*Math.cos(pit);
+  h.qc=qCmd;h.cpIn=cp;const tau=.17,ka=1-Math.exp(-dt/tau),w=h.w;
   w.p+=(qCmd*eff-w.p)*ka;w.r+=(pCmd*eff-w.r)*ka;w.y+=(rCmd*eff-w.y)*ka;
   // ground contact
   const gh=groundAt(pos.x,pos.z),gl=gh+H.gh;
@@ -309,19 +311,30 @@ window.makeKa50=makeKa50;
   const SOV_RKT_=['B-8M1'],has=k=>!!(MSL[k]||AGW[k]||k==='TK'||k==='PTB'),L=(...a)=>a.flat().filter(has);
   const ST_={1:[0,-.32,.55],2:[0,-.32,.55],3:[0,-.32,.55],4:[0,-.32,.55]};
   ST_[1]=[-3.3,-.52,.55];ST_[2]=[-2.0,-.52,.55];ST_[3]=[2.0,-.52,.55];ST_[4]=[3.3,-.52,.55];
-  const over={name:'Ka-50',model:makeKa50,st:ST_,heli:KA50,empty:7700,fuel:1500,tank:440,S:30,CLa:3,cd0:.1,k:.2,mil:1,ab:1,spool:6,abLight:99,
+  const over={name:'Ka-50',model:makeKa50,st:ST_,heli:KA50,empty:7200,fuel:1500,tank:440,S:30,CLa:3,cd0:.1,k:.2,mil:1,ab:1,spool:6,abLight:99,
     gLim:3.5,gHi:undefined,aoaLim:25,roll:1.5,fbw:false,noLimiter:true,vne:KA50.vne,rcs:6,irs:2.2,pit:'ka50',cockpit:'ka50',eye:[2.45,.5],ff:[.2,.4,.4],
     rwr:'25',spo:3,tankName:'PTB-550',rel:[],keepJ:[],rwrKind:'SPO-15',gun:{name:'2A42',rate:13,v:960,dmg:20,ammo:460,spread:.0032,acc:0,spin:0}};
   cloneType(src,id,over);
   const A=AC[id];delete A.noAB;delete A.swing;
   A.rel=['1','4','2','3'];A.rio=false;A.wso=false;A.crew=1;A.eye=[2.45,.5];A.cwSrc=src;A.cwPit='Ka-50 · cockpit after the DCS Black Shark manual';
   STN[id]={1:L('B-8M1','TK'),2:L('B-8M1','TK'),3:L('B-8M1','TK'),4:L('B-8M1','TK')};
-  const ld={2:'B-8M1',3:'B-8M1'};
+  let ld={2:'B-8M1',3:'B-8M1'};
+  if(window.vikhrRack&&vikhrRack(id,['1','4'],6))ld=Object.assign(vikhrFull(['1','4'],6),ld);   // APU-6 on each outer pylon: 12 Vikhr
   for(const era of['cold','modern'])LOAD[era][id]=validLoad(id,era,ld);
   LOAD.guns[id]={};STRIKE_LOAD[id]=Object.assign({},LOAD.cold[id]);
   for(const era of Object.keys(CMS))CMS[era][id]=[128,128];
   ENGN[id]='2× TV3-117VMA';CALLS[id]='SHARK';NCTR_ID[id]='KA-50';FOE[id]='F-4E';ACROLE[id]='ATTACK HELICOPTER';RWR_OF[id]='SPO-15LM';
-  FV[id]=Object.assign({},FV[src]);
+  // head-on picture for the loadout screen: coaxial rotors, narrow fuselage, two engine intakes, stub wings with the outer pylons, twin tail fins
+  FV[id]={hw:7.4,y1:3.2,span:14.5,d:()=>{let s='';
+    s+=ell(0,-1.05,.2,.2,'sk-dark')+ell(-1.35,-1.0,.22,.22,'sk-dark')+ell(1.35,-1.0,.22,.22,'sk-dark');
+    s+=one([[-.1,.9],[.1,.9],[.12,2.55],[-.12,2.55]],'sk-body');
+    s+=bth([[0,2.62],[7.2,2.5],[7.2,2.44],[0,2.52]],'sk-wing')+bth([[0,3.08],[7.2,2.96],[7.2,2.9],[0,2.98]],'sk-wing');
+    s+=bth([[-.5,-.3],[-3.65,-.4],[-3.65,-.52],[-.5,-.5]].map(([x,y])=>[-x,y]),'sk-wing');
+    s+=bth([[-3.7,-.24],[-3.6,-.24],[-3.6,-.62],[-3.7,-.62]].map(([x,y])=>[-x,y]),'sk-body');
+    s+=bth([[1.9,.3],[2.1,.3],[2.12,1.25],[1.95,1.25]],'sk-body');
+    s+=ell(0,.2,.72,.82,'sk-body');
+    s+=bth([[.5,.3],[1.1,.55],[1.1,1.05],[.5,.95]],'sk-body')+ell(.78,.7,.34,.38,'sk-dark')+ell(-.78,.7,.34,.38,'sk-dark');
+    s+=ell(0,.5,.46,.4,'sk-can');return s;}};
   if(typeof RUS!=='undefined')RUS.add(id);
   if(typeof NO_CCIP!=='undefined')NO_CCIP.delete(id);
   A.name='Ka-50';A.role='USSR · ATTACK HELICOPTER · COAXIAL ROTORS · SHKVAL-V · 2A42 · VIKHR';
