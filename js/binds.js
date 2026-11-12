@@ -38,6 +38,7 @@ const ACT=[
  ['yL','Rudder left','FLIGHT','h','KeyQ','Q'],['yR','Rudder right','FLIGHT','h','KeyE','E'],
  ['tUp','Throttle up','FLIGHT','h','KeyR','R'],['tDn','Throttle down','FLIGHT','h','KeyF','F'],
  ['sb','Speed brake (hold)','FLIGHT','h','KeyB','B'],
+ ['hEng','Engine start / stop (helicopter)','FLIGHT','p','Semicolon',';'],
  ['tSnapMil','Throttle SNAP to MIL (slam)','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(.8),'Shift+R'],['tSnapAb','Throttle SNAP to full A/B','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(1),'—'],['tSnapIdle','Throttle SNAP to IDLE','FLIGHT','f',()=>window.ENGSYS&&ENGSYS.snap(0),'Shift+F'],
  ['engPg','Engine systems page (oil / EGT / hydraulics / stall margin)','VIEW','f',()=>window.ENGSYS&&ENGSYS.toggle(),'Shift+G'],['airPg','Airframe page (G load / overstress / wings / slats)','VIEW','f',()=>window.STRUCT&&STRUCT.toggle(),'Shift+H'],['slatMd','Leading-edge slats: AUTO / RETRACT / EXTEND','FLIGHT','f',()=>window.STRUCT&&STRUCT.slatMode(),'Shift+L'],
  ['gear','Landing gear','FLIGHT','f',()=>BASE.KeyG&&BASE.KeyG.fn(),'G'],
