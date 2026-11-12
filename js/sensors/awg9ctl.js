@@ -97,9 +97,31 @@ function crew(dt){if(!fitted()||!twoSeat()||!AWG.auto||!rio.active()||AWG.hold>0
   if(AWG.vc!==wv){AWG.vc=wv;say('Vc '+AWG.VC[wv]+'.','awg-vc',15);}
   if(AWG.asp!==wa){AWG.asp=wa;say('Aspect '+AWG.ASP[wa].toLowerCase()+'.','awg-asp',15);}
   if(AWG.tgts!==wt){AWG.tgts=wt;say('Targets '+AWG.TGTS[wt].toLowerCase()+'.','awg-tgts',20);}
+  // ---- search mode, range scale, track hold and PD threshold (the buttons he did not touch before) ----
+  const hs=[];for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj||!rio.hostile(j))continue;const d=player.pos.distanceTo(j.pos)/NM_;hs.push({j,d,vc:closure(j)});}
+  hs.sort((x,y)=>x.d-y.d);const near=hs[0],jamN=!!(radar.hoj||radar.strobes.size>0);
+  const act=(m)=>{AWG.last=m;};
+  crew.mt=(crew.mt||0)-1.5;
+  if(!stt&&radar.mode!=='ACM'){
+    // range scale: the smallest one that holds the nearest contact with room; 100 NM when nothing is held
+    const want=near?near.d*1.25:90;let ri=radar.ranges.findIndex(v=>v*(radar.unit/NM_)>=want);if(ri<0)ri=radar.ranges.length-1;
+    if(ri!==radar.ri&&(crew.rt=(crew.rt||0)-1.5)<=0){crew.rt=8;radar.ri=ri;say('Range '+Math.round(radar.ranges[ri]*(radar.unit/NM_))+'.','awg-ri',12);act('range '+Math.round(radar.ranges[ri]*(radar.unit/NM_)));}
+    // search mode: pulse where the doppler cannot help (look-down, beam, slow closure), TWS with several contacts, PD search for the long head-on look
+    let rm=1;
+    if(!near)rm=0;
+    else{const dh=near.j.pos.y-player.pos.y,el=Math.atan2(dh,Math.max(1,Math.hypot(near.j.pos.x-player.pos.x,near.j.pos.z-player.pos.z)));
+      const lowCl=Math.abs(near.vc)<150,lookDn=el<-1.5*D;
+      if(hs.filter(h=>h.d<80).length>=2&&!jamN)rm=2;
+      else if(lookDn||lowCl)rm=4;
+      else rm=near.d>45&&near.vc>200?0:1;}
+    if(AWG.rm!==rm&&crew.mt<=0){crew.mt=12;AWG.rm=rm;applyMode();applyScan();say(['PD search.','Range while search.','TWS auto.','TWS manual.','Pulse search.'][rm],'awg-rm',14);act(AWG.MODE[rm].toLowerCase());}
+  }
+  // track hold when he is working a track file in TWS; PD threshold tight in the clear, loose in the clutter
+  const th=radar.mode==='TWS'&&hs.length>0?1:0;if(AWG.trkHold!==th){AWG.trkHold=th;say(th?'Track hold on.':'Track hold off.','awg-th',20);act('track hold '+(th?'on':'off'));}
+  const dn=near&&near.j.pos.y<player.pos.y-300;AWG.thC=.4;AWG.thL=dn?.45:.5;
   if(AWG.mlc!==2)AWG.mlc=2;if(!AWG.paramp)AWG.paramp=1;if(!AWG.stab)AWG.stab=1;
   const jam=radar.hoj||radar.strobes.size>0,wg=jam?1:0;if(AWG.agc!==wg){AWG.agc=wg;if(wg)say('Fast AGC, jamming.','awg-agc',20);}}
-const _rup=rio.update;rio.update=function(dt){_rup.apply(this,arguments);try{crew(dt);}catch(e){}};
+const _rup=rio.update;rio.update=function(dt){_rup.apply(this,arguments);try{crew(dt);}catch(e){window.__crewErr=e.stack;}};
 // ----- the panel -----
 let root=null;
 const css=`#awg{position:fixed;left:14px;top:90px;z-index:60;width:340px;max-height:86vh;overflow:auto;background:#14181a;border:2px solid #3a4246;border-radius:6px;color:#cfe;font:11px 'B612 Mono',monospace;padding:8px;display:none;user-select:none}
@@ -133,7 +155,7 @@ function render(){if(!root)return;const ok=fitted();root.style.display=AWG.show&
   p.push(cell(`PD THRLD · CLEAR ${Math.round(AWG.thC*100)} / CLUTTER ${Math.round(AWG.thL*100)}`,`<input type="range" min="0" max="100" value="${Math.round(AWG.thC*100)}" data-s="thC"><input type="range" min="0" max="100" value="${Math.round(AWG.thL*100)}" data-s="thL">`,1));
   const L=radar.lock,ind=stt&&L?`<i>ANT TRK</i> ${radar.hoj?'<i>JAT</i>':'<i>RDROT</i>'}`:'no track';
   root.innerHTML=`<h4>AN/AWG-9 · ${drum()}${pulse&&!stt&&nm>=20?' · PULSE COMPRESSION':''}${twoSeat()?` · <span style="color:${AWG.auto?'#fc6':'#8a9'}">${AWG.auto?'RIO':'MAN'}</span>`:''}</h4><div class="g">${p.join('')}
-  <div class="r"><small>${ind}  ·  ${AWG.VC[AWG.vc]} Vc / ${AWG.ASP[AWG.asp]} window ${Math.max(VCS[AWG.vc][0],ASPW[AWG.asp][0])}..${Math.min(VCS[AWG.vc][1],ASPW[AWG.asp][1])} kt${twoSeat()?`  ·  <button data-a="auto">${AWG.auto?'TAKE OVER':'GIVE TO RIO'}</button>`:''}</small></div></div>`;}
+  <div class="r"><small>${ind}${AWG.auto&&twoSeat()&&AWG.last?'  ·  RIO: '+AWG.last:''}  ·  ${AWG.VC[AWG.vc]} Vc / ${AWG.ASP[AWG.asp]} window ${Math.max(VCS[AWG.vc][0],ASPW[AWG.asp][0])}..${Math.min(VCS[AWG.vc][1],ASPW[AWG.asp][1])} kt${twoSeat()?`  ·  <button data-a="auto">${AWG.auto?'TAKE OVER':'GIVE TO RIO'}</button>`:''}</small></div></div>`;}
 function onClick(e){e.stopPropagation();const t=e.target;if(!t.dataset)return;const d=t.dataset;
   if(d.a==='auto'){AWG.auto=!AWG.auto;AWG.hold=0;render();return;}
   if(d.a==='acm'){if(radar.mode==='ACM'&&radar.acm===d.v)radar.mode='RWS';else radar.setACM(d.v);AWG.hold=25;render();return;}
