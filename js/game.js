@@ -1075,6 +1075,9 @@ class Missile{
       if(this.track){P=_mP.copy(this.track.pos);Vt=_mVt.copy(this.track.vel);if(!this.track.isDecoy){this.lastP.copy(P);this.lastV.copy(Vt);this.memT=0;}}
       // memory mode: an active radar head that loses the target keeps flying to where it should be for a few seconds, searching as it goes
       else if(d.seek==='ARH'&&!this.maddog&&(this.memT=(this.memT||0)+dt)<(d.spec?d.spec.targetMemoryHoldTime:3)){this.lastP.addScaledVector(this.lastV,dt);P=_mP.copy(this.lastP);Vt=_mVt.copy(this.lastV);}
+      // v320: an IR head that lost the target (flare burned out, target left the field of view) kept no aim point at all and flew straight and ballistic, which read as the missile giving up.
+      // It now keeps steering at where the target should be for a couple of seconds while the search below looks for it again.
+      else if(d.seek==='IR'&&!this.maddog&&this.t>1&&(this.memT=(this.memT||0)+dt)<2){this.lastP.addScaledVector(this.lastV,dt);P=_mP.copy(this.lastP);Vt=_mVt.copy(this.lastV);}
       this.hoj=false;
       if(this.track&&!this.track.isDecoy&&d.seek==='ARH'){const jm=jamOfMsl(this.track,d,this.pos);
         if(jm&&jm.noise&&jm.far){if(d.hoj)this.hoj=true;else{this.track=null;P=null;}}
@@ -1100,7 +1103,7 @@ class Missile{
     // an IR head whose flare burned out, or that lost the target, sweeps a small cone to reacquire
     if(d.seek==='IR'&&this.active&&!this.track&&tb>-1){let best=null,bd=1e9;
       for(const j of jets){if(!j.alive||j===this.sh||IFF.mslSkip(this,j))continue;const r=_mr.copy(j.pos).sub(this.pos),dd=r.length();
-        if(vd.angleTo(r)<Math.max(d.search,8*D2R)&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
+        if(vd.angleTo(r)<Math.max(d.search,8*D2R,d.gimbal*.35)&&dd<irLockRange(d,j,this.pos)&&dd<bd){bd=dd;best=j;}}
       if(best){this.track=best;P=_mP.copy(best.pos);Vt=_mVt.copy(best.vel);}}
     // imaging / doppler CCM: a decoy that separates from the real target in speed gets rejected
     if(this.track&&this.track.isDecoy&&d.ccm&&this.track.src&&this.track.src.alive){const tgt=this.track.src;
@@ -1119,7 +1122,7 @@ class Missile{
       cmd.copy(om).cross(this.vel).multiplyScalar(d.N*(this.hoj?.8:1));
       if(d.apn&&this.track&&!this.track.isDecoy&&this.track.accV){r.normalize();const at=_mtmp.copy(this.track.accV);at.addScaledVector(r,-at.dot(r));cmd.addScaledVector(at,d.N*.5);}
       cmd.y+=G;}
-    else if(this.maddog&&tb>0)cmd.y+=G;
+    else if(tb>0)cmd.y+=G;   // v320: any powered or coasting round holds its height after losing the track, not just a mad-dog shot
     cmd.addScaledVector(vd,-cmd.dot(vd));
     // ---- airframe: motor, lift-limited turn, autopilot lag, drag ----
     const y=this.pos.y,rr=rho(y),qd=.5*rr*V*V,M=V/sos(y),[T0,m]=(MSLCUR=this,mslMotor(d,tb,rr));MSLCUR=null;const T=ramT(d,ph,tb,T0,V,M,y,rr,m);this.mass=m;this.thrust=T;
