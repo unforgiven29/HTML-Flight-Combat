@@ -107,7 +107,10 @@ function crew(dt){const T=tier();if(!fitted()||!twoSeat()||!PRC.auto||!rio.activ
   // maneuver: HI G in a fight (close, STT), LOW G when he is being jammed or at long range
   if(stt&&L){const d=L.pos.distanceTo(player.pos),j=radar.hoj,wm=d<12*NM_&&!j?1:0;if(PRC.has('man')&&PRC.man!==wm){PRC.man=wm;say(wm?'High G.':'Low G.','prc-man',12);}
     // track: AOJ OUT only if home-on-jam is false-alarming (he lets it ride when the jammer is real); the RIO leaves it on AUTO
-    if(PRC.trk!==0){PRC.trk=0;}
+    // jammed (strobes up, no home-on-jam): he sets MANUAL and dials the closure from the scope
+    {const jam=!radar.hoj&&radar.strobes.size>0&&PRC.has('trk'),r=L.pos.clone().sub(player.pos),dd=Math.max(r.length(),1),vk=-r.dot(L.vel.clone().sub(player.vel))/dd*1.944;
+     const wt=jam?2:0;if(PRC.trk!==wt){PRC.trk=wt;say(wt?'Manual track, jammer.':'Auto track.','prc-trk',15);}
+     if(wt===2){const idx=vk<-150?1:vk<0?0:2+Math.max(0,Math.min(9,Math.round(vk/100)));if(PRC.vc!==idx)PRC.vc=idx;}}
     // aspect switch to match the target
     const rel=L.pos.clone().sub(player.pos).normalize(),jf=L.fwd?L.fwd(new V3()):null;
     if(jf&&PRC.has('asp')){const asp=-jf.dot(rel),wa=asp>.75?1:asp>.35?2:asp<-.75?4:asp<-.35?3:0;if(PRC.asp!==wa)PRC.asp=wa;}}
@@ -116,6 +119,13 @@ function crew(dt){const T=tier();if(!fitted()||!twoSeat()||!PRC.auto||!rio.activ
   const wdw=(rio.prio&&!stt)?0:1;if(PRC.has('dw')&&PRC.dw!==wdw&&!stt){PRC.dw=wdw;applyDw();say(wdw?'Wide sweep.':'Narrow sweep.','prc-dw',20);}
   // gain: back it off if the picture is full of ground clutter (look-down at low level), raise it at range
   if(PRC.has('gain')){const alt=player.pos.y*3.281,wg=(radar.antEl<-3*D&&alt<12000)?.35:.5;PRC.gC+=clamp_(wg-PRC.gC,-.05,.05);pushGain();if(Math.abs(wg-PRC.gC)>.06)say(wg<.4?'Gain down, clutter.':'Gain up.','prc-g',20);}
+  // range scale: the smallest one that holds the nearest contact with room (not in track)
+  if(!stt){const near=(()=>{let b=1e9;for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj||!rio.hostile(j))continue;b=Math.min(b,player.pos.distanceTo(j.pos)/NM_);}return b;})(),
+    w=near*1.25;let ri=radar.ranges.findIndex(v=>v*(radar.unit/NM_)>=w);if(ri<0)ri=radar.ranges.length-1;
+    crew.rt=(crew.rt||0)-1.2;if(near<1e9&&ri!==radar.ri&&crew.rt<=0){crew.rt=8;radar.ri=ri;say('Range '+Math.round(radar.ranges[ri]*(radar.unit/NM_))+'.','prc-ri',12);}
+    // MODE: MAP with a ground weapon selected (AIR-GRD for the gun / rockets), back to RDR for air-to-air; B-scope for air, PPI for the map
+    if(PRC.opts('mode')&&PRC.opts('mode').includes(2)){const ag=typeof isAG==='function'&&isAG(game.wsel),wm=ag?2:0;if(PRC.mode!==wm){PRC.mode=wm;applyScan();say(wm?'Ground map.':'Air mode.','prc-mode',15);}
+      if(PRC.has('disp')){const wd=wm===2?1:0;if(PRC.disp!==wd)PRC.disp=wd;}}}
   // long pulse for long range search, short pulse inside 20 miles
   if(PRC.has('pulse')){const wp=radar.ranges[radar.ri]*(radar.unit/NM_)>30?1:0;if(PRC.pulse!==wp)PRC.pulse=wp;}}
 const _rup=rio.update;rio.update=function(dt){_rup.apply(this,arguments);try{crew(dt);}catch(e){}};
