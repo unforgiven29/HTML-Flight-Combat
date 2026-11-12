@@ -2019,16 +2019,16 @@ function drawHornetHud(P,fs,lh){
 
 // MiG-29 (N019 + ILS-31): the radar picture is on the HUD (DCS manual fig. 87): range scale left, azimuth zone line below, capture strobe
 const MSC={AZ:4.6,E0:-9.4,E1:3.8};let hudScope=null;
-function drawRwsB(P){const AZ=4.6,E0=-4.6,E1=1.8,SA=radar.scopeAz||60,rng=radar.rngM,X=az=>clamp(az*R2D/SA,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
+function drawRwsB(P){const AZ=4.6,E0=-5.6,E1=2.0,SA=radar.scopeAz||60,rng=radar.rngM,X=az=>clamp(az*R2D/SA,-1,1)*AZ,Ye=r=>lerp(E0,E1,clamp(r/rng,0,1)),pt=(az,r)=>hb(X(az),Ye(r));
   const a=hb(-AZ,E0),b=hb(AZ,E1);if(!a||!b)return;hudScope={x0:a.x,x1:b.x,y0:a.y,y1:b.y};const now=performance.now()/1000;
   hx.save();hx.globalAlpha*=.6;hx.lineWidth=1;hx.strokeRect(a.x,b.y,b.x-a.x,a.y-b.y);hx.restore();
   // range scale (left): ticks every fifth, labels with the unit
   {const s0=hb(-AZ-.5,E0),s1=hb(-AZ-.5,E1);if(s0&&s1){line(s0.x,s0.y,s1.x,s1.y);hx.save();hx.font=hfont(10);for(let i=0;i<=5;i++){const y=lerp(s0.y,s1.y,i/5);line(s0.x,y,s0.x+(i%5?5:8),y);txt(String(Math.round(radar.ranges[radar.ri]*i/5)),s0.x-4,y,'right');}hx.restore();}}
   // azimuth scale (bottom): ticks every SA/3 with the limits labelled, scan sector bar and antenna caret
-  {const y0=Ye(0);hx.save();hx.font=hfont(10);for(let q=-3;q<=3;q++){const p=hb(q/3*AZ,E0-.35);if(!p)continue;line(p.x,p.y,p.x,p.y+(q%3?4:7));}
-    const l=hb(-AZ,E0-1.1),r=hb(AZ,E0-1.1);if(l&&r){txt(String(Math.round(SA)),l.x,l.y,'center');txt(String(Math.round(SA)),r.x,r.y,'center');}
-    const W=Math.min(radar.azs[radar.ai]*D2R,radar.gimbal()),c0=radar.scanC||0,za=hb(X(c0-W),E0-.35),zb=hb(X(c0+W),E0-.35);hx.lineWidth=3;if(za&&zb)line(za.x,za.y,zb.x,zb.y);hx.lineWidth=1.4;
-    const an=hb(X(radar.antAz),E0-.35);if(an){line(an.x,an.y-6,an.x,an.y+6);}hx.restore();}
+  {const y0=Ye(0);hx.save();hx.font=hfont(10);for(let q=-3;q<=3;q++){const p=hb(q/3*AZ,E0);if(!p)continue;line(p.x,p.y,p.x,p.y-(q%3?4:7));}
+    const l=hb(-AZ+.6,E0+.55),r=hb(AZ-.6,E0+.55);if(l&&r){txt(String(Math.round(SA)),l.x,l.y,'center');txt(String(Math.round(SA)),r.x,r.y,'center');}
+    const W=Math.min(radar.azs[radar.ai]*D2R,radar.gimbal()),c0=radar.scanC||0,za=hb(X(c0-W),E0+.3),zb=hb(X(c0+W),E0+.3);hx.lineWidth=3;if(za&&zb)line(za.x,za.y,zb.x,zb.y);hx.lineWidth=1.4;
+    const an=hb(X(radar.antAz),E0+.3);if(an){line(an.x,an.y-6,an.x,an.y+6);}hx.restore();}
   irNoise(hx,(u,v)=>hb(u*AZ,lerp(E0,E1,v)),1,hx.globalAlpha,SA*D2R,1,false);
   for(const[j,s]of radar.strobes){if(Math.abs(s.az)>SA*D2R)continue;const p=pt(s.az,0),q=pt(s.az,rng);if(p&&q){hx.save();hx.globalAlpha*=clamp(1-(now-s.t)/4.5,.25,1);hx.setLineDash([4,5]);line(p.x,p.y,q.x,q.y);hx.setLineDash([]);hx.restore();}}
   const tws=radar.mode==='TWS';
@@ -12665,13 +12665,13 @@ function ikshHud(P,fs0){const now=performance.now()/1000,k=KPX*D2R,fs=Math.max(9
       const t=-Math.PI/2-.35+(ad+5)/35*1.95;line(c.x,c.y,c.x+Math.cos(t)*R*.95,c.y+Math.sin(t)*R*.95);}}
   }else{
     // ---- range bar with zone flags and the ⇦ target caret ----
-    const maxR=radar.ranges[radar.ri]*1000,R0=C-3.2,R1=C+3.6,Yr=v=>lerp(R0,R1,clamp(v/maxR,0,1)),X=-3.7;
+    const maxR=radar.ranges[radar.ri]*1000,R0=C-3.2,R1=C+3.6,Yr=v=>lerp(R0,R1,clamp(v/maxR,0,1)),X=-3.7;if(!(radar.mode==='ACM'&&radar.acm==='VERT'&&!TG)){/* ACM vertical scan: no range bar until it locks */
     {const a=hb(X,R1),b=hb(X,R0);if(a&&b){line(a.x,a.y,b.x,b.y);const nt=Math.round(maxR/1000),st=nt>100?40:nt>50?20:nt>20?5:nt>10?2:1;
       for(let q=0;q<=nt;q+=st){const p=hb(X,Yr(q*1000));if(!p)continue;line(p.x,p.y,p.x+7,p.y);hx.font=hfont(sm);txt(String(q),p.x-4,p.y,'right');hx.font=hfont(fs);}
       line(a.x,a.y,a.x+7,a.y);}
      if(dl&&!noR){const fl=v=>{const p=hb(X,Yr(v));if(p){hx.beginPath();hx.moveTo(p.x+2,p.y);hx.lineTo(p.x+11,p.y-4);hx.lineTo(p.x+11,p.y+4);hx.closePath();hx.fill();}};fl(dl.rmax);fl(dl.rmin);
        const p=hb(X,Yr(dl.rne));if(p){hx.lineWidth=4;line(p.x+2,p.y,p.x+13,p.y);hx.lineWidth=1.6;}}
-     if(TG&&!noR){const p=hb(X,Yr(r));if(p){hx.beginPath();hx.moveTo(p.x+3,p.y);hx.lineTo(p.x+11,p.y-6);hx.lineTo(p.x+11,p.y-2.5);hx.lineTo(p.x+24,p.y-2.5);hx.lineTo(p.x+24,p.y+2.5);hx.lineTo(p.x+11,p.y+2.5);hx.lineTo(p.x+11,p.y+6);hx.closePath();hx.stroke();}}}
+     if(TG&&!noR){const p=hb(X,Yr(r));if(p){hx.beginPath();hx.moveTo(p.x+3,p.y);hx.lineTo(p.x+11,p.y-6);hx.lineTo(p.x+11,p.y-2.5);hx.lineTo(p.x+24,p.y-2.5);hx.lineTo(p.x+24,p.y+2.5);hx.lineTo(p.x+11,p.y+2.5);hx.lineTo(p.x+11,p.y+6);hx.closePath();hx.stroke();}}}}
     // ---- mode column ----
     {const ch=irst?'ТП':'РЛП',l2=!irst&&!on?(radar.power==='OFF'?'ВЫКЛ':'ГОТ'):ch;TA(tr(l2),-7.5,1.1,'center');
      if(TG)TA(tr(hemi),6.6,-5.0,'center');if(radar.mode==='TWS'&&on)TA(tr('СНП'),-7.5,-.1,'center');
