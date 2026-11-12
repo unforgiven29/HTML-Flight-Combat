@@ -273,6 +273,16 @@ function pgSAR(c,w,h,P){hdr(c,w,'SAR1','NAV',1);const rng=TS.rngs[TS.rng]*1852*.
   const s=Math.min(w-20,h-130),x0=(w-s)/2,y0=60;c.imageSmoothingEnabled=true;c.drawImage(_sar,x0,y0,s,s);c.strokeStyle=G;c.lineWidth=2;c.strokeRect(x0,y0,s,s);
   for(let i=1;i<4;i++){c.strokeStyle='rgba(71,245,138,.55)';c.beginPath();c.arc(x0+s/2,y0+s,s*i/4,Math.PI*1.2,Math.PI*1.8);c.stroke();NS(c,String(Math.round(rng/1852*i/4)),x0+s/2+4,y0+s-s*i/4+16,16,G);}
   c.strokeStyle=WH;c.lineWidth=2;c.beginPath();c.moveTo(x0+s/2,y0+s);c.lineTo(x0+s/2,y0);c.stroke();jet(c,x0+s/2,y0+s-14,12,WH);
+  // ATR: every ground unit in the patch is classified from its image (SAM / AAA / tank / truck / structure) and named
+  try{const hd=P.hdg*D,sx=Math.sin(hd),sz=-Math.cos(hd),rx=Math.cos(hd),rz=Math.sin(hd),CL={SURN:['SAM','SA-6 RADAR'],TEL:['SAM','SA-6 TEL'],ZSU:['AAA','ZSU-23-4'],TANK:['ARM','MBT'],TRUCK:['SOFT','TRUCK'],BLDG:['BLDG','DEPOT']},rows=[];
+    for(const u of(typeof GND!=='undefined'?GND.units:[])){if(!u.alive)continue;const dx=u.pos.x-P.pos.x,dz=u.pos.z-P.pos.z,f=dx*sx+dz*sz,l=dx*rx+dz*rz;if(f<0||f>rng||Math.abs(l)>rng/2)continue;
+      const x=x0+s/2+l/rng*s,y=y0+s-f/rng*s,k=CL[u.kind]||['UNK',u.T&&u.T.n||'?'],hos=u.side!==P.side,col=hos?(k[0]==='SAM'||k[0]==='AAA'?RD:AM):CY;c.strokeStyle=col;c.lineWidth=2.5;
+      c.fillStyle='rgba(255,255,255,.9)';c.fillRect(x-2,y-2,4,4);
+      if(k[0]==='SAM'){c.beginPath();c.moveTo(x,y-12);c.lineTo(x+12,y);c.lineTo(x,y+12);c.lineTo(x-12,y);c.closePath();c.stroke();}
+      else if(k[0]==='AAA'){c.beginPath();c.moveTo(x,y-12);c.lineTo(x+11,y+9);c.lineTo(x-11,y+9);c.closePath();c.stroke();}
+      else if(k[0]==='ARM'){c.strokeRect(x-10,y-7,20,14);}else if(k[0]==='SOFT'){c.beginPath();c.arc(x,y,8,0,7);c.stroke();}else{c.strokeRect(x-9,y-9,18,18);c.beginPath();c.moveTo(x-9,y-9);c.lineTo(x+9,y+9);c.stroke();}
+      if(!rows.some(r=>Math.abs(r[3]-x)<34&&Math.abs(r[4]-y)<16))NS(c,k[0],x+14,y-10,15,col);rows.push([f,k,hos,x,y]);}
+    const pr=r=>r[1][0]==='SAM'?0:r[1][0]==='AAA'?1:2;rows.sort((a,b)=>pr(a)-pr(b)||a[0]-b[0]);rows.slice(0,5).forEach(([f,k,hos],i)=>NS(c,(hos?'H ':'F ')+k[1]+'  '+(f/1852).toFixed(1)+' NM',14,y0+14+i*20,15,hos?RD:CY));NS(c,'ATR '+rows.length+' CONTACTS',w-14,y0+14,15,G,'right');}catch(e){}
   NS(c,'MODE SAR',14,h*.9,19,G);NS(c,'RNG '+Math.round(rng/1852)+' NM',14,h*.95,18,G);NS(c,'HDG '+String(Math.round((P.hdg%360+360)%360)).padStart(3,'0'),w-14,h*.9,19,G,'right');NS(c,'ALT '+Math.round(ft(P.pos.y)),w-14,h*.95,18,G,'right');}
 const live=(cv,fb)=>(c,w,h,P)=>{try{if(cv()&&cv().width){hdr(c,w,'FCR','NAV',1);const k=Math.min(w/cv().width,(h-60)/cv().height),dw=cv().width*k,dh=cv().height*k;c.drawImage(cv(),(w-dw)/2,56,dw,dh);return;}}catch(e){}fb(c,w,h,P);};
 const DRAW={EFI:pgEFI,TSD:pgTSD,VSD:pgVSD,RCS:pgRCS,FCR:live(()=>fcrC,pgTSD),SAR:pgSAR,SMS:pgSMS,FCS:pgFCS,ENG:pgENG,FUEL:pgFUEL,DAS:pgDAS,EOTS:pgEOTS,GEAR:pgGEAR,EW:pgEW,MENU:pgMENU};
