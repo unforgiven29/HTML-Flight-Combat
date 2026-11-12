@@ -193,9 +193,9 @@ function hsiFace(c,S,P){bg(c,S);const hd=P?P.hdg:0,cx=S/2,R=S*.47;c.save();c.tra
   plate(g,x-60*KP,y+72*KP,.012,.01,(c,w,h)=>txt(c,'АБРИС',w/2,h/2,h*.5),.01,600);}
  // engine instruments: dual engine RPM, dual EGT, fuel quantity, in a column on the right edge
  gauge(g,p(634,430),27,(c,S)=>{const P=PL(),h=hl(P);bg(c,S);dial(c,S,{min:0,max:110,a0:-140,a1:140,major:10,minor:5,title:'ОБ/МИН %',fmt:v=>v/10,arcs:[[93,100,'#37c85a']]});
-   const n=(h.run&&h.start<=0?(P.n||0)*100:0);needle(c,S,lin(n*1.0,0,110,-140,140)*D,.85,.03,'#f2f2ee');needle(c,S,lin(n*.995,0,110,-140,140)*D,.7,.025,'#e8a020');});
- for(const sx of[-1,1])gauge(g,p(612+sx*17+17,486),19,(c,S)=>{const P=PL(),h=hl(P);bg(c,S);dial(c,S,{min:0,max:1000,a0:-135,a1:135,major:200,minor:100,lab:false});
-   const t=h.run?300+560*Math.min(1,(h.Pe||0)/Math.max(1,h.Pa||1)):Math.max(20,20+(h.Nr||0)*200);needle(c,S,lin(t,0,1000,-135,135)*D);});
+   const hs=P&&P.hs,e0=hs?hs.e[0].n1:(h.run&&h.start<=0?(P.n||0)*100:0),e1=hs?hs.e[1].n1:e0;needle(c,S,lin(e0,0,110,-140,140)*D,.85,.03,'#f2f2ee');needle(c,S,lin(e1,0,110,-140,140)*D,.7,.025,'#e8a020');});
+ for(const sx of[-1,1])gauge(g,p(612+sx*17+17,486),19,(c,S)=>{const P=PL(),h=hl(P);bg(c,S);const eg=P&&P.hs?P.hs.e[sx<0?0:1].tgt:null;dial(c,S,{min:0,max:1000,a0:-135,a1:135,major:200,minor:100,lab:false});
+   const t=eg!==null?eg:h.run?300+560*Math.min(1,(h.Pe||0)/Math.max(1,h.Pa||1)):Math.max(20,20+(h.Nr||0)*200);needle(c,S,lin(t,0,1000,-135,135)*D);});
  gauge(g,p(634,548),24,(c,S)=>{const P=PL();bg(c,S);dial(c,S,{min:0,max:2000,a0:-135,a1:135,major:500,minor:100,title:'ТОПЛ КГ',fmt:v=>v/100});needle(c,S,lin(P?P.totalFuel:0,0,2000,-135,135)*D);});
  // engine power indicator strip (bottom right)
  {const [x,y]=p(628,596);plate(g,x,y,.08,.016,(c,w,h)=>{txt(c,'РЕЖИМ ДВ',w*.2,h/2,h*.45);for(let i=0;i<3;i++)txt(c,['Л','ПР','ВСУ'][i],w*(.5+i*.2),h/2,h*.45,'#c8d0c8');},.005,500);}
@@ -301,6 +301,13 @@ for(const sx of[-1,1])add(new THREE.BoxGeometry(.03,.03,.1),redM,-.02+sx*.0,.0,.
 const ped=(()=>{const g=new THREE.Group();root.add(g);const ps=[];for(const s of[-1,1]){const p=new THREE.Group();p.position.set(s*.12,-.84,-.55);g.add(p);add(new THREE.BoxGeometry(.1,.015,.12),L(0x24282a),0,0,0,p);add(new THREE.BoxGeometry(.1,.1,.012),L(0x24282a),0,.04,.05,p,-.4);ps.push(p);}
   return{g,set:y=>{ps[0].position.z=-.55-y*.05;ps[1].position.z=-.55+y*.05;}};})();
 
+/* solid fill so nothing of the outside shows through the cockpit: front bulkhead behind the panel, an anti-glare cowl from the panel top to the glare shield, side walls and the floor */
+{const body=L(0x1c1f1d);
+ add(new THREE.BoxGeometry(2.0,.62,.06),body,0,-.63,-.93);                                   // bulkhead behind and below the panel, wider than the wings
+ add(new THREE.BoxGeometry(1.5,.03,.17),body,0,-.255,-.895,root,-.6);                        // cowl: panel top edge up to the glare shield
+ for(const sx of[-1,1]){add(new THREE.BoxGeometry(.05,.95,1.5),body,sx*.72,-.5,-.15);          // side walls under the canopy sills
+   add(new THREE.BoxGeometry(.5,.05,1.4),body,sx*.5,-.78,-.15);}
+ add(new THREE.BoxGeometry(1.5,.05,1.5),body,0,-.92,-.15);}                                   // floor
 /* ---------------- required members for the cockpit system ---------------- */
 out.stk=stick;out.thr=col;out.sg=.12;
 out.panelMats=[panelM,consM,wing];out.panel0=[panelM.color.getHex(),consM.color.getHex(),wing.color.getHex()];
