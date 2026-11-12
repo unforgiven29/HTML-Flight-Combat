@@ -133,10 +133,11 @@ addM({id:'F-15EX',src:'F-15E',side:'BLUE',call:'EAGLE II',nctr:'F-15',foe:'Su-35
   role:'USAF · AIR SUPERIORITY / STRIKE · APG-82(V)1 AESA · EPAWSS · FBW · 12 AAM',
   ac:{name:'F-15EX Eagle II',empty:14800,mil:152600,ab:263200,fbw:true,gLim:9,aoaLim:30,rcs:14,
     radar:R('APG-82(V)1',98*NM,[10,20,40,80,160],'NM',.92,{aesa:1,beam:2.6*D}),twsN:8,trkN:20},
-  add:{'2A':['AIM-120D'],'8A':['AIM-120D'],'2':['AIM-120D','AIM-9X'],'8':['AIM-120D','AIM-9X']},
+  add:{'2A':['AIM-120D'],'8A':['AIM-120D'],'2':['AIM-120D','AIM-9X','AGM-88E'],'8':['AIM-120D','AIM-9X','AGM-88E']},
+  drop:['AIM-9L','AIM-9M','AIM-120A','AIM-120B','AIM-7M','AIM-7P'],
   ecm:{cold:{n:'ALQ-250 EPAWSS',jp:2,dec:.88,kg:0,cd:0,warm:10},modern:{n:'ALQ-250 EPAWSS',jp:2.2,dec:.9,kg:0,cd:0,warm:10}},
-  load:{modern:{'2A':'AIM-9X','8A':'AIM-9X','2B':'AIM-120D','8B':'AIM-120D','3C':'AIM-120D','4C':'AIM-120D','6C':'AIM-120D','7C':'AIM-120D',5:'TK'},
-        strike:{'2A':'AIM-9X','8A':'AIM-9X','2B':'AIM-120D','8B':'AIM-120D',2:'GBU-31',8:'GBU-31',LC1:'GBU-38',LC2:'GBU-38',RC1:'GBU-38',RC2:'GBU-38',TP:'SNIPER',5:'TK'}},
+  load:{modern:{'2A':'AIM-9X','8A':'AIM-9X','2B':'AIM-120D','8B':'AIM-120D',2:'AIM-120D',8:'AIM-120D','3C':'AIM-120D','4C':'AIM-120D','6C':'AIM-120D','7C':'AIM-120D',5:'TK'},
+        strike:{'2A':'AIM-9X','8A':'AIM-9X','2B':'AIM-120D','8B':'AIM-120D',2:'GBU-31',8:'GBU-31',LC1:'GBU-38',LC2:'GBU-38',LC3:'GBU-38',RC1:'GBU-38',RC2:'GBU-38',RC3:'GBU-38',TP:'SNIPER',5:'TK'}},
   cms:[120,120]});
 
 // ---- F/A-18F Super Hornet: two-seat E, same F414-GE-400s, ~3% less internal fuel ----

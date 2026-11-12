@@ -9118,7 +9118,7 @@ function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
     renderer.clearDepth();ckShadowGate(dt);renderer.render(ckScene,ckCam);}
   if(!mUp)SNS.render();
   if(!mUp){updateHover();drawHUD();rainComposite();CAMP.cue();}}
-function applyGfx(){const m=gfx.mode;gfx.cap=m==='LOW'?1:m==='HIGH'?2:1.5;gfx.scale=m==='LOW'?.85:1;gfx.panelHz=m==='HIGH'?60:m==='LOW'?20:30;
+function applyGfx(){const m=gfx.mode;gfx.cap=m==='LOW'?1:m==='HIGH'?2:1.5;gfx.scale=m==='LOW'?.85:1;gfx.panelHz=m==='HIGH'?60:m==='LOW'?30:60;
   const sh=SET.shadow==='OFF'?0:m==='HIGH'?2048:m==='LOW'?0:1024;ckSun.castShadow=sh>0;if(sh&&gfx.shadow!==sh){ckSun.shadow.mapSize.set(sh,sh);if(ckSun.shadow.map){ckSun.shadow.map.dispose();ckSun.shadow.map=null;}}gfx.shadow=sh||gfx.shadow;
   smoke.budget=glow.budget=m==='LOW'||SET.fx==='REDUCED'?.55:1;gfx.acc=gfx.n=gfx.good=0;resize();}
 // every ~1.5 s: below ~50 fps drop the render scale a notch, after a few smooth windows creep back up (AUTO and LOW only)
@@ -9139,6 +9139,7 @@ function terrLOD(){const T=window.TERRAIN;if(!T)return;const g=T.geometry,want=g
   g.setIndex(want===2?g._idx2:g._idx1);g._lod=want;}
 function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(gfx.acc<1500)return;const avg=gfx.acc/gfx.n;gfx.acc=gfx.n=0;
   const lo=gfx.mode==='LOW'?.5:.6,hi=gfx.mode==='LOW'?.85:1;
+  if(gfx.mode==='AUTO'){if(avg>20.5)gfx.panelHz=30;else if(avg<17.6)gfx.panelHz=60;}
   if(avg>20.5&&gfx.scale>lo){gfx.scale=Math.max(lo,gfx.scale-.1);gfx.good=0;resize();}
   else if(avg<17.6&&gfx.scale<hi){if(++gfx.good>=3){gfx.scale=Math.min(hi,gfx.scale+.05);gfx.good=0;resize();}}else gfx.good=0;}
 {const seg=document.querySelector('.seg[data-k="gfx"]');if(seg)seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===gfx.mode?'true':'false'));}
@@ -9158,7 +9159,7 @@ function gfxTune(ms){if(gfx.mode==='HIGH'||ms>100)return;gfx.acc+=ms;gfx.n++;if(
 const typeOf=u=>{const k=(u&&u.kind)||'';if(u&&(u.nv!=null||u.ship||(typeof SDEF!=='undefined'&&SDEF[k])))return'SHIP';if(/^MBT/.test(k))return'TANK';if(/^IFV/.test(k))return'ZSU';if(/^INF/.test(k))return'INF';return k;};
 const wrapA=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const hash2=(x,z)=>{const s=Math.sin(x*12.9898+z*78.233)*43758.5453;return s-Math.floor(s);};
-const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D','Tornado GR.4','F-111F','Su-24M','AJS-37','JH-7','Super Etendard','A-4E'];
+const AG_ACS=['F-16','F-16C','F-18C','F-18E','F-4E','A-7D','Tornado GR.4','F-111F','Su-24M','AJS-37','JH-7','Super Etendard','A-4E','F-35A'];
 const LCODES=['1688','1511','1111','1234','2222'];
 
 /* ---------------- stores: pods and the Maverick family ---------------- */
@@ -9481,7 +9482,7 @@ window.AGR=AGR;
   return _l(pg,id);};}
 {const _m=mfdClick;mfdClick=function(id,x,y){if(AGR.active()){const P=player;
     if(id==='phscope'&&y<56){AGR.nextMode(1);return;}
-    if(id==='fcr'&&P.type==='F-16'){const n=hornOsbAt(x,y);if(n){AGR.press(n);return;}if(x>46&&x<314&&y>44&&y<306){radar.cur.az=((x-46)/268*120-60)*D2R;radar.cur.r=(306-y)/262;radar.designate();return;}}}
+    if(id==='fcr'&&(P.type==='F-16'||P.type==='F-35A')){const n=hornOsbAt(x,y);if(n){AGR.press(n);return;}const G=AGR.geo(P);if(x>G.x0&&x<G.x1&&y>G.y0&&y<G.y1){radar.cur.az=((x-G.x0)/(G.x1-G.x0)*120-60)*D2R;radar.cur.r=(G.y1-y)/(G.y1-G.y0);if(P.type==='F-16'){radar.designate();}return;}}}
   return _m(id,x,y);};}
 
 /* ---------------- pod and seeker pages on the cockpit displays ---------------- */
@@ -9733,7 +9734,7 @@ const TCS={zi:0,vdi:true,disp:true,los:null,idT:null,t:0,cv:null,box:null,rt:nul
     c.textBaseline='bottom';c.textAlign='left';if(l.trk)c.fillText((l.d/NMv).toFixed(1)+' NM',W*.03,H*.97);c.textAlign='right';if(l.trk&&l.id)c.fillText(NCTR_ID[l.tgt.type]||l.tgt.ac.name||'',W*.97,H*.97);
     if((ENV.nightK||0)>.6){c.textAlign='center';c.textBaseline='middle';c.fillText('LOW LIGHT',cx,H*.78);}c.restore();},
   render(){this.mount();const on=this.avail()&&this.disp&&this.los&&game.running&&$('#menu').hidden&&!mcam.m;if(!on){this.box.style.display='none';return;}
-    this.box.style.display='block';const now=performance.now();if(!this._t||now-this._t>90){this._t=now;this.capture();}this.paint(this.cv.getContext('2d'),320,240);}};
+    this.box.style.display='block';const now=performance.now();if(!this._t||now-this._t>(gfx.panelHz>=60?30:45)){this._t=now;this.capture();}this.paint(this.cv.getContext('2d'),320,240);}};
 window.TCS=TCS;
 {const _v=drawTcVdi;drawTcVdi=function(P){_v(P);if(TCS.avail()&&TCS.vdi&&TCS.los&&TCS.sc){const c=tcVdiC.getContext('2d');c.save();c.globalAlpha=1;TCS.paint(c,360,360);c.restore();}};}
 {const _t=GND.tick.bind(GND);GND.tick=function(dt){_t(dt);TCS.tick(dt);};}
@@ -9891,8 +9892,13 @@ SE.draw=(_d=>function(P){_d.call(this,P);if(P&&P.type==='F-15E')EMPD.draw(P);})(
 {const _mp=makePlayer;makePlayer=function(){const r=_mp.apply(this,arguments);EMPD.reset();return r;};}
 // APG-70 A/G modes: RBM (real beam map), HRM (SAR high-resolution patch map, three patch sizes), GMT, SEA, AGR (air-to-ground ranging)
 {const A=window.V121.AGR,_m=A.modesFor.bind(A),_l=A.levels.bind(A),_f=A.fac.bind(A),_lb=A.label.bind(A);
-  A.modesFor=P=>P&&P.type==='F-15E'?['GM','EXP','GMT','SEA','AGR']:_m(P);A.levels=P=>P&&P.type==='F-15E'?3:_l(P);A.fac=P=>P&&P.type==='F-15E'?[4,8,16][A.lvl-1]||4:_f(P);
-  A.label=P=>{if(P&&P.type==='F-15E'){if(A.mode==='GM')return'RBM';if(A.mode==='EXP')return'HRM '+[1.3,.67,.33][A.lvl-1];return A.mode;}return _lb(P);};}
+  const _H=P=>P&&(P.type==='F-15E'||P.type==='F-35A');A.modesFor=P=>_H(P)?['GM','EXP','GMT','SEA','AGR']:_m(P);A.levels=P=>_H(P)?3:_l(P);A.fac=P=>_H(P)?[4,8,16][A.lvl-1]||4:_f(P);
+  A.label=P=>{if(P&&P.type==='F-35A'){if(A.mode==='GM')return'RBM';if(A.mode==='EXP')return'SAR '+[4,8,16][A.lvl-1]+'X';if(A.mode==='GMT')return'GMTI';return A.mode;}if(P&&P.type==='F-15E'){if(A.mode==='GM')return'RBM';if(A.mode==='EXP')return'HRM '+[1.3,.67,.33][A.lvl-1];return A.mode;}return _lb(P);};  const _li=A.list.bind(A);A.list=P=>{const L=_li(P);if(!P||P.type!=='F-35A')return L;
+    const pick=m=>()=>{if(A.mode!==m){A.mode=m;if(m==='EXP'&&Math.abs(radar.cur.az)<9*D2R)radar.cur.az=(radar.cur.az<0?-1:1)*14*D2R;A.sig='';flash('A/G RADAR · '+A.label(P),800);}};
+    [['RBM','GM'],['SAR','EXP'],['GMTI','GMT'],['SEA','SEA'],['AGR','AGR']].forEach(([t,m],i)=>L.push({n:6+i,t,on:A.mode===m,act:pick(m)}));
+    for(const o of L)if(o.n===2&&A.mode==='EXP')o.t='SAR\n'+A.fac(P)+'X';
+    return L;};
+}
 // A/G event log for the EVENT page
 {const _p=agPickle;agPickle=function(w){const P=player,n0=GND.bombs.length+(GND.mavs?GND.mavs.length:0);_p(w);
   if(P&&GND.bombs.length+(GND.mavs?GND.mavs.length:0)>n0){const d=new Date(),gam=Math.round(Math.asin(clamp(P.vel.y/Math.max(1,P.vel.length()),-1,1))*R2D);

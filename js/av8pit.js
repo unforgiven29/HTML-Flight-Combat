@@ -632,7 +632,7 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
   const stkG=new THREE.Group(),thrG=new THREE.Group();g.add(stkG);g.add(thrG);thrG.visible=false;
   box(stkG,.026,.34,.026,LM(0x1a1a1a,30),0,.17,0);box(stkG,.042,.12,.048,LM(0x2a2a2a,20),0,.39,-.004,-.25);box(stkG,.014,.016,.014,LM(0x777777,30),0,.455,.004);box(stkG,.012,.022,.012,LM(0xb02020,30),-.018,.43,0);box(stkG,.006,.03,.022,LM(0x888888,30),0,.37,-.03);
   let t=0;
-  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;if(!cautions(P).length)mcAck=false;if(!WARNL.some(w=>{try{return w[1](P);}catch(e){return false;}}))mwAck=false;for(const l of lamps)l(P);const tn=now();if(tn-t<.066)return;t=tn;
+  return{stkG,thrG,ctls,upd:(P)=>{if(!P)return;if(!cautions(P).length)mcAck=false;if(!WARNL.some(w=>{try{return w[1](P);}catch(e){return false;}}))mwAck=false;for(const l of lamps)l(P);const tn=now();if(tn-t<.025)return;t=tn;
         {const e=EDP(P);let h=0;try{h=q(P.pos.y-groundAt(P.pos.x,P.pos.z),.66);}catch(er){}let b=0;try{b=q(brgField(P),2)+q(distField(P),4);}catch(er){}
      FKA=[q(P.bank,229),q(P.pitch,229),q(P.hdg,2),q(P.cas,1),q(P.mach,100),q(P.alpha,229),q(P.pos.y,.66),q(P.vel?P.vel.y:0,.1),q(P.nz,20),q(P.maxNz,5),q(P.beta,115),h,b,P.gearPos>.5?1:0,STV];FK=FKA.join();
      SK=[q(P.n,50),q(P.thr,50),q(P.totalFuel,.2),q(P.gearPos,20),q(P.flapPos!=null?P.flapPos:P.flapCmd,20),q(P.sb,20),Math.floor(now()),lampTest>now()?1:0,STV,q(e.noz,2),q(e.jpt,.1),q(e.water,1),q(e.rpm,1),q(e.duct,1),(P.fire||0)>0?1:0,q(P._trimP,20),q(P.ctl?P.ctl.r:0,20),cautions(P).join('.'),P.onGnd?1:0,q(P.hdg,1),q(Math.hypot(P.vel.x,P.vel.z),1)].join();}
