@@ -1,3 +1,7 @@
+## v319
+- Hangar: 58 variants and extra types (js/hangar/jets-v319.js): F-100D, F-101A, F-104A/C, F-106B, A-4F/M, A-7E, F-4N/S/EJ, RF-4C, F-15A/D, F-16B, F/A-18A, A-6A, A-10A, F-111A, EF-111A, F-105G, Scimitar, Etendard IVM, Canberra, Buccaneer S.1, P.1154, Hunter FGA.9, Lightning F.1, Mirage F1CT/CR, 2000-9, 2000N, Typhoon T1/T3, J 35A/D, Gripen A/B, Lavi, Nesher, F-2B, J-10B, Tejas Mk2, Kaan, Marut, Hurjet, MiG-21F-13/PF, MiG-23MS/MLD/-98/BN, MiG-27M, Su-24MR, Su-25UB, Su-27P, Il-28, J-5.
+- Parameters are gameplay-level estimates; cockpits are the parent airframe's placeholders. Not yet in engine/start-up/structure tables.
+
 ## v318 — 23 more Cold War jets (hangar)
 New file `js/hangar/jets-v318.js` (after `jets-v317.js`). Clones of the closest airframe (parent's cockpit, HUD and 3D model for now), own flight numbers, radar, gun, stations and loadouts. Gameplay-level estimates.
 - **USSR:** MiG-19PM, MiG-25RB, Su-17M4, Yak-25M. **USA:** F-4C, F-4D, F-8J, F-89J, F-94C, F9F-2 Panther, F9F-8 Cougar, F-84F. **Canada / UK:** CF-105 Arrow, CF-100, TSR-2, Sea Venom. **Sweden / Italy:** J 29F, J 32B, Saab 105, G.91R/3. **France:** Mirage IVA (conventional bombs), Mirage 4000. **Yugoslavia:** J-22 Orao.
