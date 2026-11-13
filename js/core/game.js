@@ -6158,7 +6158,7 @@ function renderScore(){const el=$('#score');if(!net.on){el.hidden=true;return;}e
 // Room over PeerJS: the first player to open a room code becomes its host (a peer whose id is derived from the code); everyone else connects to that id.
 // The host relays every message to the other players, so the page needs no server of its own, only the free PeerJS signalling broker to introduce peers.
 function peerRoom(){return{async join(name){
-  const me='p'+Math.random().toString(36).slice(2,10),hid='viper-sortie-'+name.replace(/[^a-z0-9-]/g,'-'),peers=new Map(),pcb=[],ev={},conns=new Set();
+  const me='p'+Math.random().toString(36).slice(2,10),hid='viper-sortie-'+(name.replace(/[^a-z0-9-]/g,c=>'-'+c.charCodeAt(0).toString(16)+'-').replace(/-{2,}/g,'-').replace(/^-|-$/g,'')||'sortie'),peers=new Map(),pcb=[],ev={},conns=new Set();
   let role='',pr=null,hc=null,up=true;
   const say=t=>{try{const e=document.getElementById('mpStatus');if(e)e.textContent=t;}catch(_){}};   // v257: show where the join is, instead of a bare "Connecting…"
   const self=()=>({peer:me,sameTab:true,isMe:true,presence:peers.get(me)||{}}),fire=ch=>pcb.forEach(f=>f(Object.assign({peers:room.peers(),joined:[],updated:[],left:[]},ch)));
@@ -6181,6 +6181,7 @@ function peerRoom(){return{async join(name){
   const O=Object.assign({config:{iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']},
     {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'},
     {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}],sdpSemantics:'unified-plan',iceCandidatePoolSize:4}},window.PEER_OPTS||{});
+  try{const x=new URLSearchParams(location.search).get('ice')||localStorage.getItem('mpIce');if(x){const l=JSON.parse(x);if(Array.isArray(l)&&l.length)O.config.iceServers=l.concat(O.config.iceServers);}}catch(e){}   // v322: your own TURN goes first
   const keep=p=>p.on('disconnected',()=>{if(up&&pr===p)setTimeout(()=>{try{if(up&&!p.destroyed)p.reconnect();}catch(e){}},700);});   // the broker dropped us: sign back in, the data links stay up
   let hbT=0,rejoining=false;
   const dropAll=()=>{const l=[...peers.keys()].filter(k=>k!==me).map(k=>({peer:k}));l.forEach(x=>peers.delete(x.peer));if(l.length)fire({left:l});};
@@ -6202,8 +6203,14 @@ function peerRoom(){return{async join(name){
         c.on('close',()=>{conns.delete(c);if(c.pid){const l={t:'left',peer:c.pid};relay(l);handle(l);}});c.on('error',()=>{});});
       res();});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type||'error'});});});
-  const asClient=()=>new Promise((res,rej)=>{const p=new Peer(O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'could not open a link to the host (a school / work network may be blocking WebRTC; try another network or a phone hot-spot)'});},15000);
-    p.on('open',()=>{say('Room server reached · opening a link to the host…');const c=p.connect(hid,{reliable:true,serialization:'json'});
+  // v322: report what the WebRTC link is doing. Candidate types: host = LAN, srflx = via STUN, relay = via TURN. Without a relay candidate two strict NATs can never connect.
+  const ice={relay:false,srflx:false};
+  const watchIce=c=>{ice.relay=ice.srflx=false;let n=0;const iv=setInterval(()=>{const pc=c.peerConnection;if(!pc){if(++n>40)clearInterval(iv);return;}
+      if(!pc._w){pc._w=1;pc.addEventListener('icecandidate',e=>{const t=e.candidate&&e.candidate.type;if(t==='relay')ice.relay=true;if(t==='srflx')ice.srflx=true;});}
+      if(c.open||pc.connectionState==='closed'){clearInterval(iv);return;}
+      say('Opening a link to the host… ICE '+pc.iceConnectionState+' · '+(ice.relay?'relay ok':ice.srflx?'STUN only, no relay yet':'no public address yet')+' ('+(++n)+'s)');},1000);};
+  const asClient=()=>new Promise((res,rej)=>{const p=new Peer(O),t=setTimeout(()=>{try{p.destroy();}catch(e){}rej({code:'could not open a link to the host ('+(ice.relay?'a relay was reachable but the host did not answer':'no TURN relay reachable, so two strict routers cannot see each other')+'; try another network or a phone hot-spot)'});},30000);
+    p.on('open',()=>{say('Room server reached · opening a link to the host…');const c=p.connect(hid,{reliable:true,serialization:'json'});watchIce(c);
       c.on('open',()=>{clearTimeout(t);pr=p;role='client';hc=c;c.last=performance.now();keep(p);res();});
       c.on('data',m=>{c.last=performance.now();if(m&&m.t==='hb')return;handle(m);});c.on('close',()=>{if(up&&role==='client'&&hc===c)handle({t:'down'});});c.on('error',()=>{});});
     p.on('error',e=>{clearTimeout(t);try{p.destroy();}catch(x){}rej({code:e&&e.type==='peer-unavailable'?'host not found':e&&e.type||'error'});});});
