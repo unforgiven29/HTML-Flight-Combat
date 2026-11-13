@@ -2272,7 +2272,7 @@ function drawMigHud(P,fs,lh){
     if(b2){hx.setLineDash([3,3]);hx.strokeRect(b2.x-11,b2.y-11,22,22);hx.setLineDash([]);hx.fillText('2',b2.x+14,b2.y-12);}
     const bb=radar.bug&&radar.bugOK()&&radar.tracks.get(radar.bug);if(bb){const q=radar.trkPos(radar.bug,bb,now).sub(P.pos),bp1=ruAim(P,q,-AZ+.5,AZ-.5,BOT+.6,TOP-.3);if(bp1)hx.fillText('1',bp1.x+14,bp1.y-12);}
     let la=false;try{const w=game.wsel,dz=radar.bug&&dlzGet(w,radar.bug);la=!!(dz&&MSL[w]&&MSL[w].seek==='ARH'&&radar.bugOK()&&P.count(w)>0&&P.pos.distanceTo(radar.bug.pos)<dz.rmax*.95);}catch(e){}
-    const lx=hb(-AZ+1.6,BOT-.3);if(lx){hx.textAlign='left';hx.fillText(RU?'Ц1 '+(la?'ПР ':'   ')+'Ц2':'T1 '+(la?'LA ':'   ')+'T2',lx.x,lx.y);}}
+    const lx=window.IKSET&&IKSET.has(P.type)?null:hb(-AZ+1.6,BOT-.3);if(lx){hx.textAlign='left';hx.fillText(RU?'Ц1 '+(la?'ПР ':'   ')+'Ц2':'T1 '+(la?'LA ':'   ')+'T2',lx.x,lx.y);}}
   // ---- centre bottom: launch permitted, radiating, break away ----
   if(L&&radar.hoj)T('ПОМЕХА',0,RY,'center');else if(noR)T('БЕЗ Д',0,RY,'center');
   else if(permit)T('ПР',0,RY,'center');
