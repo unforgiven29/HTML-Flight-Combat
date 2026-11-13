@@ -1,3 +1,10 @@
+## v316 / v317 — 28 more jets (hangar)
+New files: `js/hangar/jets-v316.js`, `js/hangar/jets-v317.js` (loaded after `more-jets.js`). Each jet is a clone of the closest airframe (cockpit, HUD and 3D model are the parent's for now) with its own flight numbers, radar, gun, stations and loadouts. Gameplay-level estimates, not published data.
+- **v316 (12):** F-4G Wild Weasel, F-35B, F-35C, Rafale M, F-117A, F-16XL, F-15J, F-15K, MiG-29M, Su-27UB, J-10A, JAS 39D.
+- **v317 (16):** Su-9, Su-11, Su-39, Phantom FGR.2, EA-6B Prowler, F3H-2 Demon, Javelin FAW.9, Sea Vixen FAW.2, Mirage IIIC, Super Mystère B2, Vautour IIN, Mystère IVA, Swift F.7, Gnat F.1, Vampire FB.5, Meteor F.8.
+- **New missiles:** Matra R.511 (Mirage IIIC, Super Mystère B2, Vautour IIN), Fairey Fireflash (Swift F.7), RS-2US (Su-9), R-8MR / R-8MT (Su-11), AIM-7C (F3H-2).
+- Not done: own cockpits and 3D models; the jets are not in the engine, start-up and structure tables yet. Tests: 129/131, the two failures (Ka-50 DIRCM, Ka-50 gentle landing) also fail without these files.
+
 ## v315
 - **Datalink fire for US jets**: F-15C/E/EX/I, F-16V/E/I, F/A-18C/E/F, EA-18G, F-22, F-35A and F-14D (modern era; not F-14A/B or F-16C) carry the datalink and can shoot ARH missiles on link-only tracks; with no hooked link target the nearest one in the forward cone is used. Also fixed the sensor registry keeping the datalink off after start-up.
 - **IRST scope**: the Russian-style IRST C-scope now spans the real search volume (-15 to +30 deg) so the bottom quarter is no longer an empty strip; Legion IRST21 pod head-on range raised (22 km).
