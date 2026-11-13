@@ -1522,7 +1522,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   bmV(){return this.sensor==='IRST'&&!this.rotor()&&!this.spin()?7.5*D2R:this.beam;},
   barEl(){const n=this.nb();return this.elCmd+(this.bar-(n-1)/2)*this.bsp();},
   covers(){const n=this.nb(),h=(n-1)/2*this.bsp()+this.bmV()/2;return[this.elCmd-h,this.elCmd+h];},
-  stt(j){if(this.jamLock&&this.jamLock.j===j&&performance.now()/1000<this.jamLock.t){sfx.click();return;}this.fromACM=this.mode==='ACM';this.fromTWS=this.mode==='TWS';this.lock=j;this.mode='STT';this.lostT=0;sfx.click();},
+  stt(j){if(this.jamLock&&this.jamLock.j===j&&performance.now()/1000<this.jamLock.t){sfx.click();return;}this.fromACM=this.mode==='ACM';this.fromTWS=this.mode==='TWS';this.lock=j;this.sttArr=null;this.mode='STT';this.lostT=0;sfx.click();},
   drop(why){const was=this.mode;this.hoj=false;this.rngErr=0;this.pull=0;if(was==='TWS'&&this.bug&&!why){this.bug=null;this.bugMan=true;sfx.click();return;}
     this.lock=null;this.mode=was==='STT'&&this.fromACM?'ACM':was==='STT'&&this.fromTWS?'TWS':'RWS';if(this.mode!=='ACM')this.fromACM=false;if(this.mode!=='TWS'){this.fromTWS=false;this.bug=null;}
     this.acmT=0;if(why){this.notched=2;this.lostWhy=why;}},
@@ -1549,6 +1549,8 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     if(!this.on()){this.strobes.clear();this.hoj=false;if(this.lock){this.lock=null;if(this.mode==='STT')this.mode=this.fromACM?'ACM':'RWS';}this.antAz*=.9;for(const [j,tk] of this.tracks)if(!j.alive||tk.lnk||now-tk.t>10)this.tracks.delete(j);return;}
     if(this.mode==='STT'){const L=this.lock;if(!L||!L.alive){this.drop();return;}
       const a=this.ang(L.pos);this.antAz=a.az;this.antEl=a.el;
+      // Su-57: the nose array only steers about +-60 deg; past that the lock is handed to the cheek array that covers the target, which keeps the same single-target track
+      if(window.MSS&&MSS.arrOf){const q=MSS.arrOf(a.baz,a.bel),nm=q?(q.a.az===0?'NOSE':q.a.az<0?'L CHEEK':'R CHEEK'):null;if(nm&&nm!==this.sttArr){if(this.sttArr)flash('HANDOFF \u00b7 '+nm+' ARRAY',1200);this.sttArr=nm;}}
       // COOP: the radar and the IRST hand the lock to each other. When the one that has it can no longer see the target (notch, range, heat, gimbal) and the other can, the lock moves over
       if(this.coop()&&!this.hoj&&this.on()&&!this.detect1(L,a)&&this.other(()=>this.detect1(L,a)&&a.off<this.glimOf(this.sensor==='IRST'?'RDR':'IRST'))){this.sensor=this.sensor==='IRST'?'RDR':'IRST';this.lostT=0;flash('HANDOFF · '+(this.sensor==='IRST'?'IRST':'RADAR'),1000);sfx.click();}
       if(a.off>gim+2*D2R){this.drop('GIMBAL');return;}
@@ -2321,7 +2323,13 @@ function drawHMCS(P,fs){if(P.ac.cockpit==='fulcrum'){drawMigHMD(P);return;}
   const o=Math.min(W,H)*.16;txt(String(U.spd(P)),cx-o,cy-o*.7,'right');txt(U.alt(P),cx+o,cy-o*.7,'left');
   const w=game.wsel;txt(w==='GUN'?'GUN '+P.gun.ammo:SN[w]+' '+P.count(w),cx-o,cy+o*.8,'right');
   const L=radar.mode==='STT'?radar.lock:null;
-  if(L){const s=proj(L.pos);if(s)hx.strokeRect(s.x-13,s.y-13,26,26);
+  if(L){const s=proj(L.pos);if(s)hx.strokeRect(s.x-13,s.y-13,26,26);   if(P.type==='Su-57'&&radar.on()&&radar.sensor==='RDR'){const now=performance.now()/1000,sel=L||(radar.mode==='TWS'&&radar.bugOK()?radar.bug:null);
+     // the helmet shows every radar track (nose and cheek arrays alike): a diamond with its range, boxed on the selected one, a pointer for the selected one when it is off the visor
+     for(const[j,tk]of radar.tracks){if(!j.alive||tk.hoj)continue;const pos=radar.mode==='TWS'&&tk.p?radar.trkPos(j,tk,now):j.pos,sp=proj(pos),sd=window.MSS&&MSS.sideHits&&MSS.sideHits.has(j);
+       if(sp&&sp.x>0&&sp.x<W&&sp.y>0&&sp.y<H){diamond(sp.x,sp.y,j===sel?8:6);if(j===sel)hx.strokeRect(sp.x-14,sp.y-14,28,28);if(sd){hx.beginPath();hx.arc(sp.x,sp.y,1.6,0,7);hx.fill();}
+         hx.font=hfont(Math.max(8,fs-3));txt((pos.distanceTo(P.pos)/1000).toFixed(0),sp.x,sp.y+(j===sel?24:16),'center');hx.font=hfont(fs);}
+       else if(j===sel){const rel=pos.clone().sub(camera.position).applyQuaternion(qInv(camera.quaternion)),an=Math.atan2(-rel.y,rel.x);line(cx+Math.cos(an)*100,cy+Math.sin(an)*100,cx+Math.cos(an)*130,cy+Math.sin(an)*130);}}}
+
     else{const rel=L.pos.clone().sub(camera.position).applyQuaternion(qInv(camera.quaternion)),an=Math.atan2(-rel.y,rel.x);line(cx+Math.cos(an)*30,cy+Math.sin(an)*30,cx+Math.cos(an)*90,cy+Math.sin(an)*90);}
     txt(RS(P,L.pos.distanceTo(P.pos)),cx+o,cy+o*.8,'left');}
   const wd=MSL[w];if(wd&&wd.seek==='IR'&&wd.gimbal>=60*D2R){const Tg=irTarget(w),s=Tg?proj(Tg.pos):{x:cx,y:cy};if(s){circ(s.x,s.y,18);diamond(s.x,s.y,7);}}

@@ -301,7 +301,7 @@ addM({id:'MiG-35',src:'MiG-29SMT',side:'RED',call:'FULCRUM-F',nctr:'MIG-29',foe:
 // ---- Su-30MKI: Su-30SM's ancestor (canards, AL-31FP TVC, N011M Bars, OLS-30) with Indian / Israeli / French kit: Astra, BrahMos-A, R-77, R-73 ----
 addM({id:'Su-30MKI',src:'Su-30SM',side:'RED',call:'FLANKER-H',nctr:'SU-30',foe:'F-16C',eng:'2× AL-31FP',crew:'WSO',hms:'HMS_ALWAYS',irstn:'OLS-30',ccip:true,
   role:'INDIA · TWO-SEAT AIR SUPERIORITY / STRIKE · N011M BARS PESA · TVC · ASTRA / BRAHMOS-A',
-  ac:{name:'Su-30MKI',empty:18400,fuel:9640},
+  ac:{name:'Su-30MKI',empty:18400,fuel:9640,twsN:4},
   drop:['R-77-1','R-77M','R-37M','R-74M','R-74M2','Kh-38MT','Kh-59MK2','Kh-31PD','Kh-31AD','Kh-35D','P-800','UPAB-500B','UPAB-1500B','Grom-2','T220'],
   add:{3:['Astra'],4:['Astra'],5:['Astra','BrahMos-A'],6:['Astra'],7:['Astra'],8:['Astra'],11:['Astra'],12:['Astra']},
   load:{modern:{1:'R-73',10:'R-73',2:'R-73',9:'R-73',3:'Astra',8:'Astra',4:'R-27ER',7:'R-27ER',11:'R-77',12:'R-77',5:'R-77',6:'R-77'},
@@ -310,7 +310,7 @@ addM({id:'Su-30MKI',src:'Su-30SM',side:'RED',call:'FLANKER-H',nctr:'SU-30',foe:'
 // ---- Su-30MKM: Malaysian Su-30MKI derivative (N011M, OLS-30, MAWS-300 / L-150, Damocles) ----
 addM({id:'Su-30MKM',src:'Su-30SM',side:'RED',call:'FLANKER-H',nctr:'SU-30',foe:'F-18C',eng:'2× AL-31FP',crew:'WSO',hms:'HMS_ALWAYS',irstn:'OLS-30',ccip:true,
   role:'MALAYSIA · TWO-SEAT MULTIROLE · N011M BARS PESA · TVC · R-77 / Kh-31 / KAB',
-  ac:{name:'Su-30MKM',empty:18400,fuel:9640},
+  ac:{name:'Su-30MKM',empty:18400,fuel:9640,twsN:4},
   drop:['R-77-1','R-77M','R-37M','R-74M','R-74M2','Kh-38MT','Kh-59MK2','Kh-31PD','Kh-31AD','Kh-35D','P-800','UPAB-500B','UPAB-1500B','Grom-2'],
   load:{modern:{1:'R-73',10:'R-73',2:'R-73',9:'R-73',3:'R-77',8:'R-77',4:'R-27ER',7:'R-27ER',11:'R-77',12:'R-77'},
         strike:{1:'R-73',10:'R-73',3:'R-77',8:'R-77',4:'Kh-31A',7:'Kh-31P',11:'KAB-500Kr',12:'KAB-500Kr'}},cms:[96,96]});
@@ -330,7 +330,7 @@ addM({id:'Su-34',src:'Su-30SM',side:'RED',call:'FULLBACK',nctr:'SU-34',foe:'F-16
 addM({id:'Su-57',noCold:true,src:'Su-35S',side:'RED',call:'FELON',nctr:'SU-57',foe:'F-22',eng:'2× AL-41F1 (117)',hms:'HMS_ALWAYS',irstn:'101KS-V',ccip:true,
   role:'RUSSIA · 5TH-GEN AIR SUPERIORITY · N036 BYELKA AESA · 101KS-V · 3D TVC · INTERNAL BAYS',
   ac:{name:'Su-57',empty:18000,fuel:10300,S:78.8,CLa:4.6,cd0:.0175,k:.115,mil:176600,ab:294200,gLim:9,aoaLim:40,rcs:.3,irs:1.3,dW:35000,tvc:{pitch:15,yaw:15},
-    radar:R('N036 Byelka',130*NM/* 180-200 km vs 1 m2 */,[10,25,50,100,200,400],'KM',.9,{aesa:1,beam:2.4*D}),irst:true,ols:{tail:90000,head:35000,lrf:20000},twsN:8,trkN:60},
+    radar:R('N036 Byelka',130*NM/* 180-200 km vs 1 m2 */,[10,25,50,100,200,400],'KM',.9,{aesa:1,beam:2.4*D}),irst:true,ols:{tail:90000,head:35000,lrf:20000},twsN:10,trkN:60},
   stn:{1:['R-74M2','R-74M'],10:['R-74M2','R-74M'],5:['R-77M','R-77-1','Kh-38MT','KAB-500Kr','KAB-500L','Grom-2'],6:['R-77M','R-77-1','Kh-38MT','KAB-500Kr','KAB-500L','Grom-2'],
        '5B':['R-77M','R-77-1'],'6B':['R-77M','R-77-1'],2:['R-74M2','R-77-1'],9:['R-74M2','R-77-1'],
        3:['R-77-1','R-37M','Kh-59MK2','Kh-31P','Kh-31A','Kh-35U','KAB-1500L'],8:['R-77-1','R-37M','Kh-59MK2','Kh-31P','Kh-31A','Kh-35U','KAB-1500L'],

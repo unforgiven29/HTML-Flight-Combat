@@ -160,7 +160,7 @@ PLANES.add('su27',{
     ACROLE['Su-27']='USSR · AIR SUPERIORITY · R-27 / R-73';
 
     // ---------- Su-27SM: upgraded N001V, two-target TWS, R-77 (cockpit still the Su-27S pit for now) ----------
-    AC['Su-27SM']=Object.assign({},AC['Su-27'],{name:'Su-27SM',empty:16700,twsN:2,
+    AC['Su-27SM']=Object.assign({},AC['Su-27'],{name:'Su-27SM',empty:16700,twsN:10,
       radar:Object.assign({},AC['Su-27'].radar,{name:'N001V',R0:52*NM,ecc:.6})});
     cloneT('Su-27','Su-27SM');
     STN['Su-27SM']=JSON.parse(JSON.stringify(STN27));
@@ -491,7 +491,7 @@ PLANES.add('su27',{
       makeSu30SM=eval('('+src+')');}catch(e){console.warn('Su-30SM model fallback',e);}
     AC[T30]=Object.assign({},B,{name:'Su-30SM',model:makeSu30SM,st:S30ST,empty:18800,fuel:9400,dW:26000,mil:149000,ab:245200,S:62,CLa:4.6,cd0:.0198,k:.118,
       gLim:9,aoaLim:26,fbw:true,ovrOK:false,rcs:13,irs:1.42,dep:{a:40,rock:.45,spin:1.8},tkG:[9,9],tvc:{pitch:15,yaw:10},s30:true,
-      ols:{tail:38000,head:18000,lrf:12000},irst:true,rio:true,wso:true,twsN:4,trkN:15,
+      ols:{tail:38000,head:18000,lrf:12000},irst:true,rio:true,wso:true,twsN:10,trkN:15,
       radar:Object.assign({},B.radar,{name:'N011M',R0:75*NM/* 140 km head-on vs a MiG-29-size target, 60 km pursuit */,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.78,pesa:1,beam:2.8*D2R}),
       rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
     RGIM['N011M']=[90,56,40,1];
@@ -1011,7 +1011,7 @@ PLANES.add('su27',{
     try{
       const S30=AC['Su-30SM'],B=AC['Su-27SM'];
       cloneType('Su-27SM','Su-35S',{name:'Su-35S',tvc:{pitch:15,yaw:15},empty:19000,fuel:11500,dW:27500,mil:172600,ab:284400,S:62,CLa:4.6,cd0:.0188,k:.118,gLim:9,aoaLim:28,fbw:true,rcs:3,irs:1.4,
-        dep:{a:42,rock:.4,spin:1.7},ols:{tail:90000,head:35000,lrf:20000},irst:true,twsN:4,trkN:30,ff:[.35,2.9,13.4],
+        dep:{a:42,rock:.4,spin:1.7},ols:{tail:90000,head:35000,lrf:20000},irst:true,twsN:10,trkN:30,ff:[.35,2.9,13.4],
         radar:Object.assign({},B.radar,{name:'Irbis-E',R0:104*NM/* 200 km vs 3 m2 wide search (350-400 km in a 100 sq-deg sector) */,ranges:[10,25,50,100,200,400],unit:1000,ul:'KM',ecc:.85,pesa:1,beam:2.5*D2R}),rel:B.rel.slice(),migRel:B.migRel?B.migRel.slice():undefined});
       RGIM['Irbis-E']=[120,60,60,1];
       if(S30&&STN['Su-30SM']){STN['Su-35S']={};for(const k of Object.keys(STN['Su-30SM']))STN['Su-35S'][k]=STN['Su-30SM'][k].filter(w=>w!=='T220');}
