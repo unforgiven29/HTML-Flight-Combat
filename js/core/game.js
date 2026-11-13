@@ -5579,7 +5579,7 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
           ['3','2','1','РЛ','I','II','III','φ0 I','φ0 II'].forEach((t,i)=>{const a=-2.2+i*.55;lt(c,t,150+Math.sin(a)*96,205-Math.cos(a)*96,t.length>2?11:14);});
           lt(c,'БС',26,168,16);lt(c,'Т',290,150,16);lt(c,'СИСТ',150,305,14);
           lt(c,'ПУ',300,214,16);lt(c,'ВЫК',296,315,14);lt(c,'ИЗЛ',60,342,16);lt(c,'Э',150,345,13);lt(c,'ВЫК',60,478,15);
-          lt(c,'АВТ',190,405,14);lt(c,'РУЧН',192,495,14);lt(c,'НАВЕД',250,448,11);lt(c,'ППС',324,372,15);lt(c,'ЗПС',320,480,14);lt(c,'МСКЦ',386,428,11);},.021);
+          lt(c,'АВТ',190,405,14);lt(c,'РУЧН',192,495,14);lt(c,'НАВЕД',250,448,11);lt(c,'ППС',324,372,15);lt(c,'ЗПС',320,480,14);lt(c,'МСКЦ',386,428,11);lt(c,'СДЦ',350,186,14);lt(c,'ВЫК',350,284,13);},.021);
         let[x,y]=pc(150,205);dial(g,x,y,.016,'СИСТ · system / radar mode: БС 3-2-1 (side-lobe coherent), РЛ, Т I-III and Т φ0 I-II (IRST)',
           {n:9,get:()=>{if(mw()==='IR')return sys.mig.sist>=4?sys.mig.sist:4;if(mw()==='RAD')return sys.mig.sist<=3?sys.mig.sist:3;return sys.mig.sist??3;},
            set:v=>{sys.mig.sist=v;sys.mig.rmode=sys.mig.rmode||1;migWCS(MWCS.indexOf(v<4?'RAD':'IR'));},
@@ -5587,7 +5587,8 @@ const regrp=(par,n0,px,py)=>{const g=new THREE.Group();g.position.set(px,py,0);c
         [x,y]=pc(282,258);lever(g,x,y,['ПУ · parametric amplifier on (no effect here)','ВЫК · off'],'ПУ / ВЫК · parametric amplifier',()=>sys.mig.puOff?1:0,v=>sys.mig.puOff=v,.03);
         [x,y]=pc(90,408);lever(g,x,y,['ИЗЛ · radiating','ЭКВ · equivalent (dummy load)','ВЫК · off'],'ИЗЛ / ЭКВ / ВЫК · transmitter',PWR.get,PWR.set,.03);
         [x,y]=pc(190,450);lever(g,x,y,['АВТ · GCI steering (ARL-SM datalink)','РУЧН · manual'],'НАВЕД · АВТ / РУЧН · GCI guidance',()=>sys.mig.guid?0:1,v=>GCI.setGuid(v===0),.03);
-        [x,y]=pc(322,430);lever(g,x,y,['МСКЦ · low-speed targets (radar search mode as set)','ППС · front hemisphere','ЗПС · rear hemisphere'],'МСКЦ / ППС / ЗПС · target aspect',()=>sys.mig.rmode===3?2:sys.mig.rmode===2?1:0,v=>{sys.mig.rmode=[1,2,3][v];if(mw()==='RAD')migWCS(sys.mig.wcs);},.03);}
+        [x,y]=pc(322,430);lever(g,x,y,['МСКЦ · low-speed targets (radar search mode as set)','ППС · front hemisphere','ЗПС · rear hemisphere'],'МСКЦ / ППС / ЗПС · target aspect',()=>sys.mig.rmode===3?2:sys.mig.rmode===2?1:0,v=>{sys.mig.rmode=[1,2,3][v];if(mw()==='RAD')migWCS(sys.mig.wcs);},.03);
+        [x,y]=pc(350,235);lever(g,x,y,['СДЦ · MTI on: ground clutter cancelled, shorter range, slow and beaming targets lost','ВЫК · off: raw pulse video'],'СДЦ / ВЫК · moving target selection (MTI)',()=>sys.mig.mti?0:1,v=>{sys.mig.mti=v?0:1;flClutter.v.fill(0);},.03);}
       // ============================ LEFT COLUMN ============================
       round(MG.ias,.048,PX(510),PY(718),fg);round(MG.alt,.05,PX(510),PY(830),fg);round(MG.mach,.05,PX(510),PY(940),fg);
       // САУ lamp box

@@ -1,3 +1,7 @@
+## v323
+- MiG-23ML: the radar panel (N003-34) now has the СДЦ / ВЫК lever for MTI. It was only wired to the СДЦ lamp and the scope, with no switch in the cockpit (the MiG-29 had one). Same state as before (`sys.mig.mti`): ON cancels ground clutter, shortens the range and loses slow or beaming targets; OFF shows raw pulse video.
+- Position of the lever (right of the ПУ / ВЫК lever, above the МСКЦ / ППС / ЗПС one) is my placement: the reference photos are not in the repo, so check it against the panel photo. Gameplay-level model, not published data.
+
 ## v321
 - 18 missing weapons (js/hangar/weapons-v321.js), each cloned from the nearest existing entry with its own mass / size / range, then put on the jets that carried it: AIM-9C, AIM-9H, AIM-7D, AIM-26B, Python 4, Shafrir 1, AAM-3, AGM-12B/C Bullpup, AGM-78B, AGM-62A Walleye, GBU-8, GBU-15, GBU-27 (F-117A default), BLU-27 napalm, Kh-23, Kh-25MP, Kh-28. Gameplay-level estimates; Walleye is a rocket-model stand-in for a glide bomb; napalm uses the blast/fragment model.
 
