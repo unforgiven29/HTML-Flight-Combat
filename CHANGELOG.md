@@ -1,6 +1,8 @@
 ## v320
 - Hangar index: the 109 jets from v316-v319 were all in a collapsed OTHER group; they now sit in their families (British Cold War, Dassault, Saab, Canadian, Light Bombers...) with roles.
 - Own 3D airframes (jet-models.js) for 43 of them that are not the same airframe as their parent (Javelin, Sea Vixen, F-117A, Mirage IV, CF-105, TSR-2, Il-28, Canberra, EA-6B, Su-9, F9F, F-84F, G.91, Lavi, Kaan and more). Dimensions are public-record rounded; wing sweeps/chords estimated. Variants of the same airframe keep the parent's model.
+- Weapons audit (js/hangar/jets-v320-loads.js) for all 109 jets from v316-v319: station lists cut to what each jet carried in service, correct cold-war / modern / strike default loadouts (Mirage 4000, Gnat, Vampire, Meteor, Il-28, F-4C/D/N/S, MiG-23 and more). Parameters are gameplay-level estimates.
+- New missile R-3R (K-13R, SARH) on the MiG-21PF.
 
 ## v319
 - Hangar: 58 variants and extra types (js/hangar/jets-v319.js): F-100D, F-101A, F-104A/C, F-106B, A-4F/M, A-7E, F-4N/S/EJ, RF-4C, F-15A/D, F-16B, F/A-18A, A-6A, A-10A, F-111A, EF-111A, F-105G, Scimitar, Etendard IVM, Canberra, Buccaneer S.1, P.1154, Hunter FGA.9, Lightning F.1, Mirage F1CT/CR, 2000-9, 2000N, Typhoon T1/T3, J 35A/D, Gripen A/B, Lavi, Nesher, F-2B, J-10B, Tejas Mk2, Kaan, Marut, Hurjet, MiG-21F-13/PF, MiG-23MS/MLD/-98/BN, MiG-27M, Su-24MR, Su-25UB, Su-27P, Il-28, J-5.
