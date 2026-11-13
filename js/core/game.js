@@ -1549,8 +1549,13 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
     if(!this.on()){this.strobes.clear();this.hoj=false;if(this.lock){this.lock=null;if(this.mode==='STT')this.mode=this.fromACM?'ACM':'RWS';}this.antAz*=.9;for(const [j,tk] of this.tracks)if(!j.alive||tk.lnk||now-tk.t>10)this.tracks.delete(j);return;}
     if(this.mode==='STT'){const L=this.lock;if(!L||!L.alive){this.drop();return;}
       const a=this.ang(L.pos);this.antAz=a.az;this.antEl=a.el;
-      // Su-57: the nose array only steers about +-60 deg; past that the lock is handed to the cheek array that covers the target, which keeps the same single-target track
-      if(window.MSS&&MSS.arrOf){const q=MSS.arrOf(a.baz,a.bel),nm=q?(q.a.az===0?'NOSE':q.a.az<0?'L CHEEK':'R CHEEK'):null;if(nm&&nm!==this.sttArr){if(this.sttArr)flash('HANDOFF \u00b7 '+nm+' ARRAY',1200);this.sttArr=nm;}}
+      // Su-57: the nose array only steers about +-60 deg; past that the single-target file is handed to the cheek array that covers the target. The hand-off takes about half a second
+      // (the receiving array has to put its first dwells on the predicted position) during which the track is coasted. The arrays are fixed to the airframe but their beams are laid in
+      // earth-stabilised space from the track file, so banking or pitching never breaks the file; only a target that ends up outside every array's cone is lost, after a short memory
+      if(this.sttHand>0)this.sttHand-=dt;
+      if(window.MSS&&MSS.arrOf&&MSS.fit&&MSS.fit.arrays){const q=MSS.arrOf(a.baz,a.bel),nm=q?(q.a.az===0?'NOSE':q.a.az<0?'L CHEEK':'R CHEEK'):null;
+        if(nm&&nm!==this.sttArr){if(this.sttArr){this.sttHand=.5;flash('HANDOFF \u00b7 '+this.sttArr+' \u2192 '+nm+' ARRAY',1400);}this.sttArr=nm;}
+        this.sttCover=!!nm;}else this.sttCover=true;
       // COOP: the radar and the IRST hand the lock to each other. When the one that has it can no longer see the target (notch, range, heat, gimbal) and the other can, the lock moves over
       if(this.coop()&&!this.hoj&&this.on()&&!this.detect1(L,a)&&this.other(()=>this.detect1(L,a)&&a.off<this.glimOf(this.sensor==='IRST'?'RDR':'IRST'))){this.sensor=this.sensor==='IRST'?'RDR':'IRST';this.lostT=0;flash('HANDOFF · '+(this.sensor==='IRST'?'IRST':'RADAR'),1000);sfx.click();}
       if(a.off>gim+2*D2R){this.drop('GIMBAL');return;}
@@ -1558,7 +1563,7 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       const J=this.jam(L);this.hoj=!!(J&&J.noise&&a.d>J.bt);
       if(this.hoj){if(this.on()&&terrLOS(player.pos,L.pos)&&a.d<this.rdet(L,a)*1.5)this.lostT=0;else{this.lostT+=dt;if(this.lostT>this.lostG){this.drop('LOST');return;}}this.strobes.set(L,{az:a.az,el:a.el,d:a.d,t:now});}
       else{if(L.isGhost){L._life=(L._life==null?2+Math.random()*7:L._life)-dt;if(L._life<=0){L.alive=false;this.drop('LOST');return;}}this.sttAcc=(this.sttAcc||0)+dt;let lost=false;
-        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=a.off<gim&&Math.random()<pdOf(this.snr(L,a,window.BEAM?BEAM.k(L,a):1)*8);if(ok)this.lostT=0;else{this.lostT+=.1*(this.notch(L,a)?1:.35);if(this.lostT>this.lostG){lost=true;break;}}}   // a dropout from range eclipsing or a Doppler blind speed is coasted through (track memory about 3 s) and the PRF set moves on; a real notch still breaks it at the old rate
+        while(this.sttAcc>=.1){this.sttAcc-=.1;const ok=this.sttHand>0||a.off<gim&&Math.random()<pdOf(this.snr(L,a,window.BEAM?BEAM.k(L,a):1)*8);if(ok)this.lostT=0;else{this.lostT+=.1*(this.notch(L,a)?1:.35);if(this.lostT>this.lostG+(this.noseHw?1.3:0)){lost=true;break;}}}   // a dropout from range eclipsing or a Doppler blind speed is coasted through (track memory about 3 s) and the PRF set moves on; a real notch still breaks it at the old rate
         if(lost){this.drop(this.notch(L,a)?'NOTCH':'LOST');return;}}
       // deception: the range / velocity gate is walked off the echo, the displayed range creeps away, and when the jammer lets go the track breaks
       if(J&&J.dec&&a.d>J.btD){this.pull=Math.max(0,this.pull+dt*J.rate*(Math.random()<dt*.5*this.ecc?-2:1));this.rngErr=this.pull*this.pull*2600;
