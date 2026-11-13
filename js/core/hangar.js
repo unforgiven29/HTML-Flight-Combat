@@ -61,6 +61,19 @@ const ROLE={'F-16':'AS','F-16C':'MR','F-16V':'MR','F-16E':'MR','F-16I':'MR','F-1
  'J-11':'AS','J-11B':'AS','J-15T':'MR','J-16':'MR','J-20':'AS','J-35':'MR','J-10C':'MR','JF-17':'MR','J-7G':'AS','J-8F':'IN','J-6':'AS','JH-7':'ST','JH-7A':'ST','Q-5':'CS'};
 const ROLES=[['AS','AIR SUPERIORITY'],['MR','MULTIROLE'],['ST','STRIKE'],['CS','CLOSE SUPPORT'],['IN','INTERCEPTOR'],['EW','ELECTRONIC ATTACK'],['LT','LIGHT / TRAINER'],['HC','ATTACK HELICOPTER']];
 const NATS=[['US','US'],['EU','EUROPE'],['RU','RUSSIA'],['CN','CHINA'],['OT','OTHER']];
+// v320 — jets added by the hangar batches (MJ.NEW) join their parent's family and role unless FAMFIX moves them
+const FAMFIX={'F-117A':'F-22 / F-35','Il-28':'LIGHT BOMBERS','Lavi':'KFIR','Nesher':'KFIR','Kaan':'ASIA-PACIFIC','Marut':'ASIA-PACIFIC','Hurjet':'ASIA-PACIFIC','Tejas Mk2':'ASIA-PACIFIC','F-2B':'ASIA-PACIFIC',
+ 'Saab 29':'SAAB','Saab 32':'SAAB','Saab 105':'SAAB','G.91':'EUROPEAN JOINT','J-22 Orao':'EUROPEAN JOINT','CF-105':'CANADIAN','CF-100':'CANADIAN',
+ 'Javelin FAW.9':'BRITISH COLD WAR','Sea Vixen FAW.2':'BRITISH COLD WAR','Sea Venom':'BRITISH COLD WAR','Swift F.7':'BRITISH COLD WAR','Gnat F.1':'BRITISH COLD WAR','Vampire FB.5':'BRITISH COLD WAR','Meteor F.8':'BRITISH COLD WAR',
+ 'Phantom FGR.2':'F-4 PHANTOM II','Vautour IIN':'DASSAULT','Mystere IVA':'DASSAULT','Super Mystere':'DASSAULT','Mirage IV':'DASSAULT','Mirage 4000':'DASSAULT',
+ 'F-89J':'F-86 / F-8','F-94C':'F-86 / F-8','F9F-2':'F-86 / F-8','F9F-8':'F-86 / F-8','F-84F':'F-86 / F-8','F3H-2':'F-86 / F-8','F-8J':'F-86 / F-8','EA-6B':'ATTACK','Su-39':'SU-25 FROGFOOT'};
+const FAMROLE={'EA-6B':'EW','EF-111A':'EW','F-4G':'EW','F-105G':'EW','Il-28':'ST','Canberra':'ST','Su-24MR':'ST','RF-4C':'ST','Mirage F1CR':'ST','Hurjet':'LT','Saab 105':'LT','CF-100':'IN','CF-105':'IN','F-89J':'IN','F-94C':'IN','Javelin FAW.9':'IN','Sea Vixen FAW.2':'IN','Su-9':'IN','Su-11':'IN','Yak-25':'IN','Lightning F.1':'IN','F-106B':'IN','F-101A':'ST','F-104C':'ST','A-10A':'CS','Su-25UB':'CS','Su-39':'CS'};
+try{const fam=n=>FAMS.find(f=>f[0]===n);
+  if(!fam('LIGHT BOMBERS'))FAMS.push(['LIGHT BOMBERS','RU',[]]);if(!fam('CANADIAN'))FAMS.push(['CANADIAN','OT',[]]);
+  for(const sp of (window.MJ&&window.MJ.NEW)||[]){const id=sp.id;if(FAMS.some(f=>f[2].includes(id)))continue;
+    const f=fam(FAMFIX[id])||FAMS.find(f=>f[2].includes(sp.src));if(f)f[2].push(id);
+    if(!ROLE[id])ROLE[id]=FAMROLE[id]||ROLE[sp.src]||'MR';}
+}catch(e){console.warn('[hangar] families',e);}
 const FAMOF={},NATOF={};for(const [n,c,l] of FAMS)for(const t of l){FAMOF[t]=n;NATOF[t]=c;}
 
 const S={own:{q:'',nat:'',role:'',open:new Set()},foe:{q:'',nat:'',role:'',open:new Set()}};
