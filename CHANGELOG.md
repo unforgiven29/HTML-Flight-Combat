@@ -1,3 +1,6 @@
+## v321
+- 18 missing weapons (js/hangar/weapons-v321.js), each cloned from the nearest existing entry with its own mass / size / range, then put on the jets that carried it: AIM-9C, AIM-9H, AIM-7D, AIM-26B, Python 4, Shafrir 1, AAM-3, AGM-12B/C Bullpup, AGM-78B, AGM-62A Walleye, GBU-8, GBU-15, GBU-27 (F-117A default), BLU-27 napalm, Kh-23, Kh-25MP, Kh-28. Gameplay-level estimates; Walleye is a rocket-model stand-in for a glide bomb; napalm uses the blast/fragment model.
+
 ## v320
 - Hangar index: the 109 jets from v316-v319 were all in a collapsed OTHER group; they now sit in their families (British Cold War, Dassault, Saab, Canadian, Light Bombers...) with roles.
 - Own 3D airframes (jet-models.js) for 43 of them that are not the same airframe as their parent (Javelin, Sea Vixen, F-117A, Mirage IV, CF-105, TSR-2, Il-28, Canberra, EA-6B, Su-9, F9F, F-84F, G.91, Lavi, Kaan and more). Dimensions are public-record rounded; wing sweeps/chords estimated. Variants of the same airframe keep the parent's model.
