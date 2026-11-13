@@ -1654,7 +1654,7 @@ const HEAD0={pitch:-SET.look*D2R,fov:SET.fov};const head={yaw:0,pitch:HEAD0.pitc
 const HMS_ALWAYS=new Set(['MiG-29','MiG-29S','Su-27','Su-27SM','Su-33','Su-30SM','F-35A','EF-2000','Rafale','JAS-39E','Su-35S','Su-57','Su-30MKM','MiG-35','J-20','J-10C','J-16','J-11B','J-15T','J-35','KF-21','F-18F','EA-18G']),HMS_MODERN=new Set(['F-16C','F-15C','F-15E','F-18C','F-18E']);
 const helmetFit=(type,era)=>HMS_ALWAYS.has(type)||era==='modern'&&HMS_MODERN.has(type);
 const hasHelmet=()=>!!player&&helmetFit(player.type,player.era);
-const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&hasHelmet()&&(player.ac.cockpit==='fulcrum'?mw()==='HELM':Math.hypot(head.yaw,head.pitch)>.26);
+const hmcsOn=()=>view==='cockpit'&&player&&player.alive&&hasHelmet()&&(player.ac.cockpit==='fulcrum'&&player.type!=='Su-57'?mw()==='HELM':Math.hypot(head.yaw,head.pitch)>.26);
 function irTarget(type){// IR seeker: helmet-cued (if fitted and the missile can look that far), slaved to the radar/IRST track, else uncaged on the boresight
   const d=MSL[type];if(!d||d.seek!=='IR')return null;const f=player.fwd(new V3());
   const ok=(j,cone,dir)=>{if(j===player||!j.alive||IFF.hide(j))return false;const rel=j.pos.clone().sub(player.pos),dd=rel.length();
@@ -2317,7 +2317,7 @@ function drawDLZ(d,r,vc,mig){const top=hb(5.2,3),bot=hb(5.2,-8.4);if(!top||!bot)
   txt(mig?(max/1000).toFixed(0):(max/NM).toFixed(0),x+4,top.y-12,'center');const yr=Y(r);
   hx.beginPath();hx.moveTo(x-2,yr);hx.lineTo(x-10,yr-5);hx.lineTo(x-10,yr+5);hx.closePath();hx.stroke();txt(String(U.vc(player,vc)),x-14,yr,'right');
   if(r<d.rmin)cue(mig?'MIN':'MIN RNG');else if(r<d.rne)cue(mig?'SHOOT':'SHOOT');else if(r<d.rmax){const p=hb(0,-9.3);if(p)txt(mig?'SHOOT':'RNG',p.x,p.y,'center');}}
-function drawHMCS(P,fs){if(P.ac.cockpit==='fulcrum'){drawMigHMD(P);return;}
+function drawHMCS(P,fs){if(P.ac.cockpit==='fulcrum'&&P.type!=='Su-57'){drawMigHMD(P);return;}
   const cx=W/2,cy=H/2;hx.save();hx.font=hfont(fs);hx.strokeStyle=hx.fillStyle='#59ff9f';hx.shadowBlur=3;
   circ(cx,cy,12);line(cx-22,cy,cx-12,cy);line(cx+12,cy,cx+22,cy);line(cx,cy-22,cx,cy-12);line(cx,cy+12,cx,cy+22);
   const o=Math.min(W,H)*.16;txt(String(U.spd(P)),cx-o,cy-o*.7,'right');txt(U.alt(P),cx+o,cy-o*.7,'left');
