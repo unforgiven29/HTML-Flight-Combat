@@ -1,3 +1,9 @@
+## v322
+- Multiplayer: the join logic was tested with two browsers and a local broker (simultaneous start, 6/6 joins), so the "stuck at opening a link to the host" case is the WebRTC link between two networks: the data channel only opens through a TURN relay when both routers are strict, and the relay list may not answer.
+- The join status now shows the live ICE state and whether a relay address was found; the client waits 30 s (was 15) and the failure text says whether no relay was reachable.
+- Own TURN/STUN: add `?ice=[{"urls":"turn:...","username":"..","credential":".."}]` to the page address, or set `localStorage.mpIce`, and those servers are tried first (both players need a relay only if one of them is behind a strict router). A free key from metered.ca works.
+- Room codes ending in `.` / `-` or containing `..` made an invalid PeerJS id and could never connect; the id is now always valid.
+
 ## v321
 - 18 missing weapons (js/hangar/weapons-v321.js), each cloned from the nearest existing entry with its own mass / size / range, then put on the jets that carried it: AIM-9C, AIM-9H, AIM-7D, AIM-26B, Python 4, Shafrir 1, AAM-3, AGM-12B/C Bullpup, AGM-78B, AGM-62A Walleye, GBU-8, GBU-15, GBU-27 (F-117A default), BLU-27 napalm, Kh-23, Kh-25MP, Kh-28. Gameplay-level estimates; Walleye is a rocket-model stand-in for a glide bomb; napalm uses the blast/fragment model.
 
