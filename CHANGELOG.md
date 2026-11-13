@@ -1,3 +1,8 @@
+## v318 — 23 more Cold War jets (hangar)
+New file `js/hangar/jets-v318.js` (after `jets-v317.js`). Clones of the closest airframe (parent's cockpit, HUD and 3D model for now), own flight numbers, radar, gun, stations and loadouts. Gameplay-level estimates.
+- **USSR:** MiG-19PM, MiG-25RB, Su-17M4, Yak-25M. **USA:** F-4C, F-4D, F-8J, F-89J, F-94C, F9F-2 Panther, F9F-8 Cougar, F-84F. **Canada / UK:** CF-105 Arrow, CF-100, TSR-2, Sea Venom. **Sweden / Italy:** J 29F, J 32B, Saab 105, G.91R/3. **France:** Mirage IVA (conventional bombs), Mirage 4000. **Yugoslavia:** J-22 Orao.
+- MiG-17F was already in the game. Tests 129/131 (same two Ka-50 failures as before).
+
 ## v316 / v317 — 28 more jets (hangar)
 New files: `js/hangar/jets-v316.js`, `js/hangar/jets-v317.js` (loaded after `more-jets.js`). Each jet is a clone of the closest airframe (cockpit, HUD and 3D model are the parent's for now) with its own flight numbers, radar, gun, stations and loadouts. Gameplay-level estimates, not published data.
 - **v316 (12):** F-4G Wild Weasel, F-35B, F-35C, Rafale M, F-117A, F-16XL, F-15J, F-15K, MiG-29M, Su-27UB, J-10A, JAS 39D.
