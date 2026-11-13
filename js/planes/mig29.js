@@ -139,7 +139,7 @@ PLANES.add('mig29',{
     // The 9.13 airframe with the large dorsal tank (about 4,700 kg of internal fuel), RD-33 series 3, N010ME Zhuk-ME slotted-array radar (about 120 km against
     // a fighter, ±85° in azimuth, ten track files, four engaged with the R-77), OEPS-29 with the laser, R-27ER / ET, R-77, R-73.
     try{
-      cloneType('MiG-29S','MiG-29SMT',{name:'MiG-29SMT',empty:11600,fuel:4700,dW:17000,twsN:4,trkN:10,rcs:5,
+      cloneType('MiG-29S','MiG-29SMT',{name:'MiG-29SMT',empty:11600,fuel:4700,dW:17000,twsN:10,trkN:10,rcs:5,
         radar:{name:'Zhuk-ME',R0:57*NM/* 120 km vs 5 m2 (export) */,ranges:[10,25,50,100,200],unit:1000,ul:'KM',ecc:.72}});
       RGIM['Zhuk-ME']=[85,60,40,1];ENGN['MiG-29SMT']='2× RD-33 ser. 3';CALLS['MiG-29SMT']='FULCRUM-F';NCTR_ID['MiG-29SMT']='MIG-29';HMS_ALWAYS.add('MiG-29SMT');
       ACROLE['MiG-29SMT']='RUSSIA · FRONTLINE MULTIROLE · ZHUK-ME · 4-TARGET TWS · LONG LEGS';

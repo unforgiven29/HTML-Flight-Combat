@@ -177,7 +177,7 @@ PLANES.add('su27',{
       makeSu33=eval('('+src+')');}catch(e){console.warn('Su-33 model fallback',e);}
     AC['Su-33']=Object.assign({},AC['Su-27'],{name:'Su-33',model:makeSu33,st:SU33ST,empty:18400,fuel:6000,S:67.84,mil:149000,ab:251000,dW:26000,gLim:8,aoaLim:28,rcs:13,
       rel:[1,10,2,9,3,8,11,12,4,7,5,6],migRel:['3','8','11','12','4','7','5','6','2','9','1','10'],hook:true});
-    delete AC['Su-33'].twsN;
+    AC['Su-33'].twsN=10;
     cloneT('Su-27','Su-33');
     STN['Su-33']=JSON.parse(JSON.stringify(STN['Su-27']));STN['Su-33'][11]=STN['Su-33'][12]=['R-27R','R-27T','R-27ER','R-27ET','R-73'];
     LOAD.cold['Su-33']={1:'R-73',2:'R-73',3:'R-27R',4:'R-27T',5:'R-27R',6:'R-27R',7:'R-27T',8:'R-27R',9:'R-73',10:'R-73',11:'R-27R',12:'R-27R'};
