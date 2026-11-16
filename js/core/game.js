@@ -8451,7 +8451,9 @@ const CAMP={st:null,on:false,mapOn:false,client:false,air:[],phys:new Map(),adPh
     for(let q=U.length-1;q>=0;q--){const u=U[q];if(u.dead&&st.t-u.dt>.45){this.dropPhys(u.id);U.splice(q,1);}}
     // airfields fall to the advancing front
     for(const b of st.bases){const d=cbDef(b.id),fz=this.frontZ(d.x);
-      if(b.side===0&&fz>d.z-2500||b.side===1&&fz<d.z+2500){b.side=1-b.side;b.pool=0;b.dmg=60;this.log(d.name+' airfield has fallen to '+(b.side?'red':'blue')+' forces!',b.side?'r':'b');
+      // v325: hysteresis. Both tests are true while the front sits within 2.5 km of a field, so it flipped every step; after a
+      // flip the front must move 5 km back toward the side that lost it before the field can change hands again
+      if(b.side===0&&fz>d.z-2500&&(b.fl==null||fz>b.fl+5000)||b.side===1&&fz<d.z+2500&&(b.fl==null||fz<b.fl-5000)){b.side=1-b.side;b.fl=fz;b.pool=0;b.dmg=60;this.log(d.name+' airfield has fallen to '+(b.side?'red':'blue')+' forces!',b.side?'r':'b');
         if(b.side===0)for(const a of st.ad)if(a.k==='BT'&&a.b===b.id)a.al[0]=0;}}
     if(!st.over){if(st.bases.every(b=>b.side===0)){st.over='VICTORY';this.log('All red airfields taken. VICTORY.','b');}else if(st.bases.every(b=>b.side===1)){st.over='DEFEAT';this.log('Our last airfield has fallen. DEFEAT.','r');}}
     st.hotT-=dt/3600;if(st.hotT<=0)this.pickHot(false);

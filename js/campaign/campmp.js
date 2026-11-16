@@ -76,7 +76,7 @@ function grade(S,sortie){if(!S||!S.task||!S.probe)return null;
 // score the sortie, pay out the reward, show the debrief
 {const _se=CAMP.sortieEnd;CAMP.sortieEnd=function(){
   const st=this.st,s=this.sortie?Object.assign({},this.sortie):null,P=player,S=this._snap,t0=s?performance.now()-s.start:0;let g=null,dead=false;
-  try{dead=!!(P&&!P.alive);g=grade(S,s);}catch(e){}
+  try{dead=!!(P&&!P.alive);g=grade(S,s);this._lastGrade=g;}catch(e){}   // v325: world.js reads the grade for the mission record
   const r=_se.apply(this,arguments);
   try{
     if(g&&st){

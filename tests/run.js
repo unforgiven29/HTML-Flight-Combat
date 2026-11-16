@@ -333,6 +333,65 @@ test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16V',a
     P.pos.set(0,6000,0);P.q.set(0,0,0,1);t.pos.set(0,6000,-40000);const g=dlTgt();DL.contacts=o;return{shooter:dlShooter(),on:DL.on(),g:g===t};});
   ok('F-16V datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
 
+
+/* ---------- campaign world ledger (v325, spec v49 phases 0-2) ---------- */
+const CW=async(p,f)=>p.evaluate(f);
+test('cw_ledger: a new war reconciles, a 48 h skip keeps every ledger and projection consistent','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),a0=WORLD.audit(),af=Object.keys(w.af).length,pp=Object.keys(w.pp).length;
+    CAMP.advance(48);const a1=WORLD.audit(),ours=CAMP.st.bases.filter(b=>b.side===0);
+    return{a0,a1,af,pp,proj:ours.every(b=>b.pool===WORLD.readyAt(b.id).length),ev:w.ev.length,ids:new Set(w.ev.map(e=>e.id)).size,max:WORLD.CFG.evMax};});
+  ok('clean audit at the start',r.a0.length===0,r.a0);ok('airframes and crews on strength',r.af>=20&&r.pp>=r.af,{af:r.af,pp:r.pp});
+  ok('clean audit after 48 h',r.a1.length===0,r.a1);ok('field counts are the airframe ledger',r.proj);ok('event ids unique, ledger bounded',r.ids===r.ev&&r.ev<=r.max,{ev:r.ev});});
+
+test('cw_idempotent: the same keyed event is applied once','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const n0=WORLD.W().ev.length;WORLD.emit('CAMPAIGN',{k:'test:once',txt:'x'});WORLD.emit('CAMPAIGN',{k:'test:once',txt:'x'});return WORLD.W().ev.length-n0;});
+  ok('one event for two deliveries',r===1,r);});
+
+test('cw_air: AI flights carry airframes and crews; a loss records crew fate, a landing goes to maintenance','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();game.ac='F-16C';CAMP.newState('cold',1);await CAMP.startSortie();for(let k=0;k<8;k++){CAMP.st.casT=0;CAMP.airOps(12);}
+    const w=WORLD.W(),bj=CAMP.air.filter(j=>j._w&&j.alive),n=bj.length;let lost=null,crew=null,maint=null;
+    if(bj[0]){const id=bj[0]._w.af,pid=bj[0]._w.pp;bj[0].kill('SHOT',null);lost=w.af[id].st;crew=w.pp[pid].st;}
+    if(bj[1]){const id=bj[1]._w.af;CAMP.land(bj[1]);maint=w.af[id].st;}
+    const a=WORLD.audit();CAMP.endSortie();const so=WORLD.view().so[0];return{n,lost,crew,maint,a,a2:WORLD.audit(),so,air:Object.values(w.af).filter(x=>x.st==='SORTIE').length};});
+  ok('our AI flights launched with airframe records',r.n>=2,r.n);ok('shot-down airframe is LOST',r.lost==='LOST',r.lost);
+  ok('its crew has a fate',['KIA','ACTIVE','WOUNDED','MISSING'].includes(r.crew),r.crew);ok('landed airframe in maintenance',r.maint==='MAINT',r.maint);
+  ok('audit clean in flight and after the sortie',r.a.length===0&&r.a2.length===0,{a:r.a,a2:r.a2});ok('nothing left "in the air" after the scene is cleared',r.air===0,r.air);
+  ok('sortie record written',r.so&&r.so.tail&&r.so.out,r.so&&{out:r.so.out,tail:r.so.tail});});
+
+test('cw_player_loss: losing your jet loses one airframe, not two, and records the pilot','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();game.ac='F-16C';CAMP.newState('cold',1);await CAMP.startSortie();const w=WORLD.W(),id=player._w&&player._w.af;
+    const g0=w.ev.filter(e=>e.ty==='AF_LOST').length;player.kill('SHOT',null);CAMP.sortieEnd();
+    return{id:!!id,st:id&&w.af[id].st,lost:w.ev.filter(e=>e.ty==='AF_LOST').length-g0,so:WORLD.view().so[0],a:WORLD.audit()};});
+  ok('player flew a recorded airframe',r.id);ok('that airframe is LOST',r.st==='LOST',r.st);ok('exactly one loss recorded',r.lost===1,r.lost);
+  ok('sortie LOST with a pilot fate',r.so&&r.so.out==='LOST'&&!!r.so.fate,r.so&&{out:r.so.out,fate:r.so.fate});ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_finite: no airframe of the type and none at the depot blocks the sortie','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W();w.depot.af=0;game.ac='MiG-29';CAMP.on=false;await CAMP.startSortie();return{on:CAMP.on};});
+  ok('sortie refused',r.on===false,r);});
+
+test('cw_supply: a field that has used its stock is resupplied by convoy, and the books still balance','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),b=CAMP.st.bases.find(b=>b.side===0).id,I=w.inv[b];
+    for(const c of ['fuel','aam','agm']){w.lg[c].exp+=I[c];I[c]=0;}   // as if flown away
+    CAMP.advance(12);const ev=w.ev.filter(e=>e.ty.startsWith('CONVOY')&&e.e.includes(b)).map(e=>e.ty);return{ev,fuel:w.inv[b].fuel,a:WORLD.audit()};});
+  ok('a convoy left for the field',r.ev.includes('CONVOY:DEPARTED'),r.ev);ok('stock arrived only by convoy',r.fuel>0===r.ev.some(t=>t==='CONVOY:DELIVERED'),{fuel:r.fuel,ev:r.ev});ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_base_fall: an overrun field evacuates ready airframes, loses its stock, and the books balance','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),b=CAMP.st.bases.find(b=>b.id==='HAR'),n0=WORLD.readyAt('HAR').length;
+    CAMP.st.front=CAMP.st.front.map(()=>58000);CAMP.groundStep(.5);
+    return{side:b.side,n0,left:Object.values(w.af).filter(a=>a.base==='HAR'&&!['LOST','CAPTURED'].includes(a.st)).length,ev:[...new Set(w.ev.map(e=>e.ty))],a:WORLD.audit()};});
+  ok('field fell',r.side===1,r.side);ok('no live airframe left at the lost field',r.left===0,r.left);ok('loss, evacuation and stock events',['BASE:LOST','AF_EVAC','SUPPLY:CAPTURED'].every(t=>r.ev.includes(t)),r.ev);ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_save: save / load and migration of an old save keep the ledger consistent','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);CAMP.advance(6);const w=WORLD.W(),n=Object.keys(w.af).length,js=JSON.stringify(CAMP.st);
+    CAMP.st=null;localStorage.setItem('viper.camp',js);const ld=CAMP.load(),a1=WORLD.audit(),n1=Object.keys(WORLD.W().af).length;
+    delete CAMP.st.wld;WORLD.attach();const ev=WORLD.W().ev.map(e=>e.ty);return{ld,a1,same:n===n1,a2:WORLD.audit(),mig:ev.includes('MIGRATION'),len:js.length};});
+  ok('loads',r.ld);ok('same airframes after load',r.same);ok('audit clean after load',r.a1.length===0,r.a1);
+  ok('old save gets a migration event, nothing invented before it',r.mig);ok('audit clean after migration',r.a2.length===0,r.a2);ok('save stays small',r.len<600000,r.len);});
+
+test('cw_ui: the war record renders every tab','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);CAMP.advance(3);const out={};for(const t of ['fields','roster','sorties','history','losses','audit']){WARREC.UI.tab=t;out[t]=WARREC.block().length;}return out;});
+  ok('all tabs produce content',Object.values(r).every(n=>n>200),r);});
+
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
