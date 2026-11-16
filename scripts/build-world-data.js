@@ -60,7 +60,24 @@ const dp=(pts,eps)=>{if(pts.length<4)return pts;const keep=new Uint8Array(pts.le
   return pts.filter((_,i)=>keep[i]);};
 const countries=cc.features.map(f=>{const p=f.properties,g=f.geometry,polys=g.type==='Polygon'?[g.coordinates]:g.coordinates;const rings=[];
   for(const poly of polys){const ring=poly[0],m=ring.length>>1,r=dp(ring.slice(0,m+1),.04).concat(dp(ring.slice(m),.04).slice(1));/* a closed ring: two open halves */if(r.length<4)continue;const q=[];let px=null,py=null;for(const[x,y]of r){const X=Math.round(x*100),Y=Math.round(y*100);if(X===px&&Y===py)continue;q.push(X,Y);px=X;py=Y;}if(q.length>=8)rings.push(q);}
-  return{n:p.NAME||p.ADMIN,a3:p.ADM0_A3||p.ISO_A3,a2:p.ISO_A2_EH||p.ISO_A2,r:rings};}).filter(c=>c.r.length);
+  return{n:p.NAME||p.ADMIN,a3:p.ADM0_A3||p.ISO_A3,a2:p.ISO_A2_EH||p.ISO_A2,r:rings,
+    sov:p.SOV_A3,type:p.TYPE,pop:Math.round(p.POP_EST||0),popY:p.POP_YEAR,gdp:Math.round(p.GDP_MD||0),gdpY:p.GDP_YEAR,cont:p.CONTINENT,sub:p.SUBREGION,
+    lx:Math.round((p.LABEL_X||0)*100)/100,ly:Math.round((p.LABEL_Y||0)*100)/100,full:p.FORMAL_EN||'',nb:[]};}).filter(c=>c.r.length);
+// land neighbours and shared borders: Natural Earth land boundary lines carry no country names, so each line is sampled and
+// a point 0.05 deg to either side of it is located in the 1:50m country polygons
+{const P=cc.features.map(f=>{const g=f.geometry,polys=g.type==='Polygon'?[g.coordinates]:g.coordinates;return{a3:f.properties.ADM0_A3,rings:polys.map(q=>{const r=q[0];let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const[x,y]of r){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}return{r,x0,x1,y0,y1};})};});
+ const inR=(R,x,y)=>{if(x<R.x0||x>R.x1||y<R.y0||y>R.y1)return false;let c=false;const r=R.r;for(let i=0,j=r.length-1;i<r.length;j=i++)if((r[i][1]>y)!==(r[j][1]>y)&&x<(r[j][0]-r[i][0])*(y-r[i][1])/(r[j][1]-r[i][1])+r[i][0])c=!c;return c;};
+ const who=(x,y)=>{for(const c of P)for(const R of c.rings)if(inR(R,x,y))return c.a3;return null;};
+ const BL=JSON.parse(await get(NE+'ne_50m_admin_0_boundary_lines_land.geojson',path.join(CACHE,'borders.geojson')));const near=new Map(),pairs=new Map();
+ for(const f of BL.features){const g=f.geometry,lines=g.type==='LineString'?[g.coordinates]:g.coordinates;
+   for(const L of lines){const votes=new Map();for(let k=0;k<L.length-1;k+=Math.max(1,Math.floor(L.length/12))){const[a,b]=[L[k],L[k+1]],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy)||1;
+       const nx=-dy/d*.05,ny=dx/d*.05,l=who(mx+nx,my+ny),r=who(mx-nx,my-ny);if(l&&r&&l!==r){const key=[l,r].sort().join('|');votes.set(key,(votes.get(key)||0)+1);}}
+     let best=null,bv=0;for(const[k,v]of votes)if(v>bv){bv=v;best=k;}if(!best)continue;const[s1,s2]=best.split('|');
+     (near.get(s1)||near.set(s1,new Set()).get(s1)).add(s2);(near.get(s2)||near.set(s2,new Set()).get(s2)).add(s1);
+     const q=[];for(const[x,y]of dp(L,.02))q.push(Math.round(x*100),Math.round(y*100));(pairs.get(best)||pairs.set(best,[]).get(best)).push(q);}}
+ for(const c of countries)c.nb=[...(near.get(c.a3)||[])].sort();
+ fs.writeFileSync(path.join(OUT,'borders.json'),JSON.stringify({q:100,d:[...pairs].map(([k,v])=>({a:k.split('|')[0],b:k.split('|')[1],l:v}))}));
+ console.log('land borders',pairs.size);}
 fs.writeFileSync(path.join(OUT,'countries.json'),JSON.stringify({q:100,d:countries}));
 console.log('countries',countries.length);
 
@@ -101,7 +118,8 @@ Built by \`node scripts/build-world-data.js\` on ${new Date().toISOString().slic
 | places.json | ${places.length} cities and towns: name, position, population (pop_max), country, capital flag | Natural Earth 1:10m Populated Places (simple), naturalearthdata.com | Public domain | Positions to about 1 km; populations are Natural Earth estimates, not census counts |
 | airports.json | ${aps.length} airports (large, medium, and paved small fields of 1,500 m or more) with runway ends, headings, length, width, surface | OurAirports (ourairports.com, data mirror github.com/davidmegginson/ourairports-data) | Public domain | Community-maintained; runway ends missing for some fields (placed from the heading instead). Military flag inferred from the name |
 | tiles/*.json | Per 10-degree cell: towns and cities of 1,000+ people (name, position, population) and urban-area outlines (simplified 0.004 deg) | GeoNames via github.com/lmfmaier/cities-json (cities500); Natural Earth 1:10m Urban Areas | GeoNames: CC BY 4.0 (attribution: GeoNames, geonames.org). Natural Earth: public domain | Town positions are the GeoNames point (the centre); urban outlines come from 2002-era satellite land cover, so recent growth is missing |
-| countries.json | ${countries.length} country outlines, simplified (0.04 deg) and quantised to 0.01 deg | Natural Earth 1:50m Admin 0 Countries | Public domain | Map display only; boundaries as Natural Earth draws them (de facto), not a statement on any dispute |
+| borders.json | Shared land borders: country pair and border lines (simplified 0.02 deg) | Natural Earth 1:50m Admin 0 Boundary Lines (Land); sides found by locating points either side of each line in the country polygons | Public domain | Disputed and indefinite lines included as Natural Earth draws them |
+| countries.json | ${countries.length} countries: outline (simplified 0.04 deg, quantised 0.01 deg), codes, sovereign, population estimate and year, GDP estimate (USD million) and year, region, label point, land neighbours (computed: borders within 0.03 deg) | Natural Earth 1:50m Admin 0 Countries (v5) | Public domain | Map display only; boundaries as Natural Earth draws them (de facto), not a statement on any dispute |
 | elev-2048.png | Global elevation and bathymetry, 2048 x 1024 equirectangular (about 20 km per cell), Terrarium encoding (R*256 + G - 32768 m) | AWS Open Data Terrain Tiles, zoom 4 | Open; attribution: SRTM (NASA), GMTED2010 (USGS), ETOPO1 (NOAA), and others listed at github.com/tilezen/joerd/blob/master/docs/attribution.md | Coarse: world map and offline fallback only |
 
 At run time the flight terrain streams the same Terrain Tiles at zoom 10 (about 150 m per pixel) from elevation-tiles-prod.s3.amazonaws.com (CORS enabled). Offline, the coarse grid plus procedural detail is used, and the game says so.
