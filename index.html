@@ -260,7 +260,7 @@
 <script src="js/planes/mig23.js?v=259"></script>
 <script src="js/planes/mig25.js?v=258"></script>
 <!-- ── CORE · the sim, IFF, binds, assets, start-up, realism layer, crash guard ── -->
-<script src="js/core/game.js?v=338"></script>
+<script src="js/core/game.js?v=339"></script>
 <script src="js/core/iff.js?v=262"></script>
 <script>IFF.install();</script>
 <!-- ── HANGAR · Cold War / modern / more jets: data, models, stealth ── -->
@@ -413,6 +413,10 @@
 <script src="js/flight/aerodepth.js?v=4"></script>
 <script src="js/core/fixes-v324.js?v=324"></script>
 <script src="js/core/addons-v324.js?v=324"></script>
+<!-- ── WORLD · the Earth: geographic frame, streamed terrain, airports, cities (world campaign stage 1). After addons-v324 (wraps start / onPaved) ── -->
+<script src="js/world/geo.js?v=326"></script>
+<script src="js/world/worldflight.js?v=326"></script>
+<script src="js/world/worldmap.js?v=326"></script>
 <!-- ── CAMPAIGN WORLD · event ledger, airframes, aircrew, supply, war record (spec v49 phases 0-2). Must load LAST: it wraps CAMP, the campaign layers and Jet.kill ── -->
 <script src="js/campaign/world.js?v=325"></script>
 <script src="js/campaign/warrecord.js?v=325"></script>

@@ -18,9 +18,11 @@ js/rotorcraft/           helicopter flight model, systems, Apache, Vikhr, strike
 js/weapons/              missile / gun data, stores and pods, AIM-9X Block II + LOAL, seeker cameras, anti-ship
 js/rwr/                  warner registry and models
 js/sensors/              sensor registry, radar, IRST, signal processing, jamming, NCTR, pulse-radar set control
+js/world/                the Earth: geographic frame, streamed terrain, airports, cities, world map
 js/campaign/             campaign / multiplayer, strategic air war, dynamic campaign, campaign ledger + war record
 assets/assets.config.js  ← edit this to add your own models and sounds
 assets/models/           .glb / .gltf files
+assets/world/            world data (elevation grid, airports, places, countries, town tiles) + SOURCES.md
 assets/audio/            .ogg / .mp3 / .wav files
 vendor/                  three.js r128, GLTFLoader, PeerJS
 docs/ARCHITECTURE.md     what each folder is, load-order rules, patterns

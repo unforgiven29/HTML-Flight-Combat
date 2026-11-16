@@ -573,12 +573,16 @@
    "title": "Global geography, map data, terrain, and rendering",
    "kind": "group",
    "line": 1247,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-002",
@@ -588,12 +592,16 @@
    "title": "One Earth-scale geographic, terrain, map, and streamed rendering system",
    "kind": "block",
    "line": 1248,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-003",
@@ -603,11 +611,11 @@
    "title": "Persistent and varied global campaign map requirements",
    "kind": "block",
    "line": 1304,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -618,12 +626,16 @@
    "title": "Complete Earth-scale campaign map and world model",
    "kind": "block",
    "line": 1332,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-005",
@@ -633,12 +645,16 @@
    "title": "Global strategic view",
    "kind": "block",
    "line": 1353,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-006",
@@ -648,11 +664,11 @@
    "title": "Regional operational view",
    "kind": "block",
    "line": 1362,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -663,12 +679,16 @@
    "title": "Local tactical view",
    "kind": "block",
    "line": 1370,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-008",
@@ -678,12 +698,16 @@
    "title": "Whole-Earth terrain, cities, and streamed Three.js rendering",
    "kind": "block",
    "line": 1429,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh",
+   "tests": [
+    "wg_frame",
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R03-009",
@@ -693,12 +717,14 @@
    "title": "PERSISTENT ENTITY MIGRATION ACROSS GEOGRAPHIC STREAMING",
    "kind": "block",
    "line": 1526,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Floating-origin rebase shifts every live entity with the frame; no entity is created or dropped by streaming. Campaign entities are not on the Earth yet",
+   "tests": [
+    "wg_rebase"
+   ]
   },
   {
    "id": "R03-010",
@@ -708,11 +734,11 @@
    "title": "TERRAIN, MAP ECOLOGY, AND ENVIRONMENTAL CHANGE",
    "kind": "block",
    "line": 1550,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -723,12 +749,14 @@
    "title": "Geographic data pipeline, coordinate systems, and world-data governance",
    "kind": "block",
    "line": 1566,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "scripts/build-world-data.js; provenance and licence register in assets/world/SOURCES.md",
+   "tests": [
+    "wg_data"
+   ]
   },
   {
    "id": "R03-012",
@@ -738,11 +766,11 @@
    "title": "World content coverage, country depth, and regional differentiation",
    "kind": "block",
    "line": 1628,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -753,11 +781,11 @@
    "title": "Navigation, routing, movement, and positioning",
    "kind": "group",
    "line": 1650,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -768,11 +796,11 @@
    "title": "NAVIGATION, POSITIONING, TIMING, AND RESILIENT OPERATIONS",
    "kind": "block",
    "line": 1651,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -783,11 +811,11 @@
    "title": "MISSION ROUTE PLANNER, WAYPOINTS, AND FLIGHT PLAN MANAGEMENT",
    "kind": "block",
    "line": 1679,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -798,11 +826,11 @@
    "title": "Shared navigation, routing, and movement foundations",
    "kind": "block",
    "line": 1737,
-   "owner": "js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)",
+   "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
    "status": "defer",
    "progress": "none",
-   "note": "Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre",
+   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
    "tests": []
   },
   {
@@ -7902,10 +7930,12 @@
    "line": 16373,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Generated buildings inside real urban footprints and at every town of 1,000+ (GeoNames), sized by population; no housing / property simulation",
+   "tests": [
+    "wg_flight"
+   ]
   },
   {
    "id": "R11-002",
@@ -7932,10 +7962,12 @@
    "line": 16426,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Generated buildings inside real urban footprints and at every town of 1,000+ (GeoNames), sized by population; no housing / property simulation",
+   "tests": [
+    "wg_flight"
+   ]
   },
   {
    "id": "R11-004",
@@ -8067,10 +8099,13 @@
    "line": 16887,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "7,480 airports with real runways (OurAirports), flyable from the world map; no airport operations or air traffic",
+   "tests": [
+    "wg_data",
+    "wg_flight"
+   ]
   },
   {
    "id": "R11-013",

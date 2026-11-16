@@ -12,7 +12,7 @@ const lines=fs.readFileSync(SPEC,'utf8').split('\n');
 const CH={
  '01':['docs/campaign/OWNERSHIP.md (governance)',0,'implement','Phase 0 artifacts: ownership registry and this matrix'],
  '02':['js/campaign/world.js — WORLD event ledger and identities',1,'extend','Phase 1 foundation; slice covers the player side air arm'],
- '03':['js/core/game.js — cmpRaw / cmpH theatre terrain, CBASE fields, CFX front (300 km fictional theatre)',4,'defer','Phase 4: global geography and streaming not started; the campaign is a 300 km fictional theatre'],
+ '03':['js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)',4,'defer','Phase 4: rest of global geography (regions, routing, ecology) not started'],
  '04':['js/core/game.js — CAMP.st.t clock, CAMP.tick, CAMP.save; world.js schema v1 + migration',10,'defer','Phase 10: performance tiers, streaming, multi-decade evolution not started'],
  '05':['none (front and escalation only: game.js CAMP, strategic.js)',8,'defer','Phase 8: countries, diplomacy, law and peace processes not started'],
  '06':['js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness',3,'defer','Phase 3: the military enterprise beyond the player side air arm'],
@@ -34,6 +34,11 @@ const CH={
 const SLICE='js/campaign/world.js, js/campaign/warrecord.js';
 // [chapter or '*', title regex, status, progress, note, tests]
 const OVERRIDES=[
+ ['03',/^global geography, map data|one earth-scale geographic|complete earth-scale campaign map|whole-earth terrain, cities|global strategic view|local tactical view/i,'implement','partial','Stage 1 (v326): real Earth in js/world/ — lat/lon frame, streamed 150 m elevation with a bundled global fallback, oceans, airports and runways at real positions, cities and towns from GeoNames / Natural Earth, world map. Not yet: campaign on the Earth, regional view, tile LOD beyond the 170 km mesh',['wg_frame','wg_data','wg_flight']],
+ ['03',/persistent entity migration across geographic streaming/i,'implement','partial','Floating-origin rebase shifts every live entity with the frame; no entity is created or dropped by streaming. Campaign entities are not on the Earth yet',['wg_rebase']],
+ ['03',/geographic data pipeline, coordinate systems/i,'implement','partial','scripts/build-world-data.js; provenance and licence register in assets/world/SOURCES.md',['wg_data']],
+ ['11',/^cities, urban development, buildings|^cities, housing, property/i,'implement','partial','Generated buildings inside real urban footprints and at every town of 1,000+ (GeoNames), sized by population; no housing / property simulation',['wg_flight']],
+ ['11',/^civil aviation, airports, and airspace services/i,'implement','partial','7,480 airports with real runways (OurAirports), flyable from the world map; no airport operations or air traffic',['wg_data','wg_flight']],
  ['01',/./,'implement','done','Ownership registry docs/campaign/OWNERSHIP.md; this matrix',[]],
  ['02',/canonical entities, identities|single authoritative campaign data model|one coherent world simulation/i,'extend','partial','Stable ids for airframes, aircrew, squadrons, missions, sorties, shipments, events ('+SLICE+'). Countries, settlements, organisations: later phases',['cw_ledger','cw_save']],
  ['02',/shared events, causality/i,'implement','partial','Event contract (id, schema v, type, domain, time, actor, entities, causes, confidence, idempotency key); cause chains in HISTORY "why"; no dependency graph yet',['cw_idempotent','cw_ledger']],

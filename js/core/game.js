@@ -119,7 +119,7 @@ function terrGeo(SZ,fn,pal,wfn){const SEG=440;const g=new THREE.PlaneGeometry(SZ
     vec3 c=diffuseColor.rgb;float n3=vn(vW.xz/1300.);
     vec2 cell=floor(vW.xz/vec2(380.,290.)+vec2(n3*.8,n3*.5));float fld=h21(cell),low=smoothstep(760.,420.,vW.y)*smoothstep(26.,70.,vW.y);
     vec3 fc=fld<.25?vec3(.42,.47,.24):fld<.45?vec3(.56,.52,.30):fld<.6?vec3(.25,.36,.16):fld<.7?vec3(.47,.40,.28):c;
-    fc=mix(fc*uFld,vec3(.9,.92,.95),uWin);c=mix(c,fc,low*.55*f2*(1.-uWin*.6));
+    fc=mix(fc*uFld,vec3(.9,.92,.95),uWin);float sat=max(c.r,max(c.g,c.b))-min(c.r,min(c.g,c.b));c=mix(c,fc,low*.55*f2*(1.-uWin*.6)*smoothstep(.03,.09,sat));   /* v326: no field patchwork on grey (urban) ground */
     float rock=smoothstep(.9,.74,vUp)*smoothstep(60.,220.,vW.y)*step(vW.y,2050.);
     c=mix(c,vec3(.44,.42,.38)*(.85+.3*vn(vW.xz/60.)),rock*.85);
     float snow=smoothstep(uSnowA,uSnowA+350.,vW.y+vn(vW.xz/400.)*250.)*smoothstep(.55,.8,vUp);c=mix(c,vec3(.93,.95,.98),snow);

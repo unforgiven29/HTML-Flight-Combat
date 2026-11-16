@@ -64,6 +64,19 @@ const countries=cc.features.map(f=>{const p=f.properties,g=f.geometry,polys=g.ty
 fs.writeFileSync(path.join(OUT,'countries.json'),JSON.stringify({q:100,d:countries}));
 console.log('countries',countries.length);
 
+/* ---------------- towns (GeoNames, population 1,000+) and urban footprints (Natural Earth), cut into 10-degree tiles ---------------- */
+const tileKey=(lat,lon)=>Math.floor(lat/10)*10+'_'+Math.floor(lon/10)*10;
+fs.rmSync(path.join(OUT,'tiles'),{recursive:true,force:true});fs.mkdirSync(path.join(OUT,'tiles'),{recursive:true});
+const TT={};const tt=k=>TT[k]||(TT[k]={t:[],u:[]});
+const GN=JSON.parse(await get('https://raw.githubusercontent.com/lmfmaier/cities-json/master/cities500.json',path.join(CACHE,'cities500.json')));
+let nT=0;for(const c of GN){const pop=+c.pop||0,la=+c.lat,lo=+c.lon;if(pop<1000||!isFinite(la)||!isFinite(lo))continue;tt(tileKey(la,lo)).t.push([c.name,Math.round(la*1e3)/1e3,Math.round(lo*1e3)/1e3,pop]);nT++;}
+const UR=JSON.parse(await get(NE+'ne_10m_urban_areas.geojson',path.join(CACHE,'urban.geojson')));let nU=0;
+for(const f of UR.features){const g=f.geometry;if(!g)continue;const polys=g.type==='Polygon'?[g.coordinates]:g.coordinates;
+  for(const poly of polys){const ring=poly[0];if(ring.length<4)continue;const m=ring.length>>1,r=dp(ring.slice(0,m+1),.004).concat(dp(ring.slice(m),.004).slice(1));if(r.length<4)continue;
+    let sx=0,sy=0;for(const[x,y]of r){sx+=x;sy+=y;}const q=[];for(const[x,y]of r)q.push(Math.round(x*1e3),Math.round(y*1e3));tt(tileKey(sy/r.length,sx/r.length)).u.push(q);nU++;}}
+for(const[k,v]of Object.entries(TT)){v.t.sort((a,b)=>b[3]-a[3]);fs.writeFileSync(path.join(OUT,'tiles',k+'.json'),JSON.stringify({q:1000,t:v.t,u:v.u}));}
+console.log('towns',nT,'urban polygons',nU,'tiles',Object.keys(TT).length);
+
 /* ---------------- elevation: Terrarium z4 (Web Mercator) -> 2048 x 1024 equirectangular ---------------- */
 const Z=4,N=1<<Z,TS=256,WPX=N*TS,tiles={};
 for(let y=0;y<N;y++)for(let x=0;x<N;x++){const b=await get('https://s3.amazonaws.com/elevation-tiles-prod/terrarium/'+Z+'/'+x+'/'+y+'.png',path.join(CACHE,'tiles',Z+'_'+x+'_'+y+'.png'));
@@ -87,6 +100,7 @@ Built by \`node scripts/build-world-data.js\` on ${new Date().toISOString().slic
 |---|---|---|---|---|
 | places.json | ${places.length} cities and towns: name, position, population (pop_max), country, capital flag | Natural Earth 1:10m Populated Places (simple), naturalearthdata.com | Public domain | Positions to about 1 km; populations are Natural Earth estimates, not census counts |
 | airports.json | ${aps.length} airports (large, medium, and paved small fields of 1,500 m or more) with runway ends, headings, length, width, surface | OurAirports (ourairports.com, data mirror github.com/davidmegginson/ourairports-data) | Public domain | Community-maintained; runway ends missing for some fields (placed from the heading instead). Military flag inferred from the name |
+| tiles/*.json | Per 10-degree cell: towns and cities of 1,000+ people (name, position, population) and urban-area outlines (simplified 0.004 deg) | GeoNames via github.com/lmfmaier/cities-json (cities500); Natural Earth 1:10m Urban Areas | GeoNames: CC BY 4.0 (attribution: GeoNames, geonames.org). Natural Earth: public domain | Town positions are the GeoNames point (the centre); urban outlines come from 2002-era satellite land cover, so recent growth is missing |
 | countries.json | ${countries.length} country outlines, simplified (0.04 deg) and quantised to 0.01 deg | Natural Earth 1:50m Admin 0 Countries | Public domain | Map display only; boundaries as Natural Earth draws them (de facto), not a statement on any dispute |
 | elev-2048.png | Global elevation and bathymetry, 2048 x 1024 equirectangular (about 20 km per cell), Terrarium encoding (R*256 + G - 32768 m) | AWS Open Data Terrain Tiles, zoom 4 | Open; attribution: SRTM (NASA), GMTED2010 (USGS), ETOPO1 (NOAA), and others listed at github.com/tilezen/joerd/blob/master/docs/attribution.md | Coarse: world map and offline fallback only |
 

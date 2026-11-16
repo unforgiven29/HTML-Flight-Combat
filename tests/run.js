@@ -392,6 +392,32 @@ test('cw_ui: the war record renders every tab','F-16C',async p=>{
   const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);CAMP.advance(3);const out={};for(const t of ['fields','roster','sorties','history','losses','audit']){WARREC.UI.tab=t;out[t]=WARREC.block().length;}return out;});
   ok('all tabs produce content',Object.values(r).every(n=>n>200),r);});
 
+
+/* ---------- the Earth (v326, world campaign stage 1). The test browser has no network, so these also cover the offline fallback ---------- */
+test('wg_frame: local frame round-trips, great-circle distance and bearing are right','F-16C',async p=>{
+  const r=await p.evaluate(()=>{WGEO.setOrigin(47.46,8.55);const a=WGEO.ll2xz(47.9,9.3),b=WGEO.xz2ll(a.x,a.z);
+    return{err:Math.hypot((b.lat-47.9)*111000,(b.lon-9.3)*75000),lj:WGEO.dist(33.94,-118.41,40.64,-73.78)/1000,brg:WGEO.brg(0,0,10,0),east:WGEO.ll2xz(47.46,8.56).x};});
+  ok('round trip under 1 m',r.err<1,r.err);ok('LAX-JFK about 3,975 km',Math.abs(r.lj-3975)<20,r.lj);ok('due north is 000',Math.abs(r.brg)<1e-6,r.brg);ok('east is +x',r.east>700&&r.east<800,r.east);});
+test('wg_data: airports, runways, places, countries and the elevation grid load','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();WGEO.setOrigin(33.9425,-118.408);const lax=WGEO.search('KLAX')[0],rw=lax.runways.map(q=>WGEO.runway(lax,q));
+    return{n:WGEO.airports.length,pl:WGEO.places.length,cc:WGEO.countries.length,lax:lax.name,hd:rw.map(q=>Math.round(q.hdg)),len:rw.map(q=>Math.round(q.hl*2)),
+      ev:Math.round(WGEO.coarse(39.74,-104.99)),sea:Math.round(WGEO.coarse(0,-160)),mil:WGEO.search('ramstein')[0].mil};});
+  ok('7,000+ airports, 7,000+ places, 200+ countries',r.n>7000&&r.pl>7000&&r.cc>200,{n:r.n,pl:r.pl,cc:r.cc});ok('KLAX found first',/Los Angeles/.test(r.lax),r.lax);
+  ok('LAX runways run about 083 / 263',r.hd.every(h=>Math.abs(h-83)<3||Math.abs(h-263)<3),r.hd);ok('LAX runways 2,700-3,700 m',r.len.every(l=>l>2600&&l<3800),r.len);
+  ok('Denver about 1,600 m, mid-Pacific deep',Math.abs(r.ev-1600)<300&&r.sea<-3000,{ev:r.ev,sea:r.sea});ok('Ramstein is marked military',r.mil===1,r.mil);});
+test('wg_flight: start on a real runway (offline: coarse ground), wheels on pavement, terrain and towns built','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player,w=WF.rwys.find(q=>q.ap===a);
+    return{scen:game.scen,on:WF.on,paved:onPaved(P.pos.x,P.pos.z),gnd:groundAt(P.pos.x,P.pos.z),e:w&&w.e,hd:Math.round(P.hdg),rh:w&&Math.round(w.hdg),bld:WF.bld,rw:WF.rwys.length,q:WF.lastQ,af:AF.x};});
+  ok('world flight running',r.scen==='WORLD'&&r.on,r);ok('on a paved runway',r.paved===true,r.paved);ok('ground under the wheels is the runway',Math.abs(r.gnd-r.e)<1.5,{gnd:r.gnd,e:r.e});
+  ok('pointing down the runway',Math.abs(((r.hd-r.rh+540)%360)-180)<2,{hd:r.hd,rh:r.rh});ok('buildings and other runways around',r.bld>1000&&r.rw>3,{bld:r.bld,rw:r.rw});ok('old airfield out of the way',r.af>1e8,r.af);});
+test('wg_rebase: far from the origin the world re-centres without moving the aircraft on the Earth','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player;P.spawn(37000,4000,0,90,0);P.onGnd=false;
+    game.paused=true;const ll0=WGEO.xz2ll(P.pos.x,P.pos.z);await WF.rebase();const ll1=WGEO.xz2ll(P.pos.x,P.pos.z);
+    return{reb:WF.reb,x:P.pos.x,d:WGEO.dist(ll0.lat,ll0.lon,ll1.lat,ll1.lon),g:groundAt(P.pos.x,P.pos.z),h:WGEO.heightLL(ll1.lat,ll1.lon)};});
+  ok('re-centred once',r.reb===1,r.reb);ok('aircraft near the new origin',Math.abs(r.x)<2,r.x);ok('same place on Earth (< 30 m)',r.d<30,r.d);ok('terrain agrees with the height source',Math.abs(r.g-r.h)<60,{g:r.g,h:r.h});});
+test('wg_leave: any other mode restores the old theatre','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.search('KLAX')[0],0,'le');await start('RANGE');return{on:WF.on,fn:MAPMODE.fn,af:AF.x,scen:game.scen};});
+  ok('world left, theatre back',r.on===false&&r.fn===null&&r.af<1e8&&r.scen==='RANGE',r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

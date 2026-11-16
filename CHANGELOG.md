@@ -1,3 +1,15 @@
+## v326 (world campaign stage 1: the Earth)
+New QUICK FLIGHT card **WORLD MAP**: fly from any of 7,480 airports anywhere on Earth. Free flight; the war moves onto the Earth in later stages.
+- **Real terrain and oceans**: elevation streams around the aircraft at about 150 m (public AWS Terrain Tiles, cached by the browser so places flown before work offline); offline, a bundled 20 km global grid plus procedural detail. Sea is anything at or below sea level.
+- **Airports**: every large and medium airport and every paved field of 1,500 m or more (OurAirports), with each runway at its real position, length, width and heading, pressed flat into the terrain so the wheels sit on it. Pick the runway and the end on the map.
+- **Cities and towns**: real urban footprints (Natural Earth) shaded and filled with buildings, a building cluster at every town of 1,000+ people (GeoNames), high-rise cores in cities over 500,000. Building shapes and heights are generated; where they stand and how far a city spreads is real.
+- **Whole-planet flight**: the local frame re-centres on the aircraft every 35 km (floating origin), with the next region's terrain fetched ahead, so you can keep flying across countries and oceans.
+- **World map**: shaded elevation and sea depth, country outlines, cities and towns, airports (military fields in red); search by ICAO, IATA, name or city.
+- Climate palette by latitude and the big desert belts; snow line by latitude.
+- Data (12 MB in `assets/world/`, towns and urban outlines in 10-degree tiles loaded per region) is built by `scripts/build-world-data.js`; sources and licences in `assets/world/SOURCES.md` (Natural Earth and OurAirports: public domain; GeoNames: CC BY 4.0; Terrain Tiles: open with attribution).
+- Terrain shader: no field patchwork on grey (urban) ground. Tests: `node tests/run.js wg_`.
+- Known limits: the terrain mesh is 170 km at about 390 m per cell (jagged coastlines up close); rebuilding it costs a short hitch (about 0.3 s) every 35 km; lakes above sea level show as flat land; no lights at night yet.
+
 ## v325 (campaign spec v49, phases 0-2: audit, foundations, one vertical slice; figures are gameplay-level estimates)
 Spec, ownership registry, implementation report and requirement traceability (719 blocks, each with an owner, phase, status and progress) in `docs/campaign/`. Regenerate the matrix with `node scripts/spec-trace.js`.
 - **Campaign world ledger** (`js/campaign/world.js`, loads last): every consequential change is an event with an id, causes, confidence and an idempotency key. Airframes have tail numbers, aircrew have (fictional) names and service histories, squadrons, missions and sortie records persist in the save.
