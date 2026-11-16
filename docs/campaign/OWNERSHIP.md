@@ -30,6 +30,9 @@ individual records (the spec allows this where individual detail is not needed).
 | Weather, season | `CAMP.wxStep`, `CAMP.applySeason` | `st.wx`, `CAMP.clock()` | ENV |
 | Escalation (DEFCON, nuclear) | strategic.js | `st.esc` | — |
 | Sensors, radar, RWR, jamming, IRST | `js/sensors/*`, `js/rwr/*` | sensor registry | not yet linked to the ledger |
+| The Earth: geographic frame, elevation, places, airports, countries, borders | `WGEO` (`js/world/geo.js`) | `assets/world/*` + streamed tiles | worldflight.js, worldmap.js, worldwar.js |
+| World-war state: country registry, alignments and their history, national profiles (estimates), fronts and sector offsets, air theatres, city control, war events | `WWAR` (`js/war/worldwar.js`) | `localStorage viper.ww` (schema v1) | warmap.js (map layer, panel) |
+| World-war clock | `WWAR.step` (`st.t`, hours since the scenario start) | `viper.ww` | warmap.js. **Separate from `CAMP.st.t` until step 2 joins the theatre campaign to the world war** |
 | Co-op campaign state | the host (`CAMP.publish`) | — | clients apply it; the ledger read model goes out as `wrv` every 40 publishes; clients never write the ledger |
 
 ## Rules that keep this true

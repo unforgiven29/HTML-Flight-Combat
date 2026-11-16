@@ -95,9 +95,15 @@ G.loadData=async()=>{if(G.ready)return;
   const[pl,ap,cc]=await Promise.all(['places','airports','countries'].map(n=>fetch('assets/world/'+n+'.json').then(r=>r.json())));
   G.places=unpack(pl);
   G.airports=ap.d.map(r=>{const a=Object.fromEntries(ap.f.map((k,i)=>[k,r[i]]));a.runways=a.runways.map(q=>Object.fromEntries(ap.rf.map((k,i)=>[k,q[i]])));return a;});
-  G.countries=cc.d.map(c=>({n:c.n,a3:c.a3,a2:c.a2,r:c.r.map(q=>Float32Array.from(q,v=>v/cc.q))}));
+  G.countries=cc.d.map(c=>Object.assign({},c,{r:c.r.map(q=>Float32Array.from(q,v=>v/cc.q))}));
+  for(const c of G.countries){let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const r of c.r)for(let i=0;i<r.length;i+=2){x0=Math.min(x0,r[i]);x1=Math.max(x1,r[i]);y0=Math.min(y0,r[i+1]);y1=Math.max(y1,r[i+1]);}c.bb=[x0,x1,y0,y1];}
+  G.byA3=new Map(G.countries.map(c=>[c.a3,c]));G.byA2=new Map(G.countries.filter(c=>c.a2&&c.a2!=='-99').map(c=>[c.a2,c]));
+  try{const b=await (await fetch('assets/world/borders.json')).json();G.borders=b.d.map(x=>({a:x.a,b:x.b,l:x.l.map(q=>Float32Array.from(q,v=>v/b.q))}));}catch(e){G.borders=[];}
   await G.loadGrid();G.ready=true;};
 // nearest / within radius, cheap filters (data are small enough for linear scans)
+// which country a point is in (simplified outlines: near a border it can be wrong by a few km)
+G.countryAt=(lat,lon)=>{for(const c of G.countries){const b=c.bb;if(lon<b[0]||lon>b[1]||lat<b[2]||lat>b[3])continue;
+  for(const r of c.r){let ins=false;for(let i=0,j=r.length-2;i<r.length;j=i,i+=2)if((r[i+1]>lat)!==(r[j+1]>lat)&&lon<(r[j]-r[i])*(lat-r[i+1])/(r[j+1]-r[i+1])+r[i])ins=!ins;if(ins)return c;}}return null;};
 G.near=(list,lat,lon,r)=>list.filter(p=>Math.abs(p.lat-lat)<r/111000+.01&&G.dist(lat,lon,p.lat,p.lon)<r);
 G.search=(q,n=40)=>{q=String(q||'').trim().toLowerCase();if(!q||!G.airports)return[];const out=[];
   for(const a of G.airports){const s=(a.ident+' '+a.iata+' '+a.name+' '+a.city+' '+a.iso2).toLowerCase();if(a.ident.toLowerCase()===q||a.iata.toLowerCase()===q)out.unshift(a);else if(s.includes(q))out.push(a);if(out.length>=n*3)break;}

@@ -1365,10 +1365,13 @@
    "line": 2857,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy",
+   "tests": [
+    "ww_registry",
+    "ww_fronts"
+   ]
   },
   {
    "id": "R05-003",
@@ -1455,10 +1458,13 @@
    "line": 3228,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy",
+   "tests": [
+    "ww_registry",
+    "ww_fronts"
+   ]
   },
   {
    "id": "R05-009",
@@ -1560,10 +1566,13 @@
    "line": 3367,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy",
+   "tests": [
+    "ww_registry",
+    "ww_fronts"
+   ]
   },
   {
    "id": "R05-016",
@@ -1710,10 +1719,12 @@
    "line": 3515,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Fronts on real borders in 50 km sectors moving gradually (power, air, defence, supply), cities change hands, war diary. Not yet: regions of strategic value, breakthroughs, encirclement, endings",
+   "tests": [
+    "ww_run"
+   ]
   },
   {
    "id": "R05-026",

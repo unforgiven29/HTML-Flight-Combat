@@ -43,6 +43,9 @@ function collectRunways(){const out=[],o=G.o;
     if(Math.abs(g.cx)>SZ/2-3000||Math.abs(g.cz)>SZ/2-3000)continue;
     // runway elevation: the terrain along its centre line (consistent with the ground around it), never below 2 m
     let s=0;for(let k=-2;k<=2;k++){s+=G.height(g.cx+g.ux*g.hl*k/2.2,g.cz+g.uz*g.hl*k/2.2);}g.e=Math.max(2,s/5);g.ap=a;out.push(g);}
+  // crossing runways must meet at one height: every runway of an airport takes the airport's mean
+  const by=new Map();for(const g of out)(by.get(g.ap)||by.set(g.ap,[]).get(g.ap)).push(g);
+  for(const L of by.values()){const m=L.reduce((t,g)=>t+g.e,0)/L.length;for(const g of L)g.e=m;}
   return out;}
 function runwayMesh(r){const tex=typeof cmpRwyTex==='function'?cmpRwyTex():null;
   const m=new THREE.MeshLambertMaterial(Object.assign({color:r.paved?0xffffff:0x8f8a6c,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},r.paved&&tex?{map:tex}:{}));

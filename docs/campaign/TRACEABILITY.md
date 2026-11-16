@@ -12,7 +12,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 02 | Shared Entities, Identities, Relationships, Authoritative State, Events, Causality, Accounting, and History | 22 | extend 15, implement 7 | none 7, partial 15 |
 | 03 | Global Geography, Map, Terrain, Territory, Navigation, and Spatial Foundations | 16 | implement 8, defer 8 | partial 8, none 8 |
 | 04 | World Clock, Simulation Scheduling, Persistence, Streaming, Performance, and Recovery | 33 | defer 27, existing 1, implement 1, extend 4 | none 27, done 1, partial 5 |
-| 05 | Countries, Governments, Alliances, Diplomacy, Conflict, Law, Occupation, Security, and Peace | 52 | defer 52 | none 52 |
+| 05 | Countries, Governments, Alliances, Diplomacy, Conflict, Law, Occupation, Security, and Peace | 52 | defer 48, implement 4 | none 48, partial 4 |
 | 06 | Armed Forces, Command, Personnel, Units, Weapons, Readiness, Operations, and Sustainment | 237 | defer 227, extend 10 | none 227, partial 10 |
 | 07 | Sensors, Radar, Intelligence, Electronic Warfare, Communications, Cyber, Space, and Information Integrity | 17 | existing 4, defer 13 | partial 4, none 13 |
 | 08 | Population, Individuals, Families, Households, Demographics, Migration, Health, Education, and Personal Life | 58 | defer 58 | none 58 |
@@ -29,7 +29,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 19 | Implementation Order and Claude Execution Workflow | 2 | existing 2 | partial 2 |
 | 20 | Acceptance Criteria, Regression, Data Integrity, Performance, and Release Gates | 6 | extend 6 | none 6 |
 
-Total: 719 blocks; 83 with code behind them (partial or done), 606 deferred with a phase and reason.
+Total: 719 blocks; 87 with code behind them (partial or done), 602 deferred with a phase and reason.
 
 ## Explicit scope exclusions (unchanged)
 
@@ -123,20 +123,20 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R04-032 | 2811 | Streaming, assets, and browser resilience | js/core/game.js — CAMP.st.t clock, CAMP.tick, CAMP.save; world.js schema v1 + migration | 10 | defer | none | Phase 10: performance tiers, streaming, multi-decade evolution not started |  |
 | R04-033 | 2812 | ASSET, NETWORK, AND BROWSER RESILIENCE | js/core/game.js — CAMP.st.t clock, CAMP.tick, CAMP.save; world.js schema v1 + migration | 10 | defer | none | Phase 10: performance tiers, streaming, multi-decade evolution not started |  |
 | R05-001 | 2856 | National identity, governments, diplomacy, alliances, and political continuity | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
-| R05-002 | 2857 | Country, government, and world-order foundations | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-002 | 2857 | Country, government, and world-order foundations | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy | ww_registry ww_fronts |
 | R05-003 | 2901 | Unified national leadership, government decision-making, political continuity, and transitions | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-004 | 3071 | Political crises, government continuity, and domestic pressure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-005 | 3119 | Regional cooperation and shared cross-border systems | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-006 | 3134 | STRATEGIC ARMS CONTROL AND INTERNATIONAL SECURITY GOVERNANCE | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-007 | 3214 | Rules of engagement, diplomacy, and campaign consequences | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
-| R05-008 | 3228 | Global World War framework and coalition structure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-008 | 3228 | Global World War framework and coalition structure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy | ww_registry ww_fronts |
 | R05-009 | 3250 | Coalition command, interoperability, host-nation support, and national caveats | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-010 | 3303 | Neutral countries, diplomatic pressure, and global legitimacy | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-011 | 3317 | Negotiations and diplomacy that can actually end the war | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-012 | 3331 | DIPLOMACY, ALLIANCE POLITICS, AND NATIONAL DECISION-MAKING | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-013 | 3345 | International organizations, observers, and global governance | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-014 | 3354 | Independent group behavior and internal politics | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
-| R05-015 | 3367 | Expanded global country registry, national identity, and independent country behavior | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-015 | 3367 | Expanded global country registry, national identity, and independent country behavior | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy | ww_registry ww_fronts |
 | R05-016 | 3409 | North America and the Caribbean | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-017 | 3413 | South America | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-018 | 3417 | Western, Northern, Central, and Eastern Europe | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
@@ -146,7 +146,7 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R05-022 | 3433 | Africa | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-023 | 3437 | Oceania and the Pacific | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-024 | 3514 | Conflict, force posture, escalation, and non-state actors | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
-| R05-025 | 3515 | A persistent war that keeps moving | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-025 | 3515 | A persistent war that keeps moving | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Fronts on real borders in 50 km sectors moving gradually (power, air, defence, supply), cities change hands, war diary. Not yet: regions of strategic value, breakthroughs, encirclement, endings | ww_run |
 | R05-026 | 3534 | Strategic weapons, missile forces, warning, defense, CBRN consequences, and escalation governance | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-027 | 3549 | Strategic missile force configuration, warning uncertainty, and nuclear escalation | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-028 | 3568 | Strategic weapons governance and abstract CBRN hazard consequences | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |

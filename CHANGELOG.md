@@ -1,3 +1,13 @@
+## v327 (world war, step 1: the war on the world map; spec chapter 05)
+On the WORLD MAP, **START THE WORLD WAR**. A fictional scenario on the real world: real countries, borders, cities and airfields; an invented war, never a prediction.
+- **Every country is an actor** (237, Natural Earth): its own profile, alignment and history. Default scenario as the spec gives it: Russia and China lead REDFOR (Belarus, North Korea allied); the United States and NATO lead BLUEFOR (Japan, South Korea, Australia, the Philippines allied; New Zealand a non-fighting partner). Everyone else starts neutral and stays neutral unless something changes it (that comes in step 3).
+- **National profiles**: population and GDP (Natural Earth), military airfields (OurAirports) and ESTIMATED combat aircraft and ground brigades derived from them. No public order-of-battle data is used, and the figures are labelled as estimates everywhere.
+- **Fronts on real borders** between hostile countries (10 at the start: Finland, Norway, the Baltic states, Poland, Belarus, Korea), cut into 50 km sectors that move gradually with ground power, air superiority, the defender's advantage and supply (an advance weakens with depth). Cities over 200,000 change hands when the line passes them.
+- **Air theatres** (Northern Europe & Baltic, Central Europe & Black Sea, Arctic & North Atlantic, Korea & Sea of Japan, East & South China Seas, North Pacific): square-law attrition, about 1 % a day of the weaker side, superiority shown on the map.
+- **War panel**: date, run / pause / speed / +1 day, aircraft and brigades per side, theatres, fronts, war diary, profile of any country you click. Saved in the browser.
+- New data: land borders and neighbours (`assets/world/borders.json`), country population / GDP / region. Tests: `node tests/run.js ww_`.
+- Not yet: flying in the world war (step 2), countries changing sides, diplomacy, ceasefires and endings (step 3), naval war, economy and civilians.
+
 ## v326 (world campaign stage 1: the Earth)
 New QUICK FLIGHT card **WORLD MAP**: fly from any of 7,480 airports anywhere on Earth. Free flight; the war moves onto the Earth in later stages.
 - **Real terrain and oceans**: elevation streams around the aircraft at about 150 m (public AWS Terrain Tiles, cached by the browser so places flown before work offline); offline, a bundled 20 km global grid plus procedural detail. Sea is anything at or below sea level.
