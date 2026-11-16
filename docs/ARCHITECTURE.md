@@ -17,6 +17,7 @@ The game is plain browser JavaScript: **classic `<script>` tags that share one g
 | `rwr/` | warner registry (`rwrreg.js`, generated), the RWR model, SPO-15, western warner logic | regenerate with `node scripts/gen-rwr-registry.js` |
 | `sensors/` | sensor registry (`sensorreg.js`) and everything wired to it: radar, IRST, signal processing, jamming, NCTR, raw video, modern suite (`MSS`), pulse-radar set control (`PRC`), AWG-9 set control (`AWG`, F-14A), IRST fit audit | see the order notes below |
 | `world/` | the Earth: `geo.js` (`WGEO`: lat/lon frame, streamed and bundled elevation, places / airports / countries), `worldflight.js` (`WF`: terrain, runways, towns, floating origin), `worldmap.js` (the picker) | load after `addons-v324.js`, before `campaign/world.js`; data in `assets/world/` |
+| `war/` | the world war: `worldwar.js` (`WWAR`: country registry, alignments, fronts, air theatres, strategic clock) and `warmap.js` (its world-map layer and panel) | after `world/` |
 | `campaign/` | campaign / multiplayer upgrade, strategic air war, dynamic campaign; `world.js` (campaign ledger: events, airframes, aircrew, supply) and `warrecord.js` (its panel) | `campmp` / `strategic` / `campplus` load after `game.js`; `world.js` + `warrecord.js` load **last** (after `addons-v324.js`) because they wrap everything else. Ownership: `docs/campaign/OWNERSHIP.md` |
 
 ## Load order rules

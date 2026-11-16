@@ -418,6 +418,27 @@ test('wg_rebase: far from the origin the world re-centres without moving the air
 test('wg_leave: any other mode restores the old theatre','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.search('KLAX')[0],0,'le');await start('RANGE');return{on:WF.on,fn:MAPMODE.fn,af:AF.x,scen:game.scen};});
   ok('world left, theatre back',r.on===false&&r.fn===null&&r.af<1e8&&r.scen==='RANGE',r);});
+
+/* ---------- the world war, step 1 (v327, spec ch.05) ---------- */
+test('ww_registry: every country is an actor; the default scenario follows the spec; nobody else is forced in','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const c=WWAR.st.c,P=Object.values(c);
+    return{n:P.length,ctry:WGEO.countries.length,usa:c.USA.side+c.USA.al,rus:c.RUS.side+c.RUS.al,chn:c.CHN.side+c.CHN.al,pol:c.POL.side+c.POL.al,ind:c.IND.al,bra:c.BRA.al,nzl:c.NZL.al,
+      neutral:P.filter(p=>p.al==='NEUTRAL').length,hist:c.POL.hist.length,est:P.every(p=>p.air0>=0&&p.gnd0>=0)};});
+  ok('all countries in the registry',r.n===r.ctry&&r.n>200,{n:r.n});ok('US and NATO lead BLUEFOR, Russia and China REDFOR',r.usa==='BCORE'&&r.rus==='RCORE'&&r.chn==='RCORE'&&r.pol==='BALLY',r);
+  ok('India and Brazil neutral',r.ind==='NEUTRAL'&&r.bra==='NEUTRAL',r);ok('a partner does not fight',r.nzl==='PARTNER',r.nzl);ok('most of the world neutral',r.neutral>150,r.neutral);ok('alignment has history',r.hist>=1,r.hist);});
+test('ww_fronts: fronts only on real borders between hostile belligerents','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WWAR.newWar();const st=WWAR.st,bad=st.fronts.filter(f=>st.c[f.a].side===st.c[f.b].side||!['CORE','ALLY'].includes(st.c[f.a].al)||!['CORE','ALLY'].includes(st.c[f.b].al));
+    return{n:st.fronts.length,bad:bad.length,ids:st.fronts.map(f=>f.a+f.b),nb:st.fronts.every(f=>WGEO.byA3.get(f.a).nb.includes(f.b))};});
+  ok('fronts exist',r.n>=6,r.ids);ok('none between allies or with neutrals',r.bad===0,r.bad);ok('each is a real land border',r.nb);ok('Finland-Russia and Korea are fronts',r.ids.includes('FINRUS')&&r.ids.includes('KORPRK'),r.ids);});
+test('ww_run: 60 days of war keep the registry consistent, move gradually and record events','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WWAR.newWar();const st=WWAR.st;let maxJump=0;const prev=()=>st.fronts.flatMap(f=>f.sec.map(s=>s.off));let a=prev();
+    for(let d=0;d<60;d++){WWAR.step(24);const b=prev();for(let i=0;i<a.length;i++)maxJump=Math.max(maxJump,Math.abs(b[i]-a[i]));a=b;}
+    const ids=new Set(st.ev.map(e=>e.id));return{audit:WWAR.audit(),maxJump,ev:st.ev.length,uniq:ids.size===st.ev.length,types:[...new Set(st.ev.map(e=>e.ty))],ind:st.c.IND.al,day:Math.floor(st.t/24)};});
+  ok('audit clean',r.audit.length===0,r.audit);ok('lines move at most a few km a day',r.maxJump<=4,r.maxJump);ok('events unique',r.uniq);
+  ok('air, front and alignment events',['AIR','FRONT','ALIGN'].every(t=>r.types.includes(t)),r.types);ok('neutrals stay neutral by themselves',r.ind==='NEUTRAL',r.ind);ok('60 days passed',r.day===60,r.day);});
+test('ww_save: the war survives save and load','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WWAR.newWar();WWAR.step(72);const t=WWAR.st.t,o=WWAR.st.fronts[0].sec[0].off;WWAR.st=null;const ok=await WWAR.load();return{ok,t:WWAR.st.t===t,o:WWAR.st.fronts[0].sec[0].off===o,a:WWAR.audit()};});
+  ok('loaded, same clock and lines',r.ok&&r.t&&r.o,r);ok('audit clean',r.a.length===0,r.a);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

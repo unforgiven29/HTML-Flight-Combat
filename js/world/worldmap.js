@@ -27,7 +27,7 @@ document.head.insertAdjacentHTML('beforeend','<style>'+
 function mount(){if(M.el)return;const d=document.createElement('div');d.id='wmap';d.hidden=true;
   d.innerHTML='<div style="position:relative;min-height:0"><canvas id="wmCv"></canvas><div class="zb"><button data-z="in" aria-label="Zoom in">+</button><button data-z="out" aria-label="Zoom out">−</button></div></div>'+
    '<div class="side"><h2>WORLD MAP</h2><div class="note">Pick an airport anywhere on Earth. Drag to pan, wheel or ± to zoom, click a field to select it.</div>'+
-   '<input id="wmQ" type="search" placeholder="ICAO, IATA, airport or city (e.g. KLAX, Ramstein, Tokyo)" autocomplete="off"><div class="res" id="wmRes"></div><div id="wmSel"></div><div id="wmStatus"></div>'+
+   '<input id="wmQ" type="search" placeholder="ICAO, IATA, airport or city (e.g. KLAX, Ramstein, Tokyo)" autocomplete="off"><div class="res" id="wmRes"></div><div id="wmSel"></div><div id="wmWar"></div><div id="wmStatus"></div>'+
    '<div class="note">Terrain streams at about 150 m from public elevation tiles; offline, a coarse world grid is used. Cities and towns are placed and sized from Natural Earth; airports and runways from OurAirports. Sources: assets/world/SOURCES.md</div>'+
    '<div class="act"><button class="go" id="wmGo">FLY</button><button id="wmX">CLOSE</button></div></div>';
   document.body.appendChild(d);M.el=d;M.cv=d.querySelector('#wmCv');M.cx=M.cv.getContext('2d');
@@ -71,6 +71,7 @@ function draw(){const c=M.cx;if(!c||M.el.hidden)return;const W=M.W,H=M.H;c.setTr
   c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=.8;c.beginPath();
   for(const C of G.countries)for(const r of C.r){let px=null;for(let i=0;i<r.length;i+=2){const[x,y]=w2s(r[i+1],r[i]);if(px!=null&&Math.abs(x-px)>W*.5){c.moveTo(x,y);}else if(i)c.lineTo(x,y);else c.moveTo(x,y);px=x;}}
   c.stroke();
+  if(window.WARMAP)try{WARMAP.draw(c,w2s,M,'under');}catch(e){console.warn(e);}
   // places: big ones always, smaller as you zoom in
   const minPop=M.ppd<4?2e6:M.ppd<10?5e5:M.ppd<30?1e5:M.ppd<80?2e4:0;c.font='600 11px "B612 Mono",monospace';
   for(const p of G.places){if(p.pop<minPop)break;const[x,y]=w2s(p.lat,p.lon);if(x<-20||y<-20||x>W+20||y>H+20)continue;const r=Math.max(1.5,Math.min(5,Math.log10(Math.max(1e3,p.pop))-3));
@@ -82,11 +83,12 @@ function draw(){const c=M.cx;if(!c||M.el.hidden)return;const W=M.W,H=M.H;c.setTr
   if(M.sel){const a=M.sel,[x,y]=w2s(a.lat,a.lon);c.strokeStyle='#ffcf5a';c.lineWidth=2;c.beginPath();c.arc(x,y,9,0,7);c.stroke();
     if(M.ppd>=60){const rw=a.runways[M.rw];if(rw&&rw.le_lat!=null){const[p,q]=[w2s(rw.le_lat,rw.le_lon),w2s(rw.he_lat,rw.he_lon)];c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.lineWidth=4;c.stroke();}}
     c.fillStyle='#ffcf5a';c.fillText((a.iata||a.ident)+' · '+a.name,x+12,y-10);}
+  if(window.WARMAP)try{WARMAP.draw(c,w2s,M,'over');}catch(e){console.warn(e);}
   c.fillStyle='rgba(232,240,236,.8)';c.fillText(M.lat.toFixed(2)+'°  '+M.lon.toFixed(2)+'°',8,16);}
 function click(e){if(!G.ready)return;const r=M.cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=144;
   const show=M.ppd<6?'L':M.ppd<20?'LM':'LMS';
   for(const a of G.airports){if(!show.includes(a.size))continue;const[sx,sy]=w2s(a.lat,a.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=a;}}
-  if(best)select(best,false);}
+  if(best)select(best,false);else if(window.WARMAP){const w=s2w(x,y);WARMAP.pick(w.lat,w.lon);}}
 function select(a,fly){if(!a)return;M.sel=a;M.rw=0;M.end='le';
   // the longest paved runway first
   let bi=0,bl=-1;a.runways.forEach((r,i)=>{const v=r.len_m*(r.paved?1:.5);if(v>bl){bl=v;bi=i;}});M.rw=bi;
@@ -104,5 +106,5 @@ function card(){const rng=document.getElementById('sRNG');if(!rng||document.getE
   rng.insertAdjacentHTML('beforebegin','<button class="qm" id="sWORLD"><i>EARTH</i><b>WORLD MAP</b><span>Fly from any airport on Earth: real terrain, coastlines, runways, cities and towns. Free flight.</span><em>PICK</em></button>');
   document.getElementById('sWORLD').onclick=open;}
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',card);else card();
-window.WMAP={open,close,M,select};
+window.WMAP={open,close,M,select,draw};
 })();
