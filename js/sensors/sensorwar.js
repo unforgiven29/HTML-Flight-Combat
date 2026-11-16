@@ -26,11 +26,16 @@ addEventListener('keydown',e=>{if(e.code!=='KeyU'||e.ctrlKey||e.metaKey||e.altKe
 const echoes=new Map();
 function echoFor(u){let g=echoes.get(u);if(!g){g=new GroundEcho(u.pos.clone());g.cu=u;echoes.set(u,g);}g.pos.copy(u.pos);g.vel.copy(u.vel);g.ac.rcs=Math.max(1,u.ac.rcs||10);g.ac.name=u.nv!=null?'SHIP':'GMT';g.type=u.nv!=null?'SHIP':'GMT';g.callsign=u.callsign||'';g.gnd=true;return g;}
 F.mod('war-gm',5,(r,c)=>{if(radar.xm==='AA'||radar.xm==='VS'||!player||!player.alive||radar.sensor!=='RDR'||!radar.on()||typeof GND==='undefined')return;
+  const _sa=radar.antAz,_sp=W._pa==null?_sa:W._pa,_swLo=Math.min(_sa,_sp),_swHi=Math.max(_sa,_sp);W._pa=_sa;
   const now=performance.now()/1000,lam=C/((r.carrierFrequencyGHz||9.6)*1e9),R0=((player.ac.radar&&player.ac.radar.R0)||90000)*.55,L=GROUND.list;let n=0;
   const mv=r.gmGmtiMinDetectableVelMS||4,notch=(r.gmGmtiClutterNotchHz||300)*lam/2*.3,res=Math.max(r.gmRangeResolutionM||30,3),sea=cl((r.gmSeaClutterSuppression||20)/40,.2,1.2);
   for(const u of GND.units){if(!u.alive||u.side===player.side||u.dead)continue;const isShip=u.nv!=null;
     if(radar.xm==='SEA'&&!isShip)continue;if(radar.xm==='GMTI'&&isShip&&!r.gmSeaTargetWakeEnabled)continue;
     const a=radar.ang(u.pos);if(a.d>radar.rngM||a.off>radar.gimbal()||!terrLOS(player.pos,u.pos))continue;
+    // v324 (#32): ground modes painted every unit inside the gimbal cone on every frame, ignoring where the beam is. A mechanical, PESA or AESA antenna sees only what its beam is on: the
+    // fan beam sweeps in azimuth (antAz follows the scan, electronic or mechanical) and a unit is only detected while the beam is across it.
+    // (tested against the arc swept since the last evaluation, so a coarse update rate cannot step the beam over a unit)
+    if(a.az<_swLo-.35*radar.beam||a.az>_swHi+.35*radar.beam)continue;
     const sp=Math.hypot(u.vel.x,u.vel.z);let los=_gl.copy(u.pos).sub(player.pos).normalize();const vr=Math.abs(u.vel.dot(los));
     let k=1;
     if(radar.xm==='GMTI'){if(sp<mv||vr<Math.max(notch,mv*.5))continue;k=cl(vr/(notch+mv),.3,2.5);}

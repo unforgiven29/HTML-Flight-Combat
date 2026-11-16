@@ -161,4 +161,28 @@ blk('MICA NG',()=>{
   for(const id in STN){const sn=STN[id];if(!sn)continue;for(const k in sn){const l=sn[k];if(!Array.isArray(l))continue;
     if(l.includes('MICA EM')&&!l.includes('MICA NG EM'))l.splice(l.indexOf('MICA EM')+1,0,'MICA NG EM');if(l.includes('MICA IR')&&!l.includes('MICA NG IR'))l.splice(l.indexOf('MICA IR')+1,0,'MICA NG IR');}}
 });
+
+// 3: loadouts. An audit of every default loadout against the stores each station offers found the F-14D's cold-era defaults carrying AIM-54C (modern-only, not offered in that era),
+// which the hangar then silently dropped. They fall back to the AIM-54A. (The empty cold loads of modern-only jets and the Vikhr rack sub-stations are by design.)
+blk('loadout audit',()=>{const L=LOAD&&LOAD.cold&&LOAD.cold['F-14D'];if(!L)return;for(const k in L)if(L[k]==='AIM-54C'&&!(STN['F-14D'][k]||[]).length)continue;else if(L[k]==='AIM-54C'&&!(typeof stOpts==='function'?stOpts('F-14D','cold',k):[]).includes('AIM-54C'))L[k]='AIM-54A';});
+
+// 2: wrong hangar front views. Cloned jets inherited their source airframe's drawing: the F-35B, Rafale M, EF-2000 prototypes, Gripen A and A-10A showed the F-16, the J-10A / B the MiG-29.
+// They now take the drawing of their own family, with the real span in the caption.
+blk('front views',()=>{if(typeof FV==='undefined')return;
+  const al=(id,src,span)=>{if(AC[id]&&FV[src]&&FV[id]!==FV[src]||AC[id]&&FV[id]===FV['F-16']&&FV[src]&&src!=='F-16'){const o=FV[src];FV[id]=Object.assign({},o,span?{span,hw:parseFloat(span)/2}:{});}};
+  al('F-35B','F-35A','10.70 m');al('Rafale M','Rafale','10.90 m');al('EF-2000 T1','EF-2000');al('EF-2000 T3','EF-2000');al('Gripen A','JAS-39C');al('A-10A','A-10C');
+  for(const k of['J-10A','J-10B'])if(AC[k]&&FV['J-10C']&&FV[k]!==FV['J-10C'])FV[k]=Object.assign({},FV['J-10C'],{span:'9.75 m',hw:4.875});});
+
+// 48: TGP / seeker slew over terrain. The point of interest is only ever updated when the new line of sight hits ground within 60 km. Slewing up past a ridge line towards the horizon (a ray that clears every hill)
+// found no ground, so the point simply stayed put and the view could not be raised above mountains and hills. A ray that finds no ground now moves the point out along the ray (sky / horizon), and
+// the next slew continues from that line of sight instead of snapping back.
+blk('TGP slew over terrain',()=>{if(typeof SNS==='undefined')return;
+  SNS.slew=function(cs,cr,dt){const P=player;this.ensure(P);if(this.mode==='POINT'||this.mav){if(cs||cr){this.mode='AREA';this.unit=null;this.mav=null;}}
+    const e=this.eye(P),l=this.spi.clone().sub(e).normalize(),r=this.fov()*D2R*.45*dt;
+    const az=Math.atan2(l.x,-l.z)+cs*r,el=Math.asin(clamp(l.y,-1,1))+cr*r,nl=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el));
+    const f=P.fwd(new V3()),an=Math.acos(clamp(nl.dot(f),-1,1)),ac=Math.acos(clamp(l.dot(f),-1,1));
+    if(an>this.lim()&&an>=ac){this.glim=1;return;}
+    const g=this.ground(e,nl);this.sky=!g;this.spi=g||e.clone().addScaledVector(nl,60000);};
+  const _lim=SNS.clampSpi;SNS.clampSpi=function(P){if(this.sky)return;return _lim.apply(this,arguments);};
+});
 })();

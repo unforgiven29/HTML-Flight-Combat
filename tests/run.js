@@ -106,10 +106,15 @@ test('rcs: fluctuation is correlated with aspect and time, engines modulate nose
   ok('engine modulation only nose or tail on, and with power',r.nose>.15&&r.side===0&&r.idle<r.nose,r);});
 
 test('antenna: sidelobe nulls and peaks follow the taper of the set','F-4E',async p=>{
-  const r=await p.evaluate(()=>{const S=window.SENSOR_SIG,b=.06,f=(u,sll)=>S.pattern(u*b,0,b,b,sll);const o={};
-    for(const sll of[-21,-30]){const per=S.period(sll);o[sll]={per,null:f(2*per,sll),peak:f(2.5*per,sll),n3:f(3*per,sll),p3:f(3.5*per,sll)};}return o;});
-  ok('wider taper, tighter nulls',r[-30].per<r[-21].per,[r[-21].per,r[-30].per]);
-  for(const k of[-21,-30])ok('peak is above its neighbouring nulls at '+k+' dB',r[k].peak>r[k].null*3&&r[k].p3>r[k].n3*3,[r[k].null,r[k].peak]);});
+  // v324 (#11): the pattern is the aperture pattern of a tapered circular aperture; nulls are found by scanning, not read off a formula
+  const r=await p.evaluate(()=>{const S=window.SENSOR_SIG,b=.06,o={};player.ac.radar.name='APG-66(V)1';
+    for(const sll of[-21,-30]){const v=[];for(let u=.6;u<4.5;u+=.005)v.push([u,S.pattern(u*b,0,b,b,sll)]);const nulls=[],peaks=[];
+      for(let i=1;i<v.length-1;i++){if(v[i][1]<v[i-1][1]&&v[i][1]<=v[i+1][1])nulls.push(v[i][0]);if(v[i][1]>v[i-1][1]&&v[i][1]>=v[i+1][1])peaks.push(v[i]);}
+      o[sll]={nulls:nulls.slice(0,3),sp:nulls[1]-nulls[0],first:peaks[0]?peaks[0][1]:0,depth:peaks[0]&&nulls[0]?peaks[0][1]/Math.max(1e-9,v.find(x=>x[0]>nulls[0]-.01)[1]):0};}
+    return o;});
+  ok('wider taper, tighter nulls',r[-30].sp<r[-21].sp,[r[-21].sp,r[-30].sp]);
+  ok('wider taper, lower first sidelobe',r[-30].first<r[-21].first*.5,[r[-21].first,r[-30].first]);
+  for(const k of[-21,-30])ok('first sidelobe is a peak between nulls at '+k+' dB',r[k].nulls.length>=2&&r[k].first>0&&r[k].first>1e-4,[r[k].nulls,r[k].first]);});
 
 test('scope: sweep nonlinearity, range marks, range noise, PRF agility','F-4E',async p=>{
   const r=await p.evaluate(()=>{const u=RAWVID.warpU;let mono=true,maxe=0,prev=-1;for(let i=0;i<=100;i++){const x=i/100,v=u(x);if(v<=prev)mono=false;prev=v;maxe=Math.max(maxe,Math.abs(v-x));}

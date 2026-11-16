@@ -16,7 +16,26 @@ S.sim=true;
 // ---------- antenna
 /* null spacing of the aperture pattern in half-power beamwidths: lambda/(D*bw) is 1.13 for a uniform aperture (-13 dB sidelobes) and shrinks as the taper that buys lower sidelobes widens the beam (about 0.87 at -30 dB). Nulls sit at multiples of it, sidelobe peaks halfway. */
 S.period=function(sllDb){return Math.max(.8,Math.min(1.13,1.13-.0153*(Math.abs(sllDb)-13)));};
-const pat=S.pattern=function(dAz,dEl,bwA,bwE,sllDb){const u=Math.hypot(dAz/bwA,dEl/bwE),main=Math.exp(-2.7726*u*u);if(u<.9)return main;
+/* v324 (#11): the pattern now comes from the aperture itself. A circular aperture lit with a (1-r^2)^p taper has the field pattern Lambda_{p+1}(x) = (p+1)! (2/x)^(p+1) J_{p+1}(x):
+   p = 0 uniform (first sidelobe -17.6 dB), p = 1 parabolic (-24.6), p = 2 (-30.6), p = 3 (-36). The set's sidelobe figure picks p; the beam is rescaled so u = 0.5 is the half-power point.
+   A dish (feed horn and struts in the aperture: a central blockage of 22 % of the diameter) loses the null depth and raises the near sidelobes: pattern ~ [L(x) - e^2 L(e x)] / (1 - e^2).
+   A flat slotted array or an electronic array has a clean aperture. S.apOn = false brings the old Gaussian-and-envelope pattern back. */
+const DISH=/APQ|Sapfir-23|RP-2[12]|RP-5|Orion|Almaz|Aida|Spin|AI\.?Mk|Blue |N003|Foxhunter-?A/i;
+const bj=(n,x)=>{const N=96,h=Math.PI/N;let sm=0;for(let k=0;k<=N;k++){const t=k*h,w=k===0||k===N?1:(k%2?4:2);sm+=w*Math.cos(n*t-x*Math.sin(t));}return sm*h/3/Math.PI;};
+const FACT=[1,1,2,6,24];
+const lam=(p,x)=>{if(x<1e-4)return 1;const v=p+1;return FACT[v]*Math.pow(2/x,v)*bj(v,x);};
+const apF=(p,e,x)=>e>0?(lam(p,x)-e*e*lam(p,e*x))/(1-e*e):lam(p,x);
+const TAB=new Map(),UMAX=10,DU=.004;
+function apTab(p,e){const k=p+':'+e;let t=TAB.get(k);if(t)return t;let lo=.1,hi=6;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(apF(p,e,m)*apF(p,e,m)>.5)lo=m;else hi=m;}
+  const xh=(lo+hi)/2,n=Math.round(UMAX/DU)+1;t=new Float32Array(n);for(let i=0;i<n;i++){const f=apF(p,e,2*xh*i*DU);t[i]=f*f;}TAB.set(k,t);return t;}
+const pKey=new Map();
+function apOf(sllDb,name){const k=sllDb+'|'+name;let o=pKey.get(k);if(o)return o;const pp=cl((Math.abs(sllDb)-17.6)/7,0,3),p0=Math.floor(Math.min(pp,2.999)),f=pp-p0,e=DISH.test(name||'')?.22:0;
+  o={a:apTab(p0,e),b:apTab(p0+1,e),f:f,e:e,p:pp};pKey.set(k,o);return o;}
+S.apOn=true;S.apOf=apOf;
+const pat=S.pattern=function(dAz,dEl,bwA,bwE,sllDb){const u=Math.hypot(dAz/bwA,dEl/bwE),main=Math.exp(-2.7726*u*u);
+  if(S.apOn&&u<UMAX){const nm=(typeof player!=='undefined'&&player&&player.ac&&player.ac.radar&&player.ac.radar.name)||'',o=apOf(sllDb,nm),x=u/DU,i=x|0,fr=x-i,A=o.a[i]*(1-fr)+o.a[i+1]*fr,B=o.b[i]*(1-fr)+o.b[i+1]*fr;
+    return Math.max((A*(1-o.f)+B*o.f),un(sllDb)*.004);}
+  if(u<.9)return main;
   const sl=un(sllDb),env=sl*Math.min(1,Math.pow(1.3/u,1.4)),rip=.04+.96*Math.pow(Math.sin(Math.PI*u/S.period(sllDb)),2),t=cl((u-.9)/.5,0,1);return Math.max(main*(1-t)+env*rip*t,sl*.004);};
 // scan geometry for an electronic array: beam widens and gain falls with scan angle from the array normal
 S.scan=function(scanRad){const type=F.reg&&F.reg.antennaType,elec=type&&type!=='Mechanical_Slotted_Planar';if(!elec)return{w:1,g:1};const c=Math.max(Math.cos(Math.min(Math.abs(scanRad),1.4)),.17);return{w:1/c,g:Math.pow(c,1.5)};};

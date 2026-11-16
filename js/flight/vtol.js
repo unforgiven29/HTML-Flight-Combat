@@ -25,7 +25,10 @@ Jet.prototype.vtHook=function(dt,a,c,T,m,f,u,rt,V,pr,yr){
   let Tn=T;
   if(v.water){const want=s.wsw&&s.water>0&&this.thr>=.72&&this.n>.85;s.inj+=Math.max(-.5*dt,Math.min(.5*dt,(want?1:0)-s.inj));
     if(s.inj>.05)s.water=Math.max(0,s.water-2.0*dt*s.inj);
-    Tn*=1-(1-v.wetK)*Math.max(0,Math.min(1,(this.thr-.45)/.3))*(1-s.inj);
+    // v324 (#50): the dry-engine loss was a flat 8.5 % in every condition, so the water switch changed nothing you could see. Real dry thrust is temperature-limited: it is lost in proportion to how far the
+    // outside air is above the engine's flat-rating temperature (about 15 deg C), and cold dense air gives back some of it. Water restores the wet rating in all of them.
+    const oat=(typeof isaT==='function'?isaT(this.pos.y)-273.15:15)+((typeof ENV!=='undefined'&&ENV.dT)||0),dk=Math.max(.25,Math.min(2.2,.45+(oat-15)/22));s.dk=dk;
+    Tn*=1-(1-v.wetK)*dk*Math.max(0,Math.min(1,(this.thr-.45)/.3))*(1-s.inj);
     if(this===player&&want&&s.water<=0&&s.msgT<=0){flash('WATER · EMPTY',900);s.msgT=3;}}
   s.msgT-=dt;
   // ---- lift jets (Yak): armed above the lever's ON point, cut below OFF or above ~250 kt; spool over v.lift.spool seconds ----

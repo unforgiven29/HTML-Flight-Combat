@@ -6351,6 +6351,14 @@ const MODERN_ONLY=new Set(['AIM-9X','AIM-120C','R-77','AIM-7P','AIM-54C']);
 const MODERN_AC={};
 const stOpts=(ac,era,k)=>(STN[ac][k]||[]).filter(s=>era==='modern'||(window.MJ_NOCOLD&&MJ_NOCOLD.has(ac))||!MODERN_ONLY.has(s)&&!(MODERN_AC[ac]&&MODERN_AC[ac].includes(s))&&!(s==='PTB'&&k!=='C'));
 const stOrder=ac=>Object.keys(AC[ac].vst||AC[ac].st).sort((a,b)=>AC[ac].st[a][0]-AC[ac].st[b][0]);
+// v324 (#22): twin / multiple carriage as a single drop-down choice. A group is the stations sharing one pylon: a lower-case rack chain (3, 3b, 3c), a
+// twin-rail pylon (2A, 2B) or a pylon with a second launcher (5, 5B). A store can be taken N times when the first N stations of its group all list it.
+function groupOf(ac,k){const st=AC[ac].st,has=q=>q in st,m=/^(.*?)[a-z]$/.exec(k),p=m?m[1]:k;
+  const g=[p].filter(has).concat('abcdefgh'.split('').map(c=>p+c).filter(has));if(g.length>1)return g.includes(k)?g:null;
+  const q=k.replace(/[AB]$/,'');if(has(q+'A')&&has(q+'B'))return[q+'A',q+'B'].includes(k)?[q+'A',q+'B']:null;
+  if(has(q)&&has(q+'B'))return[q,q+'B'].includes(k)?[q,q+'B']:null;return null;}
+function dualGroup(ac,k,s){if(!AC[ac]||!AC[ac].st[k])return null;const g=groupOf(ac,k);if(!g)return null;const m=g.filter(q=>stOpts(ac,game.era,q).includes(s));return m.length>1&&m.includes(k)?m:null;}
+const rackLead=(g,k)=>g&&g[0]===k&&!/[A-Z]$/.test(k);   // a rack chain / second launcher: the first round is the pylon itself
 const stPair=(ac,k)=>{const x=AC[ac].st[k][0];return Object.keys(AC[ac].st).find(o=>o!==k&&Math.abs(AC[ac].st[o][0]+x)<.05)||null;};
 const STORE_NAME={TK:'370 gal tank',PTB:'Drop tank',IRST:'IRST21 + FPU-13/A tank'};
 game.custom={};try{const v=JSON.parse(localStorage.getItem('viper.loads')||'{}');if(v&&typeof v==='object')game.custom=v;}catch(e){}
@@ -6433,7 +6441,9 @@ function mkEditor(side,root){
   const ac=()=>side==='own'?game.ac:foeType();
   const load=()=>getLoadS(side,game.era,ac());
   const save=l=>{setLoadS(side,game.era,ac(),l);E.render();hqSync();};
-  E.setSt=(k,v)=>{const a=ac(),n=load();if(v)n[k]=v;else delete n[k];
+  E.setGrp=(k,v,q)=>{const a=ac(),n=load(),g=dualGroup(a,k,v);if(!g)return E.setSt(k,v);
+    const put=(x,on)=>{if(on)n[x]=v;else if(n[x]===v)delete n[x];};g.forEach((x,i)=>put(x,i<q));if($q('.mr').checked){const o=stPair(a,g[0]),og=o&&!g.includes(o)&&groupOf(a,o);if(og&&og.length===g.length)og.forEach((x,i)=>{if(i>=q||stOpts(a,game.era,x).includes(v))put(x,i<q);});}save(n);};
+  E.setSt=(k,v)=>{const a=ac();if(v){const g=dualGroup(a,k,v);if(rackLead(g,k))return E.setGrp(k,v,1);}const n=load();if(v)n[k]=v;else delete n[k];
     if($q('.mr').checked){const o=stPair(a,k);if(o){if(!v)delete n[o];else if(stOpts(a,game.era,o).includes(v))n[o]=v;}}save(n);};
   E.render=()=>{const a=ac(),A=AC[a],l=load();if(!(E.sel in A.st))E.sel=null;
     // aircraft strip
@@ -6457,8 +6467,8 @@ function mkEditor(side,root){
     // picker
     const pp=$q('.ed-pk');
     if(!E.sel){pp.innerHTML=`<h3>${side==='own'?'SELECT A STATION':'SELECT A STATION'}</h3><p class="hint">Click a pylon on the drawing (or a card under it) to choose what hangs there. ${side==='foe'?'The bandits fly this loadout when the flight type matches.':'Mirror L/R keeps the wings balanced.'}</p>`;}
-    else{const k=E.sel,opts=stOpts(a,game.era,k),cur=l[k]||'';pp.innerHTML=`<h3>${k==='C'?'CENTRELINE':'STATION '+k} · ${stZone(a,k)}</h3><div class="wopts"></div>`;const box=pp.querySelector('.wopts');
-      const items=[];const add=(v,html,cls)=>{const b=elH('button','wo '+cls+(cur===v?' on':''),html);b.onclick=()=>E.setSt(k,v);items.push([v?storeCat(v):'',b]);};
+    else{const k=E.sel,a_=a,opts=stOpts(a,game.era,k),cur=l[k]||'';pp.innerHTML=`<h3>${k==='C'?'CENTRELINE':'STATION '+k} · ${stZone(a,k)}</h3><div class="wopts"></div>`;const box=pp.querySelector('.wopts');
+      const items=[];const add=(v,html,cls)=>{const b=elH('button','wo '+cls+(cur===v?' on':''),html);b.onclick=()=>E.setSt(k,v);items.push([v?storeCat(v):'',b]);return b;};
       const flush=()=>{let last=null;for(const c of STORE_CATS.concat(['OTHER'])){const g=items.filter(x=>x[0]===c||(c==='OTHER'&&x[0]!==''&&!STORE_CATS.includes(x[0])));if(!g.length)continue;if(c!==''){const h=elH('div','wcat',c+' <u>'+g.length+'</u>');h.style.cursor='pointer';
           // v324 (#22): categories are drop-downs. The one holding the current store (or the first, on an empty pylon) starts open; a click opens / closes the rest
           const oc=E.openCats||(E.openCats={}),curCat=cur?storeCat(cur):'',key=c,open=key in oc?oc[key]:(g.some(x=>x[1].classList.contains('on'))||(!cur&&c===(STORE_CATS[0]||c)));
@@ -6468,8 +6478,9 @@ function mkEditor(side,root){
       add('',`<i class="c" style="background:#2c3d47"></i><b>EMPTY</b><span>nothing on this pylon · less drag</span>`,'');
       for(const s of opts){if(s==='IRST'){add(s,`<i class="c"></i><b>IRST21 · FPU-13/A TANK</b><span>passive long-wave IR search and track in the tank nose · no emissions · angle-only tracks, ranged by radar or Link 16 · jettison with Backspace</span><em>+${fmtN(tkKg(s,A))} kg</em>`,'tk');continue;}
       if(isTank(s)){add(s,`<i class="c"></i><b>${A.tankName.toUpperCase()}</b><span>extra fuel · jettison with Backspace</span><em>+${fmtN(s==='PTB'&&A.ptb||A.tank)} kg</em>`,'tk');continue;}
-        if(AGW[s]){const a=AGW[s];add(s,`<i class="c"></i><b>${s==='TGP'?'LITENING':s}</b><span>${STORE_NAME[s]} · ${a.as?(a.seek==='IIR'?'imaging IR seeker · radar-designated · sea-skimming · ignores chaff':'active radar seeker · radar-designated · sea-skimming'):({bomb:'free-fall, CCIP',pod:'rocket pod, CCIP',lgb:'laser-guided, CCRP · needs a TGP',agm:'IIR seeker · lock and launch',tgp:'laser designator · auto-lase',arm:'anti-radiation · HAS / POS / SP',hts:'emitter locator · HAD'})[a.k]}</span><em>${fmtN(a.mass)} kg</em>`,'ag');continue;}
-        const d=MSL[s],c=seekCls(s);add(s,`<i class="c"></i><b>${s}</b><span>${WNAME[s]||''} · ${SEEKN[d.seek]} · ${(d.aiR/1000).toFixed(0)} km</span><span class="bars" style="display:none"></span><div class="bars"><div class="bar"><u style="width:${clamp(d.aiR/620,4,100)}%"></u></div><div class="bar"><u style="width:${clamp(d.maxG/.55,4,100)}%;background:var(--am)"></u></div></div>`+(MODERN_ONLY.has(s)?`<em>MODERN</em>`:''),c);}flush();}
+        if(AGW[s]){const a=AGW[s];add(s,`<i class="c"></i><b>${s==='TGP'?(window.tgpName?tgpName(ac()):'TGP'):s}</b><span>${STORE_NAME[s]} · ${a.as?(a.seek==='IIR'?'imaging IR seeker · radar-designated · sea-skimming · ignores chaff':'active radar seeker · radar-designated · sea-skimming'):({bomb:'free-fall, CCIP',pod:'rocket pod, CCIP',lgb:'laser-guided, CCRP · needs a TGP',agm:'IIR seeker · lock and launch',tgp:'laser designator · auto-lase',arm:'anti-radiation · HAS / POS / SP',hts:'emitter locator · HAD'})[a.k]}</span><em>${fmtN(a.mass)} kg</em>`,'ag');continue;}
+        const d=MSL[s],c=seekCls(s),gp=dualGroup(a_,k,s),nowN=gp?gp.findIndex(x=>l[x]!==s):0,cnt=gp?(nowN<0?gp.length:nowN):0;const b1=add(s,`<i class="c"></i><b>${gp?'1\u00d7 ':''}${s}</b><span>${WNAME[s]||''} · ${SEEKN[d.seek]} · ${(d.aiR/1000).toFixed(0)} km</span><span class="bars" style="display:none"></span><div class="bars"><div class="bar"><u style="width:${clamp(d.aiR/620,4,100)}%"></u></div><div class="bar"><u style="width:${clamp(d.maxG/.55,4,100)}%;background:var(--am)"></u></div></div>`+(MODERN_ONLY.has(s)?`<em>MODERN</em>`:''),c);
+        if(gp){if(rackLead(gp,k)&&cnt>1)b1.classList.remove('on');for(let q=2;q<=gp.length;q++){const bq=elH('button','wo '+c+(cnt===q&&cur===s?' on':''),`<i class="c"></i><b>${q}\u00d7 ${s}</b><span>${WNAME[s]||''} \u00b7 ${q} rounds on this pylon (${gp.slice(0,q).join(' + ')}) \u00b7 ${SEEKN[d.seek]}</span><em>+${fmtN(d.mass*(q-1))} kg</em>`);bq.onclick=()=>E.setGrp(k,s,q);items.push([storeCat(s),bq]);}}}flush();}
     // summary
     const S=loadStats(a,l),met=A.units==='met',w=v=>met?fmtN(v)+' kg':fmtN(v*2.2046)+' lb';
     $q('.sum').innerHTML=`<b>${S.count}</b> missiles${S.count?' ('+Object.entries(S.n).map(([t,k])=>k+'× '+SN[t]).join(', ')+')':''} · <b>${S.tanks}</b> tank${S.tanks===1?'':'s'}<br>stores ${w(S.kg)} · fuel ${w(S.fuel)} · gross ${w(S.gross)}${S.reach?'<br>longest reach <b>'+Math.round(S.reach/1000)+' km</b>':''}`;
