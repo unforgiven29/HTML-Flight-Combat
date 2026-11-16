@@ -119,7 +119,7 @@ function terrGeo(SZ,fn,pal,wfn){const SEG=440;const g=new THREE.PlaneGeometry(SZ
     vec3 c=diffuseColor.rgb;float n3=vn(vW.xz/1300.);
     vec2 cell=floor(vW.xz/vec2(380.,290.)+vec2(n3*.8,n3*.5));float fld=h21(cell),low=smoothstep(760.,420.,vW.y)*smoothstep(26.,70.,vW.y);
     vec3 fc=fld<.25?vec3(.42,.47,.24):fld<.45?vec3(.56,.52,.30):fld<.6?vec3(.25,.36,.16):fld<.7?vec3(.47,.40,.28):c;
-    fc=mix(fc*uFld,vec3(.9,.92,.95),uWin);c=mix(c,fc,low*.55*f2*(1.-uWin*.6));
+    fc=mix(fc*uFld,vec3(.9,.92,.95),uWin);float sat=max(c.r,max(c.g,c.b))-min(c.r,min(c.g,c.b));c=mix(c,fc,low*.55*f2*(1.-uWin*.6)*smoothstep(.03,.09,sat));   /* v326: no field patchwork on grey (urban) ground */
     float rock=smoothstep(.9,.74,vUp)*smoothstep(60.,220.,vW.y)*step(vW.y,2050.);
     c=mix(c,vec3(.44,.42,.38)*(.85+.3*vn(vW.xz/60.)),rock*.85);
     float snow=smoothstep(uSnowA,uSnowA+350.,vW.y+vn(vW.xz/400.)*250.)*smoothstep(.55,.8,vUp);c=mix(c,vec3(.93,.95,.98),snow);
@@ -8451,7 +8451,9 @@ const CAMP={st:null,on:false,mapOn:false,client:false,air:[],phys:new Map(),adPh
     for(let q=U.length-1;q>=0;q--){const u=U[q];if(u.dead&&st.t-u.dt>.45){this.dropPhys(u.id);U.splice(q,1);}}
     // airfields fall to the advancing front
     for(const b of st.bases){const d=cbDef(b.id),fz=this.frontZ(d.x);
-      if(b.side===0&&fz>d.z-2500||b.side===1&&fz<d.z+2500){b.side=1-b.side;b.pool=0;b.dmg=60;this.log(d.name+' airfield has fallen to '+(b.side?'red':'blue')+' forces!',b.side?'r':'b');
+      // v325: hysteresis. Both tests are true while the front sits within 2.5 km of a field, so it flipped every step; after a
+      // flip the front must move 5 km back toward the side that lost it before the field can change hands again
+      if(b.side===0&&fz>d.z-2500&&(b.fl==null||fz>b.fl+5000)||b.side===1&&fz<d.z+2500&&(b.fl==null||fz<b.fl-5000)){b.side=1-b.side;b.fl=fz;b.pool=0;b.dmg=60;this.log(d.name+' airfield has fallen to '+(b.side?'red':'blue')+' forces!',b.side?'r':'b');
         if(b.side===0)for(const a of st.ad)if(a.k==='BT'&&a.b===b.id)a.al[0]=0;}}
     if(!st.over){if(st.bases.every(b=>b.side===0)){st.over='VICTORY';this.log('All red airfields taken. VICTORY.','b');}else if(st.bases.every(b=>b.side===1)){st.over='DEFEAT';this.log('Our last airfield has fallen. DEFEAT.','r');}}
     st.hotT-=dt/3600;if(st.hotT<=0)this.pickHot(false);

@@ -333,6 +333,91 @@ test('dl_fire_us: a US modern jet fires ARH on a datalink-only target','F-16V',a
     P.pos.set(0,6000,0);P.q.set(0,0,0,1);t.pos.set(0,6000,-40000);const g=dlTgt();DL.contacts=o;return{shooter:dlShooter(),on:DL.on(),g:g===t};});
   ok('F-16V datalink target auto-selected',r.shooter&&r.on&&r.g,r);});
 
+
+/* ---------- campaign world ledger (v325, spec v49 phases 0-2) ---------- */
+const CW=async(p,f)=>p.evaluate(f);
+test('cw_ledger: a new war reconciles, a 48 h skip keeps every ledger and projection consistent','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),a0=WORLD.audit(),af=Object.keys(w.af).length,pp=Object.keys(w.pp).length;
+    CAMP.advance(48);const a1=WORLD.audit(),ours=CAMP.st.bases.filter(b=>b.side===0);
+    return{a0,a1,af,pp,proj:ours.every(b=>b.pool===WORLD.readyAt(b.id).length),ev:w.ev.length,ids:new Set(w.ev.map(e=>e.id)).size,max:WORLD.CFG.evMax};});
+  ok('clean audit at the start',r.a0.length===0,r.a0);ok('airframes and crews on strength',r.af>=20&&r.pp>=r.af,{af:r.af,pp:r.pp});
+  ok('clean audit after 48 h',r.a1.length===0,r.a1);ok('field counts are the airframe ledger',r.proj);ok('event ids unique, ledger bounded',r.ids===r.ev&&r.ev<=r.max,{ev:r.ev});});
+
+test('cw_idempotent: the same keyed event is applied once','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const n0=WORLD.W().ev.length;WORLD.emit('CAMPAIGN',{k:'test:once',txt:'x'});WORLD.emit('CAMPAIGN',{k:'test:once',txt:'x'});return WORLD.W().ev.length-n0;});
+  ok('one event for two deliveries',r===1,r);});
+
+test('cw_air: AI flights carry airframes and crews; a loss records crew fate, a landing goes to maintenance','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();game.ac='F-16C';CAMP.newState('cold',1);await CAMP.startSortie();for(let k=0;k<8;k++){CAMP.st.casT=0;CAMP.airOps(12);}
+    const w=WORLD.W(),bj=CAMP.air.filter(j=>j._w&&j.alive),n=bj.length;let lost=null,crew=null,maint=null;
+    if(bj[0]){const id=bj[0]._w.af,pid=bj[0]._w.pp;bj[0].kill('SHOT',null);lost=w.af[id].st;crew=w.pp[pid].st;}
+    if(bj[1]){const id=bj[1]._w.af;CAMP.land(bj[1]);maint=w.af[id].st;}
+    const a=WORLD.audit();CAMP.endSortie();const so=WORLD.view().so[0];return{n,lost,crew,maint,a,a2:WORLD.audit(),so,air:Object.values(w.af).filter(x=>x.st==='SORTIE').length};});
+  ok('our AI flights launched with airframe records',r.n>=2,r.n);ok('shot-down airframe is LOST',r.lost==='LOST',r.lost);
+  ok('its crew has a fate',['KIA','ACTIVE','WOUNDED','MISSING'].includes(r.crew),r.crew);ok('landed airframe in maintenance',r.maint==='MAINT',r.maint);
+  ok('audit clean in flight and after the sortie',r.a.length===0&&r.a2.length===0,{a:r.a,a2:r.a2});ok('nothing left "in the air" after the scene is cleared',r.air===0,r.air);
+  ok('sortie record written',r.so&&r.so.tail&&r.so.out,r.so&&{out:r.so.out,tail:r.so.tail});});
+
+test('cw_player_loss: losing your jet loses one airframe, not two, and records the pilot','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();game.ac='F-16C';CAMP.newState('cold',1);await CAMP.startSortie();const w=WORLD.W(),id=player._w&&player._w.af;
+    const g0=w.ev.filter(e=>e.ty==='AF_LOST').length;player.kill('SHOT',null);CAMP.sortieEnd();
+    return{id:!!id,st:id&&w.af[id].st,lost:w.ev.filter(e=>e.ty==='AF_LOST').length-g0,so:WORLD.view().so[0],a:WORLD.audit()};});
+  ok('player flew a recorded airframe',r.id);ok('that airframe is LOST',r.st==='LOST',r.st);ok('exactly one loss recorded',r.lost===1,r.lost);
+  ok('sortie LOST with a pilot fate',r.so&&r.so.out==='LOST'&&!!r.so.fate,r.so&&{out:r.so.out,fate:r.so.fate});ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_finite: no airframe of the type and none at the depot blocks the sortie','F-16C',async p=>{
+  const r=await CW(p,async()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W();w.depot.af=0;game.ac='MiG-29';CAMP.on=false;await CAMP.startSortie();return{on:CAMP.on};});
+  ok('sortie refused',r.on===false,r);});
+
+test('cw_supply: a field that has used its stock is resupplied by convoy, and the books still balance','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),b=CAMP.st.bases.find(b=>b.side===0).id,I=w.inv[b];
+    for(const c of ['fuel','aam','agm']){w.lg[c].exp+=I[c];I[c]=0;}   // as if flown away
+    CAMP.advance(12);const ev=w.ev.filter(e=>e.ty.startsWith('CONVOY')&&e.e.includes(b)).map(e=>e.ty);return{ev,fuel:w.inv[b].fuel,a:WORLD.audit()};});
+  ok('a convoy left for the field',r.ev.includes('CONVOY:DEPARTED'),r.ev);ok('stock arrived only by convoy',r.fuel>0===r.ev.some(t=>t==='CONVOY:DELIVERED'),{fuel:r.fuel,ev:r.ev});ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_base_fall: an overrun field evacuates ready airframes, loses its stock, and the books balance','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);const w=WORLD.W(),b=CAMP.st.bases.find(b=>b.id==='HAR'),n0=WORLD.readyAt('HAR').length;
+    CAMP.st.front=CAMP.st.front.map(()=>58000);CAMP.groundStep(.5);
+    return{side:b.side,n0,left:Object.values(w.af).filter(a=>a.base==='HAR'&&!['LOST','CAPTURED'].includes(a.st)).length,ev:[...new Set(w.ev.map(e=>e.ty))],a:WORLD.audit()};});
+  ok('field fell',r.side===1,r.side);ok('no live airframe left at the lost field',r.left===0,r.left);ok('loss, evacuation and stock events',['BASE:LOST','AF_EVAC','SUPPLY:CAPTURED'].every(t=>r.ev.includes(t)),r.ev);ok('audit clean',r.a.length===0,r.a);});
+
+test('cw_save: save / load and migration of an old save keep the ledger consistent','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);CAMP.advance(6);const w=WORLD.W(),n=Object.keys(w.af).length,js=JSON.stringify(CAMP.st);
+    CAMP.st=null;localStorage.setItem('viper.camp',js);const ld=CAMP.load(),a1=WORLD.audit(),n1=Object.keys(WORLD.W().af).length;
+    delete CAMP.st.wld;WORLD.attach();const ev=WORLD.W().ev.map(e=>e.ty);return{ld,a1,same:n===n1,a2:WORLD.audit(),mig:ev.includes('MIGRATION'),len:js.length};});
+  ok('loads',r.ld);ok('same airframes after load',r.same);ok('audit clean after load',r.a1.length===0,r.a1);
+  ok('old save gets a migration event, nothing invented before it',r.mig);ok('audit clean after migration',r.a2.length===0,r.a2);ok('save stays small',r.len<600000,r.len);});
+
+test('cw_ui: the war record renders every tab','F-16C',async p=>{
+  const r=await CW(p,()=>{localStorage.clear();CAMP.newState('cold',1);CAMP.advance(3);const out={};for(const t of ['fields','roster','sorties','history','losses','audit']){WARREC.UI.tab=t;out[t]=WARREC.block().length;}return out;});
+  ok('all tabs produce content',Object.values(r).every(n=>n>200),r);});
+
+
+/* ---------- the Earth (v326, world campaign stage 1). The test browser has no network, so these also cover the offline fallback ---------- */
+test('wg_frame: local frame round-trips, great-circle distance and bearing are right','F-16C',async p=>{
+  const r=await p.evaluate(()=>{WGEO.setOrigin(47.46,8.55);const a=WGEO.ll2xz(47.9,9.3),b=WGEO.xz2ll(a.x,a.z);
+    return{err:Math.hypot((b.lat-47.9)*111000,(b.lon-9.3)*75000),lj:WGEO.dist(33.94,-118.41,40.64,-73.78)/1000,brg:WGEO.brg(0,0,10,0),east:WGEO.ll2xz(47.46,8.56).x};});
+  ok('round trip under 1 m',r.err<1,r.err);ok('LAX-JFK about 3,975 km',Math.abs(r.lj-3975)<20,r.lj);ok('due north is 000',Math.abs(r.brg)<1e-6,r.brg);ok('east is +x',r.east>700&&r.east<800,r.east);});
+test('wg_data: airports, runways, places, countries and the elevation grid load','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();WGEO.setOrigin(33.9425,-118.408);const lax=WGEO.search('KLAX')[0],rw=lax.runways.map(q=>WGEO.runway(lax,q));
+    return{n:WGEO.airports.length,pl:WGEO.places.length,cc:WGEO.countries.length,lax:lax.name,hd:rw.map(q=>Math.round(q.hdg)),len:rw.map(q=>Math.round(q.hl*2)),
+      ev:Math.round(WGEO.coarse(39.74,-104.99)),sea:Math.round(WGEO.coarse(0,-160)),mil:WGEO.search('ramstein')[0].mil};});
+  ok('7,000+ airports, 7,000+ places, 200+ countries',r.n>7000&&r.pl>7000&&r.cc>200,{n:r.n,pl:r.pl,cc:r.cc});ok('KLAX found first',/Los Angeles/.test(r.lax),r.lax);
+  ok('LAX runways run about 083 / 263',r.hd.every(h=>Math.abs(h-83)<3||Math.abs(h-263)<3),r.hd);ok('LAX runways 2,700-3,700 m',r.len.every(l=>l>2600&&l<3800),r.len);
+  ok('Denver about 1,600 m, mid-Pacific deep',Math.abs(r.ev-1600)<300&&r.sea<-3000,{ev:r.ev,sea:r.sea});ok('Ramstein is marked military',r.mil===1,r.mil);});
+test('wg_flight: start on a real runway (offline: coarse ground), wheels on pavement, terrain and towns built','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player,w=WF.rwys.find(q=>q.ap===a);
+    return{scen:game.scen,on:WF.on,paved:onPaved(P.pos.x,P.pos.z),gnd:groundAt(P.pos.x,P.pos.z),e:w&&w.e,hd:Math.round(P.hdg),rh:w&&Math.round(w.hdg),bld:WF.bld,rw:WF.rwys.length,q:WF.lastQ,af:AF.x};});
+  ok('world flight running',r.scen==='WORLD'&&r.on,r);ok('on a paved runway',r.paved===true,r.paved);ok('ground under the wheels is the runway',Math.abs(r.gnd-r.e)<1.5,{gnd:r.gnd,e:r.e});
+  ok('pointing down the runway',Math.abs(((r.hd-r.rh+540)%360)-180)<2,{hd:r.hd,rh:r.rh});ok('buildings and other runways around',r.bld>1000&&r.rw>3,{bld:r.bld,rw:r.rw});ok('old airfield out of the way',r.af>1e8,r.af);});
+test('wg_rebase: far from the origin the world re-centres without moving the aircraft on the Earth','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player;P.spawn(37000,4000,0,90,0);P.onGnd=false;
+    game.paused=true;const ll0=WGEO.xz2ll(P.pos.x,P.pos.z);await WF.rebase();const ll1=WGEO.xz2ll(P.pos.x,P.pos.z);
+    return{reb:WF.reb,x:P.pos.x,d:WGEO.dist(ll0.lat,ll0.lon,ll1.lat,ll1.lon),g:groundAt(P.pos.x,P.pos.z),h:WGEO.heightLL(ll1.lat,ll1.lon)};});
+  ok('re-centred once',r.reb===1,r.reb);ok('aircraft near the new origin',Math.abs(r.x)<2,r.x);ok('same place on Earth (< 30 m)',r.d<30,r.d);ok('terrain agrees with the height source',Math.abs(r.g-r.h)<60,{g:r.g,h:r.h});});
+test('wg_leave: any other mode restores the old theatre','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.search('KLAX')[0],0,'le');await start('RANGE');return{on:WF.on,fn:MAPMODE.fn,af:AF.x,scen:game.scen};});
+  ok('world left, theatre back',r.on===false&&r.fn===null&&r.af<1e8&&r.scen==='RANGE',r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

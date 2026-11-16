@@ -16,7 +16,8 @@ The game is plain browser JavaScript: **classic `<script>` tags that share one g
 | `weapons/` | missile and gun data (`weapons-data.js`), air-to-ground specs, pods and MAWS, AIM-9X Block II + LOAL, beam riders, missile camera seekers, weapon scope switch, anti-ship | |
 | `rwr/` | warner registry (`rwrreg.js`, generated), the RWR model, SPO-15, western warner logic | regenerate with `node scripts/gen-rwr-registry.js` |
 | `sensors/` | sensor registry (`sensorreg.js`) and everything wired to it: radar, IRST, signal processing, jamming, NCTR, raw video, modern suite (`MSS`), pulse-radar set control (`PRC`), AWG-9 set control (`AWG`, F-14A), IRST fit audit | see the order notes below |
-| `campaign/` | campaign / multiplayer upgrade, strategic air war, dynamic campaign | loads after `game.js`, wraps `CAMP` / `CMPUI` |
+| `world/` | the Earth: `geo.js` (`WGEO`: lat/lon frame, streamed and bundled elevation, places / airports / countries), `worldflight.js` (`WF`: terrain, runways, towns, floating origin), `worldmap.js` (the picker) | load after `addons-v324.js`, before `campaign/world.js`; data in `assets/world/` |
+| `campaign/` | campaign / multiplayer upgrade, strategic air war, dynamic campaign; `world.js` (campaign ledger: events, airframes, aircrew, supply) and `warrecord.js` (its panel) | `campmp` / `strategic` / `campplus` load after `game.js`; `world.js` + `warrecord.js` load **last** (after `addons-v324.js`) because they wrap everything else. Ownership: `docs/campaign/OWNERSHIP.md` |
 
 ## Load order rules
 
@@ -25,7 +26,8 @@ The game is plain browser JavaScript: **classic `<script>` tags that share one g
 3. `hangar/` in file order (each part needs the one before it); cockpits after the hangar jets they draw.
 4. `sensors/`: `sensorreg.js` -> `sensorfuse.js` -> the per-section wiring files -> `sensorsuite.js` -> `pulsectl.js` -> `awg9ctl.js` -> `irstfit.js`. Later files wrap functions defined by earlier ones (`radar.rdet`, `radar.stt`, `rio.update`, `DL.tick` ...), so moving one earlier silently drops its wrapper.
 5. `weapons/weapons-data.js` and `weapons/aim9x2.js` run after every jet / missile definition so they can patch `MSL`, `STN`, `AGW`.
-6. If you add a file, put it in the folder that matches what it is, and insert its `<script>` in the right place in that group; do not rely on alphabetical order.
+6. `campaign/world.js` and `campaign/warrecord.js` are the last scripts on the page: they wrap `CAMP` and `Jet.prototype.kill` after every other layer.
+7. If you add a file, put it in the folder that matches what it is, and insert its `<script>` in the right place in that group; do not rely on alphabetical order.
 
 ## Patterns you will see
 
@@ -37,7 +39,8 @@ The game is plain browser JavaScript: **classic `<script>` tags that share one g
 
 - `scripts/build.sh` — minified deployable site in `dist/` (walks every folder under `js/`).
 - `scripts/sensor-coverage.js`, `scripts/gen-rwr-registry.js` — registry tools.
-- `tests/run.js` — headless-Chrome regression tests for the radar / sensor stack.
+- `tests/run.js` — headless-Chrome regression tests for the radar / sensor stack and the campaign ledger (`cw_*`).
+- `scripts/spec-trace.js` — regenerates the campaign spec traceability matrix in `docs/campaign/`.
 
 ## Where the weight is
 
