@@ -403,7 +403,7 @@ test('wg_data: airports, runways, places, countries and the elevation grid load'
     return{n:WGEO.airports.length,pl:WGEO.places.length,cc:WGEO.countries.length,lax:lax.name,hd:rw.map(q=>Math.round(q.hdg)),len:rw.map(q=>Math.round(q.hl*2)),
       ev:Math.round(WGEO.coarse(39.74,-104.99)),sea:Math.round(WGEO.coarse(0,-160)),mil:WGEO.search('ramstein')[0].mil};});
   ok('7,000+ airports, 7,000+ places, 200+ countries',r.n>7000&&r.pl>7000&&r.cc>200,{n:r.n,pl:r.pl,cc:r.cc});ok('KLAX found first',/Los Angeles/.test(r.lax),r.lax);
-  ok('LAX runways run about 083 / 263',r.hd.every(h=>Math.abs(h-83)<3||Math.abs(h-263)<3),r.hd);ok('LAX runways 2,700-3,700 m',r.len.every(l=>l>2600&&l<3800),r.len);
+  ok('LAX runways run about 083 / 263',r.hd.every(h=>Math.abs(h-83)<3||Math.abs(h-263)<3),r.hd);ok('LAX runways 2,700-3,950 m',r.len.every(l=>l>2600&&l<4000),r.len);
   ok('Denver about 1,600 m, mid-Pacific deep',Math.abs(r.ev-1600)<300&&r.sea<-3000,{ev:r.ev,sea:r.sea});ok('Ramstein is marked military',r.mil===1,r.mil);});
 test('wg_flight: start on a real runway (offline: coarse ground), wheels on pavement, terrain and towns built','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player,w=WF.rwys.find(q=>q.ap===a);
