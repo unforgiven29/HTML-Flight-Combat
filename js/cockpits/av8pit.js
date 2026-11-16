@@ -433,6 +433,12 @@ function build(ctx){const{g,box,LM,liveTex}=ctx;const ctls=[],upd=[],lamps=[];
     const box2=(x0,y0,x1,y1,col='#141516')=>{c.fillStyle=col;c.fillRect(fx(x0),fy(y0),(x1-x0)*SX,(y1-y0)*SY);};
     box2(110,225,360,475,'#101112');box2(895,225,1145,475,'#101112');box2(450,225,692,475,'#101112');
     lab('LEFT MPCD',235,486,9);lab('RIGHT MPCD',1020,486,9);lab('UFC',570,486,9);
+    // v324 (#49): the 20 OSB caps around each MPCD were only invisible hit boxes. They are drawn now, at the same places as the hit boxes (bevelled cap, lit edge).
+    for(const[cx,cy]of[[235,350],[1020,350]]){const half=95,S2=256,k2=half*2/S2,pp=(a,b)=>[cx-half+a*k2,cy-half+b*k2],cap=(x,y,w,h)=>{c.fillStyle='#050606';c.fillRect(fx(x-w/2)-1,fy(y-h/2)-1,w*SX+2,h*SY+2);
+        const g=c.createLinearGradient(0,fy(y-h/2),0,fy(y+h/2));g.addColorStop(0,'#5b5f61');g.addColorStop(.5,'#3a3d3f');g.addColorStop(1,'#26282a');c.fillStyle=g;c.fillRect(fx(x-w/2),fy(y-h/2),w*SX,h*SY);
+        c.fillStyle='#8b9093';c.fillRect(fx(x-w/2),fy(y-h/2),w*SX,1.4);};
+      for(let i=0;i<5;i++){let[x,y]=pp(22+i*(S2-44)/4,14);cap(x,y,24,11);[x,y]=pp(22+i*(S2-44)/4,S2+12);cap(x,y,24,11);
+        [x,y]=pp(-16,S2*(40+i*44)/256);cap(x,y,11,24);[x,y]=pp(S2+16,S2*(40+i*44)/256);cap(x,y,11,24);}}
     // HUD control panel
     box2(222,500,475,596,'#17191a');lab('HUD CONTROL PANEL',348,508,8);lab('SYM BRT',248,556,6);lab('SYM REJ',292,556,6);lab('DAY AUTO NIGHT',336,556,6);lab('VIDEO BRT',381,556,6);lab('CONT',418,556,6);lab('ALT',455,556,7);
     lab('NAV',262,528,8);lab('VSTOL',312,528,8);

@@ -25,11 +25,11 @@ const NM_=typeof NM==='number'?NM:1852,D=Math.PI/180;
 const clamp_=(v,a,b)=>Math.max(a,Math.min(b,v));
 const PRC=window.PRC={show:false,pwr:3,pol:0,man:0,scan:2,asp:0,gF:.5,gC:.5,trk:0,disp:0,dw:1,vc:0,pulse:0,mode:0,hold:0,auto:true,log:[],
   POWER:['OFF','TEST','STBY','OPR','EMER'],POLAR:['LIN','CIR 1','CIR 2'],MAN:['LOW G','HI G'],ASP:['WIDE','NOSE','FWD','AFT','TAIL'],TRK:['AUTO','AOJ OUT','MANUAL'],
-  DISP:['B-SCOPE','PPI'],DW:['NAR','WIDE'],PULSE:['SHORT','LONG'],MODE:['RDR','BST','MAP','AIR-GRD','BCN'],
+  MTI:['OFF','ON'],DISP:['B-SCOPE','PPI'],DW:['NAR','WIDE'],PULSE:['SHORT','LONG'],MODE:['RDR','BST','MAP','AIR-GRD','BCN'],
   VC:['OPEN 100','OPEN 200','0','100','200','300','400','500','600','700','800','900']};   // MAN Vc knob: index 0,1 opening, 2..11 closing 0..900 kt
 const FULL=['APQ-120'],STD=['Cyrano IV','Cyrano II','AI.23B Airpass','MA-1','APQ-94','PS-01/A','PS-37/A','APG-53A'];
-const CAPS={FULL:{pwr:1,rng:1,pol:1,man:1,scan:[1,2,4],asp:1,gain:1,trk:1,disp:1,dw:1,vc:1,pulse:1,mode:[0,1,2,3,4]},
-  STD:{pwr:1,rng:1,gain:1,scan:[1,2,4],mode:[0,1]},MIN:{pwr:1,rng:1,gain:1}};
+const CAPS={FULL:{pwr:1,rng:1,pol:1,man:1,scan:[1,2,4],asp:1,gain:1,trk:1,disp:1,dw:1,vc:1,pulse:1,mode:[0,1,2,3,4],mti:1},
+  STD:{pwr:1,rng:1,gain:1,scan:[1,2,4],mode:[0,1],mti:1},MIN:{pwr:1,rng:1,gain:1}};
 const tier=()=>{const n=player&&player.ac&&player.ac.radar?player.ac.radar.name:'';return FULL.includes(n)?'FULL':STD.includes(n)?'STD':'MIN';};
 PRC.tier=tier;PRC.has=k=>{if(!player||!player.ac||!player.ac.pulse)return false;const c=CAPS[tier()];return !!(c&&c[k]);};
 PRC.opts=k=>{const c=CAPS[tier()];return c&&c[k]&&Array.isArray(c[k])?c[k]:null;};
@@ -158,10 +158,12 @@ function render(){if(!root)return;const ok=fitted();root.style.display=PRC.show&
   if(h('gain'))parts.push(cell(`RCVR GAIN · coarse ${Math.round(PRC.gC*100)} / fine ${Math.round(PRC.gF*100)}`,`<input type="range" min="0" max="100" value="${Math.round(PRC.gC*100)}" data-s="gC"><input type="range" min="0" max="100" value="${Math.round(PRC.gF*100)}" data-s="gF">`,1));
   if(h('vc'))parts.push(cell('MAN Vc',`${PRC.VC[PRC.vc]} kt<input type="range" min="0" max="11" value="${PRC.vc}" data-s="vc" data-i="1">`));
   if(h('pulse'))parts.push(cell('PULSE',btns('pulse',PRC.PULSE)));
+  // v324: the MTI canceller only had a switch on the MiG sets (sys.mig.mti), so on every other pulse radar the video / range model had an MTI that nothing could turn on
+  if(h('mti')){PRC.mti=sys.mig.mti?1:0;parts.push(cell('MTI · clutter canceller',btns('mti',PRC.MTI)));}
   if(mo)parts.push(cell('MODE',mo.map(i=>`<button data-k="mode" data-v="${i}" class="${PRC.mode===i?'on':''}">${PRC.MODE[i]}</button>`).join(''),1));
   root.innerHTML=`<h4>RADAR SET CONTROL · ${player.ac.radar&&player.ac.radar.name||''} · ${PRC.tier()}${twoSeat()?` · <span style="color:${PRC.auto?'#fc6':'#8a9'}">${PRC.auto?'RIO':'MAN'}</span>`:''}</h4><div class="g">${parts.join('')}
   <div class="r"><small>${ro?'TRACK · '+ro+' · '+(radar.hoj?'HOJ':'SKIN TRK'):'no track'}${twoSeat()?`  ·  <button data-a="auto">${PRC.auto?'TAKE OVER':'GIVE TO RIO'}</button>`:''}</small></div></div>`;}
-function onClick(e){const t=e.target;if(!t.dataset)return;if(t.dataset.k){const k=t.dataset.k,v=+t.dataset.v;PRC[k]=v;PRC.hold=25;if(k==='pwr')applyPower();if(k==='scan'||k==='mode')applyScan();if(k==='dw')applyDw();if(k==='mode'){if(v===1&&radar.mode!=='STT'){radar.fromACM=false;radar.mode='ACM';radar.acm='BORE';flashMsg('BORESIGHT');}else if(v!==1&&radar.mode==='ACM'&&radar.acm==='BORE')radar.mode='RWS';}}
+function onClick(e){const t=e.target;if(!t.dataset)return;if(t.dataset.k){const k=t.dataset.k,v=+t.dataset.v;PRC[k]=v;PRC.hold=25;if(k==='mti')sys.mig.mti=v?1:0;if(k==='pwr')applyPower();if(k==='scan'||k==='mode')applyScan();if(k==='dw')applyDw();if(k==='mode'){if(v===1&&radar.mode!=='STT'){radar.fromACM=false;radar.mode='ACM';radar.acm='BORE';flashMsg('BORESIGHT');}else if(v!==1&&radar.mode==='ACM'&&radar.acm==='BORE')radar.mode='RWS';}}
   else if(t.dataset.a==='rp'){stepRange(1);PRC.hold=25;}else if(t.dataset.a==='rm'){stepRange(-1);PRC.hold=25;}
   else if(t.dataset.a==='auto'){PRC.auto=!PRC.auto;PRC.hold=0;}render();}
 function onInput(e){const t=e.target;if(!t.dataset||!t.dataset.s)return;const v=+t.value;PRC.hold=25;if(t.dataset.i)PRC[t.dataset.s]=v;else{PRC[t.dataset.s]=v/100;if(t.dataset.s==='gC'||t.dataset.s==='gF')pushGain();}}

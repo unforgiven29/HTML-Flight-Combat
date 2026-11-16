@@ -5,7 +5,7 @@
    pulses out to the target and echoes back, plus a B-scope panel (azimuth against range, the gimbal limit, the target in or out of the beam, seeker state).
    Needs game.js (drawMslCam, mcam, readRTAsync, renderer, scene, camera). */
 (()=>{if(typeof drawMslCam!=='function'||typeof mcam==='undefined'||typeof readRTAsync!=='function'){console.warn('[mcamseek] engine missing');return;}
-const IIR=/^(AIM-9X|IRIS-T$|ASRAAM|MICA[ -]IR|Python[ -]?5|AAM-5|R-74M2?)/,D=Math.PI/180,TWO=Math.PI*2,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const IIR=/^(AIM-9X|IRIS-T$|ASRAAM|MICA[ -](?:NG[ -])?IR|Python[ -]?5|AAM-5|A-Darter|PL-10|R-74M2)/,D=Math.PI/180,TWO=Math.PI*2,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 // v320: seeker video only for the imaging-IR dogfight missiles: AIM-9X, IRIS-T, ASRAAM, MICA IR, Python 5, AAM-5, R-74M / R-74M2
 const isIIR=m=>m&&m.def&&m.def.seek==='IR'&&IIR.test(m.type||'');
 const isARH=m=>m&&m.def&&m.def.seek==='ARH';

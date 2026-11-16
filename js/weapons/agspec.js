@@ -65,7 +65,7 @@ function SPECAG(k,a){
   hangfireProbability:arm?.006:.004,safeSeparationDistance:big?70:40,
   // 02 propulsion
   boosterThrustForce:Tb,boosterBurnDuration:tb,sustainerThrustForce:0,sustainerBurnDuration:a.sus||0,
-  boosterFuelMass:mp,sustainerFuelMass:0,motorSpecificImpulseVacuum:isp*1.09,motorSpecificImpulseSeaLevel:isp,motorType:mot,
+  boosterFuelMass:mp,sustainerFuelMass:ram?Math.round(m0*.13*10)/10:0,motorSpecificImpulseVacuum:isp*1.09,motorSpecificImpulseSeaLevel:isp,motorType:mot,
   nozzleExitArea:Math.PI*(dia*.36)**2,motorTemperatureCurrent:15,thermalDissipationRate:.03,
   thrustVectorXLimit:0,thrustVectorYLimit:0,thrustVectorSlewRate:0,gasGeneratorPressure:ram?3e6:0,
   smokeTrailDensityMultiplier:jet||ram?.25:.6,interstageSeparationForce:/Booster/.test(mot)||ram?m0*4:0,
@@ -85,7 +85,7 @@ function SPECAG(k,a){
   seekerType:sk,seekerAngleTracking:arh||prh?'Monopulse':ir?'Focal_Plane_Array':tv?'Correlation_Tracker':sal?'Quadrant_Detector':'Beam_Rider',
   seekerFieldOfViewDeg:a.fov?a.fov[0]:a.cone?a.cone*2:0,seekerLockRange:a.lockR||0,seekerLockOnAfterLaunch:!!(a.lockR&&!ins),
   gimbalSlewRateMax:(arm?40:25),instantaneousBoresightAngle:0,seekerCooledStatus:ir,
-  coolantType:ir?'N2_bottle':'none',coolantGasQuantityRemaining:ir?life:Infinity,
+  coolantType:ir?'N2_bottle':'none',coolantGasQuantityRemaining:ir?life:0,
   minimumRadarCrossSection:arh?(asm?500:10):prh?0:0,receiverNoiseFloor:arh?-108:prh?-90:0,antennaGainPattern:arh||prh?[1,.97,.88,.74,.56,.37,.2,.08,.02]:null,
   opticalContrastThreshold:tv?.18:ir?.1:0,lensFoggingFactor:0,rangeGateMin:arh?400:100,rangeGateMax:a.lockR||a.range||20000,
   seekerScanPatternType:arh?'Raster':ir?'Focal_Plane_Array':tv?'Gated_Video':prh?'Interferometer':'Conical_Scan',transmitterOutputPower:arh?(asm?1200:300):0,
@@ -152,9 +152,12 @@ GND.flyMavs=function(dt){
     // thermal battery: brown-out in the last 3 % of its life ends seeker tracking, then the round self-destructs when it expires
     st.thermalBatteryCurrentLife=Math.max(0,s.thermalBatteryLifeMax-k.t);
     if(st.thermalBatteryCurrentLife<s.thermalBatteryLifeMax*.03&&k.tgt&&!k.brown){k.brown=true;k.tgt=null;}
-    if(isFinite(st.coolantGasQuantityRemaining)){st.coolantGasQuantityRemaining=Math.max(0,st.coolantGasQuantityRemaining-dt);if(st.coolantGasQuantityRemaining<=0&&k.tgt&&Math.random()<dt*.5)k.tgt=null;}
-    const burnt=(a.burn?clamp(k.t/Math.max(a.burn,.5),0,1):1),Lm=a.L||3,m=a.mass-(s.boosterFuelMass+s.sustainerFuelMass)*burnt*(a.burn<200?1:clamp(k.t/a.burn,0,1));
-    Object.assign(st,{flightDurationTimer:k.t,totalMassCurrent:m,centerOfMassCurrent:Lm*(.48-.05*burnt),momentOfInertiaPitch:m*Lm*Lm/12,momentOfInertiaYaw:m*Lm*Lm/12,
+    if(s.coolantType!=='none'&&isFinite(st.coolantGasQuantityRemaining)){st.coolantGasQuantityRemaining=Math.max(0,st.coolantGasQuantityRemaining-dt);if(st.coolantGasQuantityRemaining<=0&&k.tgt&&Math.random()<dt*.5)k.tgt=null;}
+    const burnt=(a.burn?clamp(k.t/Math.max(a.burn,.5),0,1):1),Lm=a.L||3,
+      // v324: booster fuel goes in the first `burn` seconds, a ramjet's sustainer fuel goes steadily over `sus` seconds after it; the old line emptied everything with the booster, so a Kh-31PD kept its full mass for 95 s
+      sFr=a.ramjet&&a.sus?clamp((k.t-.25-(a.burn||0))/a.sus,0,1):0,
+      m=a.ramjet&&a.sus?a.mass-s.boosterFuelMass*burnt-s.sustainerFuelMass*sFr:a.mass-(s.boosterFuelMass+s.sustainerFuelMass)*burnt*(a.burn<200?1:clamp(k.t/a.burn,0,1));
+    Object.assign(st,{flightDurationTimer:k.t,totalMassCurrent:m,boosterFuelRemaining:s.boosterFuelMass*(1-burnt),sustainerFuelRemaining:s.sustainerFuelMass*(1-sFr),centerOfMassCurrent:Lm*(.48-.05*burnt),momentOfInertiaPitch:m*Lm*Lm/12,momentOfInertiaYaw:m*Lm*Lm/12,
       staticMargin:s.staticMargin*(1-.4*burnt),ambientAirDensity:r,localSpeedOfSound:sc,currentMachNumber:M,dynamicPressure:q,ambientAirTemperature:Tk-273.15,
       barometricPressurePressure:r*287.05*Tk,skinTemperatureKinetic:Tk*(1+.2*.88*M*M)-273.15,bodyReynoldsNumber:r*V*Lm/1.79e-5,
       motorTemperatureCurrent:k.t<.25+(a.burn||0)?2400:Math.max(15,(st.motorTemperatureCurrent||15)*(1-s.thermalDissipationRate*dt)),

@@ -23,7 +23,7 @@ const MREALX={
  'AIM-54A':[3.96,61,25,'CR','RF_Proximity','none','ARH'],'AIM-54C':[3.96,61,25,'BF','RF_Proximity','none','ARH'],
  'R-3S':[2.84,11.3,5.3,'BF','IR_Influence','none','IR_Conical'],'R-13M':[2.87,11.3,5.3,'BF','IR_Influence','N2_launcher','IR_Conical'],
  'R-60M':[2.14,3.5,1.1,'ER','Active_Optical','N2_launcher','IR_Conical'],
- 'R-73':[2.9,7.4,3.2,'CR','Active_Laser','N2_launcher','IR_Conical'],'R-74M':[2.9,7.4,3.2,'CR','Active_Laser','N2_launcher','IR_Conical'],'R-74M2':[2.9,7.4,3.2,'CR','Active_Laser','N2_launcher','IR_Imaging'],
+ 'R-73':[2.9,7.4,3.2,'AF','Active_Laser','N2_launcher','IR_Conical'],'R-74M':[2.9,7.4,3.2,'AF','Active_Laser','N2_launcher','IR_Conical'],'R-74M2':[2.9,7.4,3.2,'AF','Active_Laser','N2_launcher','IR_Imaging'],
  'R-27R':[4.08,39,16,'ER','RF_Proximity','none','SARH'],'R-27T':[3.8,39,16,'ER','RF_Proximity','N2_launcher','IR_Conical'],
  'R-27ER':[4.78,39,16,'ER','RF_Proximity','none','SARH'],'R-27ET':[4.5,39,16,'ER','RF_Proximity','N2_launcher','IR_Conical'],
  'R-77':[3.6,22.5,8,'CR','Active_Laser','none','ARH'],'R-77-1':[3.71,22.5,8,'CR','Active_Laser','none','ARH'],'R-77M':[3.71,22.5,8,'CR','Active_Laser','none','ARH'],
@@ -78,7 +78,7 @@ const SPEC=(k,d)=>{const sa=sarhArch(k,d);const x=MREALX[k]||[ (d.ph&&d.ph.dia?d
   // 05 seeker
   seekerType:sa?sa.type:x[6],seekerAngleTracking:sa?sa.scan:ir?'Conical_Scan':'Active_Monopulse',seekerAngleNoiseMult:sa?sa.noise:1,seekerAmDeceptionSusceptibility:sa?sa.am:0,seekerTrackRateMult:sa?sa.lr:1,seekerAngleUpdateHz:sa?sa.update:0,seekerRequiresMonopulseIlluminator:!!(sa&&sa===SARH_ARCH.mono),decmSusceptibility:sa?sa.decm:1,burnThroughMult:sa?sa.bt:1,seekerFieldOfView:(d.search||2.5*D2R)*R2D,seekerInstantaneousFOV:ir?(/9X|M2/.test(k)?.02:1.2):3.5,gimbalLimitMax:(d.gimbal||.7)*R2D,
   gimbalSlewRateMax:(d.trk||.6)*R2D,instantaneousBoresightAngle:0,seekerCooledStatus:ir&&cool!=='none',
-  coolantType:cool,coolantGasQuantityRemaining:cool==='none'?0:/launcher/.test(cool)?(/R-|AIM-9[DG]/.test(k)?60:150):Infinity,
+  coolantType:cool,coolantGasQuantityRemaining:cool==='none'?0:/launcher/.test(cool)?(/R-|AIM-9[DG]/.test(k)?60:150):7200,
   minimumRadarCrossSection:arh?.5:d.seek==='SARH'?1:0,receiverNoiseFloor:arh?-110:d.seek==='SARH'?-104:0,antennaGainPattern:arh||sa?[1,.97,.88,.74,.56,.37,.2,.08,.02]:null,
   opticalContrastThreshold:ir?(old?.35:.12):0,lensFoggingFactor:0,rangeGateMin:ir?150:300,rangeGateMax:ir?(d.irR||12000):arh?(d.pit||20000)*1.4:(d.aiR||25000)*1.5,
   seekerScanPatternType:sa?sa.scan:x[6]==='IR_Imaging'?'Focal_Plane_Array':ir?'Conical_Scan':arh?'Raster':'Conical_Scan',transmitterOutputPower:arh?(big?1000:500):0,
@@ -151,7 +151,9 @@ Missile.prototype.update=function(dt){const d=this.def;if(!d.spec)d.spec=SPEC(th
     jammingSignalToNoiseRatio:this.hoj?20:0,squibActivationState:true});
   for(let i=0;i<6;i++)st.kalman[i*7]=st.kalman[i*7]*(1-dt*(this.track?1.5:-.3))+dt*(i<3?5:20);};
 // fuze + warhead: closure gate, misfire with impact backup, rods cut out sharply past their expansion radius, fragments thin with distance
-window.mslFuze=function(m,j,dd){const d=m.def,s=d.spec,rel=_w.copy(j.vel).sub(m.vel),los=_lat.copy(j.pos).sub(m.pos),cl=-rel.dot(los)/Math.max(los.length(),1);
+window.mslFuze=function(m,j,dd){const d=m.def,s=d.spec,rel=_w.copy(j.vel).sub(m.vel),
+  // v324: closure is taken from the START of the step (_mprev): at 800 m/s a step can carry the round past the target, and the end-of-step line of sight then points backwards, so the closure gate wrongly rejected a pass that was inside the lethal radius
+  los=_lat.copy(j.pos).sub(typeof _mprev!=='undefined'&&dd<40?_mprev:m.pos),cl=-rel.dot(los)/Math.max(los.length(),1);
   const impact=dd<3;if(!impact&&cl<s.closureSpeedThresholdFuze)return false;
   if(Math.random()<s.fuzeMisfireProbability*(impact?.15:1)){if(!m._mis){m._mis=1;if(m.sh===player&&SET.calls==='ON')radio(SN[m.type]+' · FUZE FAIL');}return false;}
   m.st&&(m.st.fuzeDynamicDelayTime=clamp(1.5/Math.max(cl,1),0,.02)*1000);

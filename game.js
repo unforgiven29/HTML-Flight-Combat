@@ -739,7 +739,7 @@ class Jet{
     this.rockT=(this.rockT||0)+dt;const rock=ad>dp.a*.82?dp.rock*clamp((ad-dp.a*.82)/(dp.a*.25),0,1)*Math.sin(this.rockT*5.2):0;
     if(this===player&&dep>.4&&Math.random()<dt*1.5)flash('DEPARTURE',700);
     const auth=1-.85*dep;
-    const pr=clamp(lerp(pP+5*(aCmd-al),pP+1.4*((c.p>.2?55*D2R:Math.min(aCmd,6*D2R))-al),dep),-1.4-dep*1.4,1.4+dep*1.4),yr=clamp(pY+4*(this.beta+c.y*.09)*(1-.6*dep)-this.spinDir*dep*.25-(ac.adv||0)*c.r*clamp((ad-6)/16,0,1.6)*clamp(qd/9000,.3,1),-1.6,1.6);
+    const pr=clamp(lerp(pP+5*(aCmd-al),pP+1.4*((c.p>.2?Math.min(al,55*D2R):Math.min(aCmd,6*D2R))-al),dep),-1.4-dep*1.4,1.4+dep*1.4),yr=clamp(pY+4*(this.beta+c.y*.09)*(1-.6*dep)-this.spinDir*dep*.25-(ac.adv||0)*c.r*clamp((ad-6)/16,0,1.6)*clamp(qd/9000,.3,1),-1.6,1.6);
     const rMax=ac.roll*clamp(qd/16000,.15,1)*(al>.35?.5:1)*(this.hp<35?.6:1);
     this.rr=lerp(this.rr,c.r*rMax*auth+rock+this.rBias()+this.spinDir*dp.spin*dep,1-Math.exp(-dt*7));
     const vw=this.ac.vstol&&this.vtHook?this.vtHook(dt,a,c,T,m,f,u,rt,V,pr,yr):null;if(vw)this.rr=vw.rr;
@@ -1134,7 +1134,9 @@ class Missile{
     const tvcA=this.burning&&d.tvc?T*d.tvc/m:0;this.tvcOn=tvcA>0;
     const aeroMax=qd*ph.S*ph.cnMax/m,amax=Math.min(d.maxG*G,aeroMax+tvcA);
     if(cmd.lengthSq()>amax*amax)cmd.setLength(amax);
-    const tau=clamp(.22*Math.sqrt(40000/Math.max(qd,500)),.08,.6);
+    let tau=clamp(.22*Math.sqrt(40000/Math.max(qd,500)),.08,.6);
+    // v324: a thrust-vectored round turns on motor thrust, not airflow: right off the rail q is tiny, but the nozzle already has full authority, so the lag follows the TVC share
+    if(tvcA>0){const tf=tvcA/(tvcA+aeroMax+1e-6);tau=Math.max(.06,tau*(1-.75*tf));}
     this.aL.lerp(cmd,1-Math.exp(-dt/tau));this.aL.addScaledVector(vd,-this.aL.dot(vd));
     const aL=this.aL.length(),aAero=Math.max(0,aL-tvcA),tvcUse=tvcA>0?Math.min(1,(aL-aAero)/tvcA):0;
     const CN=aAero*m/Math.max(qd*ph.S,1),al=Math.min(CN/ph.cna,.5);this.alpha=al;
@@ -1509,7 +1511,8 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
   bang(p){const r=p.clone().sub(player.pos).applyQuaternion(qInv(player.q));return{az:Math.atan2(r.x,-r.z),el:Math.atan2(r.y,Math.hypot(r.x,r.z)),d:r.length()};},
   // ACM scan volumes in aircraft axes: 30x20 HUD field, 10x60 vertical scan, boresight beam, helmet-slaved beam
   acmBox(){const D=D2R;switch(this.acm){case'VERT':return{az:0,el:23*D,w:5*D,h:30*D};case'BORE':return{az:0,el:0,w:this.beam/2,h:this.beam/2};
-    case'HMD':return{az:-head.yaw,el:head.pitch,w:2.5*D,h:2.5*D};
+    case'HMD':{const g=this.gl,az=(g&&g.az!=null?g.az:60)*D,eu=(g&&g.eu!=null?g.eu:60)*D,ed=(g&&g.ed!=null?g.ed:60)*D;   // v324: the helmet-slaved beam stops at the gimbal limit; it used to follow the head anywhere
+      return{az:clamp(-head.yaw,-az,az),el:clamp(head.pitch,-ed,eu),w:2.5*D,h:2.5*D};}
       // F-14 ACM: PAL (pilot automatic lock-on, the whole field ahead out to 15 NM), VSL high / low (vertical scan lock-on, 4° wide, -15° to +55°), PLM (boresight)
       case'PAL':return{az:0,el:0,w:20*D,h:6*D};case'VSLH':return{az:0,el:35*D,w:2*D,h:20*D};case'VSLL':return{az:0,el:5*D,w:2*D,h:20*D};case'PLM':return{az:0,el:0,w:this.beam/2,h:this.beam/2};case'OPT':return{az:sys.mig.opt.az,el:sys.mig.opt.el,w:2.5*D,h:2.5*D};default:return{az:0,el:-3*D,w:15*D,h:10*D};}},
   glim(){return this.sensor==='IRST'?IRG:this.gl;},
@@ -1579,7 +1582,10 @@ const radar={lostG:1.2,kA:1,kB:1,kAng:1,kRng:1,gl:{az:60,eu:60,ed:60,stab:1},ran
       for(const j of jets){if(j===player||!SEEN(j)||IFF.hide(j))continue;const q=this.bang(j.pos);
         if(q.d>Rm||Math.abs(q.az-b.az)>b.w+this.beam/2||Math.abs(q.el-b.el)>b.h+this.beam/2)continue;
         const a=this.ang(j.pos);if(a.off<gim&&this.acmDet(j,a)&&q.d<bd){bd=q.d;best=j;}}
-      this.acmBest=best;if(best&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
+      this.acmBest=best;
+      // v324: after a drop the ACM scan took the same target back on the very next beam hit, so a target on the notch edge flipped between LOCK and SEARCH several times a second.
+      // A drop now keeps the scan from re-locking for 2 s (this.notched), and a ground return is never taken as a lock in ACM.
+      if(best&&!best.isGhost&&this.notched<=0&&player.ac.cockpit!=='fulcrum'&&Math.random()<dt*(b.w<=this.beam?8:3))this.stt(best);return;}
     const mg=player.ac.cockpit==='fulcrum',tws=this.mode==='TWS';if(tws&&this.awg&&!window.AWG&&this.bi===2)this.bi=1;
     // AWG-9 TWS: ±20° in 4 bars or ±40° in 2 bars, about a 2 s frame
     const STB=mg&&player.ac.pit==='flogger'&&sys.mig.strob&&this.sensor==='RDR'&&this.mode==='RWS';const W=mg?(player.ac.pulse?(STB?6.5:30):40)*D2R:this.awg&&this.awgAz!=null?Math.min(this.awgAz,gim):tws&&this.awg?(this.bi===0?20:40)*D2R:Math.min(this.azs[this.ai]*D2R,gim,this.noseHw||9,tws?Math.max(60,this.scopeAz||0)*D2R:9);this.scanC=clamp(mg?(STB?this.cur.az:(sys.mig.zone-1)*20*D2R):this.cur.az,-gim+W,gim-W);
@@ -2470,7 +2476,8 @@ PLANES.apply('RWR_OF',RWR_OF);
 const rwrState={launchT:0,known:new Set()};
 const RW={recs:new Map(),list:[],msl:[],clk:0,sy:null,nm:'',tLock:0,tLaunch:0,latch:null,mseen:new WeakSet()};
 const _rwO=new V3(),_rwQ=new V3();
-const rwrSysOf=P=>{let n=(P===player&&(isFlogger()||isFishbed())&&P.type!=='MiG-31')?'SPO-10':RWR_OF[P.type]||(P.ac.cockpit==='fulcrum'?'SPO-15LM':'ALR-56C');if(n==='ALR-67(V)2'&&P.era==='modern')n='ALR-67(V)3';const s=RWRF[n];s.nm=n;return s;};
+const RWR_NONE=new Set();   // v324: types that carry no warner at all (set up in fixes-v324.js)
+const rwrSysOf=P=>{if(RWR_NONE.has(P.type))return null;let n=(P===player&&(isFlogger()||isFishbed())&&P.type!=='MiG-31')?'SPO-10':RWR_OF[P.type]||(P.ac.cockpit==='fulcrum'?'SPO-15LM':'ALR-56C');if(n==='ALR-67(V)2'&&P.era==='modern')n='ALR-67(V)3';const s=RWRF[n];s.nm=n;return s;};
 // what a given emitter looks like to a warner: its own detection range, waveform, scan period and how it is named on the scope
 function rwrEmit(j){if(j._rw)return j._rw;const g=!!j.gnd,ac=j.ac||{},T=j.T||{},R0=(g?T.R0:(ac.radar&&ac.radar.R0))||40000;
   return j._rw={g,R0,pd:g?false:!ac.pulse,aesa:!!(ac.radar&&ac.radar.aesa),scan:g?(R0>60000?7:4):3.2,cone:g?Math.PI:60*D2R,sym:(g?T.rwr:ac.rwr)||'U',spo:g?(T.spo!=null?T.spo:5):(ac.spo!=null?ac.spo:5),
@@ -6452,11 +6459,16 @@ function mkEditor(side,root){
     if(!E.sel){pp.innerHTML=`<h3>${side==='own'?'SELECT A STATION':'SELECT A STATION'}</h3><p class="hint">Click a pylon on the drawing (or a card under it) to choose what hangs there. ${side==='foe'?'The bandits fly this loadout when the flight type matches.':'Mirror L/R keeps the wings balanced.'}</p>`;}
     else{const k=E.sel,opts=stOpts(a,game.era,k),cur=l[k]||'';pp.innerHTML=`<h3>${k==='C'?'CENTRELINE':'STATION '+k} · ${stZone(a,k)}</h3><div class="wopts"></div>`;const box=pp.querySelector('.wopts');
       const items=[];const add=(v,html,cls)=>{const b=elH('button','wo '+cls+(cur===v?' on':''),html);b.onclick=()=>E.setSt(k,v);items.push([v?storeCat(v):'',b]);};
-      const flush=()=>{let last=null;for(const c of STORE_CATS.concat(['OTHER'])){const g=items.filter(x=>x[0]===c||(c==='OTHER'&&x[0]!==''&&!STORE_CATS.includes(x[0])));if(!g.length)continue;if(c!==''){const h=elH('div','wcat',c+' <u>'+g.length+'</u>');box.append(h);}for(const x of g)box.append(x[1]);}};
+      const flush=()=>{let last=null;for(const c of STORE_CATS.concat(['OTHER'])){const g=items.filter(x=>x[0]===c||(c==='OTHER'&&x[0]!==''&&!STORE_CATS.includes(x[0])));if(!g.length)continue;if(c!==''){const h=elH('div','wcat',c+' <u>'+g.length+'</u>');h.style.cursor='pointer';
+          // v324 (#22): categories are drop-downs. The one holding the current store (or the first, on an empty pylon) starts open; a click opens / closes the rest
+          const oc=E.openCats||(E.openCats={}),curCat=cur?storeCat(cur):'',key=c,open=key in oc?oc[key]:(g.some(x=>x[1].classList.contains('on'))||(!cur&&c===(STORE_CATS[0]||c)));
+          const sh=o=>{h.dataset.open=o?1:0;h.firstChild.textContent=(o?'\u25BE ':'\u25B8 ')+c+' ';for(const x of g)x[1].style.display=o?'':'none';};
+          h.firstChild.textContent&&0;box.append(h);for(const x of g)box.append(x[1]);sh(open);h.onclick=()=>{oc[key]=h.dataset.open!=='1';sh(oc[key]);};continue;}
+        for(const x of g)box.append(x[1]);}};
       add('',`<i class="c" style="background:#2c3d47"></i><b>EMPTY</b><span>nothing on this pylon · less drag</span>`,'');
       for(const s of opts){if(s==='IRST'){add(s,`<i class="c"></i><b>IRST21 · FPU-13/A TANK</b><span>passive long-wave IR search and track in the tank nose · no emissions · angle-only tracks, ranged by radar or Link 16 · jettison with Backspace</span><em>+${fmtN(tkKg(s,A))} kg</em>`,'tk');continue;}
       if(isTank(s)){add(s,`<i class="c"></i><b>${A.tankName.toUpperCase()}</b><span>extra fuel · jettison with Backspace</span><em>+${fmtN(s==='PTB'&&A.ptb||A.tank)} kg</em>`,'tk');continue;}
-        if(AGW[s]){const a=AGW[s];add(s,`<i class="c"></i><b>${s}</b><span>${STORE_NAME[s]} · ${a.as?(a.seek==='IIR'?'imaging IR seeker · radar-designated · sea-skimming · ignores chaff':'active radar seeker · radar-designated · sea-skimming'):({bomb:'free-fall, CCIP',pod:'rocket pod, CCIP',lgb:'laser-guided, CCRP · needs a TGP',agm:'IIR seeker · lock and launch',tgp:'laser designator · auto-lase',arm:'anti-radiation · HAS / POS / SP',hts:'emitter locator · HAD'})[a.k]}</span><em>${fmtN(a.mass)} kg</em>`,'ag');continue;}
+        if(AGW[s]){const a=AGW[s];add(s,`<i class="c"></i><b>${s==='TGP'?'LITENING':s}</b><span>${STORE_NAME[s]} · ${a.as?(a.seek==='IIR'?'imaging IR seeker · radar-designated · sea-skimming · ignores chaff':'active radar seeker · radar-designated · sea-skimming'):({bomb:'free-fall, CCIP',pod:'rocket pod, CCIP',lgb:'laser-guided, CCRP · needs a TGP',agm:'IIR seeker · lock and launch',tgp:'laser designator · auto-lase',arm:'anti-radiation · HAS / POS / SP',hts:'emitter locator · HAD'})[a.k]}</span><em>${fmtN(a.mass)} kg</em>`,'ag');continue;}
         const d=MSL[s],c=seekCls(s);add(s,`<i class="c"></i><b>${s}</b><span>${WNAME[s]||''} · ${SEEKN[d.seek]} · ${(d.aiR/1000).toFixed(0)} km</span><span class="bars" style="display:none"></span><div class="bars"><div class="bar"><u style="width:${clamp(d.aiR/620,4,100)}%"></u></div><div class="bar"><u style="width:${clamp(d.maxG/.55,4,100)}%;background:var(--am)"></u></div></div>`+(MODERN_ONLY.has(s)?`<em>MODERN</em>`:''),c);}flush();}
     // summary
     const S=loadStats(a,l),met=A.units==='met',w=v=>met?fmtN(v)+' kg':fmtN(v*2.2046)+' lb';
@@ -7024,7 +7036,9 @@ Object.assign(Jet.prototype,{
     else this.shake*=1-dt*2;},
   // the ground: wheels on pavement or grass, nose-wheel steering, brakes, rotation, belly landing, crash limits
   groundFx(dt){const P=this.pos,gh=groundAt(P.x,P.z),H=GH;
-    if(P.y>gh+H+.02||this.vel.y>.25){if(this.onGnd){this.onGnd=false;if(this===player)flash('AIRBORNE',900);}return;}// (a jet-borne climb leaves the ground as soon as it has a real rate of climb)
+    // v324: the lift-off test was vel.y>.25, but the contact code zeroes vel.y every step, so vel.y is only ever one step of net vertical acceleration: the jet needed 0.75 g of excess lift at 30 fps
+    // (1.5 g at 60 fps) to leave the runway, stayed glued, then jumped off. The test is now on the net vertical acceleration itself (> ~0.05 g), whatever the frame rate.
+    if(P.y>gh+H+.02||this.vel.y>((this.ac&&this.ac.heli)?.25:Math.max(.03,.5*dt))){if(this.onGnd){this.onGnd=false;if(this===player)flash('AIRBORNE',900);}return;}// (a jet-borne climb leaves the ground as soon as it has a real rate of climb)
     const vel=this.vel,W=this._W,V=vel.length();
     if(!this.onGnd){ // touchdown / first contact
       const sink=Math.max(0,-vel.y),pitch=this.pitch*R2D,bank=this.bank*R2D,gd=this.gearPos>.9&&this.dm.gear>25,pav=onPaved(P.x,P.z),
@@ -7056,7 +7070,9 @@ Object.assign(Jet.prototype,{
     if(!this.belly&&pav&&!this._onDeck&&Math.abs(c.y)+Math.abs(c.r)<.1&&Vg>3){let e=(((this.gHdg*R2D)%360)+540)%360-180;if(Math.abs(e)>90)e=(((e-180)%360)+540)%360-180;if(Math.abs(e)<35)wv-=e*D2R*.4*clamp(Vg/20,0,1);}
     this.gHdg+=(steer+wv)*dt;
     // rotation: nose up on the stick once there is speed; the nose settles slowly again in the roll-out
-    const rotV=this.vRot()*.9,tgt=this.belly?0:(c.p>0&&Vg>rotV?c.p*13*D2R:(Vg>rotV*.7&&this.gPitch>.02?Math.max(0,this.gPitch*.98):0));
+    const rotV=this.vRot()*.9,rotA=clamp((Vg-rotV*.75)/(rotV*.25+.01),0,1),   // v324: elevator authority builds over the last quarter of the roll instead of switching on at one speed
+      tailMax=(ac.tailClr||11)*D2R,                                           // the tail hits the runway at this nose-up angle while the weight is still on the wheels
+      tgt=this.belly?0:(c.p>0&&rotA>0?Math.min(c.p*13*D2R*rotA,unl>.2?tailMax:99):(Vg>rotV*.7&&this.gPitch>.02?Math.max(0,this.gPitch*.98):0));
     this.gPitch+=clamp(tgt-this.gPitch,-5*D2R*dt,7*D2R*dt);
     if(!this.belly&&this.gPitch>13.6*D2R&&Vg>20&&unl>.2){const k=(this.gPitch*R2D-13.6);this.dm.tail=Math.max(0,this.dm.tail-k*4*dt);if(this===player&&Math.random()<dt*2)flash('TAIL STRIKE',800);if(Math.random()<dt*50)glow.emit(P.clone().addScaledVector(_gz.set(fx,0,fz),6).setY(gh+.3),new V3(rnd(-3,3),rnd(1,5),rnd(-3,3)),.3,1.2,.5,1,.75,.3,.9);}
     if(this===player&&!this.rotCall&&Vg>rotV){this.rotCall=true;flash('ROTATE',1200);}if(Vg<20)this.rotCall=false;
@@ -7986,7 +8002,7 @@ Object.assign(AGW,{
   'AGM-65D':{k:'agm',mass:220,L:2.49,R:.153,col:0xe6e3d8,soft:10,hard:3.2,dmg:150,dv:250,burn:3.6,kd:2.2e-5,maxG:15,range:22000,fov:[5,2.5],ir:1},
   'AGM-65F':{k:'agm',mass:306,L:2.49,R:.153,col:0xe6e3d8,soft:16,hard:4,dmg:190,dv:230,burn:3.6,kd:2.4e-5,maxG:14,range:22000,fov:[5,2.5],ir:1},
   'TGP':    {k:'tgp',mass:208,L:2.2,R:.19,col:0x8a9096}});
-Object.assign(SN,{'GBU-12':'GBU12','AGM-65D':'65D','AGM-65F':'65F','TGP':'TGP'});
+Object.assign(SN,{'GBU-12':'GBU12','AGM-65D':'65D','AGM-65F':'65F','TGP':'LITENING'});
 Object.assign(STORE_NAME,{'GBU-12':'GBU-12 Paveway II · laser','AGM-65D':'AGM-65D Maverick · IIR','AGM-65F':'AGM-65F Maverick · IIR, heavy','TGP':'LITENING targeting pod'});
 // bombs keep the old shape; laser bombs get a seeker nose and canards, Mavericks a body with long-chord wings, the pod a turret nose
 {const _b=buildAG;buildAG=function(kind){const a=AGW[kind];if(a.k==='bomb'||a.k==='pod')return _b(kind);
