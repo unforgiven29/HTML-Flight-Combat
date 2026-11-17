@@ -77,7 +77,7 @@ function leverage(s){const st=W.st;let L=0;for(const v of Object.values(st.citie
   let sup=0;for(const th of st.th)sup+=th.sup;sup/=Math.max(1,st.th.length);L+=(s==='B'?sup:-sup)*3;const C=cores(s);L-=5*C.reduce((t,p)=>t+p.exh,0)/Math.max(1,C.length);return L;}
 function general(){const st=W.st,d=D_();
   if(d.cease){if(Math.random()<R.pViolGen){d.cease=null;for(const f of st.fronts)if(f.cf&&f.cf.kind==='GENERAL')f.cf=null;W.emit('CEASEFIRE',{cf:'REPORTED',txt:'The general ceasefire collapses after an attack each side attributes to the other. The war resumes on every front.'});return;}
-    d.quiet++;if(d.quiet>=R.quietDays)end('ARMISTICE','Fourteen days without a major violation: an armistice is signed. The lines become the armistice lines; no peace treaty has been agreed.');return;}
+    d.quiet++;if(d.quiet>=R.quietDays){if(W.nations&&W.nations.settle())return;end('ARMISTICE','Fourteen days without a major violation: an armistice is signed. The lines become the armistice lines; no peace treaty has been agreed.');}return;}
   // a principal power at the end of its strength capitulates; its allies may fight on; the war ends when a side has no principal power left
   for(const s of['B','R'])for(const p of cores(s))if(p.exh>=R.capitExh){p.cap=1;W.setAl(p,'NEUTRAL',null,'capitulation: forces exhausted ('+Math.round(p.exh*100)+' %)');
     for(const f of st.fronts)if(f.a===p.a3||f.b===p.a3)f.cf={kind:'END',t:st.t};W.emit('END',{e:[p.a3],txt:p.n+' capitulates. Its fronts fall silent where the lines stand; its allies decide for themselves whether to fight on.'});
@@ -91,7 +91,7 @@ function general(){const st=W.st,d=D_();
   else{d.gap=Math.min(60,(d.gap||R.proposeEvery)*2);   /* no identical proposal every few days: the wait doubles after each refusal */
     W.emit('DIPLO',{txt:sName(acc)+' rejects the proposal: '+(accExh<R.acceptExh?'it believes it can still fight on':'it holds the advantage and will not accept the current lines')+'.'});}}
 function end(kind,txt,by){const st=W.st;if(st.over)return;st.over={kind,t:st.t,txt,by:by||null};for(const f of st.fronts)f.cf=f.cf||{kind:'END',t:st.t};W.run=false;
-  W.emit('END',{txt:txt});st.report=report();}
+  W.emit('END',{txt:txt});st.report=W.diplo.report();}   /* through W.diplo so nations.js can add the home front */
 /* ------------------------------------------------------------------ the report (ch.14: the cost, not a scoreboard) */
 function report(){const st=W.st,P=Object.values(st.c),S=s=>P.filter(p=>(p.side===s||p.hist.some(x=>x[2]===s&&(x[1]==='CORE'||x[1]==='ALLY')))&&(p.lostAir>0||p.lostGnd>0));   // everyone who fought for the side, including those who left
   const sum=(L,k)=>Math.round(L.reduce((t,p)=>t+p[k],0));
@@ -101,5 +101,5 @@ function report(){const st=W.st,P=Object.values(st.c),S=s=>P.filter(p=>(p.side==
   return{kind:st.over.kind,days:Math.round(st.t/24),txt:st.over.txt,air:{B:sum(S('B'),'lostAir'),R:sum(S('R'),'lostAir')},gnd:{B:sum(S('B'),'lostGnd'),R:sum(S('R'),'lostGnd')},lines,cities,changed,
     pop:cities.reduce((t,c)=>t+c.pop,0)};}
 W.daily.push(()=>{if(!W.st||W.st.over)return;neutrals();settlements();fronts();general();});
-W.diplo={R,pressure,leverage,end,report};
+W.diplo={R,pressure,leverage,end,report,cores,side,sName,other};
 })();

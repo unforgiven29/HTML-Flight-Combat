@@ -1383,10 +1383,12 @@
    "line": 2901,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Public support, stability, regime change with a new government seeking peace (aggregate). Not yet: elections, parties, leaders as people",
+   "tests": [
+    "wend_all"
+   ]
   },
   {
    "id": "R05-004",
@@ -1398,10 +1400,12 @@
    "line": 3071,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Public support, stability, regime change with a new government seeking peace (aggregate). Not yet: elections, parties, leaders as people",
+   "tests": [
+    "wend_all"
+   ]
   },
   {
    "id": "R05-005",
@@ -1476,10 +1480,12 @@
    "line": 3250,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Coalition cohesion per side (departures, unequal exhaustion, a principal power losing its public). Not yet: caveats, basing rights, interoperability",
+   "tests": [
+    "wend_home"
+   ]
   },
   {
    "id": "R05-010",
@@ -9687,10 +9693,13 @@
    "line": 20575,
    "owner": "js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab",
    "phase": 9,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 9: anti-war presentation, awards, epilogue; loss ledger started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v331 (js/war/nations.js): all ten endings the spec lists, each from its own conditions, report with civilian estimates, postwar continuation. Not yet: awards, memorials, epilogue chapters, accountability reviews",
+   "tests": [
+    "wend_all",
+    "wend_home"
+   ]
   },
   {
    "id": "R15-001",

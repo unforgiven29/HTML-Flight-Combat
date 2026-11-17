@@ -74,11 +74,17 @@ function buildFronts(){const st=W.st,F=[];
 const secPt=(s,km)=>({lat:s.lat+s.ny*km/111.2,lon:s.lon+s.nx*km/(111.2*Math.cos(s.lat*D))});
 
 /* ------------------------------------------------------------------ new war */
-W.newWar=async()=>{await G.loadData();const MB=milBases();
+W.newWar=async(bal)=>{await G.loadData();const MB=milBases();
   W.st={v:V,name:SCEN.name,t:0,start:'2026-11-16T06:00Z',seq:1,ev:[],fold:{},folded:0,c:{},fronts:[],th:[],cities:{},over:null};
   for(const c of G.countries)W.st.c[c.a3]=profile(c,MB);
   emit('SCENARIO',{txt:'Fictional scenario '+SCEN.name+'. Countries, borders, cities and airfields are real; the war, its alignments and every force figure are invented for the game.'});
   for(const side of['R','B'])for(const al of['CORE','ALLY','PARTNER'])for(const a3 of SCEN[side][al]){const p=W.st.c[a3];if(p)setAl(p,al,side,al==='CORE'?'scenario principal power':al==='ALLY'?'treaty obligation (scenario)':'scenario partner');}
+  // BALANCE (player's choice at the start): ESTIMATES keeps the force estimates as they are; EVEN scales REDFOR's forces so
+  // the coalitions start roughly equal (+/-15 %), a game setting, recorded in the war diary
+  W.st.bal=bal==='EVEN'?'EVEN':'EST';
+  if(W.st.bal==='EVEN'){const P=Object.values(W.st.c),sum=(s,k)=>P.filter(p=>bell(p)&&p.side===s).reduce((t,p)=>t+p[k],0);
+    for(const k of['air','gnd']){const f=sum('B',k)/Math.max(1,sum('R',k))*(.85+Math.random()*.3);for(const p of P)if(bell(p)&&p.side==='R'){p[k]=Math.round(p[k]*f);p[k+'0']=p[k];}}
+    emit('SCENARIO',{txt:'Balance: EVEN SIDES. REDFOR forces scaled so the coalitions start roughly equal (a game setting, not an estimate).'});}
   buildFronts();
   W.st.th=THEATRES.map(T=>({id:T.id,name:T.name,sup:0,f:{}}));assignAir();cityScan(true);save();return W.st;};
 
@@ -124,7 +130,7 @@ function cityScan(init){const st=W.st,secs=[];
     const holder=kmN>0?(s.off>kmN+m?f.a:s.off<kmN-m?f.b:(was?was.h:f.b)):(s.off<kmN-m?f.b:s.off>kmN+m?f.a:(was?was.h:f.a));
     st.cities[k]={h:holder,own:pl.a3,lat:pl.lat,lon:pl.lon,pop:pl.pop};
     if(!init&&was&&was.h!==holder)emit('CITY',{e:[holder,pl.a3],loc:[pl.lat,pl.lon],txt:pl.name+' ('+st.c[pl.a3].n+') '+(holder===pl.a3?'retaken by '+st.c[holder].n:'falls to '+st.c[holder].n+' forces')+'.'});}}
-function prodStep(dh){for(const p of Object.values(W.st.c)){if(!bell(p))continue;const g=Math.pow(Math.max(1,p.gdp/1000),.6);
+function prodStep(dh){for(const p of Object.values(W.st.c)){if(!bell(p))continue;const g=Math.pow(Math.max(1,p.gdp/1000),.6)*(p.econ==null?1:p.econ);   /* p.econ: the war economy index (nations.js) */
   p.air=Math.min(p.air0*1.2,p.air+C.prodAir*g*dh*(1-p.exh));p.gnd=Math.min(p.gnd0*1.2,p.gnd+C.prodGnd*g*dh*(1-p.exh));
   p.exh=Math.min(1,.5*p.lostAir/Math.max(1,p.air0)+.5*p.lostGnd/Math.max(1,p.gnd0));p.ready=Math.max(.35,.8-.4*p.exh);}}
 

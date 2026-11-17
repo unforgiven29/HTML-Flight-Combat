@@ -1,3 +1,12 @@
+## v331 (world war, step 4: home fronts, coalitions, civilians, and every way the war can end; spec ch.05 / ch.14)
+- **Every ending the spec lists**: decisive military victory (an enemy capital held, the enemy's air forces broken), negotiated peace (with terms set by leverage: lines become borders, withdrawal to the prewar borders, or a demilitarised zone with observers), mutual exhaustion, withdrawal (an occupier whose public support has gone pulls back), capitulation, coalition collapse, regime change, armistice, frozen conflict, unresolved stalemate (two years), plus partial settlements while the war goes on elsewhere. War status and victory are separate: the report says what each ending cost.
+- **Home fronts** for every country at war: a war-economy index (sanctions, occupied cities, exhaustion; it scales war production), public support (rally, then erosion by losses, time, hardship, displacement), government stability (a government can fall; the new one seeks peace). Each war rolls each country's resolve, so wars end differently.
+- **Coalition cohesion** per side: allies leaving, unequal exhaustion and a principal power losing its public weaken it; retaking cities strengthens it.
+- **Civilians (estimates, labelled)**: people displaced when cities change hands (30 % of the city's population: a rule, not a count), refugees into neutral neighbours, people returning when a city is retaken.
+- **Balance at the start**: START · FORCES AS ESTIMATED, or START · EVEN SIDES (REDFOR scaled so the coalitions start roughly equal; a game setting, recorded in the war diary).
+- The end-of-war report adds displacement, refugees, governments that fell, economies at the end and the treaty terms. The panel shows coalition cohesion and the selected country's home front.
+- Tests: `node tests/run.js wend_`.
+
 ## v330 (world war, step 3: countries changing sides, diplomacy, how the war ends; spec ch.05 and ch.14)
 - **Neutral countries react**: fighting within 300 km makes a country debate its position. Countries with an existing partnership with one side (a documented scenario table: e.g. Ukraine, Moldova, Georgia toward BLUEFOR; Iran, Venezuela, Cuba toward REDFOR) may support and later join it. Everyone else stays out unless fighting spills onto its own territory (border incidents, attribution reported and disputed), and then turns against the side blamed. Ireland, Austria, Switzerland, Malta never join.
 - **Allies can leave**: an exhausted ally that has lost cities may make a separate settlement; its fronts fall quiet where the lines stand.
