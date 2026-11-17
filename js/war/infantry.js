@@ -194,34 +194,79 @@ function running(g,len,w,nW,r,dk,skirt,m){for(const sx of[-1,1]){const tr=new TH
     for(let i=0;i<nW;i++){const wh=new THREE.Mesh(GE('rw'+r,()=>new THREE.CylinderGeometry(r,r,.5,12)),dk);wh.rotation.z=Math.PI/2;wh.position.set(sx*(w/2-.31),r+.05,-len/2+.6+i*(len-1.2)/(nW-1));g.add(wh);}
     for(const z of[-len/2+.25,len/2-.25]){const sp=new THREE.Mesh(GE('sp',()=>new THREE.CylinderGeometry(.36,.36,.55,10)),dk);sp.rotation.z=Math.PI/2;sp.position.set(sx*(w/2-.31),r*2-.1,z);g.add(sp);}
     if(skirt){const sk=new THREE.Mesh(new THREE.BoxGeometry(.08,.55,len-.5),m);sk.position.set(sx*(w/2+.02),r*2-.05,0);g.add(sk);}}}
-function tankModel(side,name){const g=new THREE.Group(),m=camo(side),dk=MT(0x1d1f1c),fam=famOf(name);g.userData.fam=fam;
-  const L=fam==='SOV'?6.9:7.9,W=fam==='SOV'?3.5:3.7;running(g,L,W,fam==='SOV'?6:7,.36,dk,true,m);
-  const hull=prism(fam==='SOV'?[[-L/2,.55],[-L/2+1.1,1.15],[-L/2+2.1,1.62],[L/2,1.7],[L/2,.55]]:[[-L/2,.6],[-L/2+.6,1.25],[-L/2+1.9,1.75],[L/2-.2,1.8],[L/2,1.1],[L/2,.6]],W-.3,m);g.add(hull);
-  const tu=new THREE.Group();tu.position.set(0,1.7,fam==='SOV'?.2:.4);g.add(tu);
-  if(fam==='SOV'){const dome=new THREE.Mesh(GE('dome',()=>new THREE.SphereGeometry(1,16,8,0,6.3,0,1.5)),m);dome.scale.set(1.65,.62,1.85);tu.add(dome);
-    for(const sx of[-1,1])for(let i=0;i<4;i++){const b=new THREE.Mesh(GE('era',()=>new THREE.BoxGeometry(.32,.22,.18)),m);b.position.set(sx*(.45+i*.3),.25,-1.45+i*.18);b.rotation.y=sx*.5;tu.add(b);}
-    for(let i=0;i<6;i++){const b=new THREE.Mesh(GE('era',()=>new THREE.BoxGeometry(.32,.22,.18)),m);b.position.set(-1.25+i*.5,1.66,-L/2+1.55);b.rotation.x=-.9;g.add(b);}}
-  else{const t=prism([[-2.0,0],[-2.25,.45],[-1.6,.95],[2.2,.95],[2.5,.4],[2.2,0]],3.1,m);tu.add(t);const bus=new THREE.Mesh(new THREE.BoxGeometry(2.6,.5,.6),m);bus.position.set(0,.6,2.55);tu.add(bus);}
-  const mant=new THREE.Mesh(new THREE.BoxGeometry(.7,.55,.5),m);mant.position.set(0,.5,fam==='SOV'?-1.6:-2.3);tu.add(mant);
-  const gun=new THREE.Group();gun.position.copy(mant.position);tu.add(gun);const br=new THREE.Mesh(GE('br',()=>new THREE.CylinderGeometry(.08,.11,5.4,10)),dk);br.rotation.x=Math.PI/2;br.position.z=-2.8;gun.add(br);
-  const fe=new THREE.Mesh(GE('fe',()=>new THREE.CylinderGeometry(.15,.15,.6,10)),dk);fe.rotation.x=Math.PI/2;fe.position.z=-2.3;gun.add(fe);
-  const cup=new THREE.Mesh(GE('cup',()=>new THREE.CylinderGeometry(.3,.33,.3,10)),m);cup.position.set(fam==='SOV'?-.55:.7,fam==='SOV'?.75:1.1,.4);tu.add(cup);const mg=new THREE.Mesh(GE('mg',()=>new THREE.BoxGeometry(.06,.08,.9)),dk);mg.position.set(cup.position.x,cup.position.y+.25,cup.position.z-.4);tu.add(mg);
-  {const cm=new THREE.Group(),uni=MT(vary(PAL[side===S.me?'F':'E'][0],.05));const tb=new THREE.Mesh(GE('ct',()=>new THREE.BoxGeometry(.38,.42,.26)),uni);tb.position.y=.21;cm.add(tb);const hd=new THREE.Mesh(GE('hd',()=>new THREE.SphereGeometry(.12,8,6)),MT(SKIN[(rn()*SKIN.length)|0]));hd.position.y=.55;cm.add(hd);
+// v391: a catalogue of armoured vehicles by model (game values: armour factor against the family's plates, ERA type,
+// active protection, ammunition layout, crew). Each side fields its country's own (equipment table) first, then others
+// of its bloc. Models are built from a style: hull length and width, turret shape, fittings.
+const VC={
+  'T-72B3':{cls:'MBT',fam:'SOV',st:'T72',arm:.85,era:'K5',lay:'carousel',crew:3},'T-80BVM':{cls:'MBT',fam:'SOV',st:'T80',arm:.95,era:'RELIKT',lay:'carousel',crew:3},
+  'T-90M':{cls:'MBT',fam:'SOV',st:'T90',arm:1.05,era:'RELIKT',aps:'ARENA-M',apsN:6,lay:'carousel',crew:3},'T-14 Armata':{cls:'MBT',fam:'SOV',st:'T14',arm:1.25,era:'MALACHIT',aps:'AFGANIT',apsN:10,lay:'capsule',crew:3},
+  'BMPT-72 Terminator':{cls:'MBT',fam:'SOV',st:'BMPT',arm:.85,era:'RELIKT',lay:'carousel',crew:5,fs:1},
+  'M1A2 SEPv3 Abrams':{cls:'MBT',fam:'WEST',st:'M1',arm:1.1,aps:'TROPHY',apsN:8,lay:'bustle',crew:4},'Leopard 2A6':{cls:'MBT',fam:'WEST',st:'LEO',arm:1.0,lay:'bustle',crew:4},
+  'Leopard 2A7':{cls:'MBT',fam:'WEST',st:'LEO',arm:1.1,aps:'TROPHY',apsN:6,lay:'bustle',crew:4},'Challenger 2':{cls:'MBT',fam:'WEST',st:'CR',arm:1.05,lay:'bins',crew:4},
+  'Challenger 3':{cls:'MBT',fam:'WEST',st:'CR',arm:1.15,aps:'TROPHY',apsN:8,lay:'bustle',crew:4},'Leclerc':{cls:'MBT',fam:'WEST',st:'LEC',arm:1.0,lay:'bustle',crew:3},
+  'K2 Black Panther':{cls:'MBT',fam:'WEST',st:'K2',arm:1.05,aps:'KAPS',apsN:6,lay:'bustle',crew:3},'K1A2':{cls:'MBT',fam:'WEST',st:'K1',arm:.95,lay:'bustle',crew:4},
+  'Merkava IV':{cls:'MBT',fam:'WEST',st:'MERK',arm:1.1,aps:'TROPHY',apsN:8,lay:'merkava',crew:4},
+  'BMP-2':{cls:'IFV',fam:'SOV',st:'BMP2'},'BMP-3':{cls:'IFV',fam:'SOV',st:'BMP3',arm:1.1},'BTR-82A':{cls:'APC',fam:'SOV',st:'BTR'},
+  'M2A3 Bradley':{cls:'IFV',fam:'WEST',st:'BRAD',arm:1.1},'CV90':{cls:'IFV',fam:'WEST',st:'CV90',arm:1.15},'Puma':{cls:'IFV',fam:'WEST',st:'PUMA',arm:1.35},'Warrior':{cls:'IFV',fam:'WEST',st:'WAR'},
+  'K21':{cls:'IFV',fam:'WEST',st:'K21'},'Marder':{cls:'IFV',fam:'WEST',st:'MARD',arm:.9},'Stryker':{cls:'APC',fam:'WEST',st:'STRY'},'Boxer':{cls:'APC',fam:'WEST',st:'BOXER',arm:1.3},'Rosomak':{cls:'APC',fam:'WEST',st:'KTO'}};
+const BLOC={SOV:{MBT:['T-72B3','T-72B3','T-80BVM','T-90M','T-14 Armata','BMPT-72 Terminator'],IFV:['BMP-2','BMP-3','BMP-2'],APC:['BTR-82A']},
+  WEST:{MBT:['M1A2 SEPv3 Abrams','Leopard 2A6','Leopard 2A7','Challenger 2','Challenger 3','Leclerc','K2 Black Panther','K1A2','Merkava IV'],IFV:['M2A3 Bradley','CV90','Puma','Warrior','K21','Marder'],APC:['Stryker','Boxer','Rosomak']}};
+// a model for this side and class: the country's own equipment (by name) more often than not, else one of its bloc
+function pickModel(side,cls){const N=side===S.me?S.N:S.EN,a3=side===S.me?S.cfg.a3:S.enA3,fam=famOf(N[cls==='MBT'?'MBT':cls]||'')==='SOV'||side==='R'?'SOV':'WEST';
+  const own=String((EQ(a3||'')[cls==='MBT'?'MBT':cls])||'').split(/,\s*/).map(n=>Object.keys(VC).find(k=>{const a=k.toLowerCase().replace(/[^a-z0-9]/g,''),b=n.toLowerCase().replace(/[^a-z0-9]/g,'');return b&&(a.includes(b)||b.includes(a));})).filter(Boolean);
+  if(own.length&&rn()<.65)return own[(rn()*own.length)|0];const L=BLOC[side==='R'?'SOV':fam][cls];return L[(rn()*L.length)|0];}
+function famOf(name){if(VC[name])return VC[name].fam;return/T-\d|BMP|BTR|BMD|ZBD|ZSL|Type 9|PT-91|MT-LB/i.test(name||'')?'SOV':'WEST';}
+// the fittings for active protection, by system
+function apsFit(tu,kind,m,dk){const box=(w,h,d,x,y,z,mm)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mm||m);o.position.set(x,y,z);tu.add(o);return o;};
+  if(kind==='TROPHY'){for(const sx of[-1,1]){box(.5,.5,.7,sx*1.75,.55,.2);box(.06,.35,.45,sx*1.95,.5,-.6,MT(0x2a2e2a));box(.06,.35,.45,sx*1.95,.5,1.0,MT(0x2a2e2a));}}
+  else if(kind==='ARENA-M'){const mast=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.9,8),dk);mast.position.set(0,1.2,.6);tu.add(mast);box(.5,.3,.5,0,1.7,.6,MT(0x2a2e2a));for(let i=0;i<8;i++){const a=-1.6+i*.45;box(.18,.25,.18,Math.sin(a)*1.6,.45,-Math.cos(a)*1.4+.3);}}
+  else if(kind==='AFGANIT'){for(const sx of[-1,1])for(let i=0;i<5;i++){const t=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.4,6),dk);t.rotation.z=Math.PI/2;t.position.set(sx*1.7,.25,-.9+i*.25);tu.add(t);}for(const sx of[-1,1])box(.04,.4,.5,sx*1.62,.85,-1.1,MT(0x2a2e2a));}
+  else if(kind==='KAPS'){for(const sx of[-1,1]){box(.04,.38,.5,sx*1.7,.7,-.9,MT(0x2a2e2a));box(.04,.38,.5,sx*1.7,.7,1.0,MT(0x2a2e2a));box(.35,.3,.45,sx*1.5,.95,.1);}}}
+function tankModel(side,name){name=name&&VC[name]?name:pickModel(side,'MBT');const vc=VC[name]||{fam:famOf(name),st:famOf(name)==='SOV'?'T72':'M1'},st=vc.st;
+  const g=new THREE.Group(),m=camo(side),dk=MT(0x1d1f1c),fam=vc.fam;g.userData.fam=fam;g.userData.name=name;g.userData.vc=vc;
+  const D={T72:[6.9,3.5,6],T80:[7.0,3.5,6],T90:[6.9,3.6,6],T14:[8.4,3.6,7],BMPT:[6.9,3.5,6],M1:[7.9,3.7,7],LEO:[7.7,3.7,7],CR:[8.3,3.5,6],LEC:[6.9,3.6,6],K2:[7.5,3.6,6],K1:[7.5,3.6,6],MERK:[7.6,3.7,6]}[st]||[7.4,3.6,6];
+  const L=D[0],W=D[1];running(g,L,W,D[2],.36,dk,fam!=='SOV'||st==='T14',m);
+  // hull: sloped glacis; Merkava has its engine in front (long sloped nose); T-80 a flat gas-turbine rear deck
+  const hullP=st==='MERK'?[[-L/2,.6],[-L/2+.4,1.0],[-L/2+2.8,1.85],[L/2,1.85],[L/2,.6]]:fam==='SOV'?[[-L/2,.55],[-L/2+1.1,1.15],[-L/2+2.1,1.62],[L/2,st==='T80'?1.55:1.7],[L/2,.55]]:[[-L/2,.6],[-L/2+.6,1.25],[-L/2+1.9,1.75],[L/2-.2,1.8],[L/2,1.1],[L/2,.6]];
+  g.add(prism(hullP,W-.3,m));
+  const tu=new THREE.Group();tu.position.set(0,st==='MERK'?1.85:1.7,st==='MERK'?1.0:fam==='SOV'?.2:.4);g.add(tu);let gz=-2.3,gy=.5,cupX=.7,cupY=1.1;
+  if(st==='T72'||st==='T80'||st==='T90'||st==='BMPT'){const dome=new THREE.Mesh(GE('dome',()=>new THREE.SphereGeometry(1,16,8,0,6.3,0,1.5)),m);dome.scale.set(st==='T90'?1.75:1.65,st==='BMPT'?.5:.62,1.85);tu.add(dome);
+    if(st==='T90'){tu.add(prism([[-1.9,0],[-1.5,.62],[1.2,.62],[1.2,0]],2.9,m));}   // T-90M: welded turret with a bustle
+    if(st!=='BMPT')for(const sx of[-1,1])for(let i=0;i<4;i++){const b=new THREE.Mesh(GE('era',()=>new THREE.BoxGeometry(.32,.22,.18)),m);b.position.set(sx*(.45+i*.3),.25,-1.45+i*.18);b.rotation.y=sx*.5;tu.add(b);}
+    for(let i=0;i<6;i++){const b=new THREE.Mesh(GE('era',()=>new THREE.BoxGeometry(.32,.22,.18)),m);b.position.set(-1.25+i*.5,1.66,-L/2+1.55);b.rotation.x=-.9;g.add(b);}
+    gz=-1.6;cupX=-.55;cupY=.75;if(st==='T80'){const ex=new THREE.Mesh(new THREE.BoxGeometry(2,.25,.8),dk);ex.position.set(0,1.6,L/2-.5);g.add(ex);}}
+  else if(st==='T14'){tu.add(prism([[-2.0,0],[-2.2,.5],[-1.4,.95],[1.6,.95],[1.9,.4],[1.6,0]],2.9,m));gz=-2.1;gy=.55;cupX=.6;cupY=1.05;}
+  else if(st==='M1'){tu.add(prism([[-2.3,0],[-2.45,.4],[-1.8,.85],[2.6,.85],[2.9,.35],[2.6,0]],3.4,m));const rws=new THREE.Mesh(new THREE.BoxGeometry(.4,.35,.6),dk);rws.position.set(.75,1.15,.2);tu.add(rws);}
+  else if(st==='LEO'){tu.add(prism([[-1.9,0],[-2.0,.85],[2.3,.85],[2.5,.3],[2.3,0]],3.2,m));for(const sx of[-1,1]){const w=prism([[0,0],[-1.3,.4],[-1.3,.85],[0,.85]],1.4,m);w.position.set(sx*.8,0,-1.9);tu.add(w);}gz=-2.4;}   // the 2A6 / 2A7 arrowhead wedges
+  else if(st==='CR'){tu.add(prism([[-2.1,0],[-2.1,.75],[-1.6,.9],[2.0,.9],[2.0,0]],3.0,m));gz=-2.2;}
+  else if(st==='LEC'){tu.add(prism([[-1.8,0],[-1.9,.8],[2.4,.8],[2.4,0]],2.8,m));gz=-2.1;}
+  else if(st==='K2'||st==='K1'){tu.add(prism([[-2.0,0],[-2.2,.45],[-1.6,.85],[2.2,.85],[2.5,.35],[2.2,0]],3.2,m));gz=-2.3;}
+  else if(st==='MERK'){tu.add(prism([[-2.6,0],[-2.8,.25],[-1.2,.85],[1.6,.85],[2.2,.5],[2.4,0]],3.0,m));gz=-2.9;const ch=new THREE.Mesh(new THREE.BoxGeometry(3.2,.06,.3),dk);ch.position.set(0,.2,2.3);tu.add(ch);}
+  const gun=new THREE.Group();gun.position.set(0,gy,gz);tu.add(gun);
+  if(st==='BMPT'){for(const sx of[-1,1]){const c=new THREE.Mesh(GE('ib',()=>new THREE.CylinderGeometry(.06,.07,2.4,8)),dk);c.rotation.x=Math.PI/2;c.position.set(sx*.25,.1,-1.2);gun.add(c);const at=new THREE.Mesh(new THREE.BoxGeometry(.35,.35,1.6),m);at.position.set(sx*1.3,.6,.3);tu.add(at);}}
+  else{const mant=new THREE.Mesh(new THREE.BoxGeometry(.7,.55,.5),m);gun.add(mant);const br=new THREE.Mesh(GE('br',()=>new THREE.CylinderGeometry(.08,.11,5.4,10)),dk);br.rotation.x=Math.PI/2;br.position.z=-2.8;gun.add(br);
+    const fe=new THREE.Mesh(GE('fe',()=>new THREE.CylinderGeometry(.15,.15,.6,10)),dk);fe.rotation.x=Math.PI/2;fe.position.z=-2.3;gun.add(fe);}
+  const cup=new THREE.Mesh(GE('cup',()=>new THREE.CylinderGeometry(.3,.33,.3,10)),m);cup.position.set(cupX,cupY,.4);if(st!=='T14')tu.add(cup);const mg=new THREE.Mesh(GE('mg',()=>new THREE.BoxGeometry(.06,.08,.9)),dk);mg.position.set(cup.position.x,cup.position.y+.25,cup.position.z-.4);tu.add(mg);
+  if(st!=='T14'){const cm=new THREE.Group(),uni=MT(vary(PAL[side===S.me?'F':'E'][0],.05));const tb=new THREE.Mesh(GE('ct',()=>new THREE.BoxGeometry(.38,.42,.26)),uni);tb.position.y=.21;cm.add(tb);const hd=new THREE.Mesh(GE('hd',()=>new THREE.SphereGeometry(.12,8,6)),MT(SKIN[(rn()*SKIN.length)|0]));hd.position.y=.55;cm.add(hd);
     const hm=new THREE.Mesh(GE('hm',()=>new THREE.SphereGeometry(.15,10,6,0,6.3,0,1.45)),MT(0x3a3d34));hm.position.y=.58;cm.add(hm);cm.position.copy(cup.position).add(new V3(0,.12,0));tu.add(cm);g.userData.cmdr=cm;}
   for(const sx of[-1,1])for(let i=0;i<4;i++){const sd=new THREE.Mesh(GE('sd',()=>new THREE.CylinderGeometry(.06,.06,.3,6)),dk);sd.rotation.x=1.2;sd.position.set(sx*(1.15+i*.1),fam==='SOV'?.55:.8,(fam==='SOV'?-.6:-1)+i*.12);tu.add(sd);}
+  if(vc.aps)apsFit(tu,vc.aps,m,dk);
   const rack=new THREE.Mesh(new THREE.BoxGeometry(W-.4,.35,.5),MT(0x3d3a30));rack.position.set(0,1.85,L/2-.4);g.add(rack);
   g.userData.tu=tu;g.userData.gun=null;g.userData.tgun=gun;return g;}
-function vehicle(kind,col){const side=kind==='EIFV'||col===0x6a5a3a?S.en:S.me,N=side===S.me?S.N:S.EN,ifv=kind==='IFV'||kind==='EIFV';const name=ifv?N.IFV:N.APC;const fam=famOf(name);
-  const g=new THREE.Group(),m=camo(side),dk=MT(0x1d1f1c);g.userData.fam=fam;g.userData.name=name;
-  if(ifv){const L=fam==='SOV'?6.7:6.5,W=3.1;running(g,L,W,6,.32,dk,fam!=='SOV',m);
-    g.add(prism(fam==='SOV'?[[-L/2,.5],[-L/2+1.6,1.2],[-L/2+1.9,1.55],[L/2,1.65],[L/2,.5]]:[[-L/2,.55],[-L/2+.7,1.5],[-L/2+1.4,2.0],[L/2,2.0],[L/2,.55]],W-.2,m));
-    const tu=new THREE.Group();tu.position.set(0,fam==='SOV'?1.6:2.0,fam==='SOV'?.1:-.2);g.add(tu);const tt=new THREE.Mesh(fam==='SOV'?GE('it',()=>new THREE.CylinderGeometry(.9,1.05,.55,10)):new THREE.BoxGeometry(1.9,.65,2.2),m);tt.position.y=.3;tu.add(tt);
-    const b=new THREE.Mesh(GE('ib',()=>new THREE.CylinderGeometry(.06,.07,2.4,8)),dk);b.rotation.x=Math.PI/2;b.position.set(0,.4,-1.8);tu.add(b);if(fam!=='SOV'){const tow=new THREE.Mesh(new THREE.BoxGeometry(.5,.4,1.2),m);tow.position.set(-1.1,.45,.1);tu.add(tow);}
+function vehicle(kind,col){const side=kind==='EIFV'||col===0x6a5a3a?S.en:S.me,ifv=kind==='IFV'||kind==='EIFV';const name=pickModel(side,ifv?'IFV':'APC');const vc=VC[name]||{},st=vc.st,fam=famOf(name);
+  const g=new THREE.Group(),m=camo(side),dk=MT(0x1d1f1c);g.userData.fam=fam;g.userData.name=name;g.userData.vc=vc;
+  if(ifv){const L=st==='BMP3'?7.1:st==='BRAD'||st==='PUMA'?6.6:st==='CV90'?6.8:6.5,W=st==='PUMA'?3.6:3.2;running(g,L,W,6,.32,dk,fam!=='SOV',m);
+    const P=fam==='SOV'?(st==='BMP3'?[[-L/2,.5],[-L/2+1.5,1.25],[-L/2+1.8,1.75],[L/2,1.85],[L/2,.5]]:[[-L/2,.5],[-L/2+1.6,1.2],[-L/2+1.9,1.55],[L/2,1.65],[L/2,.5]]):st==='CV90'?[[-L/2,.55],[-L/2+1.0,1.6],[-L/2+1.6,1.95],[L/2,1.9],[L/2,.55]]:st==='PUMA'?[[-L/2,.6],[-L/2+.9,1.7],[L/2,1.9],[L/2,.6]]:[[-L/2,.55],[-L/2+.7,1.5],[-L/2+1.4,2.0],[L/2,2.0],[L/2,.55]];
+    g.add(prism(P,W-.2,m));const tu=new THREE.Group();tu.position.set(0,P[P.length-2][1]-.05,fam==='SOV'?.1:-.2);g.add(tu);
+    const tt=new THREE.Mesh(fam==='SOV'?GE('it',()=>new THREE.CylinderGeometry(.9,1.05,.55,10)):new THREE.BoxGeometry(st==='PUMA'?1.6:1.9,.65,2.2),m);tt.position.y=.3;tu.add(tt);
+    const b=new THREE.Mesh(GE('ib',()=>new THREE.CylinderGeometry(.06,.07,2.4,8)),dk);b.rotation.x=Math.PI/2;b.position.set(0,.4,-1.8);tu.add(b);
+    if(st==='BMP3'){const b2=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,1.6,8),dk);b2.rotation.x=Math.PI/2;b2.position.set(.25,.45,-1.4);tu.add(b2);}
+    if(st==='BRAD'){const tow=new THREE.Mesh(new THREE.BoxGeometry(.5,.4,1.2),m);tow.position.set(-1.1,.45,.1);tu.add(tow);}
     g.userData.tu=tu;g.userData.gun=b;}
-  else{const L=7,W=2.9;g.add(prism([[-L/2,.9],[-L/2+1.2,1.9],[L/2,2.1],[L/2,.9]],W,m));for(const sx of[-1,1])for(let i=0;i<4;i++){const wh=new THREE.Mesh(GE('ww',()=>new THREE.CylinderGeometry(.55,.55,.45,14)),dk);wh.rotation.z=Math.PI/2;wh.position.set(sx*1.5,.55,-2.5+i*1.55);g.add(wh);}
-    const rw=new THREE.Mesh(new THREE.BoxGeometry(.8,.4,.9),m);rw.position.set(fam==='SOV'?0:.6,2.3,-.6);g.add(rw);g.userData.gun=null;}
+  else{const L=st==='BOXER'?7.9:7,W=st==='BOXER'?3:2.9,Hh=st==='BOXER'?2.4:2.1;g.add(prism([[-L/2,.9],[-L/2+1.2,Hh-.2],[L/2,Hh],[L/2,.9]],W,m));for(const sx of[-1,1])for(let i=0;i<4;i++){const wh=new THREE.Mesh(GE('ww',()=>new THREE.CylinderGeometry(.55,.55,.45,14)),dk);wh.rotation.z=Math.PI/2;wh.position.set(sx*1.5,.55,-2.5+i*1.55);g.add(wh);}
+    const rw=new THREE.Mesh(new THREE.BoxGeometry(.8,.4,.9),m);rw.position.set(fam==='SOV'?0:.6,Hh+.2,-.6);g.add(rw);g.userData.gun=null;}
   return g;}
-function tank(side,col){const t=tankModel(side,side===S.me?S.N.MBT:S.EN.MBT);return t;}
+function tank(side,col){return tankModel(side,null);}
 function helo(col){const g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:col});const b=new THREE.Mesh(new THREE.BoxGeometry(2.4,2.4,7),m);b.position.y=1.6;g.add(b);
   const tb=new THREE.Mesh(new THREE.BoxGeometry(.5,.6,7),m);tb.position.set(0,2.2,-6.5);g.add(tb);const r=new THREE.Mesh(new THREE.BoxGeometry(15,.08,.5),new THREE.MeshLambertMaterial({color:0x111111}));r.position.y=3.2;g.add(r);g.userData.rotor=r;return g;}
 function plane(){const g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:0x5a6458});const f=new THREE.Mesh(new THREE.CylinderGeometry(2,2,30,10),m);f.rotation.x=Math.PI/2;g.add(f);
@@ -375,16 +420,16 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   if(S.mission==='FRONT'){S.cur=1;S.trZ=S.lines[1].z;S.waveT=60;S.push=false;S.digQ=[];
     for(let i=0;i<14;i++){const u=man(true,0,0);u.si=i;S.us.push(u);}
     for(const L of[2,3])for(let i=0;i<8;i++){const t=S.lines[L].slots[(i*4+L)%S.lines[L].slots.length];const u=man(false,t.x,t.z);u.line=L;u.gar=1;S.them.push(u);}
-    for(const x of[-70,70]){const z=S.lines[1].z+70;const m=tank(S.me,0x4e5a3c);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z,cool:3,alive:true,tank:1,name:S.N.MBT||'main battle tank'});}
-    {const m=tank(S.en,0x6a5a3a),x=-60,z=S.lines[3].z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:S.EN.MBT||'main battle tank'});}
+    for(const x of[-70,70]){const z=S.lines[1].z+70;const m=tank(S.me,0x4e5a3c);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z,cool:3,alive:true,tank:1,name:m.userData.name});}
+    {const m=tank(S.en,0x6a5a3a),x=-60,z=S.lines[3].z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:m.userData.name});}
     {const v=vehicle('EIFV',0x6a5a3a),x=50,z=S.lines[2].z-80;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}}
   else if(S.mission==='DEFEND'){// your squad and more riflemen hold the trench; two of your tanks stand behind it
     for(let i=0;i<6;i++)S.us.push(man(true,0,0));for(let i=0;i<6;i++){const u=man(true,0,0);S.us.push(u);}
     S.us.forEach((u,i)=>{const t=S.trench[Math.round((i+.5)*S.trench.length/S.us.length)%S.trench.length];u.slot=t.clone();u.m.position.set(t.x,H(t.x,t.z),t.z);});
-    for(const x of[-70,70]){const z=S.trZ+70;const m=tank(S.me,0x4e5a3c);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z,cool:3,alive:true,tank:1,name:S.N.MBT||'main battle tank'});}}
+    for(const x of[-70,70]){const z=S.trZ+70;const m=tank(S.me,0x4e5a3c);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z,cool:3,alive:true,tank:1,name:m.userData.name});}}
   else{for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
     {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
-    {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:S.EN.MBT||'main battle tank'});}}
+    {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:m.userData.name});}}
   gridBuild();layGreen();S.uglN=pri.ugl;equipVM();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
   if(S.WM)worldOn();
   {const eb=S.STR.filter(c=>c.side==='E'&&c.kind!=='COMMAND POST');const al=S.them.filter(u=>u.alive);eb.forEach((c,i)=>{const u=al[i];if(!u)return;u.m.position.set(c.cx,c.y0,c.cz);u.ox=c.cx-S.village.x;u.oz=c.cz-S.village.z;u.bunk=c;});}
@@ -485,7 +530,7 @@ function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900
   const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'?.7:1;hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
 function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;if(own){say('FRIENDLY FIRE',3);S.ff=(S.ff||0)+1;}}else if(own)S.kills++;}}
 function mark(hd){const e=document.getElementById('iHit');if(e){e.style.color=hd?'#ff5a4a':'#fff';e.style.opacity=1;clearTimeout(mark.t);mark.t=setTimeout(()=>e.style.opacity=0,120);}}
-function hurt(d,why){if(why==='bullet')SND.hit();let k=1;if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';}}if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
+function hurt(d,why){if(why==='bullet')SND.hit();let k=1;if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';}}S.lastHurt={d:Math.round(d*k),why,stk:(new Error().stack||'').split('\n').slice(2,5).join('<')};if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
 function grenade(){if(S.gren<=0||S.phase!=='FIGHT')return;S.gren--;const d=aimDir(0);S.gnades.push({p:S.pos.clone(),v:d.multiplyScalar(18).add(new V3(0,4,0)),t:0,own:true});}
 function blast(p,r,dmg,own){fx(p,1.4);SND.boom(p,r);if(r>=5)scar(p,r);for(const u of[...S.us,...S.them]){if(!u.alive)continue;const d=u.m.position.distanceTo(p);if(d<r)hitMan(u,dmg*(1-d/r),own);}
   for(const v of S.veh){if(!v.alive)continue;const d=Math.hypot(v.x-p.x,v.z-p.z);if(d<4)hitVeh(v,dmg,own);}
@@ -497,7 +542,7 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
   if(u.cool<=0)for(const dr of S.drones){if(!dr.alive||(dr.side==='F')===u.friend||dr.k==='MALE')continue;if(dr.m.position.distanceTo(u.m.position)<60){u.cool=.4;if(rn()<.12)hitDrone(dr,30,false);break;}}u.sup=Math.max(0,u.sup-dt);const P=u.m.position;
   // target: nearest live foe in 320 m (the player counts as a friendly)
   if(!u.tgt||!u.tgt.alive||rn()<dt*.3){let b=null,bd=320;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(P);if(d<bd){bd=d;b=f;}}
-    if(!u.friend&&S.phase==='FIGHT'){const d=S.pos.distanceTo(P),g=S.wp[S.w],det=(S.loudT>0?1.3:.85)*((g.seen||g.light)&&S.laserOn?1.25:1);if(d<bd*1.1*det)b={alive:true,player:true,m:{position:S.pos}};}u.tgt=b;}
+    if(!u.friend&&S.phase==='FIGHT'&&!S.downed&&!S.evacMe){const d=S.pos.distanceTo(P),g=S.wp[S.w],det=(S.loudT>0?1.3:.85)*((g.seen||g.light)&&S.laserOn?1.25:1);if(d<bd*1.1*det)b={alive:true,player:true,m:{position:S.pos}};}u.tgt=b;}
   const goal=S.mission==='FRONT'?frontGoal(u):u.off?new V3((u.ox??=(rn()-.5)*120),0,S.mission==='DEFEND'?S.trZ-350:S.village.z+(u.oz??=(rn()-.5)*40)):S.mission==='DEFEND'?(u.friend?u.slot:new V3((u.ox??=(rn()-.5)*300),0,S.trZ)):u.friend?(S.phase==='FIGHT'?S.village.clone().add(new V3((u.ox??=(rn()-.5)*30),0,(u.oz??=(rn()-.5)*30)+(S.hold>0?0:40))):null):S.village.clone().add(new V3((u.ox??=(rn()-.5)*80),0,(u.oz??=(rn()-.5)*80)));
   let mv=0,spd=0;const p0x=P.x,p0z=P.z;
   // bounding: in a fight, now and then dash 6-14 m toward the objective or sideways to new cover, then go to ground and fire
@@ -535,13 +580,16 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
-    if(v.side==='E'&&S.phase==='FIGHT'&&S.pos.distanceTo(v.m.position)<bd)b=S.pos;
+    if(v.side==='E'&&S.phase==='FIGHT'&&!S.downed&&!S.evacMe&&S.pos.distanceTo(v.m.position)<bd)b=S.pos;
     if(v.nofire)continue;if(b&&v.cool<=0){v.cool=v.side==='F'?1.2:2.5;if(v.m.userData.tu){const P2=v.m.position;v.m.userData.tu.rotation.y=Math.atan2(-(b.x-P2.x),-(b.z-P2.z))-v.m.rotation.y;}tracer(v.m.position.clone().setY(v.m.position.y+2.4),b.clone().setY(b.y+.8),v.side==='F'?S.me:S.en,true);const o=v.m.position.clone().setY(v.m.position.y+2.8);if(los(o,b.clone().setY(b.y+.8))){const hp=b.clone().add(new V3((rn()-.5)*6,0,(rn()-.5)*6));blast(hp,4,90,false);}}}
   if(S.eheli&&S.eheli.alive){const h=S.eheli;h.t+=dt;h.m.userData.rotor.rotation.y+=dt*30;const c=S.village;h.m.position.set(c.x+Math.cos(h.t*.15)*220,H(c.x,c.z)+70,c.z+Math.sin(h.t*.15)*220);h.cool-=dt;
-    if(h.cool<=0&&S.phase==='FIGHT'){h.cool=4;const tg=rn()<.4?S.pos.clone():(S.us.find(u=>u.alive)||{m:{position:S.pos}}).m.position.clone();blast(tg.add(new V3((rn()-.5)*12,0,(rn()-.5)*12)),6,110,false);}}
+    if(h.cool<=0&&S.phase==='FIGHT'){h.cool=4;const fr=S.us.find(u=>u.alive);if(fr||!(S.downed||S.evacMe)){const tg=(rn()<.4&&!S.downed&&!S.evacMe)||!fr?S.pos.clone():fr.m.position.clone();blast(tg.add(new V3((rn()-.5)*12,0,(rn()-.5)*12)),6,110,false);}}}
   // projectiles
-  for(let i=S.rk.length-1;i>=0;i--){const k=S.rk[i];k.t+=dt;if(k.tgtP&&!k.tgt){const d=k.tgtP.clone().sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
-    if(k.tgt&&k.tgt.alive){const tp=k.tgt.m.position.clone().setY(k.tgt.m.position.y+1.5),d=tp.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*3));}
+  for(let i=S.rk.length-1;i>=0;i--){const k=S.rk[i];k.t+=dt;if(apsCheck(k)){S.rk.splice(i,1);continue;}
+    // your ATGM flies a top-attack profile: up over its target, then down onto the roof
+    if(k.own&&k.g.guided&&k.tgt&&k.tgt.alive){const tp=k.tgt.m.position,dh=Math.hypot(tp.x-k.p.x,tp.z-k.p.z);const aim=tp.clone().setY(tp.y+(dh>45?Math.min(70,dh*.45):1.2));const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*3));k.top=dh<45;}
+    else if(k.tgtP&&!k.tgt){const d=k.tgtP.clone().sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
+    if(k.tgt&&k.tgt.alive&&!(k.own&&k.g.guided)){const tp=k.tgt.m.position.clone().setY(k.tgt.m.position.y+1.5),d=tp.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*3));}
     else k.v.y-=(k.g.air?0:3)*dt;k.p.addScaledVector(k.v,dt);let hit=null;
     for(const v of S.veh)if(v.alive&&Math.hypot(v.x-k.p.x,v.z-k.p.z)<3.5&&k.p.y<v.m.position.y+3.5){if(k.own&&v.side==='E')armorHit(v,k.p.clone(),k.v.clone().normalize(),k.g.guided?'ATGM':'RPG');else hitVeh(v,k.g.dmg,k.own);hit=1;}
     for(const dr of S.drones)if(dr.alive&&k.own&&k.p.distanceTo(dr.m.position)<(dr.k==='MALE'?10:5)){hitDrone(dr,k.g.dmg,true);hit=1;}
@@ -571,7 +619,7 @@ function loop(){if(!S){loop.on=false;return;}requestAnimationFrame(loop);const n
 /* ------------------------------------------------------------------ v379: tanks, the trench fight, the air war overhead */
 // a main battle tank, named from the side's equipment table; Western turrets boxy, Russian / Soviet-pattern low and round
 function wave(){S.wave++;const n=Math.round((6+S.wave*2)*S.ePow);for(let i=0;i<n;i++){const u=man(false,(rn()-.5)*320,S.trZ-520-rn()*120);S.them.push(u);}
-  const nt=Math.min(3,1+(S.wave>>1));for(let i=0;i<nt;i++){const x=(rn()-.5)*240,z=S.trZ-600-rn()*80,m=tank(S.en,0x6a5a3a);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:5,alive:true,tank:1,mv:1,stop:S.trZ-150-rn()*80,name:S.EN.MBT||'main battle tank'});}
+  const nt=Math.min(3,1+(S.wave>>1));for(let i=0;i<nt;i++){const x=(rn()-.5)*240,z=S.trZ-600-rn()*80,m=tank(S.en,0x6a5a3a);m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:5,alive:true,tank:1,mv:1,stop:S.trZ-150-rn()*80,name:m.userData.name});}
   {const x=(rn()-.5)*200,z=S.trZ-650,v=vehicle('EIFV',0x6a5a3a);v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true,mv:1,stop:S.trZ-220});}
   say('WAVE '+S.wave+' · '+n+' INFANTRY, '+nt+' '+(S.EN.MBT||'TANKS').toUpperCase()+(nt>1?' TANKS':''),4);}
 function defendStep(dt){S.waveT-=dt;if(S.waveT<=0&&S.wave<4){wave();S.waveT=75;}
@@ -669,7 +717,7 @@ function offensive(){if(S.phase!=='FIGHT')return;if(S.fCP){say('OUR COMMAND POST
   if(S.mission==='FRONT'){if(S.cur>=S.lines.length-1)return;S.push=true;S.pushT=0;say('OFFENSIVE · ON THE NEXT TRENCH',2);}
   const nx=S.mission==='FRONT'?S.lines[S.cur+1]:null;const tgt=nx?new V3(0,0,nx.z):S.mission==='DEFEND'?new V3(0,0,S.trZ-300):S.village.clone();arty(tgt,10,'F');
   const z0=nx?S.lines[S.cur].z+120:S.mission==='DEFEND'?S.trZ+150:300;for(let i=0;i<10;i++){const u=man(true,(rn()-.5)*80,z0+rn()*40);u.off=true;S.us.push(u);}
-  const m=tank(S.me,0x4e5a3c),x=(rn()-.5)*60;m.position.set(x,H(x,z0+60),z0+60);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z:z0+60,cool:3,alive:true,tank:1,mv:1,stop:nx?nx.z+70:S.mission==='DEFEND'?S.trZ-150:S.village.z+80,name:S.N.MBT||'main battle tank'});
+  const m=tank(S.me,0x4e5a3c),x=(rn()-.5)*60;m.position.set(x,H(x,z0+60),z0+60);S.sc.add(m);S.veh.push({m,hp:1100,side:'F',x,z:z0+60,cool:3,alive:true,tank:1,mv:1,stop:nx?nx.z+70:S.mission==='DEFEND'?S.trZ-150:S.village.z+80,name:m.userData.name});
   // the war: a local push on this sector
   let note='';const st=S.cfg.camp?null:W.st;if(st&&S.fr){const mid=S.fr.sec[(S.fr.sec.length/2)|0],mine=st.c[S.fr.a].side===S.me;mid.off+=mine?.3:-.3;const p=st.c[S.cfg.a3];if(p)p.gnd*=.995;W.emit('OFFENSIVE',{e:[S.cfg.a3],txt:(p?p.n:'')+' opens a local offensive at '+S.loc.name+'.'});note=' · THE FRONT PUSHES';}
   if(S.cfg.camp&&typeof CAMP!=='undefined'&&CAMP.st&&S.cs!=null){CAMP.st.front[S.cs]-=400;CAMP.log('Local offensive at '+S.loc.name+', sector '+(S.cs+1)+'.','b');note=' · SECTOR '+(S.cs+1)+' PUSHES';}
@@ -808,31 +856,52 @@ function armorHit2(v,pt,dir,wpn){const k=vkind(v),fam=vfam(v),T=PL[fam][k],A=ARM
   const dx=pt.x-P.x,dz=pt.z-P.z,lx=dx*c-dz*s2,lz=dx*s2+dz*c,ly=pt.y-P.y,ldx=dir.x*c-dir.z*s2,ldz=dir.x*s2+dir.z*c;
   const turret=ly>A.tz&&Math.abs(lz)<A.dim[2]*.35,part=turret?'turret':'hull';let face;
   if(dir.y<-.55&&(wpn==='ATGM'||wpn==='FPV'))face='top';else{const ax=Math.abs(lx)/(A.dim[0]/2),az=Math.abs(lz)/(A.dim[2]/2);face=az>=ax?(lz<0?'front':'rear'):'side';}
-  const tracks=face==='side'&&!turret&&ly<.95,[t0,sl]=T[part][face];const sr=sl*Math.PI/180;
+  const VCm=vcOf(v);const tracks=face==='side'&&!turret&&ly<.95,[tA,sl]=T[part][face],t0=tA*(VCm.arm||1);const sr=sl*Math.PI/180;
   // the plate's normal, tilted back by its slope
   const n=face==='front'?new V3(0,Math.sin(sr),-Math.cos(sr)):face==='rear'?new V3(0,Math.sin(sr),Math.cos(sr)):face==='side'?new V3(Math.sign(lx)||1,0,0).multiplyScalar(Math.cos(sr)).add(new V3(0,Math.sin(sr),0)):new V3(0,1,0);
   const cos=Math.min(1,Math.abs(n.x*ldx+n.y*dir.y+n.z*ldz)),ang=Math.round(Math.acos(cos)*180/Math.PI);
   const wh=WH[wpn]||'KE',heat=wh!=='KE',notes=[];let t=t0*(tracks?.5:1);
   if(heat&&!tracks&&T.comp>1&&(face==='front'||(face==='side'&&turret))){t*=T.comp;notes.push('composite');}
   const key=part+'.'+face;v.era=v.era||{};let pen=(PEN[wpn]||8)*(.9+rn()*.2);
-  if(T.era.includes(key)&&!tracks){const tile=key+':'+Math.round(lx)+','+Math.round(ly);if(!v.era[tile]){v.era[tile]=1;if(wh==='HEAT'){pen*=.35;notes.push('ERA brick detonated, jet disrupted');}else if(wh==='HEAT2'){notes.push('ERA brick set off by the precursor (tandem)');}else if(wpn==='TANK'||wpn==='AMR'){pen*=.8;notes.push('ERA brick detonated');}}else notes.push('ERA already spent here');}
+  if(T.era.includes(key)&&!tracks){const tile=key+':'+Math.round(lx)+','+Math.round(ly);if(!v.era[tile]){v.era[tile]=1;const ek=VCm.era||'K5',en={K5:'Kontakt-5',RELIKT:'Relikt',MALACHIT:'Malachit'}[ek]||'ERA';if(wh==='HEAT'){pen*=ek==='MALACHIT'?.25:.35;notes.push(en+' brick detonated, jet disrupted');}else if(wh==='HEAT2'){if(ek==='RELIKT'||ek==='MALACHIT'){pen*=ek==='MALACHIT'?.6:.75;notes.push(en+' brick detonated: the tandem precursor did not clear it fully');}else notes.push(en+' brick set off by the precursor (tandem)');}else if(wpn==='TANK'||wpn==='AMR'){pen*=ek==='K5'?.8:.7;notes.push(en+' brick detonated');}}else notes.push('ERA already spent here');}
   const eff=t/Math.max(.15,cos);let res,dmg=[];
   if(!heat&&cos<.34&&pen<eff*1.4)res='RICOCHET';else if(heat&&cos<.17)res='GRAZE · DID NOT FUZE';else if(pen<eff)res='NO PENETRATION';else res='PENETRATED';
   if(res==='PENETRATED'){const over=pen-eff;const liner=T.liner||0;if(liner)notes.push('spall liner '+(liner>=.8?'catches most fragments':'catches some fragments'));
     // what is behind the plate that was struck
     let L;if(tracks)L=['track'];else if(face==='rear')L=['engine','fuel tank','transmission'];else if(face==='top')L=turret?['commander','gunner','gun breech','optics'].concat(fam==='WEST'&&k==='MBT'?['bustle ammunition']:['ammunition']):['engine','crew'];
     else if(turret)L=face==='front'?['gun breech','gunner sight','gunner','commander']:(fam==='WEST'&&k==='MBT'&&lz>0?['bustle ammunition','turret drive']:['gunner','commander','turret drive','gun breech']);
-    else L=face==='front'?['driver','transmission','fuel tank']:(k==='MBT'&&fam==='SOV'?['ammunition','crew','fuel tank','road wheels']:['crew','fuel tank','ammunition','road wheels']);
+    else L=face==='front'?(VCm.lay==='merkava'?['engine','transmission','fuel tank']:['driver','transmission','fuel tank']):(k==='MBT'&&fam==='SOV'?['ammunition','crew','fuel tank','road wheels']:['crew','fuel tank','ammunition','road wheels']);
+    if(VCm.lay==='merkava'&&face==='rear'&&!turret)L=['crew','ammunition'];if(VCm.lay==='capsule'&&turret)L=L.filter(x=>!/gunner$|commander/.test(x)).concat(['turret ammunition','turret ammunition']);
     const n2=Math.max(1,Math.round((1+Math.min(3,over/120))*(1-liner*.35)));for(let i=0;i<n2&&L.length;i++)dmg.push(L.splice((rn()*L.length)|0,1)[0]);
-    v.crew=v.crew??(k==='MBT'?(fam==='SOV'?3:4):3);
+    v.crew=v.crew??(VCm.crew||(k==='MBT'?(fam==='SOV'?3:4):3));
     v.cas=v.cas||{};for(const d of dmg){if(/driver|crew|commander|gunner$/.test(d)&&rn()<1-liner*.5){v.crew-=1;const seat=d==='crew'?['driver','gunner','commander','loader'][(rn()*4)|0]:d;v.cas[seat]=1;if(seat==='commander'&&v.m.userData.cmdr)v.m.userData.cmdr.visible=false;}if(/engine|transmission|track|road wheels/.test(d))v.immob=true;if(/gun breech|gunner sight|optics|turret drive|bustle/.test(d))v.nofire=true;}
     let st;const am=dmg.includes('ammunition'),bam=dmg.includes('bustle ammunition');
-    if(am&&rn()<(k==='MBT'&&fam==='SOV'?.8:.45))st='DESTROYED · AMMUNITION DETONATED';else if(bam){st='AMMUNITION BURNS · BLOW-OUT PANELS VENT · CREW SURVIVES';v.nofire=true;}
+    if(dmg.includes('turret ammunition')){st='UNMANNED TURRET AMMUNITION DETONATES · CREW CAPSULE HOLDS';v.nofire=true;}
+    else if(am&&VCm.lay==='merkava'&&rn()<.6){st='AMMUNITION IN PROTECTED CONTAINERS DOES NOT COOK OFF';}
+    else if(am&&rn()<(k==='MBT'&&fam==='SOV'?.8:.45))st='DESTROYED · AMMUNITION DETONATED';else if(bam){st='AMMUNITION BURNS · BLOW-OUT PANELS VENT · CREW SURVIVES';v.nofire=true;}
     else if(dmg.includes('fuel tank')&&rn()<.35)st='DESTROYED · FIRE';else if(v.crew<=1)st='KNOCKED OUT · CREW ABANDONS';else st=v.immob&&v.nofire?'MOBILITY AND FIREPOWER KILL':v.immob?'MOBILITY KILL':v.nofire?'FIREPOWER KILL':'DAMAGED';
     if(/DESTROYED|KNOCKED/.test(st)){hitVeh(v,1e6,true);if(/DETONATED/.test(st)&&v.m.userData.tu){const tu=v.m.userData.tu;tu.position.set((rn()<.5?-1:1)*(3+rn()),-1.05,(rn()-.5)*3);tu.rotation.set((rn()-.5)*.5,rn()*6.28,Math.PI*(.85+rn()*.1));if(v.m.userData.cmdr)v.m.userData.cmdr.visible=false;v.cas=v.cas||{};v.cas.driver=v.cas.gunner=v.cas.commander=v.cas.loader=1;}}
     if(bam)for(let i=0;i<4;i++)smoke(v.m.position.clone().setY(v.m.position.y+3.2));res+=' · '+st;}
   else if(heat)hitVeh(v,40,true);
   const rec={v,ld:[ldx,dir.y,ldz],name:v.name||v.m.userData.name||({MBT:'main battle tank',IFV:'infantry fighting vehicle',APC:'armoured personnel carrier'}[k]),k,fam,part,face:tracks?'tracks':face,ang,slope:sl,t:Math.round(t),eff:Math.round(eff),pen:Math.round(pen),res,dmg,notes,lx,lz,ly,wpn,wh};S.armLog.push(rec);showArm(rec);return rec;}
+
+/* ------------------------------------------------------------------ v391: active protection */
+// Tanks that carry an active protection system (Trophy, Arena-M, Afganit, KAPS) detect an incoming rocket or missile at
+// about 25 m and fire a countermeasure while they have charges: likely against a direct shot from where the system
+// covers (Arena-M not from the rear), much less likely against a missile diving onto the roof; drones are not engaged.
+const APSD={TROPHY:{p:.9,top:.3,rear:1},'ARENA-M':{p:.8,top:.15,rear:0},AFGANIT:{p:.9,top:.55,rear:1},KAPS:{p:.85,top:.3,rear:1}};
+function apsCheck(k){if(k.apsDone)return false;for(const v of S.veh){if(!v.alive)continue;const vc=vcOf(v);if(!vc.aps)continue;if((v.side==='E')!==!!k.own)continue;
+    v.apsN=v.apsN??vc.apsN;if(v.apsN<=0)continue;const P=v.m.position.clone().setY(v.m.position.y+1.8),d=P.clone().sub(k.p),L=d.length();if(L>25||L<6)continue;if(d.dot(k.v)<=0)continue;
+    k.apsDone=true;const D=APSD[vc.aps];const ry=v.m.rotation.y,fx=-Math.sin(ry),fz=-Math.cos(ry);const from=-(d.x*fx+d.z*fz)/Math.max(.01,Math.hypot(d.x,d.z));const rear=from<-.5;
+    const pr=(k.top?D.top:D.p)*(rear&&!D.rear?0:1);v.apsN--;const hit=rn()<pr;
+    if(hit){fx2(k.p,v,vc);SND.boom(k.p,4);const ll=localOf(v,k.p,k.v);const rec={v,ld:ll.ld,name:v.name||vc.st,k:vkind(v),fam:vfam(v),part:'—',face:ll.face,ang:0,slope:null,t:0,eff:0,pen:Math.round(PEN[k.g.guided?'ATGM':'RPG']||0),
+      res:'INTERCEPTED BY '+vc.aps+' APS',dmg:[],notes:[vc.aps+' radar tracked it; a countermeasure fired at '+Math.round(L)+' m · '+v.apsN+' charge'+(v.apsN===1?'':'s')+' left'+(k.top?' · it was diving on the roof':'')],lx:ll.lx,lz:ll.lz,ly:ll.ly,wpn:k.g.guided?'ATGM':'RPG',wh:k.g.guided?'HEAT2':'HEAT',aps:1};
+      if(k.own){S.armLog.push(rec);showArm(rec);say(vc.aps+' APS · YOUR '+(k.g.guided?'MISSILE':'ROCKET')+' WAS SHOT DOWN · '+v.apsN+' CHARGES LEFT',3);}return true;}
+    else if(k.own&&(rear&&!D.rear))say(vc.aps+' DOES NOT COVER THE REAR',1.5);}
+  return false;}
+function fx2(p,v,vc){fx(p.clone(),1.2);for(let i=0;i<4;i++){const f=new THREE.Mesh(GE('apsf',()=>new THREE.SphereGeometry(.15,6,4)),MT(0xffd060));f.position.copy(p).add(new V3((rn()-.5)*2,(rn()-.5)*2,(rn()-.5)*2));S.sc.add(f);fxL.push({m:f,t:.2});}}
+function localOf(v,p,dir){const P=v.m.position,ry=v.m.rotation.y,c=Math.cos(-ry),s2=Math.sin(-ry),dx=p.x-P.x,dz=p.z-P.z,lx=dx*c-dz*s2,lz=dx*s2+dz*c,dn=dir.clone().normalize(),ldx=dn.x*c-dn.z*s2,ldz=dn.x*s2+dn.z*c;
+  return{lx,lz,ly:p.y-P.y,ld:[ldx,dn.y,ldz],face:Math.abs(lz)>Math.abs(lx)?(lz<0?'front':'rear'):'side'};}
 
 /* ------------------------------------------------------------------ v390: the front, command posts, transport */
 // FRONT: your current trench line is S.lines[S.cur]. An offensive sends your riflemen (and reinforcements) at the next
@@ -842,14 +911,15 @@ function armorHit2(v,pt,dir,wpn){const k=vkind(v),fam=vfam(v),T=PL[fam][k],A=ARM
 // the battle is lost. T orders a fall-back yourself.
 function slotOf(u){const L=S.lines[S.cur],n=L.slots.length;const i=((u.si??(u.si=(rn()*n)|0))*5+3)%n;return L.slots[i];}
 function frontGoal(u){u.assault=false;if(u.friend){if(S.push&&S.cur+1<S.lines.length){u.assault=true;const N=S.lines[S.cur+1];return new V3((u.ox??=(rn()-.5)*300),0,N.z);}const q=slotOf(u);return new V3(q.x,0,q.z);}
+  if(u.line==null&&!u.atk)u.atk=1;   // reinforcements called up by radio join the counter-attack
   if(u.atk){u.assault=true;const L=S.lines[S.cur]||S.lines[0];return new V3((u.ox??=(rn()-.5)*300),0,L.z);}
   // garrison: their own line, or the next one back if theirs has fallen
   let li=u.line;while(li<S.lines.length&&S.lines[li].own!=='E')li++;if(li>=S.lines.length){u.atk=1;return frontGoal(u);}u.line=li;const L=S.lines[li],q=L.slots[((u.ox2??=(rn()*L.slots.length)|0))%L.slots.length];return new V3(q.x,0,q.z);}
 function bandCount(L){const inb=p=>Math.abs(p.z-L.z)<10&&Math.abs(p.x)<180;return{e:S.them.filter(u=>u.alive&&inb(u.m.position)).length,f:S.us.filter(u=>u.alive&&inb(u.m.position)).length+(inb(S.pos)?1:0)};}
 function counter(){S.wave++;const back=S.lines.filter(l=>l.own==='E').map(l=>l.z);const z0=(back.length?Math.min(...back):S.lines[S.cur].z-500)-180;const n=Math.round((5+S.wave*2)*S.ePow);
   for(let i=0;i<n;i++){const u=man(false,(rn()-.5)*300,z0-rn()*60);u.atk=1;S.them.push(u);}
-  const m=tank(S.en,0x6a5a3a),x=(rn()-.5)*200;m.position.set(x,H(x,z0-80),z0-80);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z:z0-80,cool:5,alive:true,tank:1,goal:new V3(x,0,S.lines[S.cur].z-160),name:S.EN.MBT||'main battle tank'});
-  say('ENEMY COUNTER-ATTACK · '+n+' INFANTRY WITH A '+(S.EN.MBT||'TANK').toUpperCase(),3.5);}
+  const m=tank(S.en,0x6a5a3a),x=(rn()-.5)*200;m.position.set(x,H(x,z0-80),z0-80);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z:z0-80,cool:5,alive:true,tank:1,goal:new V3(x,0,S.lines[S.cur].z-160),name:m.userData.name});
+  say('ENEMY COUNTER-ATTACK · '+n+' INFANTRY WITH A '+String(m.userData.name||'TANK').toUpperCase(),3.5);}
 function fallBack(order){if(S.mission!=='FRONT'||S.phase!=='FIGHT')return;if(S.cur<=0){if(order)say('NO TRENCH BEHIND US',2);return;}if(order)S.lines[S.cur].own='N';S.cur--;S.push=false;S.trZ=S.lines[S.cur].z;
   for(const u of S.us)u.bound=null;say(order?'FALL BACK · TO THE OLDER TRENCH':'THE LINE IS LOST · FALLING BACK TO THE OLDER TRENCH',3.5);}
 function frontStep(dt){S.waveT-=dt;if(S.waveT<=0){counter();S.waveT=90;}
@@ -911,7 +981,7 @@ function doPan(a){const P=S.pan;closePan();if(!P||a==='x')return;
   else if(a==='sup'){for(const w of['pri','side']){const g=S.wp[w];g.res=Math.max(g.res,g.mag*7);}if(S.wp.lau.mag)S.wp.lau.res=Math.max(S.wp.lau.res,2);S.gren=Math.max(S.gren,4);S.bags+=4;S.fpvKit+=1;S.uglN=Math.max(S.uglN,S.wp.pri.ugl||0);S.supCd=90;say('RESUPPLIED',2);}
   else if(a==='med')medevac(true);
   else if(a==='leave')end('EXTRACTED');
-  else if(a.startsWith('r:')){const v=P.obj,k=a.slice(2);let g=null;
+  else if(a.startsWith('r:')){const v=P.obj,k=a.slice(2);let g=null;if(!v||!v.alive){say('THE VEHICLE IS GONE',1.5);return;}
     if(k==='front')g=S.mission==='FRONT'?new V3(S.pos.x*.3,0,S.lines[S.cur].z+18):S.village.clone().add(new V3(0,0,90));
     else if(k==='cp'){const c=S.STR.filter(c=>c.kind==='COMMAND POST'&&c.side==='F'&&!c.down).sort((a,b)=>Math.hypot(a.cx-S.pos.x,a.cz-S.pos.z)-Math.hypot(b.cx-S.pos.x,b.cz-S.pos.z))[0];g=new V3(c.cx+7,0,c.cz+5);}
     else if(k==='look'){const d0=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw));g=S.pos.clone().addScaledVector(d0,Math.min(200,rayBoxes(S.pos,d0,200)-4));}
@@ -995,6 +1065,7 @@ const PEN={AMR:45,PISTOL:3,RPG:420,ATGM:780,FPV:300,TANK:650,RIFLE:8,CARB:7,SMG:
 const ARMT={MBT:{hull:{front:550,side:90,rear:45,top:30},turret:{front:680,side:230,rear:70,top:40},dim:[3.6,2.6,7.6],tz:2.0},IFV:{hull:{front:45,side:28,rear:20,top:16},turret:{front:40,side:25,rear:20,top:15},dim:[3.1,2.9,6.6],tz:2.3},APC:{hull:{front:16,side:11,rear:9,top:8},turret:{front:10,side:10,rear:10,top:8},dim:[3.1,2.4,6.6],tz:9}};
 const COMP={front:['driver','transmission','gun breech','gunner sight'],side:['ammunition','fuel tank','crew','road wheels'],rear:['engine','fuel tank','transmission'],top:['commander','gunner','ammunition','optics'],tracks:['track']};
 function vkind(v){return v.tank?'MBT':v.m.userData.gun?'IFV':'APC';}
+const vcOf=v=>v.m.userData.vc||{};
 const vfam=v=>v.m.userData.fam||'WEST';
 // v387 armour: each face is a plate of a thickness at a slope (from vertical); a warhead is kinetic (bullets, sabot) or
 // shaped-charge (rockets, missiles, FPV). Explosive reactive armour bricks (Soviet-pattern) burn off a shaped charge's
@@ -1071,7 +1142,8 @@ function arm3D(r,host){if(!host||!r.v)return false;try{
   const P=new V3(r.lx,r.ly,r.lz),D=new V3(r.ld[0],r.ld[1],r.ld[2]).normalize(),Y=new THREE.LineBasicMaterial({color:0xffe14a}),Rm=new THREE.LineBasicMaterial({color:0xff4a30});
   const seg=(a,b,m)=>root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),m));seg(P.clone().addScaledVector(D,-5),P,Y);
   const dot=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),new THREE.MeshBasicMaterial({color:/PENETRATED/.test(r.res)?0xff4a30:0xffe14a}));dot.position.copy(P);root.add(dot);
-  if(/PENETRATED/.test(r.res)){seg(P,P.clone().addScaledVector(D,2.6),Rm);const cone=new THREE.Mesh(new THREE.ConeGeometry(.9,2.2,16,1,true),new THREE.MeshBasicMaterial({color:0xff8a3a,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false}));
+  if(r.aps){const f=new THREE.Mesh(new THREE.SphereGeometry(.6,10,8),new THREE.MeshBasicMaterial({color:0xffd060,transparent:true,opacity:.6}));f.position.copy(P);root.add(f);}
+  else if(/PENETRATED/.test(r.res)){seg(P,P.clone().addScaledVector(D,2.6),Rm);const cone=new THREE.Mesh(new THREE.ConeGeometry(.9,2.2,16,1,true),new THREE.MeshBasicMaterial({color:0xff8a3a,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false}));
     cone.position.copy(P.clone().addScaledVector(D,1.1));cone.quaternion.setFromUnitVectors(new V3(0,-1,0),D);root.add(cone);
     for(const n of r.dmg){const q=C[n];if(q)seg(P,new V3(q[0],q[1],q[2]),new THREE.LineBasicMaterial({color:0xff7a50,transparent:true,opacity:.7}));}}
   else if(/RICOCHET/.test(r.res)){const n=new V3(0,.4,0).add(D.clone().multiplyScalar(-1)).normalize();const out=D.clone().reflect(new V3(Math.abs(D.x)>Math.abs(D.z)?Math.sign(-D.x):0,.3,Math.abs(D.z)>=Math.abs(D.x)?Math.sign(-D.z):0).normalize());seg(P,P.clone().addScaledVector(out,3.5),Y);}
@@ -1079,7 +1151,7 @@ function arm3D(r,host){if(!host||!r.v)return false;try{
   // ERA brick that went off
   if(r.notes&&r.notes.some(x=>/ERA brick (detonated|set off)/.test(x))){const f=new THREE.Mesh(new THREE.SphereGeometry(.45,10,8),new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,opacity:.45}));f.position.copy(P);root.add(f);}
   // camera: three-quarter view from the side that was hit, turning slowly
-  const A=ARMT[r.k];A3.sc=sc;A3.root=root;A3.dist=A.dim[2]*1.55;A3.az=Math.atan2(r.lx||.01,r.lz||.01)+.6;A3.t=0;A3.until=performance.now()+9000;
+  const A=ARMT[r.k];A3.sc=sc;A3.root=root;A3.dist=A.dim[2]*(r.aps?2.6:1.55);A3.az=Math.atan2(r.lx||.01,r.lz||.01)+.6;A3.t=0;A3.until=performance.now()+9000;
   if(!A3.loop){A3.loop=1;const tick=()=>{if(A3.until<performance.now()||!A3.sc){A3.loop=0;return;}requestAnimationFrame(tick);A3.t+=1/60;const a=A3.az+A3.t*.35;
       A3.cam.position.set(Math.sin(a)*A3.dist,A3.dist*.55,Math.cos(a)*A3.dist);A3.cam.lookAt(0,1.3,0);A3.R.render(A3.sc,A3.cam);};requestAnimationFrame(tick);}
   A3.cam.position.set(Math.sin(A3.az)*A3.dist,A3.dist*.55,Math.cos(A3.az)*A3.dist);A3.cam.lookAt(0,1.3,0);A3.R.render(sc,A3.cam);
@@ -1097,7 +1169,7 @@ function medevac(forced){if(S.phase!=='FIGHT'||S.med)return;if(S.medN>=3){say('N
   S.medN++;const f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw));const lz=forced?S.pos.clone().add(new V3(6,0,8)):S.pos.clone().addScaledVector(f,-22);lz.y=H(lz.x,lz.z);
   // with enemy aircraft or drones about, an armoured ambulance comes by road instead of a helicopter
   const air=(S.eheli&&S.eheli.alive)||S.drones.some(d=>d.alive&&d.side==='E'&&d.k!=='FPV');if(air){const v=vehicle('APC',0x4e5a3c);const cr=new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.4),new THREE.MeshBasicMaterial({color:0xd03030,side:THREE.DoubleSide}));cr.position.set(1.47,1.5,0);cr.rotation.y=Math.PI/2;v.add(cr);
-    v.position.set(lz.x,H(lz.x,lz.z+420),lz.z+420);S.sc.add(v);v.userData.rotor={rotation:{y:0}};S.med={h:v,lz,t:0,st:'IN',from:v.position.clone(),road:true};say('ARMOURED AMBULANCE INBOUND BY ROAD (ENEMY AIR ABOUT) · ABOUT 40 S',3);return;}
+    v.position.set(lz.x,H(lz.x,lz.z+420),lz.z+420);S.sc.add(v);v.userData.rotor={rotation:{y:0}};S.med={h:v,lz,t:0,st:'IN',from:v.position.clone(),road:true};if(S.downed)S.downT=60;say('ARMOURED AMBULANCE INBOUND BY ROAD (ENEMY AIR ABOUT) · ABOUT 25 S',3);return;}
   const h=helo(0x46503f);h.position.set(lz.x-600,lz.y+120,lz.z+600);S.sc.add(h);
   const cross=new THREE.Mesh(new THREE.PlaneGeometry(2,6),new THREE.MeshBasicMaterial({color:0xd03030}));cross.rotation.x=-Math.PI/2;h.add(cross);cross.position.set(0,2.85,0);
   S.med={h,lz,t:0,st:'IN',from:h.position.clone()};say(forced?'MEDEVAC HELICOPTER INBOUND TO YOU · ABOUT 25 S':'MEDEVAC INBOUND · LANDING ZONE 20 M BEHIND YOU · ABOUT 25 S · STAND BY IT IF HURT TO BE FLOWN OUT',3);}
@@ -1111,7 +1183,7 @@ function v381Step(dt){
     if(!d.dive){d.m.position.y+=8*dt;if(d.m.position.y>H(d.m.position.x,d.m.position.z)+25)d.dive=true;}}
   if(S.feed&&!S.feed.alive){S.feed=null;say('FEED LOST · DRONE STRUCK',2);}
   const M=S.med;if(M){M.t+=dt;const P=M.h.position;M.h.userData.rotor.rotation.y+=dt*30;
-    if(M.road&&M.st==='IN'){const u=Math.min(1,M.t/38);P.lerpVectors(M.from,M.lz,u);P.y=H(P.x,P.z);if(u>=1){M.st='DOWN';M.t=0;say('AMBULANCE HERE · WOUNDED BEING LOADED',3);}}
+    if(M.road&&M.st==='IN'){const u=Math.min(1,M.t/24);P.lerpVectors(M.from,M.lz,u);P.y=H(P.x,P.z);if(u>=1){M.st='DOWN';M.t=0;say('AMBULANCE HERE · WOUNDED BEING LOADED',3);}}
     else if(M.st==='IN'){const u=Math.min(1,M.t/22);P.lerpVectors(M.from,new V3(M.lz.x,M.lz.y+(u>.8?(1-u)*200:40),M.lz.z),u);if(u>=1){P.copy(M.lz);M.st='DOWN';M.t=0;say('MEDEVAC ON THE GROUND · WOUNDED BEING LOADED',3);}}
     else if(M.st==='DOWN'){for(const u of S.us)if(u.down&&!u.evac&&u.m.position.distanceTo(M.lz)<70){u.evac=true;S.evac++;u.m.visible=false;}
       if(!S.evacMe&&(S.downed||S.hp<70)&&Math.hypot(S.pos.x-P.x,S.pos.z-P.z)<12){S.evacMe=true;M.st='OUT';M.t=0;say((M.road?'LOADED INTO THE AMBULANCE':'ON BOARD THE MEDEVAC')+' · OUT OF THE BATTLE',3);}
@@ -1175,5 +1247,5 @@ function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cf
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+window.INFANTRY={VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();
