@@ -46,7 +46,9 @@ function placeFront(){const n=WS.front;if(!n)return;const sg=n.enemyIsB?1:-1,s=n
   // along the line: three points 8 km apart; the enemy holds the side the normal points to when it is country b
   const tx=-s.ny,ty=s.nx;   // tangent (km frame: east, north)
   for(const k of[-1,0,1]){const base={lat:n.p.lat+ty*k*8/111.2,lon:n.p.lon+tx*k*8/(111.2*Math.cos(n.p.lat*D))};
-    for(const[side,off,kinds]of[[1,1.6*sg,['MBTR','MBTR','IFVR','IFVR']],[0,-1.6*sg,['MBTB','IFVB','IFVB']]]){
+    // vehicles look like the side that owns them: flying for REDFOR, the enemy armour is western and yours is not
+    const red=W.st.c[WS.me].side==='R',eK=red?['MBTB','MBTB','IFVB','IFVB']:['MBTR','MBTR','IFVR','IFVR'],fK=red?['MBTR','IFVR','IFVR']:['MBTB','IFVB','IFVB'];
+    for(const[side,off,kinds]of[[1,1.6*sg,eK],[0,-1.6*sg,fK]]){
       for(let i=0;i<kinds.length;i++){const lat=base.lat+s.ny*(off+rr(-.3,.3))/111.2,lon=base.lon+s.nx*(off+rr(-.3,.3))/(111.2*Math.cos(base.lat*D))+tx*(i-1.5)*.35/(111.2*Math.cos(base.lat*D));
         const p=xz(lat,lon);if(groundAt(p.x,p.z)<2)continue;const hd=(Math.atan2(-s.nx*sg*(side?-1:1),s.ny*sg*(side?-1:1))/D+360)%360;const u=GND.add(kinds[i],side,p.x,p.z,hd);u._ws=side?(n.enemyIsB?n.f.b:n.f.a):WS.me;WS.ground.push(u);}}}
   // a SAM battery 18 km behind the enemy line and two gun systems 4 km behind it

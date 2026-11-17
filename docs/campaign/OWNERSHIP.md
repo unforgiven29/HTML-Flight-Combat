@@ -32,6 +32,10 @@ individual records (the spec allows this where individual detail is not needed).
 | Sensors, radar, RWR, jamming, IRST | `js/sensors/*`, `js/rwr/*` | sensor registry | not yet linked to the ledger |
 | The Earth: geographic frame, elevation, places, airports, countries, borders | `WGEO` (`js/world/geo.js`) | `assets/world/*` + streamed tiles | worldflight.js, worldmap.js, worldwar.js |
 | World-war state: country registry, alignments and their history, national profiles (estimates), fronts and sector offsets, air theatres, city control, war events | `WWAR` (`js/war/worldwar.js`) | `localStorage viper.ww` (schema v1) | warmap.js (map layer, panel) |
+| World-war seasons and theatre weather | `js/war/seasons.js` | `st.th[].wx / .season` | WWAR (air attrition, front mobility), world flight (time of day, weather, snow) |
+| National economy and infrastructure (energy, fuel, industry, transport, food, infrastructure) | `js/war/economy.js` | `st.c[].ecn` | WWAR.mod (front supply), production, support |
+| Government, mobilisation, strategic decisions (posture, concentration, estimates, calls for help) | `js/war/strategy.js` | `st.c[].govt`, `st.fronts[].post / .w / .est` | WWAR.mod, panel |
+| Population, households, media reports, investigations | `js/war/society.js` | `st.c[].soc`, `st.soc` | panel (reports never change events) |
 | World-war clock | `WWAR.step` (`st.t`, hours since the scenario start) | `viper.ww` | warmap.js. **Separate from `CAMP.st.t` until step 2 joins the theatre campaign to the world war** |
 | Co-op campaign state | the host (`CAMP.publish`) | — | clients apply it; the ledger read model goes out as `wrv` every 40 publishes; clients never write the ledger |
 
