@@ -453,7 +453,7 @@ test('wsortie: fly for a country from a real airbase; the front, enemy flights, 
 
 /* ---------- the world war, step 3: alignment changes, diplomacy, endings (v330, spec ch.05 / ch.14) ---------- */
 test('wdip_rules: a ceasefire stops a front; a capitulation leaves allies fighting; constitutional neutrals stay out','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,f=st.fronts[0];f.cf={kind:'LOCAL',t:0,until:1e9};const o0=f.sec.map(s=>s.off).join();
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,f=st.fronts[0];f.cf={kind:'GENERAL',t:0};const o0=f.sec.map(s=>s.off).join();
     WWAR.step(24*5);const still=f.sec.map(s=>s.off).join()===o0;f.cf=null;
     st.c.RUS.lostGnd=st.c.RUS.gnd0*.9;st.c.RUS.lostAir=st.c.RUS.air0*.9;WWAR.step(24);
     return{still,rus:st.c.RUS.al,chn:st.c.CHN.al,over:!!st.over,aut:st.c.AUT.al,irl:st.c.IRL.al,audit:WWAR.audit()};});
