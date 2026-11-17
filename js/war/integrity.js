@@ -19,6 +19,14 @@
 if(!window.WWAR)return;
 const W=WWAR;
 W.because=(ev,fn)=>{(W._cz||(W._cz=[])).push(ev.id||ev);try{return fn();}finally{W._cz.pop();}};
+
+// rule-based causes for the main chains, where the effect is emitted later by the daily simulation (not inside the
+// cause's own handling): the most recent event of a causing type that names the same country within 7 war days.
+const RULES={OCCUPATION:['CITY'],HERITAGE:['CITY'],LOGISTICS:['BRIDGE','DEPOT','AIRBASE','FRONT'],DEPOT:['AIR'],MOBILIZATION:['FRONT','ENTRY','CITY'],CEASEFIRE:['DIPLO','HAZARD'],
+  EVACUATION:['ENTRY','FRONT'],CRISIS:['CITY','FRONT'],RELIEF:['HAZARD','CITY','CRISIS'],RECOVERY:['HAZARD'],RATIONING:['BRIDGE','AIRBASE','FRONT'],ORDERS:['FRONT','COMMAND'],GROUND:['FRONT'],
+  SURRENDER:['FRONT'],ELECTION:['POLITICS'],AID:['HAZARD'],UXO:['FRONT'],EPILOGUE:['END'],MEMORIAL:['END'],POSTWAR:['END'],REMEMBRANCE:['END'],CEREMONY:['END'],BRIDGE:['BRIDGE']};
+W.listeners.unshift(e=>{if(e.c&&e.c.length)return;const R=RULES[e.ty];if(!R||!W.st)return;const st=W.st;
+  for(let i=st.ev.length-2;i>=0&&i>st.ev.length-400;i--){const x=st.ev[i];if(st.t-x.t>24*7)break;if(!R.includes(x.ty)||x===e)continue;if(e.e&&e.e.length&&x.e&&x.e.length&&!e.e.some(a=>x.e.includes(a))&&x.ty!=='END')continue;e.c=[x.id];e.cr='rule';break;}});
 function chain(id,max=8){const st=W.st,out=[];let e=st.ev.find(x=>x.id===id);while(e&&out.length<max){out.push(e);const c=e.c&&e.c[0];e=c?st.ev.find(x=>x.id===c):null;}return out;}
 function checks(){const st=W.st,out=[];if(!st)return out;const fin=v=>typeof v!=='number'||Number.isFinite(v);
   for(const p of Object.values(st.c)){for(const k of['air','gnd','pop','econ','sup','stab','disp','ref','lostAir','lostGnd'])if(!fin(p[k]))out.push(p.a3+' '+k+' is not finite');

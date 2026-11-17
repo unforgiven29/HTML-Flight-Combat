@@ -787,8 +787,8 @@ test('s16_scen_red: playing REDFOR on an even war — your side, your orders, th
   ok('your order holds on your front',!r.intent||r.intent==='DEFEND',r);ok('the end page opens with an outcome for your side',r.ok1&&['WIN','LOSE','NEITHER'].includes(r.oc),r);ok('audit clean',r.audit.length===0,r.audit);});
 test('s16_scen_sortie: a sortie in a long war — planning, air battle, ground fight, results into the war','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*90);const L=WSORTIE.basesFor('POL');const k=WWAR.deep.PLN();k.k='CAS';k.tgt=WWAR.deep.targets('POL')[0];
-    const ev0=st.ev.length;await WSORTIE.start('POL',L[0].a);WWAR.airbattle.form();await new Promise(r=>setTimeout(r,4000));const gf=window.GFIGHT?GFIGHT.GF.units.length:0;WSORTIE.WS.kills.gnd=2;WSORTIE.finish();
-    return{task:k.k,gf,sortie:st.ev.slice(ev0).some(e=>e.ty==='SORTIE'),rec:WWAR.player.PL().rec.length,audit:WWAR.audit()};});
+    const seq0=st.seq;await WSORTIE.start('POL',L[0].a);WWAR.airbattle.form();await new Promise(r=>setTimeout(r,4000));const gf=window.GFIGHT?GFIGHT.GF.units.length:0;WSORTIE.WS.kills.gnd=2;WSORTIE.finish();
+    return{task:k.k,gf,sortie:st.ev.some(e=>e.ty==='SORTIE'&&parseInt(e.id.slice(1),36)>=seq0),rec:WWAR.player.PL().rec.length,audit:WWAR.audit()};});
   ok('the sortie is logged into the war and recorded',r.sortie&&r.rec>0,r);ok('audit clean after the sortie',r.audit.length===0,r.audit);});
 test('s16_mp: guest messages validated; host migration','F-16C',async p=>{
   const r=await p.evaluate(async()=>{const N=WWNET.N;let ok=0,bad=0;for(let i=0;i<15;i++)WWNET.rate('px')?ok++:bad++;const far=WWNET.plausible({pos:new THREE.Vector3(0,0,0)},{pos:new THREE.Vector3(30000,0,0)}),near=WWNET.plausible({pos:new THREE.Vector3(0,0,0)},{pos:new THREE.Vector3(3000,0,0)});
