@@ -887,6 +887,20 @@ test('s24_net: depot routes on the road network, trade partners and sanctions, t
     const T=st.trade2||{},pol=T.POL;const sanc=Object.values(T).some(r=>r.P.some(x=>x.st==='SANCTIONED'));const reg=WWAR.world3.people('POL');
     return{routes:vals.length,cov:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,pol:pol&&pol.P.length,sanc,reg:reg.length,kinds:[...new Set(reg.map(x=>x.src))],life:NATPANEL.tabs.LIFE(st.c.POL).includes('TRADING PARTNERS'),pol2:Object.keys(NATDATA.POL).length,audit:WWAR.audit()};});
   ok('depot routes checked against the highways',r.routes>0&&r.cov>0,r);ok('trade partners, sanctions across the line',r.pol===5&&r.sanc&&r.life,r);ok('people register from the campaign\'s persons',r.reg>5&&r.kinds.length>=2,r);ok('government data for 150+ countries',r.pol2>=150,r);ok('audit clean',r.audit.length===0,r.audit);});
+
+/* ---------- step 22 (v370): two real pages in one war (same-browser room) ---------- */
+test('s25_mp2: a host page and a guest page share the war, the guest sees the host\'s AI','F-16C',async p=>{
+  const [g]=await Promise.all([p.waitForEvent('popup'),p.evaluate(()=>{window.open(location.href,'guest');})]);await g.waitForFunction(()=>typeof WWNET!=='undefined'&&typeof localRoom==='function',null,{timeout:90000});
+  await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);window.LOCAL_ROOM=localRoom();const c=document.getElementById('cs');if(c)c.value='Host';WWNET.N.code='t1';
+    const i=document.createElement('input');i.id='wwCode';i.value='t1';document.body.appendChild(i);await WWNET.join();});
+  const host=await p.evaluate(()=>({host:WWNET.N.host,on:net.on}));
+  await g.evaluate(async()=>{game.team='BLUE';window.LOCAL_ROOM=localRoom();const c=document.getElementById('cs');if(c)c.value='Guest';const i=document.createElement('input');i.id='wwCode';i.value='t1';document.body.appendChild(i);await WWNET.join();});
+  await g.waitForFunction(()=>WWNET.N.got,null,{timeout:20000}).catch(()=>{});const gotWar=await g.evaluate(()=>({got:!!WWNET.N.got,host:WWNET.N.host,countries:WWAR.st?Object.keys(WWAR.st.c).length:0}));
+  await p.evaluate(async()=>{const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);});
+  await g.evaluate(async()=>{const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);});
+  await g.waitForTimeout(4000);const seen=await g.evaluate(()=>({prox:WWNET.N.prox.size,gu:WWNET.N.gu.size,client:WSORTIE.WS.client}));
+  const hostSees=await p.evaluate(()=>[...net.peers.values()].some(e=>e.jet));await g.close();
+  ok('host page hosts',host.host&&host.on,host);ok('guest page receives the host\'s war',gotWar.got&&!gotWar.host&&gotWar.countries>100,gotWar);ok('guest sees the host\'s AI and ground units',seen.client&&(seen.prox>0||seen.gu>0),seen);ok('host sees the guest\'s aircraft',hostSees);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

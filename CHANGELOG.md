@@ -1,3 +1,8 @@
+## v370 (multiplayer between two real pages)
+- **Same-browser room** (js/war/localroom.js): a BroadcastChannel room with the same interface as the PeerJS rooms; used with `?room=local` (or window.LOCAL_ROOM). Two tabs can play the same war, and the oldest page is promoted host if the host leaves.
+- **Test with two real pages**: a host page and a guest page join one war room; the guest receives the war, sees the host's AI aircraft and ground units in its sortie, and the host sees the guest's aircraft.
+- Tests: `node tests/run.js s25_`.
+
 ## v369 (supply on the road network; trade between countries; the register of people; more data)
 - **Depot routes on roads** (js/war/world3.js): each capital-to-depot link is checked against the Natural Earth highways in the regional tiles (points every 50 km, within 25 km of a highway); capacity x(0.55 + 0.45 x road coverage); poorly connected links are reported.
 - **Trade partners**: each country's five largest partners by a gravity rule, monthly; cut by sanctions across the line, reduced by blockade and war; lost trade lowers the economy; listed in LIFE.
