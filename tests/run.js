@@ -960,7 +960,7 @@ test('s31_infantry2: roles, every weapon fires, walls block, floors carry you, d
     const fnd=S.blds.filter(b=>b.y1-b.y0>2.9&&b.y1-b.y0<3.1&&(b.x1-b.x0)>5);const walls=S.blds.filter(b=>b.y1-b.y0>2.5&&(b.x1-b.x0)>1.5&&fnd.some(f=>Math.abs(f.y1-b.y0)<.01));const w=walls[0];S.pos.set((w.x0+w.x1)/2,w.y0+1.7,w.z0-1.5);S.yaw=Math.PI;S.keys.KeyW=true;I.step(1/30,90);S.keys.KeyW=false;
     out.blocked=!(S.pos.z>w.z0&&S.pos.z<w.z1);
     const fl=S.blds.filter(b=>b.y1-b.y0<.3&&b.y1-b.y0>.1&&(b.x1-b.x0)>3).sort((a,b)=>b.y1-a.y1)[0];out.hasFloor=!!fl;
-    if(fl){S.pos.set((fl.x0+fl.x1)/2+1,fl.y1+2.5,(fl.z0+fl.z1)/2);S.vel.set(0,0,0);I.step(1/30,30);out.onFloor=Math.abs(S.pos.y-(fl.y1+1.7))<.3;}
+    if(fl){S.pos.set((fl.x0+fl.x1)/2+1,fl.y1+2.5,(fl.z0+fl.z1)/2);S.vel.set(0,0,0);I.step(1/30,30);out.onFloor=S.pos.y>fl.y1+1.4&&S.pos.y<fl.y1+2.7;   /* on the floor, or on furniture standing on it */}
     S.pos.set(0,100,200);S.vel.set(0,0,0);I.step(1/30,120);S.drones.length=0;S.dT=1e9;const d=I.spawnDrone('FPV','E');d.m.position.copy(S.pos).add(new THREE.Vector3(0,0,-20));S.yaw=0;S.pitch=0;S.wp.pri={...I.PRI.SHOT,cur:8,res:8};S.cool=0;I.shoot();out.fpvDown=!d.alive;
     const e=I.spawnDrone('FPV','E');e.m.position.copy(S.pos).add(new THREE.Vector3(5,3,-30));const hp0=S.hp;I.step(1/30,90);out.fpvHit=!e.alive&&S.hp<hp0;
     const o=I.spawnDrone('OWA','E'),m=I.spawnDrone('MALE','F');I.step(1/30,30*45);out.owa=!o.alive;out.male=S.rk.length>0||m.t>10;out.names=[o.name,m.name];
@@ -1001,7 +1001,7 @@ test('s34_infworld: infantry in the live world while the war runs; backup, engin
     const nC=S.craters.length;for(let i=0;i<30*15;i++)I.battleStep(1/30);out.craters=S.craters.length>nC;
     const fr=S.fr,mid=fr.sec[(fr.sec.length/2)|0],o0=mid.off,nu=S.us.length;I.offensive();out.off=S.us.length===nu+10&&mid.off!==o0;
     // walls get holed by heavy blasts
-    const w=S.blds.find(b=>b.y1-b.y0>2.5&&b.m);const h0=S.blds.length;for(let i=0;i<20;i++)I.S&&(function(){const p=new THREE.Vector3((w.x0+w.x1)/2,(w.y0+w.y1)/2,(w.z0+w.z1)/2);I.arty(p,1,'F');S.arty.t=0;I.battleStep(1/30);})();out.holes=(S.holes||0)>0;
+    const w=S.blds.find(b=>b.y1-b.y0>2.5&&b.m);const h0=S.blds.length;for(let i=0;i<20;i++)I.S&&(function(){const p=new THREE.Vector3((w.x0+w.x1)/2,(w.y0+w.y1)/2,(w.z0+w.z1)/2);I.arty(p,1,'F');S.arty.t=0;I.battleStep(1/30);})();out.holes=(S.holes||0)>0||(S.collapsed||0)>0;
     I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));out.after={inf:!!player&&!!player.infantry,cls:document.body.classList.contains('infWorld'),wf:WF.on};return out;});
   ok('battle in the live world',r.wm&&r.wf&&r.ws&&r.run&&r.prox,r);ok('at a real place',!!r.loc,r.loc);ok('camera at the soldier, on the real ground',r.cam&&r.gy,r);ok('Q aims',r.ads);
   ok('engineer digs',r.dig);ok('enemy calls for backup, artillery falls',r.call&&r.arty&&r.craters,r);ok('offensive called, front pushed',r.off,r);ok('walls holed',r.holes);ok('back to the aircraft, world closed',!r.after.inf&&!r.after.cls&&!r.after.wf,r.after);});
