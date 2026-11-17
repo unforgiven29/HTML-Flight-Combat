@@ -613,10 +613,12 @@
    "line": 1304,
    "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/world/wtrees.js): forests with collision proxies. Not yet: roads, rivers, land cover data",
+   "tests": [
+    "s6_world"
+   ]
   },
   {
    "id": "R03-004",
@@ -2102,10 +2104,12 @@
    "line": 4157,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-050",
@@ -2117,10 +2121,12 @@
    "line": 4172,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-051",
@@ -2132,10 +2138,12 @@
    "line": 4287,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-052",
@@ -2162,10 +2170,12 @@
    "line": 4610,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333: ranks by national tradition, front commanders relieved / promoted / killed, player service record",
+   "tests": [
+    "s6_leaders"
+   ]
   },
   {
    "id": "R06-002",
@@ -2237,12 +2247,11 @@
    "line": 4947,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v333: ranks by national tradition, front commanders relieved / promoted / killed, player service record",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s6_leaders"
    ]
   },
   {

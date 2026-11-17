@@ -75,7 +75,8 @@ function tintUrban(g,U){const p=g.attributes.position,c=g.attributes.color.array
 function towns(R){const{T,U}=R,CAP=30000;let seed=Math.floor(Math.abs(G.o.lat*1e3+G.o.lon*7e3))%2147483646+1;const rn=()=>(seed=(seed*16807)%2147483647)/2147483647;
   const geo=new THREE.BoxGeometry(1,1,1);geo.translate(0,.5,0);const im=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:0xffffff}),CAP);
   const M=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),v=new THREE.Vector3(),col=new THREE.Color(),Y=new THREE.Vector3(0,1,0);let i=0;
-  const put=(x,z,w,d,h,ang,tall)=>{if(i>=CAP)return;const g=groundAt(x,z);if(g<=1.5||nearRunway(x,z))return;q.setFromAxisAngle(Y,ang);s.set(w,h,d);v.set(x,g-1,z);M.compose(v,q,s);im.setMatrixAt(i,M);
+  const B=[];WF.bldg=B;
+  const put=(x,z,w,d,h,ang,tall)=>{if(i>=CAP)return;const g=groundAt(x,z);if(g<=1.5||nearRunway(x,z))return;q.setFromAxisAngle(Y,ang);s.set(w,h,d);v.set(x,g-1,z);M.compose(v,q,s);im.setMatrixAt(i,M);B.push([x,z,g,w,d,h,i,1]);   /* B: civilian buildings, for damage (targets.js) */
     const sh=.55+rn()*.3;if(tall)col.setRGB(.42+rn()*.2,.5+rn()*.15,.58+rn()*.12);else col.setRGB(sh*(.95+rn()*.1),sh*(.92+rn()*.08),sh*(.86+rn()*.1));im.setColorAt(i,col);i++;};
   // 1) high-rise cores
   for(const t of T){if(t.pop<5e5)break;const n=Math.min(260,Math.round(Math.pow(t.pop,.5)/12)),r=1.2*Math.pow(t.pop,.45);
@@ -92,10 +93,10 @@ function nearRunway(x,z){for(const r of WF.rwys){const dx=x-r.cx,dz=z-r.cz;const
 function build(){const t0=performance.now(),o=G.o,P=pal(o.lat,o.lon);
   if(WF.grp){scene.remove(WF.grp);WF.grp.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material&&c.material!==WF.keepMat)c.material.dispose&&c.material.dispose();});}
   WF.rwys=collectRunways();
-  MAPMODE.fn=hfn;const old=TERRAIN.geometry,RP=regionPlaces();TERRAIN.geometry=terrGeo(SZ,hfn,P.p,grass);old.dispose();tintUrban(TERRAIN.geometry,RP.U);WF.urban=RP.U.length;
+  MAPMODE.fn=hfn;const old=TERRAIN.geometry,RP=regionPlaces();TERRAIN.geometry=terrGeo(SZ,hfn,P.p,grass);old.dispose();tintUrban(TERRAIN.geometry,RP.U);WF.urban=RP.U.length;WF.urbanPolys=RP.U;
   TERRU.uSnowA.value=P.snowA;TERRU.uWin.value=P.win;TERRU.uFld.value.setRGB(P.fld[0],P.fld[1],P.fld[2]);ENV.snow=P.win>.4;
   const g=new THREE.Group();for(const r of WF.rwys){g.add(shoulder(r));g.add(runwayMesh(r));}
-  const T=towns(RP);g.add(T.mesh);WF.towns=T.list;WF.bld=T.mesh.count;
+  const T=towns(RP);g.add(T.mesh);WF.townMesh=T.mesh;WF.towns=T.list;WF.bld=T.mesh.count;
   g.traverse(c=>{if(c.isMesh){c.castShadow=false;c.receiveShadow=false;}});scene.add(g);WF.grp=g;
   WF.buildMs=Math.round(performance.now()-t0);WF.lastQ=G.quality(o.lat,o.lon,SZ/2);}
 
@@ -122,7 +123,7 @@ async function rebase(){if(WF.busy||!WF.on||!player)return;WF.busy=true;const ge
     shift(dx,dz);G.setOrigin(nl.lat,nl.lon);build();WF.reb++;}
   catch(e){console.warn('[world] rebase',e);}finally{WF.busy=false;}}
 function loop(){requestAnimationFrame(loop);if(!WF.on||!game.active||!player)return;
-  const d=Math.max(Math.abs(player.pos.x),Math.abs(player.pos.z));if(d>REB&&!WF.busy)rebase();
+  const d=Math.max(Math.abs(player.pos.x),Math.abs(player.pos.z));if(d>REB&&!WF.busy)WF.rebase();   /* through WF so other modules see region rebuilds */
   if(d>SZ/2-8000&&WF.busy&&!WF.warned){WF.warned=1;flash('TERRAIN LOADING · SLOW DOWN OR WAIT',2500);}if(d<REB)WF.warned=0;}
 requestAnimationFrame(loop);
 
@@ -157,6 +158,6 @@ WF.start=async function(ap,rwIdx,end){if(startBusy)return;
     if(res.have<res.need)setTimeout(()=>flash('SOME TERRAIN TILES DID NOT LOAD · COARSE GROUND THERE',3000),4600);note('');}
   catch(e){console.error('[world] start',e);flash('WORLD FLIGHT FAILED · '+(e&&e.message||e),4000);leave();$('#menu').hidden=false;}
   finally{startBusy=false;WF.busy=false;}};
-WF.leave=leave;WF.build=build;WF.shift=shift;WF.rebase=rebase;WF.hfn=hfn;
+WF.leave=leave;WF.nearRunway=nearRunway;WF.build=build;WF.shift=shift;WF.rebase=rebase;WF.hfn=hfn;
 window.WF=WF;
 })();

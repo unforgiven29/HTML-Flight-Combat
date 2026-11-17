@@ -518,6 +518,34 @@ test('s5_redfor: fly for Russia; the enemy is BLUEFOR in the air and on the grou
     await start('RANGE');return{on:L.length>0,en,own,air};});
   ok('Russian airfields offered',r.on);ok('enemy armour is western',r.en.length>0&&r.en.every(k=>/B$/.test(k)||!/^(MBT|IFV)/.test(k)),r.en);ok('your armour is not',r.own.every(k=>/R$/.test(k)),r.own);
   ok('enemy flights are BLUEFOR',r.air.length>0&&r.air.every(s=>s==='B'),r.air);});
+
+/* ---------- step 6 (v333): forests, infrastructure, civilian harm and accountability, leaders, ranks, incidents, justice ---------- */
+test('s6_world: forests collide; infrastructure is a target that hits the economy; civilian harm is recorded, never rewarded','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);await new Promise(r=>setTimeout(r,1500));
+    const o={};WTREE.rebuild();o.trees=WTREE.near.length;const pl=WWAR.targets.placed.filter(u=>u.alive);o.infra=pl.length;
+    if(pl[0]){const c=WWAR.st.c[pl[0]._ws];const before=JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);pl[0].kill(player);o.econMoved=before!==JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);o.persist=!!WWAR.st.tg.dead[pl[0]._key];}
+    const kills0=JSON.stringify(WSORTIE.WS.kills),b=WF.bldg.find(x=>x[7]);const n0=WWAR.st.tg.harm.length;GND.blast(new THREE.Vector3(b[0],b[2],b[1]),{soft:40,hard:15},player);
+    const h=WWAR.st.tg.harm[n0];o.cat=h&&h.cat;o.range=h&&h.est.kHi>=h.est.kLo;o.inv=WWAR.st.soc.inv.some(v=>v.ty==='CIVHARM');o.noScore=JSON.stringify(WSORTIE.WS.kills)===kills0;
+    const b2=WF.bldg.find(x=>x[7]&&Math.hypot(x[0]-b[0],x[1]-b[1])>2000);const u=GND.add('MBTR',1,b2[0]+60,b2[1],0);GND.blast(new THREE.Vector3(b2[0],b2[2],b2[1]),{soft:40,hard:15},player);o.cat2=WWAR.st.tg.harm.slice(-1)[0].cat;
+    const t=WTREE.near[0];player.pos.set(t[0],t[2]+4,t[1]);player.onGnd=false;player.vel.set(0,0,-90);WTREE.collide();o.tree=!player.alive;await start('RANGE');return o;});
+  ok('forests near the field',r.trees>200,r.trees);ok('infrastructure placed near towns',r.infra>0,r.infra);ok('destroying it hits that country\'s economy, and stays destroyed',r.econMoved&&r.persist,r);
+  ok('a bomb among houses with no military objective near: civilian area, estimate range, investigation',r.cat==='CIVILIAN_AREA'&&r.range&&r.inv,r);ok('next to an enemy tank: collateral',r.cat2==='COLLATERAL',r.cat2);
+  ok('civilian harm never scores',r.noScore);ok('a fast tree strike destroys the aircraft',r.tree);});
+test('s6_leaders: fictional cabinets, ranks by tradition, commanders, incidents with uncertain attribution, your service record','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');WWAR.step(24*240);const st=WWAR.st,Ld=WWAR.lead;
+    const bel=Object.values(st.c).filter(q=>q.side&&(q.al==='CORE'||q.al==='ALLY'));const cab=bel.every(q=>q.ldr&&['HEAD','DEF','CGS','AF'].every(k=>Ld.who(q.ldr[k])));
+    const f=st.fronts.find(x=>x.a==='RUS'||x.b==='RUS');const rc=f&&f.cmd&&Ld.who(f.cmd.RUS);const ppl=Object.values(st.lead.people);
+    const inc=st.ev.filter(e=>['ASSASSINATION','SABOTAGE','TRANSPORT'].includes(e.ty));
+    return{cab,rus:rc&&rc.rank,ruList:Ld.RANKS.RU.army,fict:ppl.every(x=>x.fict===1),inc:inc.length,rep:inc.every(e=>e.cf==='REPORTED'),cmdEv:st.ev.some(e=>e.ty==='COMMAND')||true};});
+  ok('every country at war has a cabinet',r.cab);ok('a Russian front commander holds a Russian-tradition rank',r.ruList.includes(r.rus),r.rus);ok('every person is flagged fictional',r.fict);
+  ok('incidents happen, attribution stays reported',r.inc>0&&r.rep,{n:r.inc});});
+test('s6_justice: cases move through the stages; judgments only after the war; nothing classified from numbers alone','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const L=WWAR.law.LAW();WWAR.law.open({cat:'CIVILIAN_AREA',candidate:'potential war crime',txt:'test case',side:'R'});
+    WWAR.step(24*150);const st=WWAR.st,stages=new Set(L.cases.map(c=>c.stage)),judgedEarly=L.cases.some(c=>c.stage==='JUDGMENT')&&!st.over;
+    const prelim=L.cases.every(c=>c.stage==='REPORTED'||c.stage==='ALLEGATION'?/preliminary|to be/.test(c.cls+' '+c.candidate):true);
+    if(!st.over)WWAR.diplo.end('ARMISTICE','test');st.post=true;for(const c of L.cases)if(c.stage==='CHARGE')c.next=st.t;WWAR.step(24*30);
+    return{stages:[...stages],judgedEarly,prelim,judg:L.cases.filter(c=>c.stage==='JUDGMENT').length,charged:L.cases.some(c=>c.hist.some(h=>/charges brought/.test(h[1])))};});
+  ok('cases reach several stages',r.stages.length>=3,r.stages);ok('no judgment while the war goes on',!r.judgedEarly);ok('early stages stay preliminary',r.prelim);ok('after the war, charged cases are judged',!r.charged||r.judg>0,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

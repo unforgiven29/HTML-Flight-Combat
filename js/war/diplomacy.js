@@ -86,7 +86,8 @@ function general(){const st=W.st,d=D_();
   const maxExh=Math.max(...['B','R'].flatMap(s=>cores(s).map(p=>p.exh)),0);if(maxExh<R.proposeExh||day()-d.lastProp<(d.gap||R.proposeEvery))return;d.lastProp=day();
   const LB=leverage('B'),LR=leverage('R'),prop=LB<LR?'B':'R',acc=other(prop),accExh=Math.max(...cores(acc).map(p=>p.exh),0),gap=Math.abs(LB-LR);
   W.emit('DIPLO',{txt:sName(prop)+' proposes a general ceasefire on the current lines, with prisoner exchanges and neutral observers.'});
-  if(accExh>=R.acceptExh&&gap<R.acceptLev){d.cease={t:st.t};d.quiet=0;for(const f of st.fronts)if(!f.cf)f.cf={kind:'GENERAL',t:st.t};
+  const prag=W.pragK?cores(acc).reduce((t,q)=>t+W.pragK(q),0)/Math.max(1,cores(acc).length):1;   // leaders.js: pragmatic governments accept sooner
+  if(accExh>=R.acceptExh*prag&&gap<R.acceptLev){d.cease={t:st.t};d.quiet=0;for(const f of st.fronts)if(!f.cf)f.cf={kind:'GENERAL',t:st.t};
     W.emit('CEASEFIRE',{txt:sName(acc)+' accepts. A general ceasefire holds on every front from '+W.date(st.t)+'; neutral observers deploy, prisoner exchanges begin.'});}
   else{d.gap=Math.min(60,(d.gap||R.proposeEvery)*2);   /* no identical proposal every few days: the wait doubles after each refusal */
     W.emit('DIPLO',{txt:sName(acc)+' rejects the proposal: '+(accExh<R.acceptExh?'it believes it can still fight on':'it holds the advantage and will not accept the current lines')+'.'});}}

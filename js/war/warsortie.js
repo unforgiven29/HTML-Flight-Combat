@@ -38,7 +38,7 @@ function panelExtra(){const el=document.getElementById('wmWar');if(!el||!W.st)re
     (L.length?L.map(x=>'<div class="tc" style="margin-top:3px"><button data-ws="'+esc(x.a.ident)+'">'+esc(x.a.name)+' · '+Math.round(x.n.d/1000)+' km from the front</button></div>').join(''):'<div style="font-size:10px">No military airfield with a long enough paved runway in the data.</div>')+'</div>';
   el.insertAdjacentHTML('afterbegin',h);}
 WARMAP.after.push(panelExtra);
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsFly [data-ws]');if(!b)return;const a=G.airports.find(q=>q.ident===b.dataset.ws);if(a)start(WARMAP.UI.sel,a);});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsFly [data-ws]');if(!b)return;const a=G.airports.find(q=>q.ident===b.dataset.ws);if(a)WSORTIE.start(WARMAP.UI.sel,a);});   /* through WSORTIE so leaders.js can refuse a grounded pilot */
 
 /* ------------------------------------------------------------------ the war around you */
 const xz=(lat,lon)=>G.ll2xz(lat,lon);
