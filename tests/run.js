@@ -854,6 +854,12 @@ test('s20_airops: interceptors scramble, CAS flights attack the ground fight, RE
     if(window.GFIGHT&&!GFIGHT.GF.on){}const gf=window.GFIGHT?GFIGHT.GF.units.length:0;O.casFlight(true);const cas=O.OPS.cas.length,casJ=O.OPS.cas.flatMap(c=>c.j);
     const bombs=casJ.some(j=>typeof agTypes==='function'&&agTypes(j).length>0);WSORTIE.finish();return{gci,sites,ints,gf,cas,bombs};});
   ok('REDFOR GCI network up (radars, picture)',r.gci&&r.sites>=2,r);ok('interceptors scramble against an intruder',r.ints>=2,r);ok('CAS flights with bombs against the ground fight',r.gf===0||(r.cas>0&&r.bombs),r);});
+test('s22_lod: trees off at altitude, far ground units hidden; more data','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);
+    player.pos.y=groundAt(player.pos.x,player.pos.z)+6000;player.vel.set(0,0,-200);game.paused=false;await new Promise(r=>setTimeout(r,600));const off=window.WTREE&&WTREE.grp?!WTREE.grp.visible:true;
+    const u=GND.add('TRUCK',1,camera.position.x+40000,camera.position.z,0);await new Promise(r=>setTimeout(r,300));const hid=!u.mesh.visible;u.pos.x=camera.position.x+1000;await new Promise(r=>setTimeout(r,300));const back=u.mesh.visible;WSORTIE.finish();
+    return{off,hid,back,eq:Object.keys(NATDATA.EQ).length,un:Object.keys(NATDATA.UNITS).length,q:WWAR.endscreen.QUOTES.length};});
+  ok('trees not drawn high above the ground',r.off,r);ok('far ground units hidden, shown again near',r.hid&&r.back,r);ok('equipment for 120+ countries, units for 18, 7 quotations',r.eq>=120&&r.un>=18&&r.q>=7,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

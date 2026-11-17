@@ -1,3 +1,8 @@
+## v367 (level of detail; more national data)
+- **3D level of detail** (js/world/wlod.js): in world flight the forest is not drawn above 2,500 m above the ground (back below 2,000 m), and ground units beyond 30 km are not drawn (they keep fighting and stay sensor targets; back inside 28 km). On top of the game's existing automatic render-resolution scaling.
+- **Equipment names for 126 countries** (29 more, mostly in Africa, Central Asia, Latin America and Southeast Asia); **real formation names for 18 countries** (adds Turkey, Israel, Italy, Spain, Australia, Canada; positions and fate fictional); **seven verified quotations** (adds Washington 1785, Hoover 1944).
+- Tests: `node tests/run.js s22_`.
+
 ## v364 (interceptors, close air support runs, REDFOR GCI in world sorties)
 - **Interceptors** (both sides, js/war/airops.js): an enemy flight within about 90 km of a side's airfield brings a two-ship scramble from the nearest field, flown straight at the intruders.
 - **Close air support** (both sides): attack aircraft with the game's strike loadouts run in on the other side's units in the ground fight, aim with the CCIP bomb sight and release when the solution is on the target, up to three passes; AWACS warns you when enemy CAS bombs near you.
