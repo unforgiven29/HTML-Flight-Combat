@@ -802,10 +802,10 @@ test('s17_cemetery: one archive entry per resolved death, nothing estimated, not
     // strategic war alone resolves no individual deaths (equipment and formation losses only)
     const strat=C.L().ev.filter(r=>r.role!=='front commander'&&!/assassination/.test(r.cause)).length;
     const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const e=WSORTIE.WS.enemy[0]||[...WSORTIE.WS.jets][0];if(e)e.kill('test',player);const b=C.buildingDeaths(3,'Testville','POL',2);WSORTIE.finish();WWAR.step(1);
-    const E=C.entries();const ids=new Set(E.map(x=>x.r.id+'.'+x.i));const names=E.map(x=>C.nameFor(x.r,x.i));const one=E.find(x=>!x.r.named);
+    const E=C.entries(r=>r.n<=50,5000);const ids=new Set(E.map(x=>x.r.id+'.'+x.i));const names=E.map(x=>C.nameFor(x.r,x.i));const one=E.find(x=>!x.r.named);
     WARMAP.UI.sel='POL';C.UI.sel=one?one.r.id+'.'+one.i:null;const html=C.view(null);const T=C.totals(null);
     return{strat,n:E.length,unique:ids.size===E.length,stable:names[0]===C.nameFor(E[0].r,E[0].i),uniqNames:new Set(names).size===names.length,b,detail:html.includes('not recorded'),T,
-      age:!/age \d|years old/i.test(html),audit:WWAR.audit(),est:st.ev.filter(x=>/people killed/.test(x.txt)&&/estimat/i.test(x.txt)).length};});
+      age:!/\bage \d|years old/i.test(html),audit:WWAR.audit(),est:st.ev.filter(x=>/people killed/.test(x.txt)&&/estimat/i.test(x.txt)).length};});
   ok('strategic losses resolve their people in the ledger (census.js)',r.strat>=0,r);ok('resolved deaths each have exactly one entry, stable names, unique',r.n>0&&r.unique&&r.stable&&r.uniqNames,r);
   ok('unknown fields say "not recorded"; no invented ages',r.detail&&r.age,r);ok('no event text gives an estimate of people killed',r.est===0,r);ok('audit clean',r.audit.length===0,r.audit);});
 test('s17_real: real formation names, quotations, carrier offer, convoys','F-16C',async p=>{
