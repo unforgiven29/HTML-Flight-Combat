@@ -39,7 +39,7 @@ function daily(){const st=W.st;
       const nat=l?l.svc:{power:1,water:1,hosp:1,schools:1},hit=cl(c.exp*.25,0,.6),fix=c.fix?.1:0;
       c.pow=cl(nat.power-hit+fix,.05,1);c.wat=cl(nat.water-hit*.8+fix,.05,1);c.hosp=cl(nat.hosp-hit*.6+fix*.5,.05,1);c.sch=cl(nat.schools-hit,.0,1);
       // events and the mayor's decisions (once each)
-      const war=bel(p)&&!st.over;if(!war)continue;const say=(k,txt)=>{if(c.said[k])return;c.said[k]=st.t;W.emit('CITY',{e:[p.a3],txt});};const m=Ld.who(c.held===p.a3?c.mayor:c.adm);
+      const war=bel(p)&&!st.over;if(!war)continue;const say=(k,txt)=>{if(c.said[k])return;c.said[k]=st.t;W.emit('MUNICIPAL',{e:[p.a3],txt});};   /* CITY is for control changes (media, investigations) */const m=Ld.who(c.held===p.a3?c.mayor:c.adm);
       if(frontDist(p,c)<40e3)say('shell',c.n+' ('+p.n+') is within range of the fighting: shelling damages homes, power and water lines; residents shelter in basements.');
       if(air>.35&&rn()<.05*air){c.alerts++;c.shel=Math.round(c.pop*cl(.1+(st.city&&p.life?p.life.trust*.2:0),.05,.4));say('raid','Air-raid alerts sound in '+c.n+' ('+p.n+'); shelters open for about '+fmt(c.shel)+' people.');}
       if(c.exp>.9&&m)say('evac',(c.held===p.a3?'Mayor ':'Administrator ')+m.name+' orders the evacuation of children, the elderly and the sick from '+c.n+'; buses and trains take them to safer cities.');
