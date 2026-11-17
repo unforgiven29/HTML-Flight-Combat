@@ -1,6 +1,18 @@
-# Viper Sortie — HTML Flight Combat
+# Viper Sortie — combined-arms combat in the browser
 
 Play: https://unforgiven29.github.io/HTML-Flight-Combat/
+
+What began as a flight combat game is now a full combined-arms combat game:
+
+- **Air** — over 240 aircraft and helicopters with detailed flight models, cockpits, radars, missiles and
+  electronic warfare; dogfights, strike, close air support, carrier operations.
+- **Land** — playable infantry in first person: roles and kits, iron sights and scopes, launchers, insertion by
+  APC, IFV, helicopter or parachute; towns with buildings you can enter and destroy; trenches, bunkers, dugouts
+  and command posts; tanks and IFVs with a hit-by-hit armour model; FPV drones, artillery, medevac.
+- **Sea** — warships, carriers, submarines and anti-ship strikes.
+- **The war around you** — a campaign on its own map, and a world war on the real Earth (real terrain, airports,
+  towns and countries) whose fronts, economies, politics and losses keep moving while you fly or fight on foot
+  in the same world.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
@@ -20,6 +32,8 @@ js/rwr/                  warner registry and models
 js/sensors/              sensor registry, radar, IRST, signal processing, jamming, NCTR, pulse-radar set control
 js/world/                the Earth: geographic frame, streamed terrain, airports, cities, world map
 js/campaign/             campaign / multiplayer, strategic air war, dynamic campaign, campaign ledger + war record
+js/war/                  the world war: countries, fronts, forces, politics, economy, ground war, sea, strategic weapons,
+                         sorties on the Earth, playable infantry (infantry.js), the war record and the end of the war
 assets/assets.config.js  ← edit this to add your own models and sounds
 assets/models/           .glb / .gltf files
 assets/world/            world data (elevation grid, airports, places, countries, town tiles) + SOURCES.md
