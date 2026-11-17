@@ -41,7 +41,7 @@ function setup(a3,ap){if(!W||!W.st)return;SU.a3=a3;SU.ap=ap;SU.ac=SU.ac&&AC[SU.a
    (SU.mis!=='AUTO'?'<h3>TARGET</h3><select id="u2tg">'+T.filter(t=>SU.mis==='ANTI-SHIP'?true:SU.mis==='CAS'?t.kind==='FRONT':SU.mis==='STRIKE'?t.kind!=='FRONT':true).map((t,i)=>'<option value="'+T.indexOf(t)+'">'+esc(t.n)+'</option>').join('')+'</select>':'<div class="muted">AUTO: the theatre assigns your task after take-off.</div>')+
    '<h3>ESCORTS</h3><div class="grid">'+[0,1,2].map(n=>'<button data-u2e="'+n+'" aria-pressed="'+(SU.esc===n)+'">'+n+' flight'+(n===1?'':'s')+'</button>').join('')+'</div>'+
    (cv?'<h3>START</h3><div class="grid"><button data-u2c="0" aria-pressed="'+(!SU.cv)+'">RUNWAY</button><button data-u2c="1" aria-pressed="'+SU.cv+'">CARRIER</button></div>':'')+
-   '<div style="margin-top:16px;display:flex;justify-content:space-between"><button data-u2x="1">CANCEL</button><button class="go" data-u2go="1">FLY</button></div>';
+   '<div style="margin-top:16px;display:flex;justify-content:space-between"><button data-u2x="1">CANCEL</button><span><button data-inf="1" style="margin-right:8px">GO AS INFANTRY</button><button class="go" data-u2go="1">FLY</button></span></div>';
   modal(h);}
 async function go(){const s=document.getElementById('u2ac');if(s)SU.ac=s.value;game.ac=SU.ac;const T=W.deep?W.deep.targets(SU.a3):[];const t=document.getElementById('u2tg');
   if(W.deep){const k=W.deep.PLN();k.k=SU.mis==='AUTO'?'AUTO':SU.mis==='INTERCEPT'?'CAP':SU.mis==='ANTI-SHIP'?'STRIKE':SU.mis;k.tgt=SU.mis==='AUTO'?null:(T[+(t&&t.value)]||null);k.esc=SU.esc;}

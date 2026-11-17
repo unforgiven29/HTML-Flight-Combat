@@ -43,6 +43,8 @@ async function pixels(blob,w,h){const bmp=await createImageBitmap(blob,{colorSpa
 G.loadGrid=async()=>{if(G.grid)return G.grid;
   const b=await (await fetch('assets/world/elev-2048.png')).blob(),W=2048,H=1024,d=await pixels(b,W,H),g=new Float32Array(W*H);
   for(let i=0;i<W*H;i++)g[i]=d[i*4]*256+d[i*4+1]-32768;G.grid={W,H,g};return G.grid;};
+// v375: the map background uses a 4096 x 2048 grid (about 10 km per cell); flight keeps the 2048 grid
+G.loadHi=async()=>{if(G.hi)return G.hi;try{const b=await (await fetch('assets/world/elev-4096.png')).blob(),W=4096,H=2048,d=await pixels(b,W,H),g=new Float32Array(W*H);for(let i=0;i<W*H;i++)g[i]=d[i*4]*256+d[i*4+1]-32768;G.hi={W,H,g};}catch(e){G.hi=null;}return G.hi;};
 G.coarse=(lat,lon)=>{const q=G.grid;if(!q)return 0;const u=(lon+180)/360*q.W-.5,v=(90-lat)/180*q.H-.5;
   let i0=Math.floor(u),j0=Math.floor(v);const fu=u-i0,fv=v-j0;const at=(i,j)=>{i=((i%q.W)+q.W)%q.W;j=Math.max(0,Math.min(q.H-1,j));return q.g[j*q.W+i];};
   return(at(i0,j0)*(1-fu)+at(i0+1,j0)*fu)*(1-fv)+(at(i0,j0+1)*(1-fu)+at(i0+1,j0+1)*fu)*fv;};

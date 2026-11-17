@@ -1143,7 +1143,7 @@ class Missile{
     const D=qd*ph.S*(mslCd0(ph,M,this.burning)+.75*CN*Math.sin(al))/m;
     const acc=_mac.copy(this.aL).addScaledVector(vd,T/m*(1-.25*tvcUse)-D);acc.y-=G;
     const prev=_mprev.copy(this.pos);this.vel.addScaledVector(acc,dt);this.pos.addScaledVector(this.vel,dt);
-    if(this.t>(d.spec?d.spec.armDelayTime:.6))for(const j of jets){if(!j.alive||j===this.sh||isFr(j,this.sh)||prev.distanceToSquared(j.pos)>1e6)continue;
+    if(this.t>(d.spec?d.spec.armDelayTime:.6))for(const j of jets){if(!j.alive||j===this.sh||(isFr(j,this.sh)&&!(this.sh===player&&this.track===j))||prev.distanceToSquared(j.pos)>1e6)continue;
       const dd=segDist(prev,this.pos,j.pos,j.vel,dt);
       // warhead: blast-fragmentation, lethality falls with miss distance
       // contact-fuzed rounds (AIM-4 Falcon) must strike the airframe: the hit radius is the target's own body size, not a proximity shell

@@ -46,7 +46,7 @@ function mount(){if(M.el)return;const d=document.createElement('div');d.id='wmap
   addEventListener('keydown',e=>{if(!d.hidden&&e.key==='Escape'){e.stopPropagation();close();}},true);}
 const status=t=>{const s=document.getElementById('wmStatus');if(s)s.textContent=t;};
 async function open(){mount();M.el.hidden=false;resize();status('LOADING WORLD DATA …');
-  try{await G.loadData();status('');if(!M.img)M.img=shade();if(M.last&&!M.sel){const a=G.airports.find(q=>q.ident===M.last);if(a)select(a,false);}draw();}
+  try{await G.loadData();status('');if(!M.img)M.img=shade((await G.loadHi())||G.grid);if(M.last&&!M.sel){const a=G.airports.find(q=>q.ident===M.last);if(a)select(a,false);}draw();}
   catch(e){status('WORLD DATA FAILED TO LOAD · '+(e&&e.message||e));}}
 function close(){if(M.el)M.el.hidden=true;}
 function resize(){const r=M.cv.getBoundingClientRect();M.dpr=Math.min(2,devicePixelRatio||1);M.W=r.width;M.H=r.height;M.cv.width=Math.max(2,r.width*M.dpr);M.cv.height=Math.max(2,r.height*M.dpr);draw();}
@@ -55,7 +55,7 @@ const s2w=(x,y)=>({lat:M.lat-(y-M.H/2)/M.ppd,lon:((M.lon+(x-M.W/2)/M.ppd+540)%36
 function zoom(k,e){let ax=M.W/2,ay=M.H/2;if(e&&e.clientX!=null){const r=M.cv.getBoundingClientRect();ax=e.clientX-r.left;ay=e.clientY-r.top;}
   const a=s2w(ax,ay);M.ppd=Math.max(M.W/360*.9,Math.min(900,M.ppd*k));M.lon=a.lon-(ax-M.W/2)/M.ppd;M.lat=Math.max(-85,Math.min(85,a.lat+(ay-M.H/2)/M.ppd));draw();keep();}
 // hypsometric tint and hill shade from the global grid (built once)
-function shade(){const q=G.grid,cv=document.createElement('canvas');cv.width=q.W;cv.height=q.H;const c=cv.getContext('2d'),im=c.createImageData(q.W,q.H),d=im.data;
+function shade(q){q=q||G.grid;const cv=document.createElement('canvas');cv.width=q.W;cv.height=q.H;const c=cv.getContext('2d'),im=c.createImageData(q.W,q.H),d=im.data;
   const L=[[0,[86,112,70]],[300,[120,132,82]],[800,[160,150,104]],[1600,[150,126,96]],[2800,[170,160,150]],[4500,[236,238,240]]],S=[[-8000,[8,22,48]],[-3000,[14,42,78]],[-200,[28,78,118]],[0,[52,110,148]]];
   const ramp=(T,h)=>{if(h<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(h<=T[i][0]){const a=T[i-1],b=T[i],t=(h-a[0])/(b[0]-a[0]);return[0,1,2].map(k=>a[1][k]+(b[1][k]-a[1][k])*t);}return T[T.length-1][1];};
   for(let j=0;j<q.H;j++)for(let i=0;i<q.W;i++){const k=j*q.W+i,h=q.g[k],o=k*4;
