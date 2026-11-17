@@ -23,7 +23,7 @@
    ===================================================================================================================== */
 (()=>{
 'use strict';
-const W=window.WWAR;if(!W||typeof THREE==='undefined')return;
+const W=window.WWAR||{st:null,emit(){}};if(typeof THREE==='undefined')return;
 const rn=()=>Math.random(),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const EQ=a3=>(window.NATDATA&&NATDATA.EQ&&NATDATA.EQ[a3])||{};const first=v=>v?String(v).split(/,\s*/)[0]:null;
 /* ------------------------------------------------------------------ kit */
@@ -45,7 +45,11 @@ const INS={APC:'Armoured personnel carrier',IFV:'Infantry fighting vehicle',HELO
 const SIDE={n:'Sidearm',rpm:400,dmg:24,mag:15,res:45,spr:.02,ads:1.2,rl:1.6,auto:0,vm:'pistol'};
 const K={role:'ASSAULT',pri:'RIFLE',lau:'RPG',arm:'PLATE',ins:'IFV',gren:2,a3:null,ap:null};
 function names(a3){const E=EQ(a3);return{RIFLE:first(E.RIFLE),RPG:null,ATGM:first(E.ATGM),MANPADS:first(E.MANPADS),APC:first(E.APC),IFV:first(E.IFV),HELO:first(E.UH)||first(E.HEL),AIR:first(E.TRN)};}
-function kitMenu(a3,ap){if(!W.st)return;K.a3=a3;K.ap=ap;const p=W.st.c[a3],N=names(a3);if(window.UI2)UI2.close();
+// v378: the classic campaign (CAMP) has no country registry: BLUEFOR fights as the USA, REDFOR as Russia; the battle is
+// in the campaign's hottest sector and its result moves that sector of the campaign front.
+const campCtx=()=>{const red=typeof game!=='undefined'&&game.team==='RED';return{camp:true,a3:red?'RUS':'USA',en:red?'USA':'RUS',side:red?'R':'B',n:red?'Russia':'United States',enN:red?'United States':'Russia'};};
+const country=(cfg)=>cfg.camp?{n:campCtx().n,side:campCtx().side,gnd:1}:W.st.c[cfg.a3];
+function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=campCtx().a3;K.a3=a3;K.ap=ap;const p=country(K),N=names(a3);if(window.UI2)UI2.close();
   const b=(g,k,lab)=>'<button data-ik="'+g+':'+k+'" aria-pressed="'+(K[g]===k)+'">'+esc(lab)+'</button>';
   const h='<h2>INFANTRY — '+esc(p.n.toUpperCase())+'</h2><div class="muted">Your kit and how you get to the front.</div>'+
    '<h3>ROLE</h3><div class="grid">'+Object.keys(ROLE).map(k=>b('role',k,ROLE[k].n)).join('')+'</div>'+
@@ -59,8 +63,8 @@ function kitMenu(a3,ap){if(!W.st)return;K.a3=a3;K.ap=ap;const p=W.st.c[a3],N=nam
   const d=document.createElement('div');d.className='u2m';d.id='u2m';d.innerHTML='<div class="bx">'+h+'</div>';document.body.appendChild(d);}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-inf],[data-ik],[data-ix],[data-igo]');if(!t)return;const d=t.dataset;
   if(d.inf&&window.UI2){kitMenu(UI2.SU.a3,UI2.SU.ap);}
-  else if(d.ik){const[g,k]=d.ik.split(':');K[g]=g==='gren'?+k:k;if(g==='role')Object.assign(K,{pri:ROLE[k].pri,lau:ROLE[k].lau,arm:ROLE[k].arm,gren:ROLE[k].gren});const m=document.getElementById('u2m');if(m)m.remove();kitMenu(K.a3,K.ap);}
-  else if(d.ix){const m=document.getElementById('u2m');if(m)m.remove();if(window.UI2)UI2.setup(K.a3,K.ap);}
+  else if(d.ik){const[g,k]=d.ik.split(':');K[g]=g==='gren'?+k:k;if(g==='role')Object.assign(K,{pri:ROLE[k].pri,lau:ROLE[k].lau,arm:ROLE[k].arm,gren:ROLE[k].gren});const m=document.getElementById('u2m');if(m)m.remove();kitMenu(K.a3,K.ap,K.camp);}
+  else if(d.ix){const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&window.UI2)UI2.setup(K.a3,K.ap);}
   else if(d.igo){const m=document.getElementById('u2m');if(m)m.remove();start({...K});}});
 
 /* ------------------------------------------------------------------ the battle */
@@ -136,20 +140,24 @@ function build(cfg){const cv=document.createElement('canvas');cv.id='infCv';cv.s
   const vm=new THREE.Group();sc.add(cam);
   return{cv,hud,R,sc,cam,ter,solid,blds,village,flag,vm,vms};}
 
-function start(cfg){if(S)stop(false);const st=W.st;if(!st)return;const p=st.c[cfg.a3];const me=p.side,en=me==='B'?'R':'B';
-  const fr=st.fronts.find(f=>!f.cf&&(f.a===cfg.a3||f.b===cfg.a3))||st.fronts.find(f=>!f.cf&&(st.c[f.a].side===me||st.c[f.b].side===me));
-  const enA3=fr?(fr.a===cfg.a3||st.c[fr.a].side===me?fr.b:fr.a):null,N=names(cfg.a3),EN=names(enA3||'');
+function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.camp)return;if(cfg.camp){const c=campCtx();cfg.a3=c.a3;}const p=country(cfg);const me=p.side,en=me==='B'?'R':'B';
+  const fr=st?(st.fronts.find(f=>!f.cf&&(f.a===cfg.a3||f.b===cfg.a3))||st.fronts.find(f=>!f.cf&&(st.c[f.a].side===me||st.c[f.b].side===me))):null;
+  const enA3=cfg.camp?campCtx().en:fr?(fr.a===cfg.a3||st.c[fr.a].side===me?fr.b:fr.a):null,N=names(cfg.a3),EN=names(enA3||'');
+  const cs=cfg.camp&&typeof CAMP!=='undefined'&&CAMP.st?(CAMP.st.hot&&CAMP.st.hot.length?CAMP.st.hot[0]:(CAMP.st.front.length>>1)):null;
   if(typeof game!=='undefined'){S0.paused=game.paused;game.paused=true;}
   const B=build(cfg);const pri={...PRI[cfg.pri]},lau={...LAU[cfg.lau]},sd={...SIDE};pri.cur=pri.mag;sd.cur=sd.mag;if(lau.mag)lau.cur=lau.mag;
-  S={cfg,me,en,fr,enA3,N,EN,...B,t:0,phase:'INSERT',ins:cfg.ins,pos:new V3(0,0,250),vel:new V3(),yaw:0,pitch:0,hp:100,arm:ARM[cfg.arm],crouch:false,ads:false,w:'pri',wp:{pri,lau,side:sd},gren:cfg.gren,
+  S={cfg,cs,me,en,fr,enA3,N,EN,...B,t:0,phase:'INSERT',ins:cfg.ins,pos:new V3(0,0,250),vel:new V3(),yaw:0,pitch:0,hp:100,arm:ARM[cfg.arm],crouch:false,ads:false,w:'pri',wp:{pri,lau,side:sd},gren:cfg.gren,
     reload:0,cool:0,fire:false,keys:{},drones:[],dT:20,us:[],them:[],veh:[],gnades:[],rk:[],kills:0,lost:0,hold:0,res:null,ifv:null,eheli:null,shots:0,hits:0,heliT:60+rn()*60,waveT:70,msg:'',msgT:0};
   // squads: yours (6) and theirs (scaled by the enemy's ground strength on that front)
-  const ePow=enA3?Math.min(1.6,Math.max(.6,(st.c[enA3].gnd/Math.max(1,p.gnd))||1)):1;
+  const ePow=cfg.camp?campPow(cs):enA3&&st?Math.min(1.6,Math.max(.6,(st.c[enA3].gnd/Math.max(1,p.gnd))||1)):1;
   for(let i=0;i<6;i++)S.us.push(man(true,(rn()-.5)*30,230+rn()*20));
   for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
   {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
   for(const u of S.us)u.m.visible=false;insertion();bind();loop.last=performance.now();if(!loop.on){loop.on=true;requestAnimationFrame(loop);}
-  W.emit('INFANTRY',{e:[cfg.a3],txt:'You deploy as infantry with '+p.n+' ('+(cfg.pri==='RIFLE'&&N.RIFLE?N.RIFLE:PRI[cfg.pri].n)+', '+ARM[cfg.arm].n.toLowerCase()+') by '+INS[cfg.ins].toLowerCase()+(fr?' toward the front with '+st.c[enA3].n:'')+'.'});return S;}
+  const dtx='You deploy as infantry with '+p.n+' ('+(cfg.pri==='RIFLE'&&N.RIFLE?N.RIFLE:PRI[cfg.pri].n)+', '+ARM[cfg.arm].n.toLowerCase()+') by '+INS[cfg.ins].toLowerCase()+(fr?' toward the front with '+st.c[enA3].n:cs!=null?' into sector '+(cs+1):'')+'.';
+  if(cfg.camp){if(typeof CAMP!=='undefined'&&CAMP.st)CAMP.log(dtx,'b');}else W.emit('INFANTRY',{e:[cfg.a3],txt:dtx});return S;}
+// enemy strength in a campaign sector against yours (unit values by hit points)
+function campPow(i){if(typeof CAMP==='undefined'||!CAMP.st||i==null)return 1;const st=CAMP.st,ms=0;let o=0,e=0;for(const u of st.units){if(u.dead||u.i!==i)continue;const v=(u.hp||100)/100;if(u.s===ms)o+=v;else e+=v;}return Math.min(1.6,Math.max(.6,(e+1)/(o+1)));}
 const S0={paused:false};
 function man(friend,x,z){const m=soldier(friend?0x4f6a3a:0x7a6a44);m.position.set(x,H(x,z),z);S.sc.add(m);return{m,friend,hp:100,alive:true,cool:1+rn()*2,tgt:null,goal:null,crouch:false,mv:0,sup:0};}
 
@@ -319,14 +327,19 @@ function droneStep(dt){if(S.phase!=='FIGHT')return;S.dT-=dt;
 function hitDrone(d,dmg,own){d.hp-=dmg;if(d.hp<=0&&d.alive){d.alive=false;fx(d.m.position.clone(),d.k==='FPV'?1:3);if(own&&d.side==='E'){S.dk=(S.dk||0)+1;say(d.name.toUpperCase()+' DOWN',2);}}}
 
 /* ------------------------------------------------------------------ end */
-function end(r){if(!S||S.res)return;S.res=r;const st=W.st,p=st&&st.c[S.cfg.a3];let txt='';
+function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cfg.camp?country(S.cfg):st&&st.c[S.cfg.a3];let txt='';
   if(r==='WON'&&S.fr){const f=S.fr,mid=f.sec[(f.sec.length/2)|0],mine=st.c[f.a].side===S.me;mid.off+=mine?.6:-.6;}
   txt=(r==='WON'?'Your squad takes and holds the village.':r==='KIA'?'You are killed in action.':'You withdraw from the fight.')+' Enemy killed by you: '+S.kills+(S.vk?' (vehicles '+S.vk+')':'')+'; your squad lost '+S.lost+' of 6.'+(S.ff?' Friendly fire: '+S.ff+'.':'')+(S.dk?' Drones you shot down: '+S.dk+'.':'');
   if(st)W.emit('INFANTRY',{e:[S.cfg.a3],txt:(p?p.n+': ':'')+txt});
+  if(S.cfg.camp&&typeof CAMP!=='undefined'&&CAMP.st&&S.cs!=null){const C=CAMP.st,i=S.cs,ms=0;   // side 0 is always the player's side in the campaign
+    // a win pushes the sector toward the enemy (the player's side advances toward -z) and wears down its units there; a loss the other way
+    if(r==='WON'){C.front[i]-=1500;for(const u of C.units)if(!u.dead&&u.i===i&&u.s!==ms)u.hp=Math.max(5,(u.hp||100)-15);}
+    else if(r==='KIA'){for(const u of C.units)if(!u.dead&&u.i===i&&u.s===ms){u.hp=Math.max(5,(u.hp||100)-5);break;}}
+    CAMP.log('Infantry, sector '+(i+1)+': '+txt,r==='WON'?'b':'r');try{CAMP.save();}catch(e){}}
   const ws=window.WSORTIE&&WSORTIE.WS;if(ws&&ws.kills)ws.kills.gnd+=S.kills;say(r==='WON'?'OBJECTIVE HELD':r==='KIA'?'KILLED IN ACTION':'WITHDRAWN',4);
   const d=document.createElement('div');d.className='u2m';d.id='u2m';d.style.zIndex=9995;d.innerHTML='<div class="bx"><h2>INFANTRY DEBRIEF — '+(r==='WON'?'OBJECTIVE HELD':r==='KIA'?'KILLED IN ACTION':'WITHDRAWN')+'</h2><div>'+esc(txt)+'</div>'+
     '<div class="row"><span>Shots / hits</span><b>'+S.shots+' / '+S.hits+'</b></div><div class="row"><span>Insertion</span><b>'+esc(INS[S.ins])+'</b></div><div class="row"><span>Time</span><b>'+Math.round(S.t)+' s</b></div>'+
-    (r==='WON'&&S.fr?'<div class="muted">The front line in this sector moves forward a little.</div>':'')+'<div style="margin-top:14px;text-align:right"><button class="go" data-iend="1">CONTINUE</button></div></div>';document.body.appendChild(d);
+    (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="muted">The front line in this sector moves forward a little.</div>':'')+'<div style="margin-top:14px;text-align:right"><button class="go" data-iend="1">CONTINUE</button></div></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
 window.INFANTRY={ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};

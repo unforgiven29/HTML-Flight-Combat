@@ -967,6 +967,13 @@ test('s31_infantry2: roles, every weapon fires, walls block, floors carry you, d
     I.stop(true);document.querySelector('[data-iend]').click();return out;});
   ok('role preset sets kit',r.role);ok('all primaries fire',Object.values(r.fired).every(x=>x),r.fired);ok('first-person models',r.vm);ok('walls block',r.blocked,r);ok('upper floor carries you',r.hasFloor&&r.onFloor,r);
   ok('FPV shot down',r.fpvDown,r);ok('FPV dives and strikes',r.fpvHit,r);ok('one-way drone strikes',r.owa,r);ok('loitering drone named',/Reaper|Orion|MQ|drone/.test(r.names[1]),r.names);});
+test('s32_campinf: infantry from the campaign HQ, the battle is in the hot sector and a win moves the campaign front','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.camp');CAMP.st=null;CAMP.newState(game.era,1);const st=CAMP.st;
+    {const bt=document.createElement('button');bt.dataset.a='inf';document.body.appendChild(bt);CMPUI.act({target:bt});bt.remove();}const menu=!!document.querySelector('[data-igo]');
+    document.querySelector('[data-igo]').click();const S=INFANTRY.S;const ok=!!S&&S.cfg.camp&&S.cs!=null;const i=S.cs,f0=st.front[i];
+    INFANTRY.land();S.hp=1e9;for(const u of S.them)u.alive=false;S.dT=1e9;S.pos.set(S.village.x,S.pos.y,S.village.z);for(let k=0;k<40*30&&!S.res;k++)INFANTRY.step(1/30);
+    const res=S.res;document.querySelector('[data-iend]').click();return{menu,ok,res,moved:st.front[i]<f0,log:st.log[0]&&st.log[0].txt};});
+  ok('kit menu from the HQ',r.menu);ok('battle in a campaign sector',r.ok,r);ok('won, front moved, logged',r.res==='WON'&&r.moved&&/Infantry, sector/.test(r.log),r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

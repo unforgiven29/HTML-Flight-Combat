@@ -9110,6 +9110,7 @@ const CMPUI={cv:null,cx:null,W:0,H:0,dpr:1,cxw:0,czw:0,mpp:600,img:null,imgKey:'
     let best=null,bd=22*this.mpp;for(const t of CAMP.tasks()){const d=cd2(t.x,t.z,wx,wz);if(d<bd){bd=d;best=t;}}if(best){CAMP.task=best;this.renderSide(true);this.draw();}},
   act(e){const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;sfx.click&&sfx.click();
     if(a==='fly'){start('CAMP');return;}
+    if(a==='inf'){if(window.INFANTRY){if(!CAMP.st&&!CAMP.load())CAMP.newState(game.era,1);INFANTRY.kitMenu(null,null,true);}return;}
     if(a==='resume'){resume();return;}
     if(a==='end'){CAMP.endSortie();this.renderSide(true);return;}
     if(a==='base'){CAMP.sel.base=v;game.cmpStart='AF';}
@@ -9146,7 +9147,7 @@ const CMPUI={cv:null,cx:null,W:0,H:0,dpr:1,cxw:0,czw:0,mpp:600,img:null,imgKey:'
       '<div class="fld"><span class="lb">START</span>'+this.seg('start',game.sstart,[['RWY','RUNWAY'],['AIR','AIRBORNE']])+'</div>'+''+'</div>'+
       (mp&&!net.isHost?'':'<div class="fld"><span class="lb">WINGMEN</span>'+this.seg('wing',game.wing,[['0','NONE'],['1','1'],['2','2'],['3','3']])+'</div>')+
       (live?'<div class="mprow"><button class="hq-fly" data-a="resume">RESUME ▸</button>'+(mp?'':'<button class="cm-btn" data-a="end">END SORTIE</button>')+'</div>':
-        (st.over?'':'<div class="mprow"><button class="hq-fly" data-a="fly">FLY SORTIE ▸</button></div>'))+
+        (st.over?'':'<div class="mprow"><button class="hq-fly" data-a="fly">FLY SORTIE ▸</button><button class="cm-btn" data-a="inf">GO AS INFANTRY</button></div>'))+
       (mp&&!live?'<p class="hint">In a room: use the MULTIPLAYER tab to join.</p>':'')+'</div>';
     // tasking
     h+='<div class="pl-sec"><h3>TASKING <span class="cm-sub">click a job or the map</span></h3><div class="cm-tasks">'+T.slice(0,7).map(t=>'<button data-a="task" data-v="'+t.id+'" class="'+(CAMP.task&&CAMP.task.id===t.id?'on ':'')+t.kind.toLowerCase()+'"><b>'+t.kind+'</b><span>'+t.label.replace(/^[A-Z]+ · /,'')+'</span>'+
