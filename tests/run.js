@@ -931,6 +931,42 @@ test('s28_ui: sortie setup and debriefing, INDEX tab, controls in SETTINGS, grou
     WWAR.step(24*60);WWAR.diplo.end('ARMISTICE','t');WWAR.endscreen.open();WWAR.endscreen.go(7);await new Promise(r=>setTimeout(r,300));const cv=document.getElementById('ammoCv');out.ammo=!!cv&&cv.height>100;out.rows=WWAR.endscreen.ammoTotals().length;WWAR.endscreen.close();return out;});
   ok('over-G stress can be switched off entirely',r.gOff,r);ok('sortie setup menu before flying, chosen aircraft flown',r.setup&&r.flying,r);ok('debriefing after the sortie',r.debrief,r);
   ok('INDEX tab with entries; controls section in SETTINGS',r.index&&r.ixN>2000&&r.ctl,r);ok('country panel grouped',r.grp,r);ok('ammunition used drawn lined up',r.ammo&&r.rows>0,r);});
+test('s29_turncoat: PMCs fight and change employer, countries switch sides, terror shootdowns, production ledger, map grid','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,T=TURNCOAT;
+    WWAR.step(24*60);for(let i=0;i<300;i++){T.pmc();T.terror();T.prod();}const s=T.S();
+    const al=Object.values(st.c).find(p=>p.al==='ALLY'&&p.side&&!p.cap&&T.trait(p,'pragmatic')>=.6);let sw=false;if(al){al.exh=.9;const o=al.side;const rr=Math.random;Math.random=()=>0;
+      const nw=o==='B'?'R':'B';for(const q of Object.values(st.c))if(q.side===nw){q.air*=50;q.gnd*=50;}let err=null;try{T.switchSides();}catch(e){err=String(e);}Math.random=rr;window._e=err;sw=al.side!==o;}
+    WWAR.step(48);const pr=NATPANEL.tabs.PRODUCTION(st.c.RUS);const hi=await WGEO.loadHi();
+    return{exh:al&&al.exh,tr:al&&T.trait(al,'pragmatic'),pw:[al.side,Object.values(st.c).filter(q=>q.side==='B').reduce((t,q)=>t+q.air+q.gnd,0),Object.values(st.c).filter(q=>q.side==='R').reduce((t,q)=>t+q.air+q.gnd,0)],err:window._e,cap:al&&al.cap,al:al&&al.a3,nA:Object.values(st.c).filter(p=>p.al==='ALLY').length,pmc:s.pmc.length,sw,prod:/AIRCRAFT BY TYPE/.test(pr),hi:hi&&hi.W,a:WWAR.audit()};});
+  ok('PMCs hired',r.pmc>0,r.pmc);ok('a junior ally switched sides',r.sw,r);ok('production tab',r.prod);ok('4096 map grid',r.hi===4096,r.hi);ok('audit clean',r.a.length===0,r.a);});
+test('s30_infantry: kit menu, four insertions reach the ground, shooting kills, grenade, objective held moves the front','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,a3='POL';const out={};
+    I.kitMenu(a3,{name:'test'});out.menu=!!document.querySelector('[data-igo]');document.getElementById('u2m').remove();
+    for(const ins of['APC','IFV','HELO','AIR']){const S=I.start({...I.K,a3,ins,pri:'DMR',lau:'ATGM',arm:'PLATE',gren:2});if(ins==='AIR')S.keys.Space=true;
+      for(let i=0;i<4000&&S.phase==='INSERT'&&!S.res;i++){if(ins==='AIR'&&S.jumped)S.keys.Space=false;I.step(1/30);}S.keys.Space=false;
+      out[ins]={phase:S.phase,dz:Math.round(Math.hypot(S.pos.x,S.pos.z-200)),agl:+(S.pos.y-0).toFixed(1),ifv:!!S.ifv,res:S.res};I.stop(false);}
+    const S=I.start({...I.K,a3,ins:'APC',pri:'RIFLE'});I.land();S.hp=1e6;const e=S.them[0];e.m.position.set(S.pos.x,S.pos.y-1.7+0.0,S.pos.z-15);
+    S.yaw=0;S.pitch=-Math.atan2(.4,15);let n=0;while(e.alive&&n<200){S.cool=0;S.reload=0;S.wp.pri.cur=30;I.shoot();n++;}out.kill=!e.alive&&S.kills>0;
+    I.grenade();out.gren=S.gnades.length===1;for(const u of S.them){u.alive=false;}S.pos.set(S.village.x,S.pos.y,S.village.z);const f=S.fr,mid=f.sec[(f.sec.length/2)|0],o0=mid.off;
+    for(let i=0;i<40*30&&!S.res;i++)I.step(1/30);out.res=S.res;out.moved=mid.off!==o0;document.querySelector('[data-iend]').click();out.gone=!I.S&&!document.getElementById('infCv');return out;});
+  ok('kit menu',r.menu);for(const k of['APC','IFV','HELO','AIR'])ok(k+' insertion lands',r[k].phase==='FIGHT'&&!r[k].res,r[k]);ok('IFV stays',r.IFV.ifv);
+  ok('rifle kills an enemy',r.kill,r);ok('grenade thrown',r.gren);ok('objective held, front moved',r.res==='WON'&&r.moved,r);ok('cleaned up',r.gone);});
+test('s31_infantry2: roles, every weapon fires, walls block, floors carry you, drones attack and can be shot down','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,a3='POL',out={};
+    I.kitMenu(a3,{name:'t'});document.querySelector('[data-ik="role:SNIPER"]').click();out.role=I.K.pri==='SNP';document.getElementById('u2m').remove();
+    const S=I.start({...I.K,a3,ins:'APC'});I.land();S.hp=1e9;out.fired={};
+    for(const k of Object.keys(I.PRI)){S.wp.pri={...I.PRI[k],cur:5,res:5};S.w='pri';S.cool=0;S.reload=0;const n=S.shots;I.shoot();out.fired[k]=S.shots>n;}
+    out.vm=Object.keys(S.vms).length>=8;
+    const fnd=S.blds.filter(b=>b.y1-b.y0>2.9&&b.y1-b.y0<3.1&&(b.x1-b.x0)>5);const walls=S.blds.filter(b=>b.y1-b.y0>2.5&&(b.x1-b.x0)>1.5&&fnd.some(f=>Math.abs(f.y1-b.y0)<.01));const w=walls[0];S.pos.set((w.x0+w.x1)/2,w.y0+1.7,w.z0-1.5);S.yaw=Math.PI;S.keys.KeyW=true;I.step(1/30,90);S.keys.KeyW=false;
+    out.blocked=!(S.pos.z>w.z0&&S.pos.z<w.z1);
+    const fl=S.blds.filter(b=>b.y1-b.y0<.3&&b.y1-b.y0>.1&&(b.x1-b.x0)>3).sort((a,b)=>b.y1-a.y1)[0];out.hasFloor=!!fl;
+    if(fl){S.pos.set((fl.x0+fl.x1)/2+1,fl.y1+2.5,(fl.z0+fl.z1)/2);S.vel.set(0,0,0);I.step(1/30,30);out.onFloor=Math.abs(S.pos.y-(fl.y1+1.7))<.3;}
+    S.pos.set(0,100,200);S.vel.set(0,0,0);I.step(1/30,120);S.drones.length=0;S.dT=1e9;const d=I.spawnDrone('FPV','E');d.m.position.copy(S.pos).add(new THREE.Vector3(0,0,-20));S.yaw=0;S.pitch=0;S.wp.pri={...I.PRI.SHOT,cur:8,res:8};S.cool=0;I.shoot();out.fpvDown=!d.alive;
+    const e=I.spawnDrone('FPV','E');e.m.position.copy(S.pos).add(new THREE.Vector3(5,3,-30));const hp0=S.hp;I.step(1/30,90);out.fpvHit=!e.alive&&S.hp<hp0;
+    const o=I.spawnDrone('OWA','E'),m=I.spawnDrone('MALE','F');I.step(1/30,30*45);out.owa=!o.alive;out.male=S.rk.length>0||m.t>10;out.names=[o.name,m.name];
+    I.stop(true);document.querySelector('[data-iend]').click();return out;});
+  ok('role preset sets kit',r.role);ok('all primaries fire',Object.values(r.fired).every(x=>x),r.fired);ok('first-person models',r.vm);ok('walls block',r.blocked,r);ok('upper floor carries you',r.hasFloor&&r.onFloor,r);
+  ok('FPV shot down',r.fpvDown,r);ok('FPV dives and strikes',r.fpvHit,r);ok('one-way drone strikes',r.owa,r);ok('loitering drone named',/Reaper|Orion|MQ|drone/.test(r.names[1]),r.names);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

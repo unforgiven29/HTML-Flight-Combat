@@ -1,3 +1,23 @@
+## v377 (playable infantry, drones)
+- **GO AS INFANTRY** from the sortie setup: pick a **role** (assault, sniper, marksman, anti-tank, air defence, machine gunner, close quarters, breacher) or set the kit yourself — primary (carbine, SMG, shotgun, service rifle named for your country, LMG, DMR, sniper rifle with scope), launcher (anti-tank rocket, ATGM, MANPADS, named from the equipment table), body armour, grenades.
+- **Insertion** by APC, IFV (stays and fires in support), helicopter, or airdrop (free fall, open the canopy, steer down).
+- **First person**: a model for each weapon, aim down sights, scope view, recoil, reload.
+- **A town you can enter**: houses of one to three storeys on a street grid with doors, windows you can see and shoot through, floors and stairs; walls collide for you and every soldier.
+- **Drones**: FPV attack drones dive on soldiers, vehicles and you; one-way attack drones (Shahed-136 / Geran-2 type for REDFOR) strike the rear; armed loitering drones (MQ-9 Reaper type or the side's own) fire missiles. Shoot them down; MANPADS lock them. Both sides use them.
+- Take and hold the village with your squad: a win moves that front sector forward; the debrief reports kills, losses and drones downed.
+- Tests: `node tests/run.js s30_` and `s31_`.
+
+## v375–v376 (front lines, map, positions; airliners, friendly fire, PMCs, side changes, production)
+- **Front lines redrawn**: ground each side has taken is shaded in the occupier's colour between the pre-war border and today's line, so a line that advances also grows an occupied area; the line is a smooth curve whose width follows the zoom, with breaks at gaps.
+- **You and friendlies on the war map**: your aircraft (yellow arrow, heading) and friendly flights (blue dots).
+- **Sharper map**: the world map background now uses a 4096 x 2048 elevation grid (about 10 km per cell, `scripts/build-elev-map.js`); flight keeps the 2048 grid.
+- **Airliners can be shot down** by you (an attack on civilians; justice opens a case). Ruthless governments may shoot one down to spread fear; the world turns against them.
+- **Friendly fire**: your missiles hit a friendly you lock; fratricide is logged and your squadron's trust drops.
+- **Private military companies that fight** (fictional names): hired for aircraft or ground units, they walk out when unpaid or change employer when outbid.
+- **Countries switch sides mid war**: an exhausted, pragmatic junior ally may defect to the stronger coalition (joining mid war already existed).
+- **Production ledger** (country panel PRODUCTION tab): aircraft and ground vehicles delivered by type.
+- Tests: `node tests/run.js s29_`.
+
 ## v373–v374 (the interface; airliners; G toggle; the end of the war, restyled)
 - **Sortie setup** before every world-war sortie: aircraft (your country's types first, then the hangar), mission (AUTO, CAP, CAS, SEAD, STRIKE, ESCORT, INTERCEPT, ANTI-SHIP), target, escorts, runway or carrier. **Debriefing** after: mission, results, your aircraft, munitions you used, events.
 - **INDEX tab** on the main menu: searchable aircraft, weapons and countries. **Controllers** section in SETTINGS (axis setup). **Country panel grouped** into OVERVIEW · GOVERNMENT · MILITARY · RECORD.

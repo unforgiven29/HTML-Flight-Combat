@@ -29,9 +29,16 @@ function draw(c,w2s,M,phase){const st=W.st;if(!st)return;
       if(M.ppd>=4){c.fillStyle=c.strokeStyle;c.font='700 10px "B612 Mono",monospace';c.fillText(th.name.toUpperCase(),x0+4,y0+12);}}
     return;}
   // fronts where they stand: red and blue lines either side
-  for(const f of st.fronts){const A=st.c[f.a];const pts=f.sec.map(s=>{const lat=s.lat+s.ny*s.off/111.2,lon=s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D));return w2s(lat,lon);});
-    for(const[col,sh]of[[A.side==='B'?'#5be1ff':'#ff5a4a',-1.6],[A.side==='B'?'#ff5a4a':'#5be1ff',1.6]]){c.strokeStyle=col;c.lineWidth=2.4;c.beginPath();let pv=null;
-      for(const[x,y]of pts){if(pv&&Math.hypot(x-pv[0],y-pv[1])>Math.max(30,M.ppd*1.2)){c.moveTo(x+sh,y+sh);}else if(pv)c.lineTo(x+sh,y+sh);else c.moveTo(x+sh,y+sh);pv=[x,y];}c.stroke();}}
+  // v375: ground taken is shaded between the old border and today's line (the occupier's colour); the line itself is a
+  // smooth curve through the sector positions, red / blue either side, its width following the zoom; breaks where the
+  // border itself breaks (islands, gaps between sectors)
+  const lw=Math.max(1.2,Math.min(4.5,M.ppd*.22)),gap=Math.max(30,M.ppd*1.3),col=s=>s==='B'?'91,225,255':'255,90,74';
+  for(const f of st.fronts){const A=st.c[f.a],B=st.c[f.b];const P=f.sec.map(s=>{const lat=s.lat+s.ny*s.off/111.2,lon=s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D));return{l:w2s(lat,lon),b:w2s(s.lat,s.lon),off:s.off};});
+    for(let i=0;i<P.length-1;i++){const p=P[i],q=P[i+1];if(Math.hypot(p.b[0]-q.b[0],p.b[1]-q.b[1])>gap)continue;const o=(p.off+q.off)/2;if(Math.abs(o)<.5)continue;
+      c.fillStyle='rgba('+col(o>0?A.side:B.side)+','+Math.min(.42,.12+Math.abs(o)/150)+')';c.beginPath();c.moveTo(p.b[0],p.b[1]);c.lineTo(q.b[0],q.b[1]);c.lineTo(q.l[0],q.l[1]);c.lineTo(p.l[0],p.l[1]);c.closePath();c.fill();}
+    const runs=[];let cur=[];for(let i=0;i<P.length;i++){if(i&&Math.hypot(P[i].l[0]-P[i-1].l[0],P[i].l[1]-P[i-1].l[1])>gap){runs.push(cur);cur=[];}cur.push(P[i].l);}runs.push(cur);
+    for(const[cl,sh]of[[A.side==='B'?'#5be1ff':'#ff5a4a',-lw*.6],[A.side==='B'?'#ff5a4a':'#5be1ff',lw*.6]]){c.strokeStyle=cl;c.lineWidth=lw;c.lineJoin='round';c.lineCap='round';
+      for(const R of runs){if(R.length<2)continue;c.beginPath();c.moveTo(R[0][0]+sh,R[0][1]+sh);for(let i=1;i<R.length-1;i++){const mx=(R[i][0]+R[i+1][0])/2,my=(R[i][1]+R[i+1][1])/2;c.quadraticCurveTo(R[i][0]+sh,R[i][1]+sh,mx+sh,my+sh);}const L=R[R.length-1];c.lineTo(L[0]+sh,L[1]+sh);c.stroke();}}}
   // cities that changed hands
   c.font='700 10px "B612 Mono",monospace';for(const[k,v]of Object.entries(st.cities)){if(v.h===v.own)continue;const[x,y]=w2s(v.lat,v.lon);c.strokeStyle='#ffcf5a';c.lineWidth=2;c.beginPath();c.moveTo(x-5,y-5);c.lineTo(x+5,y+5);c.moveTo(x+5,y-5);c.lineTo(x-5,y+5);c.stroke();if(M.ppd>=8){c.fillStyle='#ffcf5a';c.fillText(k.split('|')[0],x+7,y-6);}}
   if(UI.sel){const C=G.byA3.get(UI.sel);if(C){c.strokeStyle='#ffcf5a';c.lineWidth=1.5;c.beginPath();for(const r of C.r){let px=null;for(let i=0;i<r.length;i+=2){const[x,y]=w2s(r[i+1],r[i]);if(i===0||Math.abs(x-px)>M.W*.5)c.moveTo(x,y);else c.lineTo(x,y);px=x;}c.closePath();}c.stroke();}}}

@@ -34,5 +34,13 @@ if(typeof spawnWingmen==='function'){const _w=spawnWingmen;spawnWingmen=function
   try{if(window.WF&&WF.on&&runway&&typeof player!=='undefined'&&player&&typeof WING!=='undefined'){const P=player,hd=P.hdg,f=new THREE.Vector3(Math.sin(hd*Math.PI/180),0,-Math.cos(hd*Math.PI/180)),rr=new THREE.Vector3(-f.z,0,f.x);
     WING.list.forEach((w,i)=>{const sx=[-18,18,0][i%3],sz=[30,30,75][i%3]+60*Math.floor(i/3);const x=P.pos.x+rr.x*sx-f.x*sz,z=P.pos.z+rr.z*sx-f.z*sz,y=groundAt(x,z);
       w.spawn(x,y+GH,z,hd,0);w.gHdg=hd;w.onGnd=true;w.thr=0;w.gearPos=1;w.gearCmd=1;if(w.ai){w.ai.tx=x;w.ai.tz=z;w.ai.rwHdg=hd;}});}}catch(e){console.warn('[fixes] wingmen',e);}return r;};}
-window.FIXES={v:374};
+/* ------------------------------------------------------------------ you and friendlies on the war map */
+if(window.WARMAP&&WARMAP.draw){const _d=WARMAP.draw;WARMAP.draw=function(c,w2s,M,phase){const r=_d.apply(this,arguments);if(phase!=='over')return r;
+  try{const G=window.WGEO,dot=(lat,lon,col,sz,lab)=>{const[x,y]=w2s(lat,lon);c.fillStyle=col;c.strokeStyle='#000';c.lineWidth=1;c.beginPath();c.arc(x,y,sz,0,7);c.fill();c.stroke();if(lab){c.font='bold 10px monospace';c.fillStyle=col;c.fillText(lab,x+sz+3,y+3);}};
+    const WS=window.WSORTIE&&WSORTIE.WS;
+    if(WS&&G){for(const j of (WS.friend||[])){const p=j.pos||(j.p&&j.p.pos);if(!p||j.dead)continue;const ll=G.xz2ll(p.x,p.z);dot(ll.lat,ll.lon,'#5be1ff',3);}}
+    if(window.WF&&WF.on&&G&&typeof player!=='undefined'&&player){const ll=G.xz2ll(player.pos.x,player.pos.z),[x,y]=w2s(ll.lat,ll.lon),h=(player.hdg||0)*Math.PI/180;
+      c.save();c.translate(x,y);c.rotate(h);c.fillStyle='#ffe14a';c.strokeStyle='#000';c.beginPath();c.moveTo(0,-9);c.lineTo(6,7);c.lineTo(0,3);c.lineTo(-6,7);c.closePath();c.fill();c.stroke();c.restore();
+      c.font='bold 11px monospace';c.fillStyle='#ffe14a';c.fillText('YOU',x+10,y+4);}}catch(e){}return r;};}
+window.FIXES={v:375};
 })();
