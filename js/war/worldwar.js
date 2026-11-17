@@ -147,7 +147,7 @@ function daily(){const st=W.st;for(const f of W.daily)try{f();}catch(e){warn('da
 W.date=t=>{const d=new Date(Date.parse(W.st.start)+t*3600e3);return d.toISOString().slice(0,16).replace('T',' ')+'Z';};
 
 /* ------------------------------------------------------------------ save */
-function save(){try{localStorage.setItem(KEY,JSON.stringify(W.st));}catch(e){warn('save',e);}}
+function save(){try{let s=JSON.stringify(W.st);if(W.compact&&s.length>4.5e6){W.compact();s=JSON.stringify(W.st);}localStorage.setItem(KEY,s);}catch(e){warn('save',e);}}   /* W.compact: perf.js */
 W.load=async()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===V&&o.c){await G.loadData();W.st=o;return true;}}catch(e){warn('load',e);}return false;};
 W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
   for(const a3 in st.c){const p=st.c[a3];if(!G.byA3.has(a3))out.push('unknown country '+a3);if(p.air<-1e-6||p.gnd<-1e-6)out.push('negative force '+a3);if(p.side&&!['B','R'].includes(p.side))out.push('bad side '+a3);}

@@ -526,11 +526,11 @@ test('s6_world: forests collide; infrastructure is a target that hits the econom
     const o={};WTREE.rebuild();o.trees=WTREE.near.length;const pl=WWAR.targets.placed.filter(u=>u.alive);o.infra=pl.length;
     if(pl[0]){const c=WWAR.st.c[pl[0]._ws];const before=JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);pl[0].kill(player);o.econMoved=before!==JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);o.persist=!!WWAR.st.tg.dead[pl[0]._key];}
     const kills0=JSON.stringify(WSORTIE.WS.kills),b=WF.bldg.find(x=>x[7]);const n0=WWAR.st.tg.harm.length;GND.blast(new THREE.Vector3(b[0],b[2],b[1]),{soft:40,hard:15},player);
-    const h=WWAR.st.tg.harm[n0];o.cat=h&&h.cat;o.range=h&&h.est.kHi>=h.est.kLo;o.inv=WWAR.st.soc.inv.some(v=>v.ty==='CIVHARM');o.noScore=JSON.stringify(WSORTIE.WS.kills)===kills0;
+    const h=WWAR.st.tg.harm[n0];o.cat=h&&h.cat;o.range=h&&h.est.k>=0&&h.est.inj>=0;o.inv=WWAR.st.soc.inv.some(v=>v.ty==='CIVHARM');o.noScore=JSON.stringify(WSORTIE.WS.kills)===kills0;
     const b2=WF.bldg.find(x=>x[7]&&Math.hypot(x[0]-b[0],x[1]-b[1])>2000);const u=GND.add('MBTR',1,b2[0]+60,b2[1],0);GND.blast(new THREE.Vector3(b2[0],b2[2],b2[1]),{soft:40,hard:15},player);o.cat2=WWAR.st.tg.harm.slice(-1)[0].cat;
     const t=WTREE.near[0];player.pos.set(t[0],t[2]+4,t[1]);player.onGnd=false;player.vel.set(0,0,-90);WTREE.collide();o.tree=!player.alive;await start('RANGE');return o;});
   ok('forests near the field',r.trees>200,r.trees);ok('infrastructure placed near towns',r.infra>0,r.infra);ok('destroying it hits that country\'s economy, and stays destroyed',r.econMoved&&r.persist,r);
-  ok('a bomb among houses with no military objective near: civilian area, estimate range, investigation',r.cat==='CIVILIAN_AREA'&&r.range&&r.inv,r);ok('next to an enemy tank: collateral',r.cat2==='COLLATERAL',r.cat2);
+  ok('a bomb among houses with no military objective near: civilian area, occupants resolved, investigation',r.cat==='CIVILIAN_AREA'&&r.range&&r.inv,r);ok('next to an enemy tank: collateral',r.cat2==='COLLATERAL',r.cat2);
   ok('civilian harm never scores',r.noScore);ok('a fast tree strike destroys the aircraft',r.tree);});
 test('s6_leaders: fictional cabinets, ranks by tradition, commanders, incidents with uncertain attribution, your service record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');WWAR.step(24*240);const st=WWAR.st,Ld=WWAR.lead;
@@ -668,12 +668,12 @@ test('s12_end: the fifteen-chapter epilogue, the ceremony, and the record kept',
 test('s12_tools: rates, catch-up, saves, trends, notifications, calendar, AI log','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;let wk=0,mo=0;WWAR.weekly.push(()=>wk++);WWAR.monthly.push(()=>mo++);
     const t0=st.t;WWAR.run=true;WWAR.step(24*10);WWAR.run=false;const capped=st.t-t0;WWAR.step(24*80);const Tl=WWAR.tools;
-    const ok1=Tl.saveSlot(0,'test');const day=Math.floor(st.t/24);WWAR.step(24*5);const ok2=Tl.loadSlot(0);const back=Math.floor(WWAR.st.t/24);
+    const ok1=await Tl.saveSlot(0,'test');const day=Math.floor(st.t/24);WWAR.step(24*5);const ok2=await Tl.loadSlot(0);const back=Math.floor(WWAR.st.t/24);
     const bad=Tl.importText('{"st":{"c":1}}');const good=Tl.importText(JSON.stringify({st:WWAR.st}));
     const tr=WWAR.st.tools.trend.B.length,n=Tl.notes().length,cal=Tl.calendar().length,dec=Tl.decisions('POL').length;
     WARMAP.UI.sel='POL';Tl.UI.open='TRENDS';const el=document.getElementById('wmWar')||document.body.appendChild(Object.assign(document.createElement('div'),{id:'wmWar'}));Tl.render();const html=el.innerHTML;
     return{capped,wk,mo,ok1,ok2,day,back,bad,good,tr,n,cal,dec,bar:html.includes('wwBar'),svg:html.includes('<svg')};});
-  ok('one step never advances more than 48 h',r.capped===48,r);ok('weekly and monthly hooks run',r.wk>=10&&r.mo>=2,r);ok('save slot round trip',r.ok1&&r.ok2&&r.back===r.day,r);
+  ok('one running step never advances more than 48 h at once',r.capped>0&&r.capped<=48,r);ok('weekly and monthly hooks run',r.wk>=10&&r.mo>=2,r);ok('save slot round trip',r.ok1&&r.ok2&&r.back===r.day,r);
   ok('imports validated',r.bad&&r.good==='',r);ok('trends kept',r.tr>=60,r);ok('notifications, calendar, decision log',r.n>0&&r.cal>0&&r.dec>0,r);ok('status bar and sparklines render',r.bar&&r.svg,r);});
 test('s12_life: population, services, money, homes, environment, politics','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;const pop0=st.c.NGA.pop;WWAR.step(24*200);const l=st.c.POL.life,n=st.c.NGA;
@@ -775,7 +775,7 @@ test('s15_armor: penetration by aspect, national guns, body armour','F-16C',asyn
 /* ---------- step 15 (v355): end-to-end scenarios (ch.18), integrity, causality, multiplayer hardening, budgets (ch.20) ---------- */
 test('s16_scen_est: a whole war, estimated balance — runs to an ending, stays reconciled, saves and reloads','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;const au=[];for(let i=0;i<12&&!st.over;i++){WWAR.step(24*60);au.push(WWAR.audit().length);}
-    const ended=!!st.over;if(st.over){st.post=true;WWAR.step(24*120);}const Tl=WWAR.tools;Tl.saveSlot(1,'scen');const day=Math.floor(WWAR.st.t/24);Tl.loadSlot(1);const back=Math.floor(WWAR.st.t/24);
+    const ended=!!st.over;if(st.over){st.post=true;WWAR.step(24*120);}const Tl=WWAR.tools;await Tl.saveSlot(1,'scen');const day=Math.floor(WWAR.st.t/24);await Tl.loadSlot(1);const back=Math.floor(WWAR.st.t/24);
     const caused=WWAR.st.ev.filter(e=>e.c&&e.c.length).length,b=WWAR.integrity.budget();return{ended,kind:st.over&&st.over.kind,au,final:WWAR.audit(),day,back,caused,b};});
   ok('the war reaches an ending within two years',r.ended,r.kind);ok('reconciled at every checkpoint',r.au.every(n=>n===0)&&r.final.length===0,{au:r.au,final:r.final.slice(0,5)});
   ok('save and reload keep the war',r.day===r.back,r);ok('events carry their causes',r.caused>0,r.caused);ok('performance and size within budget',r.b.ok,r.b);});
@@ -797,19 +797,38 @@ test('s16_mp: guest messages validated; host migration','F-16C',async p=>{
   ok('rate limit on reports',r.ok===10&&r.bad===5,r);ok('kills only from a plausible distance',!r.far&&r.near,r);ok('a promoted guest takes over the war',r.migrated,r);});
 
 /* ---------- step 16 (v356+): the register, real formations, quotations, carrier, convoys ---------- */
-test('s17_cemetery: named dead and missing for every country at war, from its own losses','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*200);const S=st.cem,a=Object.entries(S).sort((x,y)=>(y[1].mil.n+y[1].civ.n)-(x[1].mil.n+x[1].civ.n))[0];
-    const r0=a[1],x=r0.mil.L[0],c=r0.civ.L[0];const tab=WWAR.cemetery.tab(st.c[a[0]]);const caps=Object.values(S).every(r=>r.mil.L.length<=400&&r.civ.L.length<=400);
-    const leaders=Object.values(st.lead.people).filter(q=>q.role==='civilian').length;WWAR.diplo.end('ARMISTICE','t');const ch=WWAR.endscreen.CH.find(c=>c[0]==='Names and places')[1](WWAR.endscreen.facts(),st);
-    return{n:Object.keys(S).length,mil:r0.mil.n,civ:r0.civ.n,x,c,tab:tab.length,caps,leaders,reg:ch.includes('THE REGISTER'),audit:WWAR.audit()};});
-  ok('registers for the countries at war',r.n>5&&r.mil>0&&r.civ>0,r);ok('each record: name, age, home, who they were, when, how',r.x&&r.x.n&&r.x.age&&r.x.home&&r.x.role&&r.x.how&&r.c&&r.c.role,r);
-  ok('named records capped, the rest counted',r.caps,r);ok('names do not pollute the leaders register',r.leaders===0,r);ok('CEMETERY tab and the epilogue register',r.tab>500&&r.reg,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s17_cemetery: one archive entry per resolved death, nothing estimated, nothing invented','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*60);const C=WWAR.cemetery;const before=C.L().ev.length;
+    // strategic war alone resolves no individual deaths (equipment and formation losses only)
+    const strat=C.L().ev.filter(r=>r.role!=='front commander'&&!/assassination/.test(r.cause)).length;
+    const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const e=WSORTIE.WS.enemy[0]||[...WSORTIE.WS.jets][0];if(e)e.kill('test',player);const b=C.buildingDeaths(3,'Testville','POL',2);WSORTIE.finish();WWAR.step(1);
+    const E=C.entries();const ids=new Set(E.map(x=>x.r.id+'.'+x.i));const names=E.map(x=>C.nameFor(x.r,x.i));const one=E.find(x=>!x.r.named);
+    WARMAP.UI.sel='POL';C.UI.sel=one?one.r.id+'.'+one.i:null;const html=C.view(null);const T=C.totals(null);
+    return{strat,n:E.length,unique:ids.size===E.length,stable:names[0]===C.nameFor(E[0].r,E[0].i),uniqNames:new Set(names).size===names.length,b,detail:html.includes('not recorded'),T,
+      age:!/age \d|years old/i.test(html),audit:WWAR.audit(),est:st.ev.filter(x=>/people killed/.test(x.txt)&&/estimat/i.test(x.txt)).length};});
+  ok('no deaths from rates: the strategic war records equipment, not estimated people',r.strat===0,r);ok('resolved deaths each have exactly one entry, stable names, unique',r.n>0&&r.unique&&r.stable&&r.uniqNames,r);
+  ok('unknown fields say "not recorded"; no invented ages',r.detail&&r.age,r);ok('no event estimates people killed',r.est===0,r);ok('audit clean',r.audit.length===0,r.audit);});
 test('s17_real: real formation names, quotations, carrier offer, convoys','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*5);
     const pol=WWAR.ob.units('POL').filter(u=>u._real).map(u=>u.name),us=WWAR.ob.units('USA').filter(u=>u._real).length;const Q=WWAR.endscreen.QUOTES.length;
     const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);let cv=0;for(let i=0;i<3&&!WWAR.realwar.CNV.list.length;i++)WWAR.realwar.convoy();const cn=WWAR.realwar.CNV.list.flat().length;WSORTIE.finish();
     return{pol:pol.slice(0,3),us,Q,cn,hasCV:!!(st.c.USA.nav&&st.c.USA.nav.cv)};});
   ok('real formation names applied',r.pol.length>0&&r.us>0,r);ok('quotation archive',r.Q>=5,r);});   /* convoys need road tiles, which the offline test browser does not load */
+
+/* ---------- step 17 (v358+): sea, learning, performance ---------- */
+test('s18_sea: ports, merchant convoys, submarines','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const S=st.sea2;const C=Object.values(S.conv);
+    return{ports:Object.values(S.ports).filter(L=>L.length).length,arr:C.reduce((t,c)=>t+c.arr,0),hit:C.reduce((t,c)=>t+c.hit,0),tab:(NATPANEL.tabs.SEA||NATPANEL.tabs.NAVY)?1:0,noEst:!st.ev.some(e=>e.ty==='CONVOY'&&/\d+ (sailors|crew) (killed|dead)/.test(e.txt)),audit:WWAR.audit()};});
+  ok('ports for coastal countries at war',r.ports>3,r);ok('convoys arrive and some are attacked',r.arr>0&&r.hit>0,r);ok('no crew death estimates',r.noEst);ok('audit clean',r.audit.length===0,r.audit);});
+test('s18_learn: doctrine adapts from results, pilots learn, air tasking shifts','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*240);const M=Object.values(st.mil).filter(m=>m.atkT&&m.atkT!==1.25);
+    const les=st.ev.filter(e=>e.ty==='LESSONS').length+((st.fold||{}).LESSONS||0);return{changed:M.length,les,adj:WWAR.learn.skillAdj('RUS'),tab:NATPANEL.tabs.MILITARY(st.c.RUS).includes('DOCTRINE')};});
+  ok('attack thresholds learned from results',r.changed>0,r);ok('lessons identified are events',r.les>0,r);ok('pilot skill follows experience',Number.isFinite(r.adj),r);ok('doctrine shown',r.tab);});
+test('s18_perf: level of detail, smooth stepping, bounded saves','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*30);const P=WWAR.perf;const sk=P.skips;
+    WWAR.run=true;const t0=st.t;WWAR.step(24);const first=st.t-t0;await new Promise(r=>setTimeout(r,1500));const after=st.t-t0;WWAR.run=false;
+    const big=JSON.stringify(st).length;WWAR.compact();const small=JSON.stringify(st).length;return{sk,first,after,big,small,ev:st.ev.length};});
+  ok('distant neutral countries update weekly',r.sk>0,r);ok('a long running step is split into chunks',r.first<=6&&r.after>=r.first,r);ok('compaction keeps the save bounded',r.small<=r.big&&r.ev<=600,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

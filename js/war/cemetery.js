@@ -1,77 +1,84 @@
 /* =====================================================================================================================
-   v356 — the register of the dead and missing, for every country (spec v49 ch.14 death ledger reconciliation with
-   person records, aggregated deaths where named records do not exist, names and places, cemetery and memorial).
-   FICTIONAL PEOPLE: every name comes from the regional name pools; no real person is represented. Each record keeps
-   who the person was (civilian occupation or military rank, unit and role), their age and home town, when and where
-   they died or went missing, and how — in plain words, without injuries described.
-   ONE AUTHORITY: deaths come only from the war's own losses, as ESTIMATES BY RULE:
-     aircrew: each combat aircraft lost costs about 1.3 crew, of whom about 60 % are killed or missing (the rest are
-       rescued or captured, csar.js);
-     ground forces: each brigade-equivalent lost is about 4,000 soldiers, of whom about 12 % are killed or missing;
-     navies: about 60 sailors for each ship lost;
-     civilians: shelling and air raids on exposed cities (cities.js), unexploded ordnance (military.js), illness in
-       displacement shelters, and disasters (hazards.js) — each at a stated rate.
-   NAMED RECORDS: up to 400 military and 400 civilian named records per country; beyond that, deaths are counted in the
-   register's totals ("and N more, recorded as numbers"). The CEMETERY tab lists, filters and searches them; the
-   epilogue's "Names and places" reads from it.
+   v358 — the Campaign Cemetery / Memorial Archive (spec v49 ch.14: "Every confirmed death during the campaign must have
+   exactly one persistent memorial entry"; "Do not fabricate personal biographies, exact ages, occupations, family
+   relations, precise locations, or detailed circumstances when the source does not contain those facts. Display 'not
+   recorded' or 'unknown' instead"; "Where a casualty count is still an estimate ... keep it in a separate
+   estimated/aggregate-loss display. Do not present an estimate as a list of confirmed named deaths"; "The cemetery is
+   a read model over these records"; virtualised list, search, filters, detail page).
+   THE DEATH LEDGER (st.dl): one record per RESOLVED death event — never a rate or an estimate. Sources, each resolved by
+   the simulation person by person:
+     * an aircraft destroyed in a world sortie: each crew member (1 or 2 seats by type) either ejects (then MISSING,
+       until search and rescue resolves the fate) or is killed;
+     * a vehicle destroyed in the ground fight (armor.js): each crew member's fate resolved on a catastrophic or
+       penetrating hit; infantry killed as resolved there;
+     * a building destroyed in a world sortie (targets.js): its occupants at that hour are resolved one by one (the
+       hour's occupancy of that building, then whether each person reached shelter);
+     * a named leader or commander killed (leaders.js); a squadron pilot missing (forces.js).
+     Strategic losses (aircraft, brigades, ships worn down far from the player) are equipment and formation losses; the
+     campaign does not resolve the people in them, so it shows NO death figures for them (no estimate is made).
+   MEMORIAL ENTRIES are materialised lazily from the ledger with deterministic ids (event id + person number) and stable
+   names from the regional naming service, collision-checked. Fields the source does not contain show "not recorded".
+   Status: KILLED, MISSING (fate unknown), and later RESCUED / CAPTURED corrections keep the history.
    ===================================================================================================================== */
 (()=>{
 'use strict';
 if(!window.WWAR||!WWAR.lead)return;
-const W=WWAR,G=WGEO,rn=Math.random,Ld=W.lead;
-const pick=a=>a[(rn()*a.length)|0];
-const CAP=400;
-const JOBS=['a teacher at a primary school','a nurse at the city hospital','a farmer','a university student','a bus driver','a civil engineer','a shopkeeper','a retired railway worker','a doctor at a district clinic','a baker',
-  'an electrician with the power company','a local journalist','a volunteer with the Red Cross society','a firefighter','a schoolchild','a pensioner','a factory worker','a social worker','a librarian','a water-utility technician',
-  'a lorry driver delivering food','a pharmacist','a carpenter','a musician','a fisherman','a postal worker','a kindergarten teacher','a cook at a school canteen','a mechanic','a priest of the local parish'];
-const C=()=>W.st.cem||(W.st.cem={});
-function reg(a3){const S=C();return S[a3]||(S[a3]={mil:{n:0,L:[]},civ:{n:0,L:[]},last:{air:null,gnd:null,nav:null,uxo:0},seq:1});}
-function nm(a3){const x=Ld.person(a3,'civilian',null);const n=x.name;if(W.st.lead&&W.st.lead.people)delete W.st.lead.people[x.id];return n;}
-function town(p){const L=G.places.filter(q=>q.a3===p.a3);return L.length?pick(L.slice(0,60)).name:p.n;}
-function add(p,kind,rec,count){const r=reg(p.a3),b=kind==='MIL'?r.mil:r.civ;b.n+=count;const named=Math.min(count,Math.max(0,CAP-b.L.length),kind==='MIL'?6:6);
-  for(let i=0;i<named;i++){const x=Object.assign({id:p.a3+'-'+(r.seq++),t:W.st.t,kind},rec(i));b.L.push(x);}}
-function nearCity(p,f){const s=f&&f.sec[(f.sec.length/2)|0];if(!s)return p.n;let best=null,bd=1e12;for(const q of G.places){if(q.a3!==p.a3&&f&&q.a3!==f.a&&q.a3!==f.b)continue;const d=G.dist(q.lat,q.lon,s.lat,s.lon);if(d<bd){bd=d;best=q;}}return best?best.name:p.n;}
-function daily(){const st=W.st;
-  for(const p of Object.values(st.c)){if(!p.side&&!st.cem?.[p.a3])continue;const r=reg(p.a3),L=r.last;
-    // aircrew
-    if(L.air==null)L.air=p.lostAir;const da=p.lostAir-L.air;L.air=p.lostAir;
-    if(da>0){const n=Math.round(da*1.3*.6+rn()*.5);if(n>0){const th=(st.th||[]).find(t=>t.f&&t.f[p.a3]);const S=W.ob&&W.ob.units?W.ob.units(p.a3).filter(u=>u.kind==='SQN'&&u.num):[];
-      add(p,'MIL',()=>{const u=S.length?pick(S):null,miss=rn()<.3;return{n:nm(p.a3),age:22+((rn()*20)|0),home:town(p),role:(W.lead.rank(p.a3,'air',(rn()*4)|0))+', '+(rn()<.6?'pilot':'weapons systems officer')+(u?', '+u.name:''),
-        place:th?th.name:'over the front',how:miss?'missing after their aircraft was lost'+(th?' over '+th.name:''):'killed when their aircraft was shot down'+(th?' over '+th.name:''),st:miss?'MISSING':'DEAD'};},n);}}
-    // ground forces
-    if(L.gnd==null)L.gnd=p.lostGnd;const dg=p.lostGnd-L.gnd;L.gnd=p.lostGnd;
-    if(dg>0){const n=Math.round(dg*4000*.12);if(n>0){const F=st.fronts.filter(f=>f.a===p.a3||f.b===p.a3);const f=F.length?pick(F):null;const B=f&&W.ob?W.land?W.land.B(p.a3,f.id):[]:[];const city=nearCity(p,f);
-      const HOW=['killed in action during fighting near '+city,'died of wounds at a field hospital behind the line near '+city,'killed by artillery fire near '+city,'missing in action near '+city+', presumed dead','killed while evacuating wounded comrades near '+city];
-      add(p,'MIL',()=>{const u=B.length?pick(B):null,h=pick(HOW);return{n:nm(p.a3),age:19+((rn()*26)|0),home:town(p),role:pick(['Private','Corporal','Sergeant','Lieutenant','Private','Private'])+', '+pick(['rifleman','tank crew','combat engineer','medic','artillery crew','driver','signaller'])+(u?', '+u.name:''),
-        place:f?'front with '+st.c[f.a===p.a3?f.b:f.a].n:p.n,how:h,st:/missing/.test(h)?'MISSING':'DEAD'};},n);}}
-    // navies
-    if(p.nav&&p.nav.lost){const tot=p.nav.lost.sur+p.nav.lost.sub+p.nav.lost.amp+p.nav.lost.cv*20;if(L.nav==null)L.nav=tot;const dn=tot-L.nav;L.nav=tot;
-      if(dn>0)add(p,'MIL',()=>({n:nm(p.a3),age:19+((rn()*25)|0),home:town(p),role:pick(['Seaman','Petty Officer','Lieutenant','Chief Petty Officer'])+', '+pick(['engine room','damage control','deck','galley','radar'])+' crew',place:'at sea',how:rn()<.5?'lost at sea when their ship was sunk':'missing at sea after their ship was hit',st:rn()<.5?'DEAD':'MISSING'}),Math.round(dn*60));}
-    // civilians (estimates by rule)
-    if(!(p.side&&(p.al==='CORE'||p.al==='ALLY')))continue;const cities=(st.city&&st.city[p.a3])||[];let n=0,where=[];
-    for(const c of cities){if(c.exp<.9)continue;const k=c.pop*2e-6*c.exp;const m=Math.floor(k)+(rn()<k%1?1:0);if(m>0){n+=m;where.push([c,m]);}}
-    for(const[c,m]of where)add(p,'CIV',()=>({n:nm(p.a3),age:(rn()<.15?3+((rn()*14)|0):18+((rn()*70)|0)),home:c.n,role:pick(JOBS),place:c.n,how:pick(['killed when shelling struck '+c.n,'killed in an air raid on '+c.n,'killed when their apartment building in '+c.n+' was hit','died when the shelter they reached in '+c.n+' was damaged']),st:'DEAD'}),m);
-    const m=st.mil&&st.mil[p.a3];if(m){const du=(m.harm||0)-(L.uxo||0);L.uxo=m.harm||0;const k=Math.round(Math.max(0,du)*.3);if(k>0){const c=cities[0];add(p,'CIV',()=>({n:nm(p.a3),age:8+((rn()*60)|0),home:c?c.n:p.n,role:pick(JOBS),place:'a former battle area',how:'killed by unexploded ordnance in a former battle area',st:'DEAD'}),k);}}
-    if((p.disp||0)>p.pop*.02&&rn()<.05){const c=cities.length?pick(cities):null;add(p,'CIV',()=>({n:nm(p.a3),age:rn()<.5?1+((rn()*10)|0):65+((rn()*25)|0),home:c?c.n:p.n,role:pick(JOBS),place:'a displacement shelter',how:'died of illness in a displacement shelter',st:'DEAD'}),1);}}}
-W.daily.push(()=>{if(W.st)daily();});
-// disasters: their estimated deaths go into the register of the country hit
-W.listeners.push(e=>{if(!W.st||e.ty!=='HAZARD')return;const a3=(e.e||[])[0],p=a3&&W.st.c[a3];if(!p)return;const m=/(\d+)-(\d+) people killed/.exec(e.txt);if(!m)return;const k=Math.round((+m[1]+ +m[2])/2);if(k<=0)return;
-  const kind=(/^(An earthquake|Floods|A tropical cyclone|Wildfires|A severe winter storm|A heatwave)/.exec(e.txt)||[,'a disaster'])[1].toLowerCase();add(p,'CIV',()=>({n:nm(a3),age:5+((rn()*85)|0),home:town(p),role:pick(JOBS),place:p.n,how:'died in '+kind.replace(/^an? /,'the ').replace('the floods','the floods'),st:'DEAD'}),k);});
-/* ------------------------------------------------------------------ CEMETERY tab */
-const UI={f:'ALL',q:''};const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function tab(p){const r=C()[p.a3];if(!r)return'<div>No one from '+esc(p.n)+' is recorded in the register.</div>';const all=(UI.f!=='CIV'?r.mil.L:[]).concat(UI.f!=='MIL'?r.civ.L:[]).sort((a,b)=>b.t-a.t);
-  const q=UI.q.toLowerCase(),L=q?all.filter(x=>(x.n+' '+x.home+' '+x.role+' '+x.how).toLowerCase().includes(q)):all;
-  return '<div style="font-size:10px;color:#8a9a92">The people named here are fictional. Totals are estimates by rule from the war\'s losses. No injuries are described.</div>'+
-    '<div class="row"><span>Military dead and missing</span><b>~'+r.mil.n.toLocaleString('en')+' ('+r.mil.L.length+' named)</b></div><div class="row"><span>Civilians killed</span><b>~'+r.civ.n.toLocaleString('en')+' ('+r.civ.L.length+' named)</b></div>'+
-    '<div class="tc">'+['ALL','MIL','CIV'].map(k=>'<button data-cm="'+k+'" aria-pressed="'+(UI.f===k)+'">'+{ALL:'ALL',MIL:'MILITARY',CIV:'CIVILIAN'}[k]+'</button>').join(' ')+' <input id="cmQ" value="'+esc(UI.q)+'" placeholder="search a name or town" style="width:130px"> <button data-cm="q">FIND</button></div>'+
-    L.slice(0,40).map(x=>'<div style="border-bottom:1px dotted #333;padding:2px 0"><b>'+esc(x.n)+'</b>, '+x.age+', of '+esc(x.home)+(x.st==='MISSING'?' — <i>missing</i>':'')+'<br><span style="font-size:10px;color:#9aa19c">'+esc(x.role)+'. '+esc(W.date(x.t).slice(0,10))+': '+esc(x.how)+'.</span></div>').join('')+
-    (L.length>40?'<div style="font-size:10px">… and '+(L.length-40)+' more named here</div>':'')+((r.mil.n+r.civ.n)>(r.mil.L.length+r.civ.L.length)?'<div style="font-size:10px">and about '+((r.mil.n+r.civ.n)-(r.mil.L.length+r.civ.L.length)).toLocaleString('en')+' more, recorded as numbers</div>':'');}
-if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.CEMETERY=tab;
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsNat [data-cm]');if(!b)return;if(b.dataset.cm==='q'){const i=document.getElementById('cmQ');UI.q=i?i.value:'';}else UI.f=b.dataset.cm;WARMAP.panel();});
-// the epilogue's "Names and places" reads from the register
-if(W.endscreen&&W.endscreen.CH){const ch=W.endscreen.CH.find(c=>c[0]==='Names and places');if(ch){const _f=ch[1];ch[1]=(F,st)=>{const S=C(),all=Object.entries(S);const tm=all.reduce((t,[a,r])=>t+r.mil.n,0),tc=all.reduce((t,[a,r])=>t+r.civ.n,0);
-  const some=all.flatMap(([a,r])=>r.mil.L.slice(0,3).concat(r.civ.L.slice(0,3))).slice(0,30);
-  return _f(F,st)+'<h2>THE REGISTER</h2><div>About '+tm.toLocaleString('en')+' soldiers, sailors and aircrew and about '+tc.toLocaleString('en')+' civilians are recorded as killed or missing (estimates by rule; fictional names).</div><div class="wall">'+
-    some.map(x=>'<div>'+esc(x.n)+', '+x.age+', '+esc(x.home)+' — '+esc(x.how)+'</div>').join('')+'</div>';};}}
-W.cemetery={C,reg,daily,tab,UI};
+const W=WWAR,G=WGEO,Ld=W.lead;
+const L=()=>W.st.dl||(W.st.dl={seq:1,ev:[],names:{}});
+const TWO=new Set(['F-15E','F-14A','F-14B','Su-34','Su-30','Su-30SM','Tornado','F-4E','EA-18G','Su-24','J-16','F-18F','F/A-18F']);
+const NR='not recorded';
+/* ------------------------------------------------------------------ recording (one record per resolved event) */
+function record(o){const l=L(),id='D'+(l.seq++).toString(36).toUpperCase(),t=W.st.t;const r=Object.assign({id,t,n:1,st:'KILLED',kind:'MIL',a3:null,role:NR,unit:NR,place:NR,cause:NR,src:null,named:null},o);
+  if(r.n<1)return null;l.ev.push(r);return r;}
+// a stable, culturally appropriate name per person slot, collision-checked across the archive
+function rng(seed){let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619);}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%1e6)/1e6;};}
+function nameFor(r,i){if(r.named&&r.named[i])return r.named[i];const l=L(),k=r.id+'.'+i;if(l.names[k])return l.names[k];const P=Ld.POOL[Ld.REG(r.a3)]||Ld.POOL.EN,R=rng(k);
+  for(let tries=0;tries<20;tries++){const n=P[0][(R()*P[0].length)|0]+' '+P[1][(R()*P[1].length)|0]+(tries>5?' '+String.fromCharCode(65+((R()*26)|0))+'.':'');if(!l.used||!l.used[n]){(l.used||(l.used={}))[n]=1;return l.names[k]=n;}}return l.names[k]=r.id+'-'+i;}
+function entries(f){const out=[];for(const r of L().ev){if(f&&!f(r))continue;for(let i=0;i<r.n;i++)out.push({r,i});}return out;}
+/* ------------------------------------------------------------------ sources */
+const srcEv=()=>{const e=W.st.ev[W.st.ev.length-1];return e&&e.id;};
+// aircraft destroyed in a world sortie
+if(typeof Jet!=='undefined'){const _k=Jet.prototype.kill;Jet.prototype.kill=function(){const was=this.alive&&this!==player&&!this.remote&&this._ws&&W.st&&window.WSORTIE&&WSORTIE.WS.on;const r=_k.apply(this,arguments);
+  if(was&&!this.alive){const crew=TWO.has(this.type)?2:1,sq=this._sqn&&W.st.ob&&W.st.ob.u[this._sqn];const th=window.WWAR.airbattle?W.airbattle.theatre():null;let k=0,m=0;
+    for(let i=0;i<crew;i++){if(Math.random()<.45)m++;else k++;}   // each crew member: ejected (fate then unknown) or not
+    const base={kind:'MIL',a3:this._ws,role:'aircrew ('+this.type+')',unit:sq?sq.name:NR,place:th?th.name:NR,src:srcEv()};
+    if(k)record(Object.assign({},base,{n:k,st:'KILLED',cause:'killed in an aircraft loss'}));if(m)record(Object.assign({},base,{n:m,st:'MISSING',cause:'ejected from a destroyed aircraft; fate not yet known'}));}
+  return r;};}
+// ground fight: crews and infantry resolved in armor.js
+if(window.ARMOR){const _r=ARMOR.resolve;ARMOR.resolve=function(u,v,w,dist){const men0=v._men,alive0=v.alive;const r=_r.apply(this,arguments);if(!W.st||!v._ws)return r;
+  const unit=v._bde&&W.st.ob&&W.st.ob.u[v._bde]?W.st.ob.u[v._bde].name:NR,ll=G.xz2ll(v.pos.x,v.pos.z),place='near '+ll.lat.toFixed(2)+', '+ll.lon.toFixed(2);
+  if(v._gk==='INF'){const k=v._kiaLast|0;if(k>0)record({kind:'MIL',a3:v._ws,role:'infantry',unit,place,cause:'killed in action',n:k,src:srcEv()});}
+  else if(alive0&&!v.alive){const crew=v._gk==='MBT'?(/T-|Type 9|Al-Khalid|VT4/.test((ARMOR.prof(v._ws)||{}).mbt||'')?3:4):3;let k=0;for(let i=0;i<crew;i++)if(Math.random()<.7)k++;
+    if(k)record({kind:'MIL',a3:v._ws,role:(v._gk==='MBT'?'tank':'armoured vehicle')+' crew',unit,place,cause:'killed when their vehicle was destroyed',n:k,src:srcEv()});}
+  return r;};}
+// civilians in buildings destroyed in a world sortie (targets.js asks for the resolution)
+function buildingDeaths(n,where,a3,hr){let occ=0,k=0,inj=0;for(let b=0;b<n;b++){const people=Math.round((hr<6||hr>21?2.2:1.1)*(.5+Math.random()));occ+=people;for(let i=0;i<people;i++){const x=Math.random();if(x<.3)k++;else if(x<.65)inj++;}}
+  if(k)record({kind:'CIV',a3,role:NR,unit:NR,place:where||NR,cause:'killed when the building they were in was destroyed',n:k,src:srcEv()});return{occ,k,inj};}
+// named leaders and commanders
+W.listeners.push(e=>{if(!W.st)return;if(e.ty==='COMMAND'&&/has been killed/.test(e.txt)){const m=/that (.+?), commanding/.exec(e.txt);if(m)record({kind:'MIL',a3:(e.e||[])[0],role:'front commander',place:NR,cause:'killed in the line of duty',named:[m[1]],src:e.id});}
+  if(/is killed in an assassination/.test(e.txt)){const m=/^(.+?), (.+?), is killed/.exec(e.txt);if(m)record({kind:'CIV',a3:(e.e||[])[0],role:m[2],place:NR,cause:'killed in an assassination',named:[m[1]],src:e.id});}
+  if(e.ty==='SQUADRON'&&/missing after a mission/.test(e.txt)){const m=/mourns (.+?) \((.+?)\), missing/.exec(e.txt);if(m)record({kind:'MIL',a3:(e.e||[])[0],role:'pilot, '+m[1],st:'MISSING',cause:'missing after a mission',named:[m[2]],src:e.id});}});
+/* ------------------------------------------------------------------ totals (read model) */
+function totals(a3){const T={kM:0,mM:0,kC:0};for(const r of L().ev){if(a3&&r.a3!==a3)continue;if(r.kind==='MIL'){if(r.st==='KILLED')T.kM+=r.n;else T.mM+=r.n;}else T.kC+=r.n;}return T;}
+/* ------------------------------------------------------------------ the archive view: paged, searchable, filterable, detail page */
+const UI={f:'ALL',q:'',pg:0,sel:null,a3:null};const PG=20;const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function view(a3){const st=W.st,T=totals(a3);const flt=r=>(!a3||r.a3===a3)&&(UI.f==='ALL'||(UI.f==='MIL'&&r.kind==='MIL'&&r.st==='KILLED')||(UI.f==='CIV'&&r.kind==='CIV')||(UI.f==='MISSING'&&r.st==='MISSING'));
+  let E=entries(flt).sort((x,y)=>x.r.t-y.r.t||x.i-y.i);const q=UI.q.toLowerCase();if(q)E=E.filter(x=>(nameFor(x.r,x.i)+' '+x.r.unit+' '+x.r.role+' '+x.r.place+' '+x.r.cause).toLowerCase().includes(q));
+  const pages=Math.max(1,Math.ceil(E.length/PG));UI.pg=Math.min(UI.pg,pages-1);const S=E.slice(UI.pg*PG,UI.pg*PG+PG);
+  let h='<div style="font-size:10px;color:#8a9a92">Every death the campaign has resolved has one entry here. Names are assigned by the archive (fictional people). Fields the record does not contain say “not recorded”. Losses of aircraft, formations and ships far from your flights are recorded as equipment losses: the people in them are not resolved one by one, and no death figure is estimated for them.</div>'+
+    '<div class="row"><span>Military killed</span><b>'+T.kM+'</b></div><div class="row"><span>Military missing (fate unknown)</span><b>'+T.mM+'</b></div><div class="row"><span>Civilians killed</span><b>'+T.kC+'</b></div>'+
+    '<div class="tc">'+['ALL','MIL','CIV','MISSING'].map(k=>'<button data-cm="'+k+'" aria-pressed="'+(UI.f===k)+'">'+{ALL:'ALL',MIL:'MILITARY KILLED',CIV:'CIVILIANS',MISSING:'MISSING'}[k]+'</button>').join(' ')+'</div>'+
+    '<div><input id="cmQ" aria-label="search the archive" value="'+esc(UI.q)+'" placeholder="name, unit, place" style="width:140px"> <button data-cm="q">FIND</button> <button data-cm="clr">CLEAR</button> · '+E.length+' entr'+(E.length===1?'y':'ies')+' · chronological</div>';
+  if(UI.sel){const[rid,i]=UI.sel.split('.');const r=L().ev.find(x=>x.id===rid);if(r){const src=st.ev.find(e=>e.id===r.src);
+    h+='<div style="border:1px solid #444;padding:6px;margin:4px 0"><b>'+esc(nameFor(r,+i))+'</b><br>'+[['Status',r.st==='KILLED'?'killed':'missing — fate not yet known'],['Role',r.role],['Unit or organisation',r.unit],['Country',st.c[r.a3]?st.c[r.a3].n:NR],['Date',W.date(r.t)],['Place',r.place],['How',r.cause],['Age',NR],['Home town',NR],['Identification',r.named?'confirmed name':'name assigned by the archive'],['Record',r.st==='MISSING'?'unresolved':'confirmed by the campaign\'s own record'],['Source event',src?src.txt.slice(0,140):(r.src||NR)]].map(([a,b])=>'<div class="row"><span>'+a+'</span><b>'+esc(b)+'</b></div>').join('')+'<button data-cm="back">BACK TO THE LIST</button></div>';}}
+  h+=S.map(x=>'<div role="button" tabindex="0" data-cme="'+x.r.id+'.'+x.i+'" style="border-bottom:1px dotted #333;padding:2px 0;cursor:pointer"><b>'+esc(nameFor(x.r,x.i))+'</b> — '+esc(W.date(x.r.t).slice(0,10))+' · '+esc(x.r.role)+(x.r.unit!==NR?', '+esc(x.r.unit):'')+' · '+esc(x.r.cause)+(x.r.st==='MISSING'?' [missing]':'')+'</div>').join('')+
+    (pages>1?'<div class="tc">'+(UI.pg>0?'<button data-cm="prev">← PREVIOUS</button>':'')+' page '+(UI.pg+1)+' of '+pages+' '+(UI.pg<pages-1?'<button data-cm="next">NEXT →</button>':'')+'</div>':'');
+  return h;}
+if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.CEMETERY=p=>view(p.a3);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cm],[data-cme]');if(!b||!W.st)return;const d=b.dataset;
+  if(d.cme)UI.sel=d.cme;else if(d.cm==='q'){const i=document.getElementById('cmQ');UI.q=i?i.value:'';UI.pg=0;}else if(d.cm==='clr'){UI.q='';UI.f='ALL';UI.pg=0;}else if(d.cm==='back')UI.sel=null;else if(d.cm==='prev')UI.pg--;else if(d.cm==='next')UI.pg++;else{UI.f=d.cm;UI.pg=0;}
+  if(document.getElementById('wwEnd')&&W.endscreen)W.endscreen.go(10);else WARMAP.panel();});
+// the epilogue's "Names and places": the archive itself
+if(W.endscreen&&W.endscreen.CH){const ch=W.endscreen.CH.find(c=>c[0]==='Names and places');if(ch){const _f=ch[1];ch[1]=(F,st)=>_f(F,st)+'<h2>THE MEMORIAL ARCHIVE</h2>'+view(null);}}
+W.cemetery={L,record,entries,nameFor,totals,view,buildingDeaths,UI};
 })();

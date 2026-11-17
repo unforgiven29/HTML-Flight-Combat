@@ -10,7 +10,7 @@
    only against a country at war, and the civilian consequence (blackouts, shortages) is recorded with it.
 
    CIVILIAN HARM: town buildings are physical. A bomb or missile that bursts among them destroys them, whoever fired it.
-   Each such blast is recorded as civilian harm: buildings destroyed, people killed and injured as an ESTIMATE RANGE
+   Each such blast is recorded as civilian harm: buildings destroyed, people killed and injured, resolved person by person (cemetery.js)
    (occupancy rule by time of day; not a count), the country harmed and the side responsible, and a category:
      COLLATERAL      an enemy military objective (unit or infrastructure) within 400 m: harm in an attack on a military
                      objective; the investigation weighs proportionality;
@@ -69,13 +69,14 @@ function blastHarm(p,w,src){if(!WF.on||!WF.bldg||!WF.townMesh||!W.st)return;cons
   const mil=srcSide!=null?military(p.x,p.z,srcSide,400):null,far=srcSide!=null?military(p.x,p.z,srcSide,1000):null;
   const cat=mil?'COLLATERAL':far?'COLLATERAL':'CIVILIAN_AREA';
   const ll=G.xz2ll(p.x,p.z),c=G.countryAt(ll.lat,ll.lon),hr=((typeof ENV!=='undefined'?ENV.tod:12)+24)%24,occ=(hr<6||hr>21?.85:.45)*2.6;
-  const people=n*occ,est={kLo:Math.round(people*.15),kHi:Math.round(people*.45),iLo:Math.round(people*.25),iHi:Math.round(people*.7)};
-  const s=S();s.tot.bld+=n;for(const k in est)s.tot[k]+=est[k];
+  const town0=(WF.towns||[]).reduce((a,t)=>{const d=Math.hypot(t.x-p.x,t.z-p.z);return!a||d<a.d?{t,d}:a;},null);
+  const res=W.cemetery?W.cemetery.buildingDeaths(n,town0?town0.t.name:(c?c.n:null),c&&c.a3,hr):{occ:0,k:0,inj:0},est={k:res.k,inj:res.inj};   /* occupants resolved one by one (cemetery.js); no estimate */
+  const s=S();s.tot.bld+=n;s.tot.k=(s.tot.k||0)+res.k;s.tot.inj=(s.tot.inj||0)+res.inj;
   const town=(WF.towns||[]).reduce((a,t)=>{const d=Math.hypot(t.x-p.x,t.z-p.z);return!a||d<a.d?{t,d}:a;},null);
   const rec={t:W.st.t,cat,n,est,side,by:src===player?'PLAYER':src&&src.callsign||'unknown',country:c&&c.a3,town:town&&town.t.name,mil:mil&&mil.callsign};s.harm.push(rec);if(s.harm.length>300)s.harm.shift();
   const txt=(cat==='COLLATERAL'?'Civilian harm in an attack on a military objective'+(mil?' ('+mil.callsign+')':'')+': ':'Attack on a civilian area: ')+n+' building'+(n>1?'s':'')+' destroyed in '+(town?town.t.name:'a town')+(c?' ('+c.n+')':'')+
-    '; an estimated '+est.kLo+'-'+est.kHi+' people killed and '+est.iLo+'-'+est.iHi+' injured (estimate by occupancy rule, not a count). Responsibility: '+(side?(side==='B'?'BLUEFOR':'REDFOR'):'unknown')+'.';
-  const e=W.emit('CIVHARM',{e:c?[c.a3]:[],cf:'ESTIMATED',loc:[ll.lat,ll.lon],txt});
+    '; '+(est.k?est.k+' '+(est.k>1?'people':'person')+' killed':'no one killed')+(est.inj?' and '+est.inj+' injured':'')+'. Responsibility: '+(side?(side==='B'?'BLUEFOR':'REDFOR'):'unknown')+'.';
+  const e=W.emit('CIVHARM',{e:c?[c.a3]:[],cf:'REPORTED',loc:[ll.lat,ll.lon],txt});
   if(W.society){const N=W.society.news();N.inv.push({id:'INV'+(N.inv.length+1),ev:e&&e.id,ty:'CIVHARM',cat,txt,opened:W.st.t,due:W.st.t+24*(10+Math.random()*25),st:'OPEN',blamed:side});}
   if(side&&W.st.soc){W.st.soc.leg[side]=Math.max(0,W.st.soc.leg[side]-.005*n*(cat==='CIVILIAN_AREA'?2:1));if(W.st.nat)W.st.nat.coh[side]=Math.max(0,W.st.nat.coh[side]-.002*n*(cat==='CIVILIAN_AREA'?2:1));}
   if(src===player){flash(cat==='CIVILIAN_AREA'?'CIVILIAN AREA HIT · AN INVESTIGATION WILL FOLLOW':'CIVILIAN BUILDINGS HIT · CIVILIAN HARM RECORDED',3500);W.listeners.forEach(f=>{try{f({ty:'PLAYER_HARM',rec});}catch(_){}});}}

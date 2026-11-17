@@ -13,9 +13,9 @@
      round, its anti-tank guided missile (top attack or tandem front attack) and its anti-tank rocket.
    * A HIT: the aspect (front / side / rear from the target's heading, top for top-attack missiles and artillery),
      penetration with range falloff and spread against the protection there. Outcomes: NO PENETRATION, MOBILITY KILL
-     (stops moving), FIREPOWER KILL (stops firing), CATASTROPHIC (destroyed); crew casualties as an estimate.
+     (stops moving), FIREPOWER KILL (stops firing), CATASTROPHIC (destroyed); crew fates resolved in the memorial archive (cemetery.js).
    * INFANTRY: a squad of nine with BODY ARMOUR by the country's tier — soft armour and helmet, rifle plates, heavy
-     plates — reducing wounds from rifle fire and fragments; casualties are WOUNDED or KILLED (estimate); a squad with
+     plates — reducing wounds from rifle fire and fragments; each soldier hit is resolved as WOUNDED or KILLED; a squad with
      three or fewer able is combat-ineffective and withdraws with its wounded (counted as lost to the brigade).
    * Records: the last engagements (shooter weapon, round, aspect, result) in the LAND tab, and a summary of each
      country's guns and protection.
@@ -63,7 +63,7 @@ function resolve(u,v,w,dist){const a=prof(u._ws),t=prof(v._ws);const k=v._gk;
   // infantry target
   if(k==='INF'){v._men=v._men??9;v._wia=v._wia||0;const frag=w.fx==='art'||w.fx==='tank'||w.fx==='can'||w.fx==='atgm'||w.fx==='rpg',shots=w.fx==='mg'?3:w.fx==='art'?4:2;let kia=0,wia=0;
     for(let i=0;i<shots&&v._men>0;i++){const stop=frag?t.body.frag:t.body.rifle;if(rn()<stop)continue;if(rn()<.35){kia++;}else wia++;v._men--;}
-    v._wia+=wia;log(u,v,w.fx==='mg'?a.rifle:w.fx,'infantry',kia||wia?kia+' killed, '+wia+' wounded (estimate)':'stopped by '+t.body.n);
+    v._wia+=wia;v._kiaLast=kia;log(u,v,w.fx==='mg'?a.rifle:w.fx,'infantry',kia||wia?kia+' killed, '+wia+' wounded':'stopped by '+t.body.n);
     if(v._men<=3&&v.alive){v.damage(9999,null);log(u,v,'','infantry','squad combat-ineffective; withdraws with its wounded');}return;}
   // vehicle target
   const cls=k==='MBT'?t.mcls:k==='IFV'?t.icls:'SOFT',P=PROT[cls];let asp=aspect(u,v);let pen,ce=false,rd;
@@ -76,7 +76,7 @@ function resolve(u,v,w,dist){const a=prof(u._ws),t=prof(v._ws);const k=v._gk;
   const arm=(ce?P.CE:P.KE)[asp]*(.85+rn()*.3),ratio=pen*(.85+rn()*.3)/Math.max(1,arm);
   let res;if(ratio<1){res=ratio>.85&&rn()<.25?'MOBILITY KILL':'NO PENETRATION';}else{const r=rn()*ratio;res=r>1.3?'CATASTROPHIC':r>.9?(rn()<.5?'FIREPOWER KILL':'MOBILITY KILL'):(rn()<.5?'MOBILITY KILL':'FIREPOWER KILL');}
   if(res==='MOBILITY KILL')v._mob=1;if(res==='FIREPOWER KILL')v._fp=1;if(res==='CATASTROPHIC'||(v._mob&&v._fp))v.damage(9999,null);
-  const crew=res==='CATASTROPHIC'?'crew casualties likely':res==='NO PENETRATION'?'crew unhurt':'some crew wounded';
+  const crew=res==='CATASTROPHIC'?'vehicle destroyed':res==='NO PENETRATION'?'crew unhurt':'crew shaken, vehicle damaged';
   log(u,v,rd,['front','side','rear','top'][asp],res.toLowerCase()+' · '+crew);}
 function log(u,v,rd,asp,res){LOG.unshift({t:Date.now(),by:u.callsign||u.kind,to:v.callsign||v.kind,rd,asp,res});LOG.length=Math.min(LOG.length,30);}
 /* ------------------------------------------------------------------ the LAND tab: guns and protection */

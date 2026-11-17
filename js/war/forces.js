@@ -140,7 +140,7 @@ if(window.WSORTIE){const _f=WSORTIE.finish;WSORTIE.finish=function(){const WS=WS
    if(typeof radio==='function')radio(brief,false);}}catch(e){}return r;};}
 
 /* ------------------------------------------------------------------ daily */
-W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){const r=F(p.a3);if(!r)continue;sync(p,r);ships(p,r);drones(p,r);civil(p,r);}trade();pmc();});
+W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){if(W.lod&&!W.lod(p,Math.floor(st.t/24)))continue;const r=F(p.a3);if(!r)continue;sync(p,r);ships(p,r);drones(p,r);civil(p,r);}trade();pmc();});
 
 /* ------------------------------------------------------------------ ARSENAL tab */
 function tab(p){const st=W.st,r=F(p.a3);if(!r)return'';const s=st.frc;

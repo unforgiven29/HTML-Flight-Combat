@@ -42,7 +42,7 @@ function navy(p){const f=p.nav;if(!f)return'<div>'+esc(p.n)+' has no fleet in th
     (n?'<div style="color:#8a9a92">SEA CONTROL</div>'+S.SEAS.filter(q=>n.th[q.id]&&Object.keys(n.th[q.id].f).length).map(q=>row(esc(q.name),Math.abs(n.th[q.id].sup)<.1?'contested':n.th[q.id].sup>0?'BLUEFOR '+Math.round(n.th[q.id].sup*100)+' %':'REDFOR '+Math.round(-n.th[q.id].sup*100)+' %')).join(''):'')+
     '<div style="color:#8a9a92">Fleet sizes are estimates (carriers: approximate public numbers).</div>';}
 function justice(){const L=W.st.law,tg=W.st.tg;let h='';
-  if(tg&&tg.tot.bld)h+=row('Civilian buildings destroyed in flight (all sides)',tg.tot.bld)+row('People killed (est. range)',tg.tot.kLo+'-'+tg.tot.kHi)+row('People injured (est. range)',tg.tot.iLo+'-'+tg.tot.iHi);
+  if(tg&&tg.tot.bld)h+=row('Civilian buildings destroyed in flight (all sides)',tg.tot.bld)+row('People killed (resolved in flight)',tg.tot.k||0)+row('People injured (resolved in flight)',tg.tot.inj||0);
   if(!L||!L.cases.length)return h+'<div>No cases opened.</div>';
   return h+'<div class="nw">'+L.cases.slice(-14).reverse().map(c=>'<div><em>'+esc(c.id)+'</em><span class="k">'+esc(c.stage)+'</span>'+esc(c.cls)+(c.judgment?' · '+esc(c.judgment):'')+' · '+esc(c.txt.slice(0,110))+'</div>').join('')+'</div><div style="color:#8a9a92">'+esc(L.framework)+'. Classifications stay preliminary until the evidence supports them.</div>';}
 function careerBox(){const c=W.st.lead&&W.st.lead.career;if(!c)return'';const nm=W.lead.rank(c.a3,'air',c.rank);

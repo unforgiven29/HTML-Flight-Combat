@@ -83,7 +83,7 @@ function treaties(){const st=W.st;if(rn()>.01)return;const C=Object.values(st.c)
   const k=TREATY[(rn()*(a.side&&a.side===b.side?TREATY.length:3))|0];const la=L(a);la.treat.push({w:b.a3,k,t:st.t});if(la.treat.length>10)la.treat.shift();W.emit('TREATY',{e:[a.a3,b.a3],txt:a.n+' and '+b.n+' sign '+k+'.'});}
 /* ------------------------------------------------------------------ daily */
 W.daily.push(()=>{const st=W.st;if(!st)return;const day=Math.floor(st.t/24),month=day%30===0;
-  for(const p of Object.values(st.c)){const l=L(p);people(p,l,day);institutions(p,l);economy(p,l,month);resources(p,l);housing(p,l);environment(p,l);politics(p,l);}
+  for(const p of Object.values(st.c)){if(W.lod&&!W.lod(p,day))continue;const l=L(p);people(p,l,day);institutions(p,l);economy(p,l,month);resources(p,l);housing(p,l);environment(p,l);politics(p,l);}
   occupation();treaties();if(month)trade();});
 // effects back on the war: trust and public services steady public support; inflation and rationing wear it down
 W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){const l=p.life;if(!l||p.sup==null)continue;p.sup=cl(p.sup+(l.trust-.5)*.001-l.fin.infl*.002-(l.cons.ration?.001:0),0,1);}});

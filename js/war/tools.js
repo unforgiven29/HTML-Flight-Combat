@@ -53,10 +53,13 @@ function calendar(){const st=W.st,out=[];const add=(t,txt)=>{if(t>st.t)out.push(
   return out.sort((a,b)=>a[0]-b[0]).slice(0,25);}
 /* ------------------------------------------------------------------ saves */
 const SLOT=i=>'viper.ww.slot'+i;
-function saveSlot(i,name){try{localStorage.setItem(SLOT(i),JSON.stringify({v:VER,name:name||('Slot '+(i+1)),at:Date.now(),day:Math.floor(W.st.t/24),st:W.st}));return true;}catch(e){return false;}}
+// slots are gzip-compressed (CompressionStream) so three of them fit beside the autosave in the browser's storage quota
+async function gz(str){const cs=new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'));const buf=new Uint8Array(await new Response(cs).arrayBuffer());let bin='';for(let i=0;i<buf.length;i+=32768)bin+=String.fromCharCode.apply(null,buf.subarray(i,i+32768));return btoa(bin);}
+async function gunz(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text();}
+async function saveSlot(i,name){try{const meta={v:VER,name:name||('Slot '+(i+1)),at:Date.now(),day:Math.floor(W.st.t/24)};const data=await gz(JSON.stringify(W.st));localStorage.setItem(SLOT(i),data);localStorage.setItem(SLOT(i)+'.m',JSON.stringify(meta));return true;}catch(e){console.warn('[saves]',e);return false;}}
 function valid(st){return st&&typeof st==='object'&&st.c&&typeof st.c==='object'&&Array.isArray(st.fronts)&&Array.isArray(st.th)&&Number.isFinite(st.t)&&Array.isArray(st.ev);}
-function loadSlot(i){try{const o=JSON.parse(localStorage.getItem(SLOT(i))||'null');if(!o||!valid(o.st))return false;W.st=o.st;W.run=false;return true;}catch(e){return false;}}
-function slots(){return[0,1,2].map(i=>{try{const o=JSON.parse(localStorage.getItem(SLOT(i))||'null');return o?{i,name:o.name,day:o.day,at:o.at,v:o.v}:{i};}catch(e){return{i};}});}
+async function loadSlot(i){try{const d=localStorage.getItem(SLOT(i));if(!d)return false;let st;if(d[0]==='{'){const o=JSON.parse(d);st=o.st;}else st=JSON.parse(await gunz(d));if(!valid(st))return false;W.st=st;W.run=false;return true;}catch(e){console.warn('[saves]',e);return false;}}
+function slots(){return[0,1,2].map(i=>{try{const m=JSON.parse(localStorage.getItem(SLOT(i)+'.m')||'null');return m?{i,name:m.name,day:m.day,at:m.at,v:m.v}:{i};}catch(e){return{i};}});}
 function exportFile(){const b=new Blob([JSON.stringify({v:VER,st:W.st})],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='world-war-day'+Math.floor(W.st.t/24)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
 function importText(txt){try{const o=JSON.parse(txt),st=o.st||o;if(!valid(st))return'not a world-war save';W.st=st;W.run=false;return'';}catch(e){return'unreadable file';}}
 /* ------------------------------------------------------------------ AI decision log (explained) */
@@ -93,7 +96,7 @@ if(window.WARMAP&&WARMAP.after)WARMAP.after.push(render);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wwTools button,#wwBar button');if(!b||!W.st)return;const t=T(),d=b.dataset;
   if(d.wt)UI.open=UI.open===d.wt?'':d.wt;else if(d.wta==='read')t.read=W.st.t;else if(d.bm){if(!t.bm.includes(d.bm))t.bm.push(d.bm);}
   else if(d.wta==='q'){const i=document.getElementById('wwQ');UI.q=i?i.value:'';}else if(d.wta==='watch')t.watch.push(WARMAP.UI.sel);else if(d.uw)t.watch=t.watch.filter(a=>a!==d.uw);
-  else if(d.sv!=null)saveSlot(+d.sv,'Day '+Math.floor(W.st.t/24)+' · '+W.date(W.st.t).slice(0,10));else if(d.ld!=null){if(!confirm('Load this save? The running war is replaced.'))return;loadSlot(+d.ld);}
+  else if(d.sv!=null){saveSlot(+d.sv,'Day '+Math.floor(W.st.t/24)+' · '+W.date(W.st.t).slice(0,10)).then(()=>WARMAP.panel());}else if(d.ld!=null){if(!confirm('Load this save? The running war is replaced.'))return;loadSlot(+d.ld).then(()=>WARMAP.panel());}
   else if(d.wta==='exp')exportFile();else if(d.ax){A11Y[d.ax]=d.ax==='big'?((A11Y.big||0)+1)%3:!A11Y[d.ax];try{localStorage.setItem('viper.a11y',JSON.stringify(A11Y));}catch(_){}applyA11y();}
   WARMAP.panel();});
 document.addEventListener('change',e=>{if(e.target.id!=='wwImp'||!e.target.files[0])return;const f=e.target.files[0];f.text().then(txt=>{const err=importText(txt);const s=document.getElementById('wwSvS');if(s)s.textContent=err?'Import failed: '+err:'Imported.';WARMAP.panel();});});
