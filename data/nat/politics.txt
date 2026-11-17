@@ -120,3 +120,36 @@ PHL|PRESIDENTIAL|President||House of Representatives|316|6|1
 AUS|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|House of Representatives|150|3|1
 NZL|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|House of Representatives|123|3|1
 PNG|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|National Parliament|118|5|1
+ZMB|PRESIDENTIAL|President||National Assembly|167|5|1
+URY|PRESIDENTIAL|President||Chamber of Representatives|99|5|1
+TGO|PARLIAMENTARY|President|President of the Council of Ministers|National Assembly|113|6|0
+SDS|PRESIDENTIAL_AUTH|President||Transitional National Legislative Assembly|550|5|0
+SLE|PRESIDENTIAL|President||Parliament|149|5|1
+PRY|PRESIDENTIAL|President||Chamber of Deputies|80|5|1
+PAN|PRESIDENTIAL|President||National Assembly|71|5|1
+NIC|PRESIDENTIAL_AUTH|Co-Presidents||National Assembly|91|6|0
+NAM|PRESIDENTIAL|President||National Assembly|104|5|1
+MRT|PRESIDENTIAL|President|Prime Minister|National Assembly|176|5|1
+MWI|PRESIDENTIAL|President||National Assembly|193|5|1
+MDG|MILITARY|President of the Transition|Prime Minister|National Assembly|163|5|0
+LBR|PRESIDENTIAL|President||House of Representatives|73|6|1
+LSO|CONST_MONARCHY|King|Prime Minister|National Assembly|120|5|1
+JAM|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|House of Representatives|63|5|1
+PSX|DIVIDED|President|Prime Minister|Legislative Council (not sitting)|132|4|0
+HND|PRESIDENTIAL|President||National Congress|128|4|1
+HTI|DIVIDED|Transitional Presidential Council|Prime Minister|-|0|5|0
+GIN|MILITARY|President of the Transition|Prime Minister|National Transitional Council|81|5|0
+GTM|PRESIDENTIAL|President||Congress|160|4|1
+GMB|PRESIDENTIAL|President||National Assembly|58|5|1
+GAB|PRESIDENTIAL|President||National Assembly|145|7|0
+SLV|PRESIDENTIAL|President||Legislative Assembly|60|5|1
+ECU|PRESIDENTIAL|President||National Assembly|151|4|1
+DOM|PRESIDENTIAL|President||Chamber of Deputies|190|4|1
+CRI|PRESIDENTIAL|President||Legislative Assembly|57|4|1
+COG|PRESIDENTIAL_AUTH|President|Prime Minister|National Assembly|151|5|0
+TCD|PRESIDENTIAL_AUTH|President|Prime Minister|National Assembly|188|5|0
+CAF|PRESIDENTIAL_AUTH|President|Prime Minister|National Assembly|140|5|0
+BDI|PRESIDENTIAL_AUTH|President|Prime Minister|National Assembly|111|7|0
+BWA|PARLIAMENTARY_EXEC_PRESIDENT|President||National Assembly|69|5|1
+BOL|PRESIDENTIAL|President||Chamber of Deputies|130|5|1
+BEN|PRESIDENTIAL|President||National Assembly|109|5|1

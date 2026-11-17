@@ -1,3 +1,10 @@
+## v369 (supply on the road network; trade between countries; the register of people; more data)
+- **Depot routes on roads** (js/war/world3.js): each capital-to-depot link is checked against the Natural Earth highways in the regional tiles (points every 50 km, within 25 km of a highway); capacity x(0.55 + 0.45 x road coverage); poorly connected links are reported.
+- **Trade partners**: each country's five largest partners by a gravity rule, monthly; cut by sanctions across the line, reduced by blockade and war; lost trade lowers the economy; listed in LIFE.
+- **People register** (PEOPLE_REGISTER tab): every person the campaign has instantiated (leaders, commanders, mayors, pilots, the families followed, the memorial archive) — searchable; not a census.
+- **Government data for 154 countries** (33 more); **real formation names for 23 countries** (adds the Netherlands, Norway, Sweden, Finland, Greece). South Sudan's code fixed (SDS).
+- Tests: `node tests/run.js s24_`.
+
 ## v368 (the war you can see from the cockpit)
 - **Missile salvos in the sky** (js/war/visible.js): during a world sortie long-range salvos are fired at airbases near you (and by your side at the enemy's), from the strategic stocks: trails arcing in, interceptors climbing to meet them, flashes where they meet, impacts where they get through (base damage applies). Day-level salvos now carry the target's location.
 - **Merchant convoys at sea** with an escort near open water; an enemy convoy is a target (ships sunk count as convoy losses), your own can be attacked.

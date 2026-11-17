@@ -880,6 +880,13 @@ test('s23_visible: salvos in the sky, merchant convoys, map markers, intelligenc
     const X=WWAR.st.intel,me=WWAR.st.c.POL.side,q0=X[me].q;X[me].q=.1;let said=0;const el=document.getElementById('radio');const n0=el?el.children.length:0;for(let i=0;i<40;i++)radio('DARKSTAR: test call for 40 miles.',false);const n1=el?el.children.length:0;X[me].q=q0;
     WSORTIE.finish();return{trails,ev,cv,strokes:n,suppressed:n1-n0<40};});
   ok('salvos are visible as trails and reported',r.trails>0&&r.ev,r);ok('the map marks the air war and ground fighting',r.strokes>0,r);ok('poor intelligence: some AWACS calls missed',r.suppressed,r);});
+
+/* ---------- step 21 (v369): roads for supply, trade partners, the register of people, more data ---------- */
+test('s24_net: depot routes on the road network, trade partners and sanctions, the people register','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*40);await WWAR.world3.roads();const R=st.roads||{};const vals=Object.values(R);
+    const T=st.trade2||{},pol=T.POL;const sanc=Object.values(T).some(r=>r.P.some(x=>x.st==='SANCTIONED'));const reg=WWAR.world3.people('POL');
+    return{routes:vals.length,cov:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,pol:pol&&pol.P.length,sanc,reg:reg.length,kinds:[...new Set(reg.map(x=>x.src))],life:NATPANEL.tabs.LIFE(st.c.POL).includes('TRADING PARTNERS'),pol2:Object.keys(NATDATA.POL).length,audit:WWAR.audit()};});
+  ok('depot routes checked against the highways',r.routes>0&&r.cov>0,r);ok('trade partners, sanctions across the line',r.pol===5&&r.sanc&&r.life,r);ok('people register from the campaign\'s persons',r.reg>5&&r.kinds.length>=2,r);ok('government data for 150+ countries',r.pol2>=150,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
