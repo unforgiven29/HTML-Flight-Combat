@@ -1,3 +1,8 @@
+## v378 (infantry in the campaign)
+- **GO AS INFANTRY** on the campaign HQ, next to FLY SORTIE: the same kit, roles, insertions, town and drones. You fight for your team (BLUEFOR as the United States, REDFOR as Russia) in the campaign's hottest sector; enemy numbers follow the units in that sector.
+- A win pushes that sector of the campaign front 1.5 km toward the enemy and wears down its units there; the result is written to the campaign log and saved.
+- Tests: `node tests/run.js s32_`.
+
 ## v377 (playable infantry, drones)
 - **GO AS INFANTRY** from the sortie setup: pick a **role** (assault, sniper, marksman, anti-tank, air defence, machine gunner, close quarters, breacher) or set the kit yourself — primary (carbine, SMG, shotgun, service rifle named for your country, LMG, DMR, sniper rifle with scope), launcher (anti-tank rocket, ATGM, MANPADS, named from the equipment table), body armour, grenades.
 - **Insertion** by APC, IFV (stays and fires in support), helicopter, or airdrop (free fall, open the canopy, steer down).
