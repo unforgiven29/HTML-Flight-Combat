@@ -44,6 +44,9 @@ individual records (the spec allows this where individual detail is not needed).
 | Ground combat on sorties | `js/war/gfight.js` | GND units (not saved) | brigades (losses) |
 | Fleets, sea control, blockades, ships on sorties | `js/war/naval.js` | `st.c[].nav`, `st.navy` | economy (imports), fronts (amphibious threat), panel |
 | Downed pilots, CSAR, prisoners, exchanges | `js/war/csar.js` | `st.csar` | service record (leaders.js) |
+| Roads, rivers, bridges (map) | `js/world/wnet.js` | regional tiles | supply.js (bridges as targets) |
+| Bridge cuts, unit readiness and supply | `js/war/supply.js` | `st.br`, unit `ready` | WWAR.mod, squadronFor |
+| Natural hazards, emergency response, aid, recovery | `js/war/hazards.js` | `st.hz` | economy, population, support |
 | World-war clock | `WWAR.step` (`st.t`, hours since the scenario start) | `viper.ww` | warmap.js. **Separate from `CAMP.st.t` until step 2 joins the theatre campaign to the world war** |
 | Co-op campaign state | the host (`CAMP.publish`) | — | clients apply it; the ledger read model goes out as `wrv` every 40 publishes; clients never write the ledger |
 

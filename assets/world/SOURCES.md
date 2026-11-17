@@ -1,6 +1,6 @@
 # World data — sources, licences, dates
 
-Built by `node scripts/build-world-data.js` on 2026-11-16. Do not edit the data files by hand.
+Built by `node scripts/build-world-data.js` on 2026-11-17. Do not edit the data files by hand.
 
 | File | Content | Source | Licence | Accuracy |
 |---|---|---|---|---|
@@ -8,6 +8,7 @@ Built by `node scripts/build-world-data.js` on 2026-11-16. Do not edit the data 
 | airports.json | 7480 airports (large, medium, and paved small fields of 1,500 m or more) with runway ends, headings, length, width, surface | OurAirports (ourairports.com, data mirror github.com/davidmegginson/ourairports-data) | Public domain | Community-maintained; runway ends missing for some fields (placed from the heading instead). Military flag inferred from the name |
 | tiles/*.json | Per 10-degree cell: towns and cities of 1,000+ people (name, position, population) and urban-area outlines (simplified 0.004 deg) | GeoNames via github.com/lmfmaier/cities-json (cities500); Natural Earth 1:10m Urban Areas | GeoNames: CC BY 4.0 (attribution: GeoNames, geonames.org). Natural Earth: public domain | Town positions are the GeoNames point (the centre); urban outlines come from 2002-era satellite land cover, so recent growth is missing |
 | borders.json | Shared land borders: country pair and border lines (simplified 0.02 deg) | Natural Earth 1:50m Admin 0 Boundary Lines (Land); sides found by locating points either side of each line in the country polygons | Public domain | Disputed and indefinite lines included as Natural Earth draws them |
+| tiles/*.json (r, v) | Roads (major and secondary highways, class 1 / 2) and rivers (width class 1-3 from scale rank), simplified | Natural Earth 1:10m Roads, 1:10m Rivers and Lake Centerlines | Public domain | Generalised: minor roads and small rivers are not in the data; bridges are computed where these roads cross these rivers |
 | countries.json | 237 countries: outline (simplified 0.04 deg, quantised 0.01 deg), codes, sovereign, population estimate and year, GDP estimate (USD million) and year, region, label point, land neighbours (computed: borders within 0.03 deg) | Natural Earth 1:50m Admin 0 Countries (v5) | Public domain | Map display only; boundaries as Natural Earth draws them (de facto), not a statement on any dispute |
 | elev-2048.png | Global elevation and bathymetry, 2048 x 1024 equirectangular (about 20 km per cell), Terrarium encoding (R*256 + G - 32768 m) | AWS Open Data Terrain Tiles, zoom 4 | Open; attribution: SRTM (NASA), GMTED2010 (USGS), ETOPO1 (NOAA), and others listed at github.com/tilezen/joerd/blob/master/docs/attribution.md | Coarse: world map and offline fallback only |
 
