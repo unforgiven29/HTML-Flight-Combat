@@ -1,3 +1,11 @@
+## v384 (campaign dialogs in the menu theme)
+- **Sortie setup, infantry kit and both debriefings** now look like the other menus (brass on matte, hairline plates, red for the one action that commits): `css/sortie.css`, used by `js/war/ui2.js` and `js/war/infantry.js`.
+- **Mission type** is a set of cards (group, name, what it is flown as); the target list says how many targets fit; escorts and start are segmented controls; FLY SORTIE and GO AS INFANTRY sit in a footer bar.
+- **Infantry kit**: option tiles with real figures from the kit tables, and a LOADOUT card (objective, weapon, launcher, armour, grenades, insertion, damage / rate / magazine / accuracy / protection / mobility bars; it says MODIFIED when you leave the role preset). Keys are shown as key caps.
+- **Debriefings**: figures as tiles (aircraft / ground targets / aircraft state; kills / shots and hits / time).
+- Clicking in a dialog no longer jumps it back to the top or drops keyboard focus; the chosen target survives changing escorts or start; Esc closes the dialog (BACK in the kit). With no target of the chosen kind, the sortie now flies untargeted instead of silently taking the first target in the list.
+- Tests: `node tests/run.js s36_` (setup, kit and debrief checks unchanged).
+
 ## v383 (grass: no stutter, not in towns)
 - **No more stutter from grass**: it used to be re-laid all at once every 8 m you moved, each tuft checked against every wall in the battle (up to about 2 s for one frame). It is now laid a slice per frame, checked through the wall grid, and re-laid every 14 m. Measured walking through a live-world battle: worst frame 1,969 → 6 ms, average step 34 → 0.2 ms.
 - **Grass and bushes only where they belong**: not in a town's built-up area (the battlefield's own town; in the live world, the real urban footprints), not within a few metres of walls, not on streets or in the trench.

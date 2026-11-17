@@ -53,22 +53,42 @@ function names(a3){const E=EQ(a3);return{MBT:first(E.MBT),FTR:first(E.FTR4),ATK:
 // in the campaign's hottest sector and its result moves that sector of the campaign front.
 const campCtx=()=>{const red=typeof game!=='undefined'&&game.team==='RED';return{camp:true,a3:red?'RUS':'USA',en:red?'USA':'RUS',side:red?'R':'B',n:red?'Russia':'United States',enN:red?'United States':'Russia'};};
 const country=(cfg)=>cfg.camp?{n:campCtx().n,side:campCtx().side,gnd:1}:W.st.c[cfg.a3];
-function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=campCtx().a3;K.a3=a3;K.ap=ap;const p=country(K),N=names(a3);if(window.UI2)UI2.close();
-  const b=(g,k,lab)=>'<button data-ik="'+g+':'+k+'" aria-pressed="'+(K[g]===k)+'">'+esc(lab)+'</button>';
-  const h='<h2>INFANTRY — '+esc(p.n.toUpperCase())+'</h2><div class="muted">Your kit and how you get to the front.</div>'+
-   '<h3>MISSION</h3><div class="grid">'+b('mis','ATTACK','ATTACK — take the town')+b('mis','DEFEND','DEFEND — hold the trenches')+'</div>'+
-   '<h3>ROLE</h3><div class="grid">'+Object.keys(ROLE).map(k=>b('role',k,ROLE[k].n)).join('')+'</div>'+
-   '<h3>PRIMARY WEAPON</h3><div class="grid">'+Object.keys(PRI).map(k=>b('pri',k,(k==='RIFLE'&&N.RIFLE?N.RIFLE+' (rifle)':PRI[k].n))).join('')+'</div>'+
-   '<h3>LAUNCHER</h3><div class="grid">'+Object.keys(LAU).map(k=>b('lau',k,(N[k]?N[k]+' — ':'')+LAU[k].n)).join('')+'</div>'+
-   '<h3>BODY ARMOUR</h3><div class="grid">'+Object.keys(ARM).map(k=>b('arm',k,ARM[k].n)).join('')+'</div>'+
-   '<h3>GRENADES</h3><div class="grid">'+[0,2,4].map(n=>b('gren',n,String(n))).join('')+'</div>'+
-   '<h3>INSERTION</h3><div class="grid">'+Object.keys(INS).map(k=>b('ins',k,INS[k]+(N[k]?' · '+N[k]:''))).join('')+'</div>'+
-   '<div class="muted" style="margin-top:8px">Keys: WASD · mouse · Q or right mouse aims down the sights · B sandbag wall · O offensive · F place FPV drone, V its feed · H medevac · G grenade · Esc leave. In the world war you fight in the live world while the war goes on. Sidearm always carried. Heavier armour protects more and slows you. The IFV stays and fires in support; the APC and helicopter drop you and leave.</div>'+
-   '<div style="margin-top:16px;display:flex;justify-content:space-between"><button data-ix="1">BACK</button><button class="go" data-igo="1">DEPLOY</button></div>';
-  const d=document.createElement('div');d.className='u2m';d.id='u2m';d.innerHTML='<div class="bx">'+h+'</div>';document.body.appendChild(d);}
+const INSB={APC:'Drops you and leaves.',IFV:'Stays and supports you with its cannon.',HELO:'Drops you and leaves.',AIR:'Parachute: steer it down.'};
+const MISD={ATTACK:['ATTACK','Take the town.'],DEFEND:['DEFEND','Hold the trenches.']};
+function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=campCtx().a3;K.a3=a3;K.ap=ap;const p=country(K),N=names(a3);const sn=window.UI2&&UI2.snap?UI2.snap():null;if(window.UI2)UI2.close();
+  // one choice button: group g, key k; the data-ik attribute is what the click handler below reads
+  const o=(g,k,nm,sub)=>'<button class="opt" data-ik="'+g+':'+k+'" aria-pressed="'+(K[g]===k)+'"><b>'+esc(nm)+'</b>'+(sub?'<span>'+esc(sub)+'</span>':'')+'</button>';
+  const sec=(t,body,em)=>'<section class="sec"><h3>'+t+(em?'<em>'+em+'</em>':'')+'</h3>'+body+'</section>';
+  const priSub=(k)=>{const q=PRI[k];return(k==='RIFLE'&&N.RIFLE?'Service rifle · ':'')+q.mag+' rd · '+q.rpm+' rpm'+(q.pel?' · '+q.pel+' pellets':'')+(q.scope?' · scoped':'');};
+  const lauSub=(k)=>k==='NONE'?'':(N[k]?N[k]+' · ':'')+(LAU[k].air?'air defence':LAU[k].guided?'guided':'unguided')+' · '+(LAU[k].mag+LAU[k].res)+' rd';
+  const armSub=(k)=>k==='NONE'?'No protection.':Math.round((1-ARM[k].k)*100)+'% protection · '+Math.round((1-ARM[k].spd)*100)+'% slower';
+  const bar=(lab,v,txt)=>'<div class="st"><span>'+lab+'</span><u><i style="width:'+Math.round(Math.max(.04,Math.min(1,v))*100)+'%"></i></u><em>'+txt+'</em></div>';
+  const R=ROLE[K.role],pr=PRI[K.pri],la=LAU[K.lau],ar=ARM[K.arm];
+  const mod=R&&(R.pri!==K.pri||R.lau!==K.lau||R.arm!==K.arm||R.gren!==K.gren);
+  const ln=(l,v)=>'<div class="ln"><span>'+l+'</span><b>'+esc(v)+'</b></div>';
+  const card='<aside class="ks" aria-label="Loadout"><div class="sb">LOADOUT'+(mod?' · MODIFIED':'')+'</div><div class="rl">'+esc(R?R.n:K.role)+'</div>'+
+    ln('OBJECTIVE',MISD[K.mis]?MISD[K.mis][0]+' — '+MISD[K.mis][1]:K.mis)+ln('PRIMARY',K.pri==='RIFLE'&&N.RIFLE?N.RIFLE:pr.n)+ln('LAUNCHER',K.lau==='NONE'?'None':(N[K.lau]?N[K.lau]+' — ':'')+la.n)+ln('SIDEARM',SIDE.n)+ln('ARMOUR',ar.n)+ln('GRENADES',String(K.gren))+ln('INSERTION',INS[K.ins]+(N[K.ins]?' · '+N[K.ins]:''))+
+    '<div class="br">'+bar('DAMAGE',pr.dmg/140,pr.dmg+(pr.pel?' ×'+pr.pel:''))+bar('FIRE RATE',pr.rpm/900,String(pr.rpm))+bar('MAGAZINE',pr.mag/100,String(pr.mag))+bar('ACCURACY',1-pr.spr/.07,Math.round((1-pr.spr/.07)*100)+'%')+bar('PROTECTION',(1-ar.k)/.6,Math.round((1-ar.k)*100)+'%')+bar('MOBILITY',ar.spd,Math.round(ar.spd*100)+'%')+'</div>'+
+    '<div class="fine">'+esc(INSB[K.ins])+' Abstract game values, not published data.</div></aside>';
+  const keys=[['WASD','move'],['MOUSE','look'],['Q','aim (or right mouse)'],['B','sandbag wall'],['O','offensive'],['F','place FPV drone'],['V','its feed'],['H','medevac'],['G','grenade'],['Esc','leave']];
+  const h='<header class="mh"><div class="mk">INFANTRY · KIT AND INSERTION</div><h2 id="u2t">INFANTRY — '+esc(p.n.toUpperCase())+'</h2><div class="ms"><span>Your kit and how you get to the front</span></div></header>'+
+   '<div class="mb"><div class="kit"><div class="col">'+
+   sec('MISSION','<div class="opts c2">'+Object.keys(MISD).map(k=>o('mis',k,MISD[k][0],MISD[k][1]).replace('class="opt"','class="opt big"')).join('')+'</div>')+
+   sec('ROLE','<div class="opts c3">'+Object.keys(ROLE).map(k=>o('role',k,ROLE[k].n,PRI[ROLE[k].pri].n)).join('')+'</div>','sets the kit, each item can still be changed')+
+   sec('PRIMARY WEAPON','<div class="opts">'+Object.keys(PRI).map(k=>o('pri',k,(k==='RIFLE'&&N.RIFLE?N.RIFLE+' (rifle)':PRI[k].n),priSub(k))).join('')+'</div>')+
+   sec('LAUNCHER','<div class="opts">'+Object.keys(LAU).map(k=>o('lau',k,(N[k]?N[k]+' — ':'')+LAU[k].n,lauSub(k))).join('')+'</div>')+
+   sec('BODY ARMOUR','<div class="opts">'+Object.keys(ARM).map(k=>o('arm',k,ARM[k].n,armSub(k))).join('')+'</div>','heavier protects more and slows you')+
+   sec('GRENADES','<div class="seg">'+[0,2,4].map(n=>'<button data-ik="gren:'+n+'" aria-pressed="'+(K.gren===n)+'">'+n+'</button>').join('')+'</div><div class="note">A sidearm is always carried.</div>')+
+   sec('INSERTION','<div class="opts">'+Object.keys(INS).map(k=>o('ins',k,INS[k],(N[k]?N[k]+' · ':'')+INSB[k])).join('')+'</div>')+
+   '</div>'+card+'</div>'+
+   sec('CONTROLS','<div class="keys">'+keys.map(([k,t])=>'<span><kbd>'+k+'</kbd>'+t+'</span>').join('')+'</div><div class="note">In the world war you fight in the live world while the war goes on.</div>')+
+   '</div>'+
+   '<footer class="mf"><button class="ghost" data-ix="1">'+(K.camp?'CANCEL':'BACK')+'</button><div class="r"><button class="go" data-igo="1">DEPLOY ▸</button></div></footer>';
+  const d=document.createElement('div');d.className='u2m';d.id='u2m';d.dataset.k='kit';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','u2t');d.innerHTML='<div class="bx wide">'+h+'</div>';document.body.appendChild(d);
+  if(sn&&UI2.restore)UI2.restore(d,sn,'kit');}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-inf],[data-ik],[data-ix],[data-igo]');if(!t)return;const d=t.dataset;
   if(d.inf&&window.UI2){kitMenu(UI2.SU.a3,UI2.SU.ap);}
-  else if(d.ik){const[g,k]=d.ik.split(':');K[g]=g==='gren'?+k:k;if(g==='role')Object.assign(K,{pri:ROLE[k].pri,lau:ROLE[k].lau,arm:ROLE[k].arm,gren:ROLE[k].gren});const m=document.getElementById('u2m');if(m)m.remove();kitMenu(K.a3,K.ap,K.camp);}
+  else if(d.ik){const[g,k]=d.ik.split(':');K[g]=g==='gren'?+k:k;if(g==='role')Object.assign(K,{pri:ROLE[k].pri,lau:ROLE[k].lau,arm:ROLE[k].arm,gren:ROLE[k].gren});kitMenu(K.a3,K.ap,K.camp);}
   else if(d.ix){const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&window.UI2)UI2.setup(K.a3,K.ap);}
   else if(d.igo){const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&K.ap&&K.ap.runways&&window.WSORTIE)startWorld({...K});else start({...K});}});
 
@@ -671,9 +691,14 @@ function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cf
     else if(r==='KIA'){for(const u of C.units)if(!u.dead&&u.i===i&&u.s===ms){u.hp=Math.max(5,(u.hp||100)-5);break;}}
     CAMP.log('Infantry, sector '+(i+1)+': '+txt,(r==='WON'||r==='HELD')?'b':'r');try{CAMP.save();}catch(e){}}
   const ws=window.WSORTIE&&WSORTIE.WS;if(ws&&ws.kills)ws.kills.gnd+=S.kills;say(TTL(r),4);
-  const d=document.createElement('div');d.className='u2m';d.id='u2m';d.style.zIndex=9995;d.innerHTML='<div class="bx"><h2>INFANTRY DEBRIEF — '+TTL(r)+'</h2><div>'+esc(txt)+'</div>'+
-    '<div class="row"><span>Shots / hits</span><b>'+S.shots+' / '+S.hits+'</b></div><div class="row"><span>Insertion</span><b>'+esc(INS[S.ins])+'</b></div><div class="row"><span>Time</span><b>'+Math.round(S.t)+' s</b></div>'+
-    (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="muted">The front line in this sector moves forward a little.</div>':'')+'<div style="margin-top:14px;text-align:right"><button class="go" data-iend="1">CONTINUE</button></div></div>';document.body.appendChild(d);
+  const good=r==='WON'||r==='HELD';
+  const d=document.createElement('div');d.className='u2m';d.id='u2m';d.dataset.k='idebrief';d.style.zIndex=9995;d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','u2t');
+  d.innerHTML='<div class="bx" style="border-top-color:'+(good?'#8fae6a':r==='KIA'||r==='LOST'?'#c4432e':'#cfa94f')+'"><header class="mh"><div class="mk">INFANTRY · AFTER ACTION</div><h2 id="u2t">INFANTRY DEBRIEF — '+TTL(r)+'</h2></header>'+
+    '<div class="mb"><section class="sec"><h3>OUTCOME</h3><div class="verdict">'+esc(txt)+'</div></section>'+
+    '<section class="sec"><h3>RESULTS</h3><div class="kpis"><div class="kp"><b>'+(S.kills|0)+'</b><span>Kills</span></div><div class="kp"><b>'+S.shots+' / '+S.hits+'</b><span>Shots / hits</span></div><div class="kp"><b>'+Math.round(S.t)+' s</b><span>Time</span></div></div>'+
+    '<div class="row" style="margin-top:8px"><span>Insertion</span><b>'+esc(INS[S.ins])+'</b></div></section>'+
+    (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="note">The front line in this sector moves forward a little.</div>':'')+'</div>'+
+    '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
 window.INFANTRY={armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
