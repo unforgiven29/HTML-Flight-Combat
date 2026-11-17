@@ -99,7 +99,7 @@ function command(p,m){const st=W.st;if(!bel(p)||st.over)return;
   if(!m.hq){const c=W.lead?W.lead.person(p.a3,'Theatre commander, '+p.n,W.lead.rank(p.a3,'army',3)):{name:'Commander',skill:1};m.hq={id:c.id,name:c.name,skill:c.skill||1,deputy:null};}
   if(m.succ>0)m.succ--;
   for(const f of st.fronts){if(f.a!==p.a3&&f.b!==p.a3)continue;const o=st.c[f.a===p.a3?f.b:f.a],ratio=p.gnd/Math.max(1,o.gnd)*(m.mun.ART>5?1:.7);
-    const want=(m.cmd&&m.cmd[f.id])||(ratio>1.25?'ATTACK':ratio<.8?'DEFEND':'HOLD');   /* commander mode: your order for this front, else the headquarters decides */const cur=m.intent[f.id];
+    const want=(m.cmd&&m.cmd[f.id])||(ratio>(m.atkT||1.25)?'ATTACK':ratio<(m.defT||.8)?'DEFEND':'HOLD')   /* thresholds learned from experience (learn.js) */;   /* commander mode: your order for this front, else the headquarters decides */const cur=m.intent[f.id];
     if(cur!==want&&!m.pend.some(q=>q.f===f.id&&q.i===want)){m.pend=m.pend.filter(q=>q.f!==f.id);m.pend.push({f:f.id,i:want,why:m.cmd&&m.cmd[f.id]?'your order':'force ratio '+ratio.toFixed(2)+(m.mun.ART<=5?', artillery short':'')+(ratio>1.25?' favours an attack':ratio<.8?' calls for defence':' calls for holding'),t:st.t+24*(R.friction[0]+rn()*(R.friction[1]-R.friction[0]))});}
     if(m.intent[f.id]==='DEFEND'&&!f.cf)m.fort[f.id]=Math.min(1,(m.fort[f.id]||0)+R.fortRate*m.eng);
     if(!f.cf&&rn()<R.hqHit&&!m.succ){m.succ=R.succDays;W.emit('COMMAND',{e:[p.a3],txt:p.n+'\'s forward headquarters on the front with '+o.n+' is hit; the deputy commander takes over (command disrupted for a few days).'});}}
@@ -168,7 +168,7 @@ function tab(p){const st=W.st,m=M(p.a3);if(!m)return'';const mine=isMine(p.a3)&&
     row('Called up',lbl(fmt(m.called)))+row('Exempt or deferred',lbl(fmt(m.exempt)))+row('Did not report',lbl(fmt(m.evade)))+row('In training',lbl(fmt(m.trn.reduce((t,c)=>t+c.n,0))))+
     row('Joined units',lbl(m.gained.toFixed(1)+' brigade-eq.'))+(m.demob?row('Demobilized',lbl(fmt(m.demob))):'');
   if(mine)h+='<div class="tc">'+['PARTIAL','GENERAL'].map(s=>'<button data-mil="'+s+'" data-a3="'+p.a3+'"'+(m.state===s||m.state==='GENERAL'?' disabled':'')+'>ORDER '+s+' MOBILIZATION</button>').join(' ')+'</div>';
-  h+='<h4>PERSONNEL AND TRAINING</h4>'+row('Aircrews',lbl(Math.round(m.crews)+' for '+Math.round(p.air)+' aircraft'))+row('Experience',Math.round(m.exp*100)+' %')+row('Aircrew lost',lbl(Math.round(m.lostCrews)))+(m.less?row('Lessons learned',m.less+' revision'+(m.less>1?'s':'')):'');
+  h+='<h4>PERSONNEL AND TRAINING</h4>'+row('Aircrews',lbl(Math.round(m.crews)+' for '+Math.round(p.air)+' aircraft'))+row('Experience',Math.round(m.exp*100)+' %')+(m.less?row('Lessons learned',m.less+' revision'+(m.less>1?'s':'')):'');
   h+='<h4>COMMAND</h4>'+(m.hq?row('Theatre commander',esc(m.hq.name))+(m.succ?row('Headquarters','disrupted ('+m.succ+' days)'):''):'<div>No wartime headquarters.</div>')+
     st.fronts.filter(f=>f.a===p.a3||f.b===p.a3).map(f=>row('Front with '+esc(st.c[f.a===p.a3?f.b:f.a].n),(m.intent[f.id]||'—')+(m.pend.some(q=>q.f===f.id)?' (new orders on the way)':'')+(m.fort[f.id]?' · dug in '+Math.round(m.fort[f.id]*100)+' %':''))+
       (mine?'<div class="tc">COMMAND: '+['ATTACK','HOLD','DEFEND','AUTO'].map(i=>'<button data-cmd="'+i+'" data-f="'+f.id+'" data-a3="'+p.a3+'" aria-pressed="'+((m.cmd&&m.cmd[f.id]||'AUTO')===i)+'">'+(i==='AUTO'?'DELEGATE':i)+'</button>').join(' ')+'</div>':'')).join('')+

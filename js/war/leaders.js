@@ -35,7 +35,8 @@ const POOL={
  IT:[['Marco','Giulia','Luca','Chiara','Paolo','Sara','Andrea','Elena'],['Ferrante','Rinaldi','Lombardo','Caruso','Gallo','Moretti','Vitale','Serra']],
  DE:[['Lukas','Anna','Jonas','Lena','Stefan','Katrin','Matthias','Julia','Pieter','Sanne'],['Brandt','Hoffmann','Keller','Vogel','Lindqvist','Van Dijk','Berger','Krause','Janssen','Albers']],
  NO:[['Erik','Ingrid','Lars','Sigrid','Mikko','Aino','Olav','Kaisa','Jukka','Astrid'],['Halvorsen','Lindgren','Virtanen','Dahl','Korhonen','Berg','Nyström','Laine','Strand','Holm']],
- RU:[['Ivan','Olga','Dmitri','Irina','Pavel','Natalia','Sergei','Elena','Andrei','Marina','Oleksandr','Tetiana'],['Volkov','Orlov','Sokolov','Petrenko','Zhukov','Rybak','Lebedev','Morozov','Kovalenko','Gromov','Antonov','Shevchuk']],
+ RU:[['Ivan','Olga','Dmitri','Irina','Pavel','Natalia','Sergei','Elena','Andrei','Marina','Alexei','Tatiana'],['Volkov','Orlov','Sokolov','Zhukov','Lebedev','Morozov','Gromov','Antonov','Kuznetsov','Belov','Fedorov','Vinogradov']],
+ UA:[['Oleksandr','Tetiana','Mykola','Oksana','Taras','Iryna','Bohdan','Nataliia','Andrii','Olena','Yurii','Halyna'],['Kovalenko','Shevchuk','Petrenko','Bondarenko','Tkachenko','Rybak','Melnyk','Kravchenko','Lysenko','Moroz','Savchenko','Hnatiuk']],
  PL:[['Tomasz','Agnieszka','Piotr','Katarzyna','Jan','Petra','Marek','Zuzana'],['Nowak','Kowalska','Wiśniewski','Hrabal','Novotný','Dvořák','Horváthová','Zieliński']],
  SS:[['Marko','Ana','Nikola','Ivana','Stefan','Maja','Dragan','Elena'],['Petrović','Horvat','Jovanović','Kovačević','Popov','Georgiev','Novak','Ilić']],
  RO:[['Andrei','Ioana','Mihai','Elena','Radu','Ana'],['Popescu','Ionescu','Dumitru','Stan','Rusu','Munteanu']],
@@ -54,7 +55,7 @@ const POOL={
 const REG=a=>{const c=G.byA3.get(a)||{};const sub=c.sub||'',cont=c.cont||'';
   if(['USA','GBR','CAN','AUS','NZL','IRL'].includes(a))return'EN';if(['FRA','BEL','LUX','CHE'].includes(a))return'FR';if(['ESP','PRT','BRA'].includes(a))return a==='BRA'?'LA':'IB';if(['ITA','MLT'].includes(a))return'IT';
   if(['DEU','AUT','NLD'].includes(a))return'DE';if(['NOR','SWE','DNK','FIN','ISL'].includes(a))return'NO';if(['EST','LVA','LTU'].includes(a))return'BA';if(['CHN','TWN','HKG','SGP'].includes(a))return a==='SGP'?'SE':'CN';
-  if(['KOR','PRK'].includes(a))return'KO';if(a==='JPN')return'JP';if(['TUR','AZE','ARM','GEO','KAZ','UZB','TKM','KGZ'].includes(a))return'TR';if(['RUS','BLR','UKR'].includes(a))return'RU';if(['POL','CZE','SVK'].includes(a))return'PL';if(['SRB','HRV','BIH','SVN','MKD','MNE','BGR','KOS','ALB'].includes(a))return'SS';if(['ROU','MDA'].includes(a))return'RO';if(['GRC','CYP'].includes(a))return'GR';if(a==='HUN')return'HU';
+  if(['KOR','PRK'].includes(a))return'KO';if(a==='JPN')return'JP';if(['TUR','AZE','ARM','GEO','KAZ','UZB','TKM','KGZ'].includes(a))return'TR';if(a==='UKR')return'UA';if(['RUS','BLR'].includes(a))return'RU';if(['POL','CZE','SVK'].includes(a))return'PL';if(['SRB','HRV','BIH','SVN','MKD','MNE','BGR','KOS','ALB'].includes(a))return'SS';if(['ROU','MDA'].includes(a))return'RO';if(['GRC','CYP'].includes(a))return'GR';if(a==='HUN')return'HU';
   if(/Eastern Europe|Southern Europe/.test(sub)&&cont==='Europe')return'RU';
   if(/Western Asia|Northern Africa/.test(sub))return'AR';if(/Southern Asia/.test(sub))return'SA';if(/South-Eastern Asia/.test(sub))return'SE';if(cont==='Africa')return'AF';if(/America/.test(cont)||/Caribbean|Central America/.test(sub))return'LA';return'EN';};
 const fname=a3=>{const P=POOL[REG(a3)];return pick(P[0])+' '+pick(P[1]);};
@@ -125,5 +126,5 @@ function inquiries(){const c=L().career;if(!c)return;for(const q of c.inq){if(q.
     W.emit('INQUIRY',{e:[c.a3],txt:c.name+'\'s inquiry finds the strike was aimed at a military objective; the civilian harm stays on record and the procedure is reviewed.'});}}}
 W.daily.push(()=>{if(!W.st||W.st.over)return;for(const c of Object.values(W.st.c))if(bel(c))staff(c);commanders();incidents();inquiries();});
 if(window.WSORTIE){const _s=WSORTIE.start;WSORTIE.start=async function(){const c=W.st&&W.st.lead&&W.st.lead.career;if(c&&c.st==='GROUNDED'&&c.a3===arguments[0]){flash('YOU ARE GROUNDED PENDING A COURT-MARTIAL',3500);return;}return _s.apply(this,arguments);};}
-W.lead={POOL,RANKS,TRAD,rank:R_,person,staff,who,career,commanders,incidents,AWARDS};
+W.lead={REG,POOL,RANKS,TRAD,rank:R_,person,staff,who,career,commanders,incidents,AWARDS};
 })();

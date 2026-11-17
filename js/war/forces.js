@@ -77,11 +77,22 @@ const embargo=(seller,buyer)=>buyer.side&&seller.side!==buyer.side&&!!seller.sid
 const NAME=k=>({AAM:'air-to-air missiles',SAM:'surface-to-air missiles',PGM:'precision strike weapons',ART:'artillery ammunition'}[k]||k);
 
 /* ------------------------------------------------------------------ ships: damage control and repair; carriers */
+// a ship hit: six compartments (bow, forward, midships, engine room, magazine, stern), fire and flooding spreading
+// hour by hour, damage-control teams (more and better trained with the country's tier) fighting them; the ship is
+// saved when the fires are out and flooding is stopped before buoyancy or the magazine are lost
+const CMP=['bow','forward','midships','engine room','magazine','stern'];
+function dcSim(t){const C=CMP.map(n=>({n,fire:0,flood:0}));const hit=(rn()*6)|0;C[hit].fire=.7+rn()*.3;C[hit].flood=.4+rn()*.9;const nb=C[hit+(hit<5?1:-1)];nb.fire=Math.max(nb.fire,rn()*.6);nb.flood=Math.max(nb.flood,rn()*.6);const teams=1+t,skill=.12+.07*t;let log=[];
+  for(let h=0;h<12;h++){for(let i=0;i<6;i++){const c=C[i];if(c.fire>.4){for(const j of[i-1,i+1])if(C[j]&&rn()<.35)C[j].fire=Math.max(C[j].fire,.45);}if(c.flood>.5){c.flood=Math.min(1.2,c.flood+.06);for(const j of[i-1,i+1])if(C[j]&&rn()<.25)C[j].flood=Math.max(C[j].flood,.35);}}
+    const work=C.slice().sort((a,b)=>(b.fire+b.flood)-(a.fire+a.flood)).slice(0,teams);for(const c of work){c.fire=Math.max(0,c.fire-skill*.35);c.flood=Math.max(0,c.flood-skill*.25);}
+    if(C[4].fire>.8){log.push('magazine fire');return{saved:false,why:'a fire reaches the magazine',h,C};}
+    const fl=C.reduce((t,c)=>t+c.flood,0);if(fl>2.4)return{saved:false,why:'flooding cannot be stopped',h,C};
+    if(C.every(c=>c.fire<.05&&c.flood<.3))return{saved:true,why:'fires out and flooding stopped after '+(h+1)+' hours',h,C};}
+  return{saved:C.reduce((t,c)=>t+c.flood,0)<1.6,why:'towed with flooding contained',h:12,C};}
 function ships(p,r){const st=W.st,n=p.nav;if(!n)return;const lost=(n.lost?n.lost.sur+n.lost.sub+n.lost.amp:0),prev=r.ships._l??lost;r.ships._l=lost;
   // for every ship lost in battle about as many more are hit and survive: damage control decides
-  for(let i=0;i<lost-prev;i++){if(rn()<.5)continue;const ok=rn()<.55+.15*tier(p)/3;if(ok&&n.sur>0){n.sur--;r.ships.dmg.push({t:st.t,back:st.t+24*(20+rn()*70)});r.ships.dc.ok++;
-      W.emit('NAVAL',{e:[p.a3],cf:'REPORTED',txt:'A '+p.n+' warship is hit; fires and flooding are brought under control by its damage-control teams. It is towed to port for repair. Casualties among the crew are reported.'});}
-    else{r.ships.dc.lost++;W.emit('NAVAL',{e:[p.a3],cf:'REPORTED',txt:'A damaged '+p.n+' warship cannot be saved; the crew abandon ship and rescue ships pick up the survivors.'});}}
+  for(let i=0;i<lost-prev;i++){if(rn()<.5)continue;const dc=dcSim(tier(p));const ok=dc.saved;r.ships.last=dc;if(ok&&n.sur>0){n.sur--;r.ships.dmg.push({t:st.t,back:st.t+24*(20+rn()*70)});r.ships.dc.ok++;
+      W.emit('NAVAL',{e:[p.a3],cf:'REPORTED',txt:'A '+p.n+' warship is hit in the '+dc.C.filter(c=>c.fire>0||c.flood>0).map(c=>c.n).slice(0,3).join(', ')+'; damage-control teams save it ('+dc.why+'). It is towed to port for repair. Casualties among the crew are reported.'});}
+    else{r.ships.dc.lost++;W.emit('NAVAL',{e:[p.a3],cf:'REPORTED',txt:'A damaged '+p.n+' warship cannot be saved ('+dc.why+'); the crew abandon ship and rescue ships pick up the survivors.'});}}
   for(let i=r.ships.dmg.length-1;i>=0;i--){const d=r.ships.dmg[i];if(st.t<d.back)continue;r.ships.dmg.splice(i,1);n.sur++;r.ships.rep++;if(rn()<.3)W.emit('NAVAL',{e:[p.a3],txt:'A repaired '+p.n+' warship returns to the fleet.'});}
   // carriers: deck cycle by sea state (theatre weather) and the wing's state
   while(r.cv.length>n.cv)r.cv.pop();while(r.cv.length<n.cv)r.cv.push({id:p.a3+'-CV'+(r.cv.length+1),deck:'READY',wing:40,ready:.8,seaLim:0,cyc:0});
@@ -129,7 +140,7 @@ if(window.WSORTIE){const _f=WSORTIE.finish;WSORTIE.finish=function(){const WS=WS
    if(typeof radio==='function')radio(brief,false);}}catch(e){}return r;};}
 
 /* ------------------------------------------------------------------ daily */
-W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){const r=F(p.a3);if(!r)continue;sync(p,r);ships(p,r);drones(p,r);civil(p,r);}trade();pmc();});
+W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){if(W.lod&&!W.lod(p,Math.floor(st.t/24)))continue;const r=F(p.a3);if(!r)continue;sync(p,r);ships(p,r);drones(p,r);civil(p,r);}trade();pmc();});
 
 /* ------------------------------------------------------------------ ARSENAL tab */
 function tab(p){const st=W.st,r=F(p.a3);if(!r)return'';const s=st.frc;
@@ -158,5 +169,5 @@ function album(){try{return JSON.parse(localStorage.getItem('viper.album')||'[]'
 if(window.WSORTIE){const _f=WSORTIE.finish;WSORTIE.finish=function(){const WS=WSORTIE.WS,was=WS.on&&game.active,a3=WS.me;const img=was?snap():null;const r=_f.apply(this,arguments);
   if(img&&W.st)try{const A=album();A.unshift({img,t:W.st.t,a3,ac:player&&player.type||''});A.length=Math.min(A.length,12);localStorage.setItem('viper.album',JSON.stringify(A));}catch(e){}return r;};}
 {const _t=tab;NATPANEL&&NATPANEL.tabs&&(NATPANEL.tabs.ARSENAL=p=>{const A=album().filter(x=>x.a3===p.a3);return _t(p)+(A.length?'<h4>DEPLOYMENT ALBUM</h4><div style="display:flex;flex-wrap:wrap;gap:3px">'+A.map(x=>'<img src="'+x.img+'" width="96" height="54" title="'+esc(x.ac+' · '+W.date(x.t).slice(0,10))+'">').join('')+'</div>':'');});}
-W.forces={snap,album,CAT,INF,F,roster,afterSortie,tab,trade,embargo};
+W.forces={dcSim,snap,album,CAT,INF,F,roster,afterSortie,tab,trade,embargo};
 })();

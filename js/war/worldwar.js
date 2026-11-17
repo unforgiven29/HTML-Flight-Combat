@@ -45,9 +45,9 @@ const W={st:null,run:false,speed:6,listeners:[]};
 const warn=(k,e)=>{if(!warn[k]){warn[k]=1;console.warn('[war] '+k,e);}};
 
 /* ------------------------------------------------------------------ events (same contract as the campaign ledger) */
-function emit(ty,o){const st=W.st;const e={id:'W'+(st.seq++).toString(36).toUpperCase(),v:1,ty,dm:o.dm||'war',t:st.t,e:o.e||[],c:o.c||[],cf:o.cf||'CONFIRMED',txt:o.txt};
+function emit(ty,o){const st=W.st,cz=W._cz;const e={id:'W'+(st.seq++).toString(36).toUpperCase(),v:1,ty,dm:o.dm||'war',t:st.t,e:o.e||[],c:o.c||(cz&&cz.length?[cz[cz.length-1]]:[]),cf:o.cf||'CONFIRMED',txt:o.txt};   /* c: the events that caused this one (an event emitted while another is being handled is caused by it; ch.02 causality) */
   if(o.loc)e.loc=o.loc;st.ev.push(e);if(st.ev.length>900){const n=st.ev.length-900;for(const x of st.ev.splice(0,n))st.fold[x.ty]=(st.fold[x.ty]||0)+1;st.folded+=n;}
-  for(const f of W.listeners)try{f(e);}catch(_){}return e;}
+  (W._cz||(W._cz=[])).push(e.id);for(const f of W.listeners)try{f(e);}catch(_){}W._cz.pop();return e;}
 
 /* ------------------------------------------------------------------ national profiles */
 function milBases(){const m=new Map();for(const a of G.airports){if(!a.mil)continue;const c=G.byA2.get(a.iso2);if(!c)continue;(m.get(c.a3)||m.set(c.a3,[]).get(c.a3)).push(a);}return m;}
@@ -147,7 +147,7 @@ function daily(){const st=W.st;for(const f of W.daily)try{f();}catch(e){warn('da
 W.date=t=>{const d=new Date(Date.parse(W.st.start)+t*3600e3);return d.toISOString().slice(0,16).replace('T',' ')+'Z';};
 
 /* ------------------------------------------------------------------ save */
-function save(){try{localStorage.setItem(KEY,JSON.stringify(W.st));}catch(e){warn('save',e);}}
+function save(){try{let s=JSON.stringify(W.st);if(W.compact&&s.length>4.5e6){W.compact();s=JSON.stringify(W.st);}localStorage.setItem(KEY,s);}catch(e){warn('save',e);}}   /* W.compact: perf.js */
 W.load=async()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===V&&o.c){await G.loadData();W.st=o;return true;}}catch(e){warn('load',e);}return false;};
 W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
   for(const a3 in st.c){const p=st.c[a3];if(!G.byA3.has(a3))out.push('unknown country '+a3);if(p.air<-1e-6||p.gnd<-1e-6)out.push('negative force '+a3);if(p.side&&!['B','R'].includes(p.side))out.push('bad side '+a3);}

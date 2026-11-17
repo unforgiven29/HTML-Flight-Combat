@@ -68,7 +68,7 @@ function intimidation(){const st=W.st,L=LAW();if(L.intim!=='ON')return;
     const pol=L.policy[p.a3];if(!pol||st.t<pol.next)continue;pol.next=st.t+24*(7+rn()*7);
     const en=p.side==='B'?'R':'B',cand=G.places.filter(pl=>pl.pop>2e5&&st.c[pl.a3]&&P.side(st.c[pl.a3])===en&&st.fronts.some(f=>f.sec.some(s=>G.dist(pl.lat,pl.lon,s.lat,s.lon)<600e3)));if(!cand.length)continue;
     const city=pick(cand),v=st.c[city.a3],n=Math.round(city.pop*.05),kLo=Math.round(city.pop*1e-5),kHi=Math.round(city.pop*6e-5);v.disp=(v.disp||0)+n;
-    const e=W.emit('INTIMIDATION',{e:[city.a3,p.a3],cf:'REPORTED',loc:[city.lat,city.lon],txt:'Deliberate attack on a civilian area of '+city.name+' ('+v.n+'), attributed to '+p.n+'. Early estimates: '+kLo+'-'+kHi+' people killed; about '+n+' leave the city. Rescue and medical teams are working; shelters are open.'});
+    const e=W.emit('INTIMIDATION',{e:[city.a3,p.a3],cf:'REPORTED',loc:[city.lat,city.lon],txt:'Deliberate attack on a civilian area of '+city.name+' ('+v.n+'), attributed to '+p.n+'. Casualty figures are not known; about '+n+' leave the city. Rescue and medical teams are working; shelters are open.'});
     open({src:e&&e.id,cat:'INTIMIDATION',candidate:'potential war crime (deliberate attack on civilians)',txt:e.txt,side:p.side});
     if(st.soc)st.soc.leg[p.side]=Math.max(0,st.soc.leg[p.side]-.05);if(st.nat){st.nat.coh[p.side]=Math.max(0,st.nat.coh[p.side]-.03);st.nat.coh[en]=Math.min(1,st.nat.coh[en]+.03);}
     for(const a of(G.byA3.get(city.a3)||{nb:[]}).nb){const q=st.c[a];if(q&&!bel(q)){q.inc=q.inc||{B:0,R:0};q.inc[p.side]++;}}

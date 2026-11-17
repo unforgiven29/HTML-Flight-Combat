@@ -28,7 +28,7 @@ function strategy(p){const st=W.st,F=st.fronts.filter(f=>f.a===p.a3||f.b===p.a3)
   return F.map(f=>{const en=st.c[f.a===p.a3?f.b:f.a],post=f.post&&f.post[p.a3]||'—',w=f.w&&f.w[p.a3],est=f.est&&f.est[p.a3],tr=en.gnd;
     return row('vs '+esc(en.n),(f.cf?'ceasefire':post)+(w?' · forces x'+w.toFixed(2):'')+(est!=null?' · believes enemy at '+est.toFixed(2)+' (true '+(tr/Math.max(1,F.length)).toFixed(2)+')':''));}).join('')+'<div style="color:#8a9a92">The true value is shown for you, not for the country: it decides on its estimate.</div>';}
 function leaders(p){const Ld=W.lead;if(!Ld||!p.ldr)return'<div>No wartime government appointed (not at war).</div>';
-  let h=[['HEAD','Head of Government'],['DEF','Defence'],['CGS','General Staff'],['AF','Air Force']].map(([k,l])=>{const x=Ld.who(p.ldr[k]);return x?row(esc(l),(x.rank?esc(x.rank)+' ':'')+esc(x.name)+' · resolve '+pct(x.resolve)+' · caution '+pct(x.caution)+' · pragmatism '+pct(x.prag)):'';}).join('');
+  let h=[['HEAD',W.natpol?W.natpol.title(p.a3,'HG'):'Head of Government'],['DEF','Defence'],['CGS','General Staff'],['AF','Air Force']].map(([k,l])=>{const x=Ld.who(p.ldr[k]);return x?row(esc(l),(x.rank?esc(x.rank)+' ':'')+esc(x.name)+' · resolve '+pct(x.resolve)+' · caution '+pct(x.caution)+' · pragmatism '+pct(x.prag)):'';}).join('');
   const F=W.st.fronts.filter(f=>f.cmd&&f.cmd[p.a3]);h+=F.map(f=>{const x=Ld.who(f.cmd[p.a3]);return x?row('Front vs '+esc(W.st.c[f.a===p.a3?f.b:f.a].n),esc(x.rank)+' '+esc(x.name)+' · skill '+x.skill.toFixed(2)):'';}).join('');
   const past=Object.values(W.st.lead.people).filter(x=>x.a3===p.a3&&x.st!=='IN OFFICE').slice(-5);if(past.length)h+='<div style="color:#8a9a92">FORMER</div>'+past.map(x=>'<div>'+esc((x.rank?x.rank+' ':'')+x.name)+': '+esc(x.st.toLowerCase())+'</div>').join('');
   return h+'<div style="color:#8a9a92">All names are fictional.</div>';}
@@ -42,7 +42,7 @@ function navy(p){const f=p.nav;if(!f)return'<div>'+esc(p.n)+' has no fleet in th
     (n?'<div style="color:#8a9a92">SEA CONTROL</div>'+S.SEAS.filter(q=>n.th[q.id]&&Object.keys(n.th[q.id].f).length).map(q=>row(esc(q.name),Math.abs(n.th[q.id].sup)<.1?'contested':n.th[q.id].sup>0?'BLUEFOR '+Math.round(n.th[q.id].sup*100)+' %':'REDFOR '+Math.round(-n.th[q.id].sup*100)+' %')).join(''):'')+
     '<div style="color:#8a9a92">Fleet sizes are estimates (carriers: approximate public numbers).</div>';}
 function justice(){const L=W.st.law,tg=W.st.tg;let h='';
-  if(tg&&tg.tot.bld)h+=row('Civilian buildings destroyed in flight (all sides)',tg.tot.bld)+row('People killed (est. range)',tg.tot.kLo+'-'+tg.tot.kHi)+row('People injured (est. range)',tg.tot.iLo+'-'+tg.tot.iHi);
+  if(tg&&tg.tot.bld)h+=row('Civilian buildings destroyed in flight (all sides)',tg.tot.bld)+row('People killed (resolved in flight)',tg.tot.k||0)+row('People injured (resolved in flight)',tg.tot.inj||0);
   if(!L||!L.cases.length)return h+'<div>No cases opened.</div>';
   return h+'<div class="nw">'+L.cases.slice(-14).reverse().map(c=>'<div><em>'+esc(c.id)+'</em><span class="k">'+esc(c.stage)+'</span>'+esc(c.cls)+(c.judgment?' · '+esc(c.judgment):'')+' · '+esc(c.txt.slice(0,110))+'</div>').join('')+'</div><div style="color:#8a9a92">'+esc(L.framework)+'. Classifications stay preliminary until the evidence supports them.</div>';}
 function careerBox(){const c=W.st.lead&&W.st.lead.career;if(!c)return'';const nm=W.lead.rank(c.a3,'air',c.rank);

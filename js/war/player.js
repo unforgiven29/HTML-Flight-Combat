@@ -65,8 +65,8 @@ if(typeof renderer!=='undefined'){const _r=renderer.render.bind(renderer);render
 /* ------------------------------------------------------------------ the long aftermath */
 W.daily.push(()=>{const st=W.st;if(!st||!st.over)return;const days=Math.floor((st.t-st.over.t)/24);if(days<=0||days%365!==0)return;const yrs=days/365;
   const L=Object.values(st.c).filter(p=>p.lostAir>0||p.lostGnd>0),air=L.reduce((t,p)=>t+p.lostAir,0),gnd=L.reduce((t,p)=>t+p.lostGnd,0);
-  const vets=Math.round(gnd*4000*.35+air*1.3),orph=Math.round((gnd*4000*.08+air*.6)*.8);
-  W.emit('REMEMBRANCE',{cf:'ESTIMATED',txt:yrs+' year'+(yrs>1?'s':'')+' since the war ended. A day of remembrance in the countries that fought. An estimated '+vets.toLocaleString('en')+' veterans live with lasting injuries; an estimated '+orph.toLocaleString('en')+' children grew up without a parent.'});});
+  const T=W.cemetery?W.cemetery.totals(null):null;
+  W.emit('REMEMBRANCE',{txt:yrs+' year'+(yrs>1?'s':'')+' since the war ended. A day of remembrance in the countries that fought.'+(T?' The memorial archive holds '+(T.kM+T.kC)+' names of the dead and '+T.mM+' of the missing.':'')});});
 /* ------------------------------------------------------------------ DEBRIEF tab */
 function trackSvg(r){const T=r.trk;if(T.length<2)return'';let a=1e9,b=-1e9,c=1e9,d=-1e9;for(const[la,lo]of T){a=Math.min(a,la);b=Math.max(b,la);c=Math.min(c,lo);d=Math.max(d,lo);}
   const w=220,h=140,sx=w/Math.max(.01,d-c),sy=h/Math.max(.01,b-a),s=Math.min(sx,sy)*.9,X=lo=>(lo-c)*s+5,Y=la=>h-((la-a)*s+5);

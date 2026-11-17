@@ -41,14 +41,14 @@ function fx(a,b,kind,hit){if(kind==='art'){const p=b.clone();p.x+=rr(-60,60);p.z
   if(hit)glow.emit(b,null,.25,kind==='tank'||kind==='atgm'?9:4,10,1,.7,.35,1);}
 function tick(dt){const WS=WSORTIE.WS;if(!WS.on||!GF.on||!game.active)return;const st=W.st,night=typeof ENV!=='undefined'&&ENV.nightK>.5;
   const L=GF.units.filter(u=>u.alive),enemy=u=>L.filter(v=>v.side!==u.side);
-  for(const u of L){const W_=WPN[u._gk];for(let i=0;i<u._rl.length;i++)u._rl[i]-=dt;
+  for(const u of L){const W_=WPN[u._gk];for(let i=0;i<u._rl.length;i++)u._rl[i]-=dt;if(u._fp)continue;   /* a firepower kill: it no longer fires */
     let best=null,bd=1e12;for(const v of enemy(u)){const d=Math.hypot(v.pos.x-u.pos.x,v.pos.z-u.pos.z);if(d<bd){bd=d;best=v;}}
     if(best&&bd<=Math.max(...W_.map(w=>w.r))){const arm=armoured(best);
       for(let i=0;i<W_.length;i++){const w=W_[i];if(u._rl[i]>0||bd>w.r||(w.armOnly&&!arm)||(w.softOnly&&arm))continue;u._rl[i]=w.rof*rr(.7,1.3);
         const p=w.p*(1-.55*bd/w.r)*(night?.7:1),hit=Math.random()<p;const a=u.pos.clone();a.y+=2;const b=best.pos.clone();b.y+=1.5;
-        if(Math.hypot(a.x-camera.position.x,a.z-camera.position.z)<20000)fx(a,b,w.fx,hit);if(hit)best.damage(arm?w.arm:w.soft,null);break;}}
+        if(Math.hypot(a.x-camera.position.x,a.z-camera.position.z)<20000)fx(a,b,w.fx,hit);if(hit){if(window.ARMOR)ARMOR.resolve(u,best,w,bd);else best.damage(arm?w.arm:w.soft,null);}break;}}   /* armor.js: penetration against protection by aspect; infantry body armour */
     else if(u._gk!=='ART'){// no enemy in reach: attackers move up, defenders hold
-      const f=st.fronts.find(q=>q.id===WS.front.f.id),post=f&&f.post&&f.post[u._ws];if(post==='ATTACK'){const sp=u._gk==='INF'?1.2:3;u.pos.x+=u._dir.x*sp*dt;u.pos.z+=u._dir.z*sp*dt;u.pos.y=groundAt(u.pos.x,u.pos.z);u.mesh.position.copy(u.pos);}}}}
+      const f=st.fronts.find(q=>q.id===WS.front.f.id),post=f&&f.post&&f.post[u._ws];if(post==='ATTACK'&&!u._mob){const sp=u._gk==='INF'?1.2:3;u.pos.x+=u._dir.x*sp*dt;u.pos.z+=u._dir.z*sp*dt;u.pos.y=groundAt(u.pos.x,u.pos.z);u.mesh.position.copy(u.pos);}}}}
 let last=performance.now();setInterval(()=>{const n=performance.now(),dt=Math.min(1,(n-last)/1000);last=n;try{tick(dt);}catch(e){console.warn('[gfight]',e);}},500);
 window.GFIGHT={spawn,tick,GF,WPN,CO};
 })();

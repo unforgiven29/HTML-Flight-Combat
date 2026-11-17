@@ -200,10 +200,12 @@
    "line": 505,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-002",
@@ -305,10 +307,12 @@
    "line": 725,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-008",
@@ -354,10 +358,12 @@
    "line": 808,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-011",
@@ -369,10 +375,12 @@
    "line": 829,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-012",
@@ -401,10 +409,12 @@
    "line": 897,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-014",
@@ -450,10 +460,12 @@
    "line": 1071,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-017",
@@ -560,10 +572,12 @@
    "line": 1200,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R03-001",
@@ -1687,10 +1701,12 @@
    "line": 3409,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-017",
@@ -1702,10 +1718,12 @@
    "line": 3413,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-018",
@@ -1735,10 +1753,12 @@
    "line": 3421,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-020",
@@ -1750,10 +1770,12 @@
    "line": 3425,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-021",
@@ -1765,10 +1787,12 @@
    "line": 3429,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-022",
@@ -1780,10 +1804,12 @@
    "line": 3433,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-023",
@@ -1795,10 +1821,12 @@
    "line": 3437,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Regional political profiles per country group: need a reviewed scenario table",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/politics.txt → natdata.js, natpol.js): system of government, head of state and head of government titles, legislature, seats, term and competitiveness for 121 countries (public-knowledge approximation, labelled); regional profiles per continent; regional organizations",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R05-024",
@@ -3379,10 +3407,12 @@
    "line": 5970,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-059",
@@ -3394,10 +3424,12 @@
    "line": 6012,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-060",
@@ -3409,10 +3441,12 @@
    "line": 6041,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-061",
@@ -3424,10 +3458,12 @@
    "line": 6061,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-062",
@@ -3439,10 +3475,12 @@
    "line": 6079,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-063",
@@ -3454,10 +3492,12 @@
    "line": 6097,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-064",
@@ -3469,10 +3509,12 @@
    "line": 6115,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-065",
@@ -3555,10 +3597,12 @@
    "line": 6230,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-070",
@@ -3570,10 +3614,12 @@
    "line": 6239,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-071",
@@ -3585,10 +3631,12 @@
    "line": 6250,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-072",
@@ -3600,10 +3648,12 @@
    "line": 6297,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-073",
@@ -3615,10 +3665,12 @@
    "line": 6307,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-074",
@@ -3630,10 +3682,12 @@
    "line": 6317,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-075",
@@ -3679,10 +3733,12 @@
    "line": 6512,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-078",
@@ -3694,10 +3750,12 @@
    "line": 6519,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-079",
@@ -3709,10 +3767,12 @@
    "line": 6525,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-080",
@@ -3724,10 +3784,12 @@
    "line": 6532,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-081",
@@ -3759,10 +3821,12 @@
    "line": 6546,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-083",
@@ -3774,10 +3838,12 @@
    "line": 6553,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-084",
@@ -3809,10 +3875,12 @@
    "line": 6561,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-086",
@@ -3824,10 +3892,12 @@
    "line": 6568,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-087",
@@ -3839,10 +3909,12 @@
    "line": 6575,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-088",
@@ -3854,10 +3926,12 @@
    "line": 6582,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-089",
@@ -3869,10 +3943,12 @@
    "line": 6590,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-090",
@@ -3884,10 +3960,12 @@
    "line": 6599,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-091",
@@ -3899,10 +3977,12 @@
    "line": 6607,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-092",
@@ -3914,10 +3994,12 @@
    "line": 6613,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-093",
@@ -3929,10 +4011,12 @@
    "line": 6619,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-094",
@@ -3944,10 +4028,12 @@
    "line": 6625,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-095",
@@ -3959,10 +4045,12 @@
    "line": 6631,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-096",
@@ -3974,10 +4062,12 @@
    "line": 6639,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-097",
@@ -3989,10 +4079,12 @@
    "line": 6644,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-098",
@@ -4004,10 +4096,12 @@
    "line": 6652,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-099",
@@ -4019,10 +4113,12 @@
    "line": 6656,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-100",
@@ -4034,10 +4130,12 @@
    "line": 6659,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-101",
@@ -4049,10 +4147,12 @@
    "line": 6665,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-102",
@@ -4064,10 +4164,12 @@
    "line": 6670,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-103",
@@ -4096,10 +4198,12 @@
    "line": 6761,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-105",
@@ -4111,10 +4215,12 @@
    "line": 6773,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-106",
@@ -4126,10 +4232,12 @@
    "line": 6783,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-107",
@@ -4141,10 +4249,12 @@
    "line": 6791,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-108",
@@ -4156,10 +4266,12 @@
    "line": 6799,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-109",
@@ -4171,10 +4283,12 @@
    "line": 6807,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-110",
@@ -4186,10 +4300,12 @@
    "line": 6813,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-111",
@@ -4201,10 +4317,12 @@
    "line": 6819,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-112",
@@ -4216,10 +4334,12 @@
    "line": 6824,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-113",
@@ -4231,10 +4351,12 @@
    "line": 6836,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-114",
@@ -4246,10 +4368,12 @@
    "line": 6843,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-115",
@@ -4261,10 +4385,12 @@
    "line": 6850,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-116",
@@ -4276,10 +4402,12 @@
    "line": 6857,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-117",
@@ -4291,10 +4419,12 @@
    "line": 6865,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-118",
@@ -4306,10 +4436,12 @@
    "line": 6875,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-119",
@@ -4321,10 +4453,12 @@
    "line": 6882,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-120",
@@ -4336,10 +4470,12 @@
    "line": 6886,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-121",
@@ -4351,10 +4487,12 @@
    "line": 6892,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-122",
@@ -4366,10 +4504,12 @@
    "line": 6900,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-123",
@@ -4381,10 +4521,12 @@
    "line": 6916,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-124",
@@ -4396,10 +4538,12 @@
    "line": 6925,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-125",
@@ -4451,10 +4595,12 @@
    "line": 6946,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-128",
@@ -4466,10 +4612,12 @@
    "line": 6955,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-129",
@@ -4481,10 +4629,12 @@
    "line": 6962,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-130",
@@ -4496,10 +4646,12 @@
    "line": 6969,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-131",
@@ -4511,10 +4663,12 @@
    "line": 6975,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-132",
@@ -4526,10 +4680,12 @@
    "line": 6981,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-133",
@@ -4541,10 +4697,12 @@
    "line": 6987,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-134",
@@ -4556,10 +4714,12 @@
    "line": 6993,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-135",
@@ -4571,10 +4731,12 @@
    "line": 7000,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-136",
@@ -4586,10 +4748,12 @@
    "line": 7008,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-137",
@@ -4601,10 +4765,12 @@
    "line": 7016,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-138",
@@ -4616,10 +4782,12 @@
    "line": 7024,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-139",
@@ -4631,10 +4799,12 @@
    "line": 7030,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-140",
@@ -4646,10 +4816,12 @@
    "line": 7037,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-141",
@@ -4661,10 +4833,12 @@
    "line": 7041,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-142",
@@ -4676,10 +4850,12 @@
    "line": 7044,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-143",
@@ -4691,10 +4867,12 @@
    "line": 7048,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-144",
@@ -4706,10 +4884,12 @@
    "line": 7055,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-145",
@@ -4721,10 +4901,12 @@
    "line": 7062,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-146",
@@ -4736,10 +4918,12 @@
    "line": 7069,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-147",
@@ -4751,10 +4935,12 @@
    "line": 7076,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-148",
@@ -4766,10 +4952,12 @@
    "line": 7082,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-149",
@@ -4781,10 +4969,12 @@
    "line": 7088,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-150",
@@ -4796,10 +4986,12 @@
    "line": 7094,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-151",
@@ -4811,10 +5003,12 @@
    "line": 7101,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-152",
@@ -4826,10 +5020,12 @@
    "line": 7108,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-153",
@@ -4841,10 +5037,12 @@
    "line": 7115,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-154",
@@ -5087,10 +5285,12 @@
    "line": 7431,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-167",
@@ -5102,10 +5302,12 @@
    "line": 7445,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-168",
@@ -5117,10 +5319,12 @@
    "line": 7460,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-169",
@@ -5132,10 +5336,12 @@
    "line": 7473,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-170",
@@ -5147,10 +5353,12 @@
    "line": 7484,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-171",
@@ -5162,10 +5370,12 @@
    "line": 7492,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-172",
@@ -5197,10 +5407,12 @@
    "line": 7505,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-174",
@@ -5212,10 +5424,12 @@
    "line": 7510,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-175",
@@ -5247,10 +5461,12 @@
    "line": 7525,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-177",
@@ -5960,10 +6176,12 @@
    "line": 9175,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-216",
@@ -5975,10 +6193,12 @@
    "line": 9185,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-217",
@@ -5990,10 +6210,12 @@
    "line": 9204,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-218",
@@ -6139,10 +6361,12 @@
    "line": 9336,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-226",
@@ -6154,10 +6378,12 @@
    "line": 9362,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "deferred",
-   "note": "Named national rosters, units and products per country or manufacturer: no source reachable from the build; generic classes and estimated inventories are in js/war/forces.js",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v349 (data/nat/equipment.txt → js/war/natdata.js, natpol.js): equipment type names for 69 countries (public-knowledge approximation, in service or on order, labelled), airliner types by manufacturer; counts stay estimates (forces.js). Countries outside the table keep generic classes",
+   "tests": [
+    "s13_natpol"
+   ]
   },
   {
    "id": "R06-227",
@@ -11379,10 +11605,13 @@
    "line": 21209,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-003",
@@ -11394,10 +11623,13 @@
    "line": 21240,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-004",
@@ -11409,10 +11641,13 @@
    "line": 21253,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-005",
@@ -11439,10 +11674,13 @@
    "line": 21335,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R17-001",
@@ -11974,9 +12212,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-002",
@@ -11989,9 +12231,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-003",
@@ -12004,9 +12250,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-004",
@@ -12019,9 +12269,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-005",
@@ -12034,9 +12288,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-006",
@@ -12049,9 +12307,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-007",
@@ -12064,9 +12326,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-008",
@@ -12079,9 +12345,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-009",
@@ -12094,9 +12364,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-010",
@@ -12109,9 +12383,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-011",
@@ -12124,9 +12402,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-012",
@@ -12139,9 +12421,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-013",
@@ -12154,9 +12440,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-014",
@@ -12169,9 +12459,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-015",
@@ -12184,9 +12478,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-016",
@@ -12199,9 +12497,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-017",
@@ -12214,9 +12516,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R19-001",
@@ -12258,10 +12564,12 @@
    "line": 23351,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-002",
@@ -12273,10 +12581,12 @@
    "line": 23352,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-003",
@@ -12288,10 +12598,12 @@
    "line": 23364,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-004",
@@ -12303,10 +12615,12 @@
    "line": 23417,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-005",
@@ -12318,10 +12632,12 @@
    "line": 24132,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-006",
@@ -12333,10 +12649,12 @@
    "line": 24203,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   }
  ]
 }

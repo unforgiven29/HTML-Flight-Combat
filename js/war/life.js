@@ -72,6 +72,7 @@ function environment(p,l){const st=W.st,war=bel(p)&&!st.over;const act=st.fronts
 W.climate=W.climate||{trend:.02};   // degrees per year, a scenario constant; seasons.js could read it for long campaigns
 /* ------------------------------------------------------------------ ch.05 politics, legitimacy, treaties */
 function politics(p,l){const st=W.st,o=l.pol;o.leg=cl(o.leg+((p.sup??.6)-.5)*.002+(l.trust-.5)*.001,.05,1);
+  return;   /* elections, renewals and successions: natpol.js (v349) */
   if(st.t<o.next)return;o.next=st.t+24*365*(4+rn()*2);o.cycles++;const war=bel(p)&&!st.over;
   // a leadership renewal: the scenario does not specify each country's form of government, so this is generic
   const keep=o.leg>.45||(war&&rn()<.6);W.emit('POLITICS',{e:[p.a3],txt:'Leadership renewal in '+p.n+' (as its constitution provides): '+(keep?'the government is returned':'a new government takes office')+(war?' during the war':'')+'.'});
@@ -82,7 +83,7 @@ function treaties(){const st=W.st;if(rn()>.01)return;const C=Object.values(st.c)
   const k=TREATY[(rn()*(a.side&&a.side===b.side?TREATY.length:3))|0];const la=L(a);la.treat.push({w:b.a3,k,t:st.t});if(la.treat.length>10)la.treat.shift();W.emit('TREATY',{e:[a.a3,b.a3],txt:a.n+' and '+b.n+' sign '+k+'.'});}
 /* ------------------------------------------------------------------ daily */
 W.daily.push(()=>{const st=W.st;if(!st)return;const day=Math.floor(st.t/24),month=day%30===0;
-  for(const p of Object.values(st.c)){const l=L(p);people(p,l,day);institutions(p,l);economy(p,l,month);resources(p,l);housing(p,l);environment(p,l);politics(p,l);}
+  for(const p of Object.values(st.c)){if(W.lod&&!W.lod(p,day))continue;const l=L(p);people(p,l,day);institutions(p,l);economy(p,l,month);resources(p,l);housing(p,l);environment(p,l);politics(p,l);}
   occupation();treaties();if(month)trade();});
 // effects back on the war: trust and public services steady public support; inflation and rationing wear it down
 W.daily.push(()=>{const st=W.st;if(!st)return;for(const p of Object.values(st.c)){const l=p.life;if(!l||p.sup==null)continue;p.sup=cl(p.sup+(l.trust-.5)*.001-l.fin.infl*.002-(l.cons.ration?.001:0),0,1);}});
@@ -95,8 +96,8 @@ function tab(p){const l=L(p),st=W.st;let h='<div style="color:#8a9a92;font-size:
   h+='<h4>MONEY AND WORK</h4>'+row('Public debt',est(pc(l.fin.debt)+' of GDP'))+row('Inflation',est(pc(l.fin.infl)+' a year'))+row('Currency (prewar = 100)',est(Math.round(l.fin.cur*100)))+(l.fin.bonds?row('War bonds sold',est('$'+fmt(l.fin.bonds)+'M')):'')+
     row('Labour participation',est(pc(l.lab.part)))+row('Real wages (prewar = 100)',est(Math.round(l.lab.wage/(1+l.fin.infl)*100)))+row('Consumption (prewar = 100)',est(Math.round(l.cons.index*100)))+(l.cons.ration?row('Rationing','in force'):'')+row('Trade volume (index)',est((st.trade&&st.trade.vol[p.a3])||'—'));
   h+='<h4>HOMES AND ENVIRONMENT</h4>'+row('Homes',est(fmt(l.house.stock)))+row('Homes destroyed or uninhabitable',est(fmt(l.house.lost)))+row('Water supply',pc(l.water))+row('Pollution from the fighting (index)',Math.round(l.env.pol*100))+(l.corr.length?row('Humanitarian corridor','open'):'');
-  h+='<h4>POLITICS</h4>'+row('Legitimacy',pc(l.pol.leg))+row('Next leadership renewal',W.date(l.pol.next).slice(0,4))+(l.treat.length?row('Treaties',l.treat.slice(-4).map(t=>t.k+' with '+(st.c[t.w]?st.c[t.w].n:t.w)).join('; ')):'')+
-    '<div style="font-size:10px;color:#8a9a92">The form of each government is not specified by the scenario; renewals are generic.</div>';
+  h+='<h4>POLITICS</h4>'+row('Legitimacy',pc(l.pol.leg))+(l.treat.length?row('Treaties',l.treat.slice(-4).map(t=>t.k+' with '+(st.c[t.w]?st.c[t.w].n:t.w)).join('; ')):'')+
+    '<div style="font-size:10px;color:#8a9a92">Government, elections and parliament: POLITICS tab.</div>';
   return h;}
 if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.LIFE=tab;
 W.life={L,tab,trade,occupation};

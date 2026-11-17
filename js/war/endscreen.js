@@ -20,13 +20,13 @@ const W=WWAR;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+' million':n>=1e4?Math.round(n/1e3)+',000':String(Math.round(n||0));
 const KIND={ARMISTICE:'An armistice',NEGOTIATED_PEACE:'A negotiated peace treaty',MUTUAL_EXHAUSTION:'A peace of mutual exhaustion',DECISIVE_VICTORY:'A military decision',COALITION_COLLAPSE:'The collapse of a coalition',
-  STALEMATE:'An unresolved stalemate',REGIME_CHANGE:'A change of government',WITHDRAWAL:'A withdrawal to the prewar borders',PARTIAL:'A partial settlement'};
+  STALEMATE:'An unresolved stalemate',REGIME_CHANGE:'A change of government',WITHDRAWAL:'A withdrawal to the prewar borders',NUCLEAR_CATASTROPHE:'A nuclear catastrophe',PARTIAL:'A partial settlement'};
 // the verified quotation archive: author, occasion, date, source — public-domain, checked wording
 const QUOTES=[{q:'Every gun that is made, every warship launched, every rocket fired signifies, in the final sense, a theft from those who hunger and are not fed, those who are cold and are not clothed.',
   a:'Dwight D. Eisenhower',w:'"The Chance for Peace" address to the American Society of Newspaper Editors',d:'16 April 1953',s:'Public Papers of the Presidents of the United States: Dwight D. Eisenhower, 1953'}];
 let page=0,burnt=false;
 function css(){if(document.getElementById('wwEndCss'))return;const s=document.createElement('style');s.id='wwEndCss';s.textContent=
- '#wwEnd{position:fixed;inset:0;z-index:9999;background:rgba(14,16,17,.97);color:#d9dcd8;overflow:auto;font:14px/1.6 Georgia,serif;opacity:0;transition:opacity 2s}#wwEnd.on{opacity:1}'+
+ '#wwEnd{position:fixed;inset:0;z-index:9999;background:#0e1011;color:#d9dcd8;overflow:auto;font:14px/1.6 Georgia,serif;opacity:0;transition:opacity 2s}#wwEnd.on{opacity:1}'+
  '#wwEnd .w{max-width:760px;margin:0 auto;padding:36px 20px 90px}#wwEnd h1{font-weight:normal;letter-spacing:.2em;font-size:20px;color:#e8e8e2;text-align:center}#wwEnd h2{font-weight:normal;letter-spacing:.14em;font-size:13px;color:#9aa19c}'+
  '#wwEnd .nav{position:sticky;top:0;background:rgba(14,16,17,.95);display:flex;flex-wrap:wrap;gap:3px;padding:6px 0;border-bottom:1px solid #333}#wwEnd .nav button{font-size:11px;padding:3px 7px}'+
  '#wwEnd .wall{columns:2;column-gap:28px;font-size:13px}#wwEnd .wall div{break-inside:avoid;padding:2px 0;border-bottom:1px dotted #2c2c2c}#wwEnd .q{font-style:italic;color:#b8bcb6;text-align:center;margin:22px 0}'+
@@ -37,7 +37,7 @@ function css(){if(document.getElementById('wwEndCss'))return;const s=document.cr
 /* ------------------------------------------------------------------ facts from the war's own records */
 function outcome(){const st=W.st,me=(typeof game!=='undefined'&&game.team==='RED')?'R':'B';let gainB=0,gainR=0;
   for(const v of Object.values(st.cities||{})){if(v.h===v.own)continue;const h=st.c[v.h];if(!h)continue;if(h.side==='B')gainB+=v.pop;else if(h.side==='R')gainR+=v.pop;}
-  const neg=/NEGOTIATED|MUTUAL|ARMISTICE|STALEMATE|PARTIAL/.test(st.over.kind);if(neg||Math.abs(gainB-gainR)<5e5)return'NEITHER';return (gainB>gainR?'B':'R')===me?'WIN':'LOSE';}
+  const neg=/NEGOTIATED|MUTUAL|ARMISTICE|STALEMATE|PARTIAL|NUCLEAR/.test(st.over.kind);if(neg||Math.abs(gainB-gainR)<5e5)return'NEITHER';return (gainB>gainR?'B':'R')===me?'WIN':'LOSE';}
 function facts(){const st=W.st,r=st.report||W.diplo.report(),L=Object.values(st.c);const sum=k=>L.reduce((t,p)=>t+(p[k]||0),0);
   const life=L.map(p=>p.life).filter(Boolean),mil=Object.values(st.mil||{});
   return{r,disp:sum('disp'),ref:sum('ref'),air:r.air.B+r.air.R,gnd:r.gnd.B+r.gnd.R,uxo:mil.reduce((t,m)=>t+(m.harm||0),0),homes:life.reduce((t,l)=>t+l.house.lost,0),school:life.reduce((t,l)=>t+l.edu.lost,0),
@@ -59,7 +59,7 @@ const CH=[
      '<p>Set against them: '+fmt(F.air)+' aircraft and '+fmt(F.gnd)+' brigades destroyed on all sides, about '+fmt(F.disp)+' people driven from their homes, '+fmt(F.homes)+' homes lost, schools closed for an estimated '+fmt(F.school)+' country-days.</p>'+
      (burnt?'<div class="fire"></div><p class="q">The decorations have been burned. The record remains: every award, citation and sortie is kept in the archive.</p>':'<div style="text-align:center"><button data-we="burn">PLACE THE DECORATIONS IN THE FIRE</button></div>');}],
  ['The scale of destruction',(F)=>'<div>All sides combined. Combat aircraft: about '+fmt(F.air)+'. Ground brigade-equivalents: about '+fmt(F.gnd)+'. Warships: about '+fmt(F.ships)+'. Heritage sites damaged: '+F.her+'.</div>'+EST],
- ['The people',(F)=>'<div>People displaced inside their countries: about '+fmt(F.disp)+'. Refugees abroad: about '+fmt(F.ref)+'. Aircrew lost: about '+fmt(F.crews)+'. Prisoners still held at the end: '+(F.pow.B+F.pow.R)+'. Civilians hurt by unexploded ordnance: about '+fmt(F.uxo)+'.</div>'+EST+'<p>No testimony is invented here. These are counts by rule, and each is a person.</p>'],
+ ['The people',(F,st)=>{const T=W.cemetery?W.cemetery.totals(null):{kM:0,mM:0,kC:0};return '<div>Recorded in the memorial archive: '+T.kM+' military dead, '+T.mM+' missing whose fate is not known, '+T.kC+' civilians killed — every one a person the campaign accounted for. Deaths among forces worn down far from your flights were not resolved person by person; the campaign does not estimate them.</div><div>People displaced inside their countries: about '+fmt(F.disp)+'. Refugees abroad: about '+fmt(F.ref)+' (estimates of displacement, not of deaths).</div><p>No testimony is invented here.</p>';}],
  ['Families and interrupted lives',(F)=>'<div>About '+fmt(F.called)+' people were called up, leaving work, study and families. Schools were closed for an estimated '+fmt(F.school)+' country-days. Households displaced will take years to settle.</div>'+EST],
  ['Places that endured',(F,st)=>{const C=Object.entries(st.cities||{}).filter(([k,v])=>v.h!==v.own).slice(0,24);return '<div>Places that changed hands:</div><div class="wall">'+(C.map(([k,v])=>'<div>'+esc(k.split('|')[0])+' — '+esc(st.c[v.own]?st.c[v.own].n:'')+'</div>').join('')||'<div>none</div>')+'</div><div>Homes destroyed or uninhabitable: about '+fmt(F.homes)+'.</div>'+EST;}],
  ['What was spent',(F)=>'<div>Munitions spent beyond prewar stocks: about '+Math.round(F.mun)+' country-days of combat supply. Public debt in the countries that fought: about '+Math.round(F.debt*100)+' % of output on average. What was not built instead: schools, clinics, homes, railways.</div>'+EST+'<p>No financial total here is a measure of a human life.</p>'],

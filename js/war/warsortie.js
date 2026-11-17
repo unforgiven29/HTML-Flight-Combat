@@ -68,7 +68,7 @@ function spawnFlight(side,a3,from,toLat,toLon,role){const types=typesOf(a3,W.st.
   const dTot=G.dist(from.lat,from.lon,toLat,toLon),f=Math.max(0,1-110e3/Math.max(1,dTot)),lat=from.lat+(toLat-from.lat)*f,lon=from.lon+(toLon-from.lon)*f;
   const p=xz(lat,lon),t=xz(toLat,toLon),hd=(Math.atan2(t.x-p.x,-(t.z-p.z))/D+360)%360,out=[];
   for(let i=0;i<2;i++){let j;try{j=new Jet(side,type,side?foeLoad(type,era):getLoad(era,type),era);}catch(e){return out;}
-    j.spawn(p.x+(i?400:0),Math.max(groundAt(p.x,p.z)+1500,role==='CAP'?7500:6000)+i*100,p.z+(i?300:0),hd,230);j.ai=new AI(j);j.ai.skill(side?+SET.skill:1);
+    j.spawn(p.x+(i?400:0),Math.max(groundAt(p.x,p.z)+1500,role==='CAP'?7500:6000)+i*100,p.z+(i?300:0),hd,230);j.ai=new AI(j);j.ai.skill(side?+SET.skill+(W.learn?W.learn.skillAdj(a3):0):1);
     j.ai.route=role==='CAP'?[{x:t.x-9000,z:t.z,alt:7500},{x:t.x+9000,z:t.z,alt:7500}]:[{x:t.x,z:t.z,alt:6000}];j.ai.wi=0;j.ai.engaged=false;j.ai.det=role==='CAP'?60000:90000;
     const sq=W.ob&&W.ob.squadronFor(a3,from.ident);j._sqn=sq&&sq.id;j.callsign=(side?'BANDIT ':'')+(G.byA3.get(a3)?G.byA3.get(a3).a2:a3)+' '+type+(sq&&sq.num?' · '+sq.name:'');j._ws=a3;WS.jets.add(j);(side?WS.enemy:WS.friend).push(j);out.push(j);}
   return out;}
@@ -110,5 +110,5 @@ async function start(a3,ap){const p=W.st.c[a3];if(!W.bell(p))return;WS.me=a3;WS.
 // the world-flight tick: AI traffic; ending the sortie or leaving the world closes it
 {let last=performance.now();setInterval(()=>{const n=performance.now(),dt=Math.min(2,(n-last)/1000);last=n;try{airTick(dt);}catch(e){console.warn('[ws]',e);}
   if(WS.on&&(!WF.on||game.scen!=='WORLD'||!game.active))finish();},1000);}
-window.WSORTIE={WS,start,finish,basesFor,nearestSector,typesOf};
+window.WSORTIE={WS,start,finish,basesFor,nearestSector,typesOf,spawnFlight,xz};
 })();
