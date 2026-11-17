@@ -1,3 +1,13 @@
+## v389 (time and weather from the war; tank crews; the turret toss)
+- **Time and weather follow where and when you fight**: in the world war the battle's time of day is the local solar time at the place on the war clock, its weather the theatre's weather that day, and its season the season at that latitude (seasons.js); in the campaign, the campaign's clock and weather. They set the sky, sun and light (night, dawn, day, dusk), fog, ground colour (snow in a northern winter, autumn and dry-season tones) and falling rain or snow; flares at night. In the live world, the game's own sky is set to the battle site's local time and theatre weather. The time and weather show at the top of the screen.
+- **Tank crews**: a commander stands in the open cupola hatch of every tank; the 3D hit overview shows the crew in their seats (driver, gunner, commander, and a loader in tanks without an autoloader), killed or wounded ones in red. A knocked-out commander leaves the hatch.
+- **The turret toss**: an ammunition detonation now throws the turret clear and it lands upside down on the ground beside the hull (it used to hang tilted in the air above the tank).
+- Tests: `node tests/run.js s41_`.
+
+## v388 (the hit overview in 3D)
+- The armour hit overview now draws the vehicle you hit in 3D: a see-through copy of its model with its outline, turning slowly; the round's path in (yellow) to the strike point; through the armour and on inside (red) with the spall cone and lines to each part it hit when it penetrated; deflected when it ricocheted; a spark when it stopped; a flash where an ERA brick went off. The vehicle's internal parts sit where its family keeps them (driver, gunner, commander, breech, sights, engine, transmission, fuel, ammunition carousel or bustle) and the damaged ones are red. A blown-off turret shows as blown off. The written summary stays below it. Falls back to the flat diagrams where 3D is not available.
+- Tests: `node tests/run.js s40_`.
+
 ## v387 (choose where you fight; soldiers, tanks and towns; armour 2; a battle that moves)
 - **Choose the battle location** in the kit menu: the real towns and cities along your side's fronts (world war; your own country's fronts first, then by size) or the campaign towns nearest the front; saved with your kit. The front pushed at the end is the one that place is on.
 - **Soldiers**: jointed legs (knees) and arms, helmet or cap, vest, pack, rifle; each man's uniform shade, skin tone and helmet cover vary within his side's palette. They walk and run with a stride, crouch to fire, kick with recoil, and **bound** between positions in a fight (dash 6–14 m, go to ground, fire).
