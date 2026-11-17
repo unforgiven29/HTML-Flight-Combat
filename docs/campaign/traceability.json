@@ -6002,10 +6002,12 @@
    "line": 10883,
    "owner": "none (world.js keeps aggregate casualty estimates only)",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: population and individuals not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/society.js): aggregate cohorts, households, mobilised, unemployment, hospital load, displaced (estimates). Not yet: individuals, families, migration flows as records, education, health system",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R08-002",
@@ -6047,10 +6049,12 @@
    "line": 10908,
    "owner": "none (world.js keeps aggregate casualty estimates only)",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: population and individuals not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/society.js): aggregate cohorts, households, mobilised, unemployment, hospital load, displaced (estimates). Not yet: individuals, families, migration flows as records, education, health system",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R08-005",
@@ -6077,10 +6081,12 @@
    "line": 11284,
    "owner": "none (world.js keeps aggregate casualty estimates only)",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: population and individuals not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/society.js): aggregate cohorts, households, mobilised, unemployment, hospital load, displaced (estimates). Not yet: individuals, families, migration flows as records, education, health system",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R08-007",
@@ -6452,10 +6458,12 @@
    "line": 12370,
    "owner": "none (world.js keeps aggregate casualty estimates only)",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: population and individuals not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/society.js): aggregate cohorts, households, mobilised, unemployment, hospital load, displaced (estimates). Not yet: individuals, families, migration flows as records, education, health system",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R08-032",
@@ -6872,10 +6880,12 @@
    "line": 13544,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-002",
@@ -6887,10 +6897,12 @@
    "line": 13545,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-003",
@@ -6917,10 +6929,12 @@
    "line": 13603,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-005",
@@ -6932,10 +6946,12 @@
    "line": 13618,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-006",
@@ -6947,10 +6963,12 @@
    "line": 13632,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-007",
@@ -6977,10 +6995,12 @@
    "line": 13712,
    "owner": "none",
    "phase": 6,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 6: civil institutions not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: three kinds of outlet with framing, claims and corrections; international investigations with findings. Not yet: outlets and journalists as entities, courts and law as institutions",
+   "tests": [
+    "s5_society"
+   ]
   },
   {
    "id": "R09-009",
@@ -7232,10 +7252,12 @@
    "line": 14562,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-002",
@@ -7277,10 +7299,12 @@
    "line": 14690,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-005",
@@ -7322,10 +7346,12 @@
    "line": 15072,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-008",
@@ -7414,10 +7440,12 @@
    "line": 15252,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-014",
@@ -7718,10 +7746,12 @@
    "line": 15832,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-034",
@@ -7840,10 +7870,12 @@
    "line": 16213,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-042",
@@ -7885,10 +7917,12 @@
    "line": 16255,
    "owner": "js/campaign/world.js — depot, production, convoys (supply only)",
    "phase": 5,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 5: economy not started beyond the military supply slice",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/economy.js): national energy, fuel, defence industry, transport, food, sanctions cutting trade between sides; effects on front supply, production and support. Not yet: markets, finance, firms, labour",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R10-045",
@@ -7979,10 +8013,12 @@
    "line": 16374,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R11-003",
@@ -8026,10 +8062,12 @@
    "line": 16540,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R11-006",
@@ -8101,10 +8139,12 @@
    "line": 16730,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R11-011",
@@ -8254,10 +8294,12 @@
    "line": 17332,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R11-021",
@@ -8299,10 +8341,12 @@
    "line": 17427,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities",
+   "tests": [
+    "s5_econ"
+   ]
   },
   {
    "id": "R12-001",
@@ -8329,10 +8373,12 @@
    "line": 17456,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/seasons.js): seasons by hemisphere, daily theatre weather, mud and snow, flying weather; world flight local time and weather. Not yet: climate change, hazards, emergencies",
+   "tests": [
+    "s5_seasons"
+   ]
   },
   {
    "id": "R12-003",
@@ -8344,10 +8390,12 @@
    "line": 17713,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/seasons.js): seasons by hemisphere, daily theatre weather, mud and snow, flying weather; world flight local time and weather. Not yet: climate change, hazards, emergencies",
+   "tests": [
+    "s5_seasons"
+   ]
   },
   {
    "id": "R12-004",
@@ -9726,10 +9774,12 @@
    "line": 20591,
    "owner": "js/core/game.js — CAMP.airOps, pickHot (scripted AI)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: institutional AI not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/strategy.js): every country at war decides daily on estimates (fog of war), posture, concentration, mobilisation, calls for help. Not yet: learning, long-term planning, institutions",
+   "tests": [
+    "s5_strategy"
+   ]
   },
   {
    "id": "R15-003",
@@ -9786,10 +9836,12 @@
    "line": 20636,
    "owner": "js/core/game.js — CAMP.airOps, pickHot (scripted AI)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: institutional AI not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/strategy.js): every country at war decides daily on estimates (fog of war), posture, concentration, mobilisation, calls for help. Not yet: learning, long-term planning, institutions",
+   "tests": [
+    "s5_strategy"
+   ]
   },
   {
    "id": "R15-007",
@@ -9801,10 +9853,12 @@
    "line": 20649,
    "owner": "js/core/game.js — CAMP.airOps, pickHot (scripted AI)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: institutional AI not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/strategy.js): every country at war decides daily on estimates (fog of war), posture, concentration, mobilisation, calls for help. Not yet: learning, long-term planning, institutions",
+   "tests": [
+    "s5_strategy"
+   ]
   },
   {
    "id": "R15-008",
@@ -9891,10 +9945,12 @@
    "line": 20787,
    "owner": "js/core/game.js — CAMP.airOps, pickHot (scripted AI)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: institutional AI not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/strategy.js): every country at war decides daily on estimates (fog of war), posture, concentration, mobilisation, calls for help. Not yet: learning, long-term planning, institutions",
+   "tests": [
+    "s5_strategy"
+   ]
   },
   {
    "id": "R15-014",
@@ -9951,10 +10007,12 @@
    "line": 20995,
    "owner": "js/core/game.js — CAMP.airOps, pickHot (scripted AI)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: institutional AI not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v332 (js/war/strategy.js): every country at war decides daily on estimates (fog of war), posture, concentration, mobilisation, calls for help. Not yet: learning, long-term planning, institutions",
+   "tests": [
+    "s5_strategy"
+   ]
   },
   {
    "id": "R15-018",

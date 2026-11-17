@@ -99,7 +99,7 @@ function airStep(dh){const st=W.st;
   for(const th of st.th){const B0=sideAir(th,'B'),R0=sideAir(th,'R');if(B0<1||R0<1){th.sup=B0>R0?1:R0>B0?-1:0;continue;}
     // the weaker side fights over its own air defences and close to its bases: it counts airDef times
     const B=B0<R0?B0*C.airDef:B0,R=R0<B0?R0*C.airDef:R0;
-    const lB=C.airTheatreK*R*dh*Math.min(1,R/B),lR=C.airTheatreK*B*dh*Math.min(1,B/R);   // square-law: the bigger force loses less per unit
+    const wx=W.airWx(th),lB=C.airTheatreK*R*dh*Math.min(1,R/B)*wx,lR=C.airTheatreK*B*dh*Math.min(1,B/R)*wx;   /* W.airWx: flying weather (seasons.js) */   // square-law: the bigger force loses less per unit
     for(const a3 in th.f){const p=st.c[a3],w=p.air*th.f[a3]*p.ready,L=(p.side==='B'?lB*w/B0:lR*w/R0);const l=Math.min(p.air,L);p.air-=l;p.lostAir+=l;th.lB=(th.lB||0)+(p.side==='B'?l:0);th.lR=(th.lR||0)+(p.side==='R'?l:0);}
     th.sup=(B-R)/(B+R);}}
 const supAt=(lat,lon)=>{let s=0,n=0;for(const th of W.st.th){const T=THEATRES.find(q=>q.id===th.id);if(inBox(T,lat,lon)){s+=th.sup;n++;}}return n?s/n:0;};
@@ -108,15 +108,16 @@ const supAt=(lat,lon)=>{let s=0,n=0;for(const th of W.st.th){const T=THEATRES.fi
 function gndStep(dh){const st=W.st,secs=new Map();
   for(const f of st.fronts)for(const a3 of[f.a,f.b])secs.set(a3,(secs.get(a3)||0)+f.sec.length);
   // coalition pool: each belligerent without its own front sends 20 % of its ground forces, shared over all its side's sectors
-  const pool={B:0,R:0},tot={B:0,R:0};for(const p of Object.values(st.c))if(bell(p)&&!secs.get(p.a3))pool[p.side]+=p.gnd*.2;
+  const pool={B:0,R:0},tot={B:0,R:0};for(const p of Object.values(st.c))if(bell(p)&&!secs.get(p.a3))pool[p.side]+=p.gnd*(p.exp??.2);   /* p.exp: share sent to the coalition, raised when an ally asks for help (strategy.js) */
   for(const f of st.fronts){tot[st.c[f.a].side]+=f.sec.length;tot[st.c[f.b].side]+=f.sec.length;}
   for(const f of st.fronts){if(f.cf)continue;   /* a front under ceasefire does not move (diplomacy.js) */const A=st.c[f.a],B=st.c[f.b];
     for(const s of f.sec){const sup=supAt(s.lat,s.lon),aSup=A.side==='B'?sup:-sup;
-      const pa=(A.gnd/Math.max(1,secs.get(A.a3))+pool[A.side]/Math.max(1,tot[A.side]))*A.ready*(1+.6*aSup),pb=(B.gnd/Math.max(1,secs.get(B.a3))+pool[B.side]/Math.max(1,tot[B.side]))*B.ready*(1-.6*aSup);
+      // W.mod: national strategy (posture, where forces are concentrated), infrastructure and supply (strategy.js, economy.js); 1 when absent
+      const pa=(A.gnd/Math.max(1,secs.get(A.a3))+pool[A.side]/Math.max(1,tot[A.side]))*A.ready*(1+.6*aSup)*W.mod(A,f,s),pb=(B.gnd/Math.max(1,secs.get(B.a3))+pool[B.side]/Math.max(1,tot[B.side]))*B.ready*(1-.6*aSup)*W.mod(B,f,s);
       // supply: the deeper a side is past the border, the weaker it is at the front (halved at 150 km)
       const sa=1/(1+Math.max(0,s.off)/150),sb=1/(1+Math.max(0,-s.off)/150);
       const r=Math.log(Math.max(1e-3,pa*sa)/Math.max(1e-3,pb*sb)),before=s.off,ra=Math.abs(r)-Math.log(C.gndDef);   // the attacker must beat the defender's advantage
-      if(ra>0)s.off=Math.max(-C.maxOff,Math.min(C.maxOff,s.off+Math.sign(r)*C.gndAdvKmh*Math.tanh(ra*1.2)*dh));
+      if(ra>0)s.off=Math.max(-C.maxOff,Math.min(C.maxOff,s.off+Math.sign(r)*C.gndAdvKmh*Math.tanh(ra*1.2)*dh*W.mob(s)));   /* W.mob: mud, snow, weather (seasons.js) */
       const eng=Math.min(pa,pb)*C.gndLossK*dh,la=eng*(1+Math.max(0,-r)),lb=eng*(1+Math.max(0,r));
       A.gnd=Math.max(0,A.gnd-la);B.gnd=Math.max(0,B.gnd-lb);A.lostGnd+=la;B.lostGnd+=lb;
       if(Math.floor(before/25)!==Math.floor(s.off/25))s.mv=1;}}}
@@ -137,7 +138,7 @@ function prodStep(dh){for(const p of Object.values(W.st.c)){if(!bell(p))continue
 /* ------------------------------------------------------------------ the clock */
 W.step=(hours)=>{const st=W.st;if(!st||(st.over&&!st.post))return;let left=hours;
   while(left>1e-9){const dh=Math.min(1,left);left-=dh;const d0=Math.floor(st.t/24);st.t+=dh;airStep(dh);gndStep(dh);prodStep(dh);
-    if(Math.floor(st.t/24)!==d0)daily();}
+    if(Math.floor(st.t/24)!==d0){cityScan(false);daily();}}   /* cities checked every war day, not only at the end of a long step */
   for(const f of st.fronts){const m=f.sec.filter(s=>s.mv);if(m.length){for(const s of m)s.mv=0;const avg=f.sec.reduce((t,s)=>t+s.off,0)/f.sec.length;
       emit('FRONT',{e:[f.a,f.b],cf:'REPORTED',txt:'Front '+st.c[f.a].n+' / '+st.c[f.b].n+': '+(Math.abs(avg)<5?'holding near the border':(avg>0?st.c[f.a].n:st.c[f.b].n)+' forces '+Math.round(Math.abs(avg))+' km beyond the border on average')+'.'});}}
   cityScan(false);const n=performance.now();if(!W._sv||n-W._sv>10000||hours>=1){W._sv=n;save();}};
@@ -155,5 +156,5 @@ W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
 // background running: one campaign hour per real second x speed while the map is open, real time in world flight
 let last=performance.now();
 setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!W.st||!W.run)return;try{W.step(dt*W.speed);}catch(e){warn('step',e);}},1000);
-window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.daily=[];W.setAl=(p,al,side,why)=>setAl(p,al,side,why);W.rebuild=()=>{const old=new Map(W.st.fronts.map(f=>[f.id,f]));buildFronts();W.st.fronts=W.st.fronts.map(f=>old.get(f.id)||f);assignAir();};W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
+window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.daily=[];W.mod=()=>1;W.mob=()=>1;W.airWx=()=>1;W.setAl=(p,al,side,why)=>setAl(p,al,side,why);W.rebuild=()=>{const old=new Map(W.st.fronts.map(f=>[f.id,f]));buildFronts();W.st.fronts=W.st.fronts.map(f=>old.get(f.id)||f);assignAir();};W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
 })();

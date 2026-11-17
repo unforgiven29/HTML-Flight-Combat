@@ -487,6 +487,37 @@ test('wend_home: displacement, refugees, economy, support and cohesion move duri
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const c=st.c;
     return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:c.USA.sup<.65,coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
   ok('people displaced when cities change hands (estimate)',r.disp>0&&r.civ,r);ok('civilian events are labelled estimates',r.est);ok('economies, support and cohesion move',r.econ&&r.sup&&r.coh,r);});
+
+/* ---------- the world war, step 5 (v332): seasons and weather, economy, government and AI, society, playing REDFOR ---------- */
+test('s5_seasons: hemispheres, mud, flying weather','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;
+    const se=[WWAR.season(50,0),WWAR.season(-35,0),WWAR.season(10,6),WWAR.season(-10,6)];st.start='2027-03-10T06:00Z';st.t=0;WWAR.step(24);
+    const mud=WWAR.mob({lat:55,lon:30}),sum=WWAR.mob({lat:55,lon:30})===mud,wx=st.th.every(t=>t.wx&&WWAR.airWx(t)>0&&WWAR.airWx(t)<=1);return{se,mud,wx};});
+  ok('north winter, south summer in January; wet / dry in the tropics',r.se.join()==='WINTER,SUMMER,WET,DRY',r.se);ok('spring thaw mud at 55 N',r.mud<=.5,r.mud);ok('every theatre has weather',r.wx);});
+test('s5_econ: fuel, power, industry and supply affect the war','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*30);const c=st.c,f=st.fronts.find(q=>q.b==='RUS'||q.a==='RUS');
+    const rus=c.RUS,s=f.sec[0],m1=WWAR.mod(rus,f,s);const fuel=rus.ecn.fuel;rus.ecn.fuel=0;const m0=WWAR.mod(rus,f,s);rus.ecn.fuel=fuel;
+    return{has:['RUS','CHN','USA','FIN'].every(a=>c[a].ecn&&c[a].ecn.fuel>=0),m1,m0,est:st.ev.filter(e=>e.ty==='ECON').every(e=>e.cf==='ESTIMATED')};});
+  ok('every belligerent has an economy',r.has);ok('no fuel weakens the front',r.m0<r.m1,{m0:r.m0,m1:r.m1});ok('economy events are labelled estimates',r.est);});
+test('s5_strategy: countries decide on what they believe; forces are moved, not created','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const st=WWAR.st;WWAR.step(24*20);
+    const c=st.c.RUS,F=st.fronts.filter(f=>!f.cf&&(f.a==='RUS'||f.b==='RUS')&&f.w&&f.w.RUS);const n=F.reduce((t,f)=>t+f.sec.length,0),wn=F.reduce((t,f)=>t+f.w.RUS*f.sec.length,0);
+    const post=st.fronts.some(f=>f.post&&Object.values(f.post).some(x=>x==='ATTACK'||x==='DEFEND'));const est=st.fronts.some(f=>f.est&&Object.values(f.est).length);
+    const dec=Object.values(st.c).some(q=>q.govt&&q.govt.dec.length);return{n,wn,post,est,dec,mob:Object.values(st.c).some(q=>q.govt&&q.govt.mob>0)};});
+  ok('postures chosen',r.post);ok('decisions from estimates',r.est);ok('concentration conserves forces',r.n===0||Math.abs(r.wn-r.n)<1e-6,r);ok('government decisions recorded',r.dec);});
+test('s5_society: households, three kinds of media, claims and corrections, investigations','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const st=WWAR.st;WWAR.step(24*120);const n=st.soc;
+    return{hh:st.c.POL.soc.households>1e6,outs:['B','R','N'].map(o=>n.news.filter(x=>x.out===o).length),claim:n.news.some(x=>x.k==='CLAIM'),corr:n.news.some(x=>x.k==='CORRECTION'),
+      inv:n.inv.length,closed:n.inv.filter(v=>v.st!=='OPEN').length,ev:st.ev.filter(e=>e.ty==='CITY').length};});
+  ok('households estimated',r.hh);ok('news from all three outlets',r.outs.every(x=>x>0),r.outs);ok('claims and corrections when cities change hands',r.ev===0||(r.claim&&r.corr),r);
+  ok('investigations opened and closed',r.ev===0||(r.inv>0&&r.closed>0),r);});
+test('s5_redfor: fly for Russia; the enemy is BLUEFOR in the air and on the ground','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const L=WSORTIE.basesFor('RUS');game.ac='MiG-29S';await WSORTIE.start('RUS',L[0].a);const WS=WSORTIE.WS;
+    WS.spawnT=0;await new Promise(r=>setTimeout(r,2300));
+    const en=WS.ground.filter(u=>u.side===1).map(u=>u.kind),own=WS.ground.filter(u=>u.side===0).map(u=>u.kind),air=WS.enemy.map(j=>WWAR.st.c[j._ws].side);
+    await start('RANGE');return{on:L.length>0,en,own,air};});
+  ok('Russian airfields offered',r.on);ok('enemy armour is western',r.en.length>0&&r.en.every(k=>/B$/.test(k)||!/^(MBT|IFV)/.test(k)),r.en);ok('your armour is not',r.own.every(k=>/R$/.test(k)),r.own);
+  ok('enemy flights are BLUEFOR',r.air.length>0&&r.air.every(s=>s==='B'),r.air);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
