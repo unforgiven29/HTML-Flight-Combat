@@ -72,7 +72,7 @@ function spawnFlight(side,a3,from,toLat,toLon,role){const types=typesOf(a3,W.st.
     j.ai.route=role==='CAP'?[{x:t.x-9000,z:t.z,alt:7500},{x:t.x+9000,z:t.z,alt:7500}]:[{x:t.x,z:t.z,alt:6000}];j.ai.wi=0;j.ai.engaged=false;j.ai.det=role==='CAP'?60000:90000;
     const sq=W.ob&&W.ob.squadronFor(a3,from.ident);j._sqn=sq&&sq.id;j.callsign=(side?'BANDIT ':'')+(G.byA3.get(a3)?G.byA3.get(a3).a2:a3)+' '+type+(sq&&sq.num?' · '+sq.name:'');j._ws=a3;WS.jets.add(j);(side?WS.enemy:WS.friend).push(j);out.push(j);}
   return out;}
-function airTick(dt){if(!WS.on||!player||!game.active)return;const me=W.st.c[WS.me];WS.spawnT-=dt;WS.capT-=dt;
+function airTick(dt){if(!WS.on||!player||!game.active||WS.client)return;   /* a multiplayer guest gets the host's traffic (warnet.js) */const me=W.st.c[WS.me];WS.spawnT-=dt;WS.capT-=dt;
   const alive=L=>L.filter(j=>j.alive).length,th=W.st.th.filter(t=>{const T=W.THEATRES.find(q=>q.id===t.id);return WS.base.lat>=T.lat[0]&&WS.base.lat<=T.lat[1];})[0];
   const enemyShare=th?(me.side==='B'?(1-th.sup)/2:(1+th.sup)/2):.5;   // more enemy flights where the enemy holds the air
   if(WS.spawnT<=0&&alive(WS.enemy)<8){WS.spawnT=rr(150,330)/(.4+enemyShare);const E=enemyBases();if(E.length){const e=pick(E.slice(0,6)),tgt=WS.front?WS.front.p:WS.base;
@@ -104,7 +104,7 @@ async function start(a3,ap){const p=W.st.c[a3];if(!W.bell(p))return;WS.me=a3;WS.
   let rw=0,bl=-1;ap.runways.forEach((r,i)=>{if(r.paved&&r.len_m>bl){bl=r.len_m;rw=i;}});
   await WF.start(ap,rw,'le');if(game.scen!=='WORLD'||!WF.on)return;
   WS.on=true;WS.speed0=W.speed;W.speed=1/3600;W.run=true;WS.spawnT=rr(60,140);WS.capT=20;
-  if(WS.front&&WS.front.d<260e3)placeFront();tasking();
+  if(WS.front&&WS.front.d<260e3&&!WS.client)placeFront();tasking();
   if(window.WMAP)WMAP.close();
   flash('FLYING FOR '+p.n.toUpperCase()+(WS.front?' · FRONT '+Math.round(WS.front.d/1000)+' KM':''),4000);}
 // the world-flight tick: AI traffic; ending the sortie or leaving the world closes it

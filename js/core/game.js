@@ -6111,7 +6111,7 @@ const net={on:false,lobby:null,r:null,me:'',code:'',cs:'',score:{k:0,d:0},peers:
     if(!Array.isArray(s)||s.length<13||!AC[pr.ac]){if(e&&e.jet){this.dropJet(e);}if(!e){e={ms:new Map()};this.peers.set(p.peer,e);}e.cs=String(pr.cs||'').slice(0,16);e.k=num(pr.k);e.d=num(pr.d);return;}
     if(!e){e={ms:new Map()};this.peers.set(p.peer,e);}
     e.cs=String(pr.cs||'Pilot').slice(0,16);e.k=num(pr.k);e.d=num(pr.d);
-    if(!e.jet||e.jet.type!==pr.ac){if(e.jet)this.dropJet(e);const j=new Jet(this.coop?0:1,pr.ac,{},pr.era==='modern'?'modern':'cold');j.remote=true;j.peer=p.peer;
+    if(!e.jet||e.jet.type!==pr.ac){if(e.jet)this.dropJet(e);const j=new Jet(this.coop||(this.ww&&pr.sd&&pr.sd===this.sd)?0:1,pr.ac,{},pr.era==='modern'?'modern':'cold');j.remote=true;j.peer=p.peer;
       j.ai={radarLock:false,update(){}};j.net={p:new V3(),v:new V3(),q:new Q4(),t:now};e.jet=j;j.pos.set(num(s[0]),num(s[1],5000),num(s[2]));j.q.set(num(s[3]),num(s[4]),num(s[5]),num(s[6],1)).normalize();}
     const j=e.jet;j.callsign=e.cs;j.net.p.set(num(s[0]),num(s[1],5000),num(s[2]));j.net.q.set(num(s[3]),num(s[4]),num(s[5]),num(s[6],1)).normalize();
     j.net.v.set(num(s[7]),num(s[8]),num(s[9]));j.net.t=now;j.hp=num(s[10],100);j.thr=num(s[11],.8);j.ab=num(s[12]);
@@ -6137,7 +6137,7 @@ const net={on:false,lobby:null,r:null,me:'',code:'',cs:'',score:{k:0,d:0},peers:
       ms.push([m.id,MSL_KEYS.indexOf(m.type),r(m.pos.x),r(m.pos.y),r(m.pos.z),r(m.vel.x),r(m.vel.y),r(m.vel.z),(m.active?1:0)|(m.dl?2:0)|(m.burning?4:0),m.track&&!m.track.isDecoy?(m.track.peer||''):tgt]);if(ms.length>=8)break;}
     const lk=radar.mode==='STT'&&radar.sensor==='RDR'&&radar.lock&&radar.lock.peer||'';
     const pres={cs:this.cs,ac:P.type,era:P.era,al:P.alive?1:0,k:this.score.k,d:this.score.d,lk,tr:P.trigger?1:0,ec:P.ecm&&P.ecm.on?(P.ecm.tech==='NOISE'?1:2):0,m:ms,
-      ld:Object.keys(P.ac.st).map(k=>P.load[k]||''),
+      ld:Object.keys(P.ac.st).map(k=>P.load[k]||''),sd:this.ww?this.sd:undefined,o:this.ww&&window.WGEO&&WGEO.o?[WGEO.o.lat,WGEO.o.lon]:undefined,
       s:[r(P.pos.x),r(P.pos.y),r(P.pos.z),r4(P.q.x),r4(P.q.y),r4(P.q.z),r4(P.q.w),r(P.vel.x),r(P.vel.y),r(P.vel.z),Math.round(P.hp),Math.round(P.thr*100)/100,Math.round(P.ab*100)/100]};
     this.r.presence(pres).catch(()=>{});this.dirty=false;},
   hit(j,dmg,w,src){if(!this.on)return;if(j.cid!=null){this.r.emit('chit',{cid:j.cid,dmg:Math.round(dmg),w}).catch(()=>{});glow.emit(j.pos,null,.3,6,14,1,.8,.4,1);return;}this.r.emit('hit',{to:j.peer,dmg:Math.round(dmg),w,by:src&&src.cid!=null?src.cid:null}).catch(()=>{});glow.emit(j.pos,null,.3,6,14,1,.8,.4,1);},
@@ -6150,7 +6150,7 @@ const net={on:false,lobby:null,r:null,me:'',code:'',cs:'',score:{k:0,d:0},peers:
       killer=by===this.me?this.cs:by?((this.peers.get(by)||{}).cs||'Pilot'):'';
     if(by===this.me&&!m.sameTab){this.score.k++;flash('SPLASH · '+victim,2500);}
     this.feed.unshift((killer?killer+' › ':'')+victim+(m.data.w?' · '+m.data.w:''));this.feed.length=Math.min(this.feed.length,4);renderScore();}};
-function applyHit(j,dmg,src,w){if(j.remote){if(src===player||(net.coop&&net.isHost&&src&&!src.remote&&!src.peer))net.hit(j,dmg,w,src);}else{if(src&&src.peer)j.lastWeapon=w;j.damage(dmg,src);}}
+function applyHit(j,dmg,src,w){if(j.remote){if(src===player||((net.coop||net.ww)&&net.isHost&&src&&!src.remote&&!src.peer))net.hit(j,dmg,w,src);}else{if(src&&src.peer)j.lastWeapon=w;j.damage(dmg,src);}}
 Jet.prototype.netStep=function(dt){const n=this.net,now=performance.now(),age=Math.min(1,(now-n.t)/1000),k=Math.min(1,dt*18);
   const target=n.p.clone().addScaledVector(n.v,age);this.vel.copy(n.v);
   if(this.pos.distanceTo(target)>500)this.pos.copy(target);else this.pos.lerp(target,k);this.q.slerp(n.q,k);
@@ -7181,7 +7181,7 @@ const _dq2=new Q4();
 // patch point: applyHit passes the point of impact so the damage lands on the right side of the jet
 
 /* ============ wingmen: friendly AI flight, formation, takeoff, radio ============ */
-const isFr=(a,b)=>(!net.on||!!net.coop)&&a!==b&&a.side===b.side;
+const isFr=(a,b)=>(!net.on||!!net.coop||!!net.ww)&&a!==b&&a.side===b.side;
 const WING={list:[],cmd:'ENGAGE',call:'VIPER',spread:1};
 const CALLS={};
 PLANES.apply('CALLS',CALLS);
