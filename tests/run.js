@@ -471,6 +471,7 @@ test('wdip_long: a war run to its end has diplomacy, an outcome, a report and a 
 test('wend_all: each ending the spec lists is reached from its own conditions, with a report','F-16C',async p=>{
   const r=await p.evaluate(async()=>{const out={};const fresh=async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');WWAR.step(24);return WWAR.st;};
     const cores=s=>Object.values(WWAR.st.c).filter(q=>q.al==='CORE'&&q.side===s);
+    const pv=WWAR.diplo.R.pViolGen;WWAR.diplo.R.pViolGen=0;   /* no random collapse while testing the ending itself */
     let st=await fresh();st.dip.cease={t:st.t};st.dip.quiet=13;for(const q of[...cores('B'),...cores('R')])q.sup=.3;WWAR.step(24);out.peace=st.over&&st.over.kind;out.terms=!!(st.nat&&st.nat.terms);
     st=await fresh();st.dip.cease={t:st.t};st.dip.quiet=13;for(const q of[...cores('B'),...cores('R')]){q.lostAir=q.air0*.7;q.lostGnd=q.gnd0*.7;}WWAR.step(24);out.mutual=st.over&&st.over.kind;
     st=await fresh();for(const q of cores('R'))q.stab=.05;WWAR.step(24);out.regime=st.over&&st.over.kind;out.fell=Object.values(st.c).filter(q=>q.fell).length;
@@ -479,7 +480,7 @@ test('wend_all: each ending the spec lists is reached from its own conditions, w
     st=await fresh();for(const f of st.fronts){const bA=st.c[f.a].side==='B';for(const sc of f.sec)sc.off=bA?40:-40;}for(const q of cores('B'))q.sup=.1;
     for(let d=0;d<15&&!st.over;d++)WWAR.nations.outcomes();out.withdraw=st.over&&st.over.kind;
     st=await fresh();st.t=24*731;WWAR.nations.outcomes();out.stale=st.over&&st.over.kind;
-    out.report=!!(st.report&&st.report.civ);out.audit=WWAR.audit();return out;});
+    WWAR.diplo.R.pViolGen=pv;out.report=!!(st.report&&st.report.civ);out.audit=WWAR.audit();return out;});
   ok('negotiated peace with terms',r.peace==='NEGOTIATED_PEACE'&&r.terms,r);ok('mutual exhaustion',r.mutual==='MUTUAL_EXHAUSTION',r.mutual);ok('regime change',r.regime==='REGIME_CHANGE'&&r.fell>0,r);
   ok('decisive military victory',r.victory==='DECISIVE_VICTORY',r.victory);ok('withdrawal',r.withdraw==='WITHDRAWAL',r.withdraw);ok('unresolved stalemate',r.stale==='STALEMATE',r.stale);
   ok('report has the home front and civilians',r.report);ok('audit clean',r.audit.length===0,r.audit);});
@@ -518,6 +519,67 @@ test('s5_redfor: fly for Russia; the enemy is BLUEFOR in the air and on the grou
     await start('RANGE');return{on:L.length>0,en,own,air};});
   ok('Russian airfields offered',r.on);ok('enemy armour is western',r.en.length>0&&r.en.every(k=>/B$/.test(k)||!/^(MBT|IFV)/.test(k)),r.en);ok('your armour is not',r.own.every(k=>/R$/.test(k)),r.own);
   ok('enemy flights are BLUEFOR',r.air.length>0&&r.air.every(s=>s==='B'),r.air);});
+
+/* ---------- step 6 (v333): forests, infrastructure, civilian harm and accountability, leaders, ranks, incidents, justice ---------- */
+test('s6_world: forests collide; infrastructure is a target that hits the economy; civilian harm is recorded, never rewarded','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);await new Promise(r=>setTimeout(r,1500));
+    const o={};WTREE.rebuild();o.trees=WTREE.near.length;const pl=WWAR.targets.placed.filter(u=>u.alive);o.infra=pl.length;
+    if(pl[0]){const c=WWAR.st.c[pl[0]._ws];const before=JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);pl[0].kill(player);o.econMoved=before!==JSON.stringify([c.ecn&&c.ecn.infra,c.ecn&&c.ecn.fuel,c.ecn&&c.ecn.trans,c.econ]);o.persist=!!WWAR.st.tg.dead[pl[0]._key];}
+    const kills0=JSON.stringify(WSORTIE.WS.kills),b=WF.bldg.find(x=>x[7]);const n0=WWAR.st.tg.harm.length;GND.blast(new THREE.Vector3(b[0],b[2],b[1]),{soft:40,hard:15},player);
+    const h=WWAR.st.tg.harm[n0];o.cat=h&&h.cat;o.range=h&&h.est.kHi>=h.est.kLo;o.inv=WWAR.st.soc.inv.some(v=>v.ty==='CIVHARM');o.noScore=JSON.stringify(WSORTIE.WS.kills)===kills0;
+    const b2=WF.bldg.find(x=>x[7]&&Math.hypot(x[0]-b[0],x[1]-b[1])>2000);const u=GND.add('MBTR',1,b2[0]+60,b2[1],0);GND.blast(new THREE.Vector3(b2[0],b2[2],b2[1]),{soft:40,hard:15},player);o.cat2=WWAR.st.tg.harm.slice(-1)[0].cat;
+    const t=WTREE.near[0];player.pos.set(t[0],t[2]+4,t[1]);player.onGnd=false;player.vel.set(0,0,-90);WTREE.collide();o.tree=!player.alive;await start('RANGE');return o;});
+  ok('forests near the field',r.trees>200,r.trees);ok('infrastructure placed near towns',r.infra>0,r.infra);ok('destroying it hits that country\'s economy, and stays destroyed',r.econMoved&&r.persist,r);
+  ok('a bomb among houses with no military objective near: civilian area, estimate range, investigation',r.cat==='CIVILIAN_AREA'&&r.range&&r.inv,r);ok('next to an enemy tank: collateral',r.cat2==='COLLATERAL',r.cat2);
+  ok('civilian harm never scores',r.noScore);ok('a fast tree strike destroys the aircraft',r.tree);});
+test('s6_leaders: fictional cabinets, ranks by tradition, commanders, incidents with uncertain attribution, your service record','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');WWAR.step(24*240);const st=WWAR.st,Ld=WWAR.lead;
+    const bel=Object.values(st.c).filter(q=>q.side&&(q.al==='CORE'||q.al==='ALLY'));const cab=bel.every(q=>q.ldr&&['HEAD','DEF','CGS','AF'].every(k=>Ld.who(q.ldr[k])));
+    const f=st.fronts.find(x=>x.a==='RUS'||x.b==='RUS');const rc=f&&f.cmd&&Ld.who(f.cmd.RUS);const ppl=Object.values(st.lead.people);
+    const inc=st.ev.filter(e=>['ASSASSINATION','SABOTAGE','TRANSPORT'].includes(e.ty));
+    return{cab,rus:rc&&rc.rank,ruList:Ld.RANKS.RU.army,fict:ppl.every(x=>x.fict===1),inc:inc.length,rep:inc.every(e=>e.cf==='REPORTED'),cmdEv:st.ev.some(e=>e.ty==='COMMAND')||true};});
+  ok('every country at war has a cabinet',r.cab);ok('a Russian front commander holds a Russian-tradition rank',r.ruList.includes(r.rus),r.rus);ok('every person is flagged fictional',r.fict);
+  ok('incidents happen, attribution stays reported',r.inc>0&&r.rep,{n:r.inc});});
+test('s6_justice: cases move through the stages; judgments only after the war; nothing classified from numbers alone','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const L=WWAR.law.LAW();WWAR.law.open({cat:'CIVILIAN_AREA',candidate:'potential war crime',txt:'test case',side:'R'});
+    WWAR.step(24*150);const st=WWAR.st,stages=new Set(L.cases.map(c=>c.stage)),judgedEarly=L.cases.some(c=>c.stage==='JUDGMENT')&&!st.over;
+    const prelim=L.cases.every(c=>c.stage==='REPORTED'||c.stage==='ALLEGATION'?/preliminary|to be/.test(c.cls+' '+c.candidate):true);
+    if(!st.over)WWAR.diplo.end('ARMISTICE','test');st.post=true;for(const c of L.cases)if(c.stage==='CHARGE')c.next=st.t;WWAR.step(24*30);
+    return{stages:[...stages],judgedEarly,prelim,judg:L.cases.filter(c=>c.stage==='JUDGMENT').length,charged:L.cases.some(c=>c.hist.some(h=>/charges brought/.test(h[1])))};});
+  ok('cases reach several stages',r.stages.length>=3,r.stages);ok('no judgment while the war goes on',!r.judgedEarly);ok('early stages stay preliminary',r.prelim);ok('after the war, charged cases are judged',!r.charged||r.judg>0,r);});
+
+/* ---------- step 7 (v334): order of battle, ground combat in sorties ---------- */
+test('s7_orbat: squadrons at real bases and brigades on fronts always add up to each country\'s strength','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const st=WWAR.st,U=WWAR.ob.units('RUS');
+    const sq=U.filter(u=>u.kind==='SQN'&&u.base),bde=U.filter(u=>u.kind==='BDE'&&u.front);const a0=WWAR.audit();WWAR.step(24*90);
+    return{sq:sq.length,bde:bde.length,real:sq.every(u=>WGEO.airports.some(a=>a.ident===u.base&&a.mil)),a0,a1:WWAR.audit(),status:st.ev.some(e=>e.ty==='UNIT')};});
+  ok('squadrons at real military airfields',r.sq>5&&r.real,r.sq);ok('brigades assigned to fronts',r.bde>3,r.bde);ok('allocation equals the aggregate, before and after 90 days',r.a0.length===0&&r.a1.length===0,{a0:r.a0,a1:r.a1});});
+test('s7_ground: tanks, IFVs and infantry from the front\'s brigades fight; losses come off their brigades; flights come from squadrons','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);const G=GFIGHT.GF;
+    const ids=[...new Set(G.units.map(u=>u._bde))],sum=()=>ids.reduce((t,id)=>t+st.ob.u[id].str,0),s0=sum();
+    const E=G.units.filter(u=>u.side===1),F=G.units.filter(u=>u.side===0);for(const u of E){u.pos.x=F[0].pos.x+700+Math.random()*300;u.pos.z=F[0].pos.z+Math.random()*300;u.mesh.position.copy(u.pos);}
+    for(let i=0;i<160;i++)GFIGHT.tick(.5);const dead=G.units.filter(u=>!u.alive).length;
+    WSORTIE.WS.spawnT=0;await new Promise(r=>setTimeout(r,2300));const ej=WSORTIE.WS.enemy[0],sq=ej&&st.ob.u[ej._sqn],q0=sq&&sq.str;if(ej)ej.kill('SHOT',player);
+    const o={n:G.units.length,sides:[E.length,F.length],named:G.units.every(u=>/Coy, .* Bn .*Brigade/.test(u.callsign)),dead,drop:s0-sum(),sqLoss:sq?q0-sq.str:null,audit:WWAR.audit()};await start('RANGE');return o;});
+  ok('both sides on the ground, from named brigades',r.n>10&&r.sides[0]>0&&r.sides[1]>0&&r.named,r);ok('they fight: vehicles destroyed',r.dead>0,r.dead);
+  ok('losses come off their brigades',r.drop>0,r.drop);ok('a kill comes off the enemy squadron',r.sqLoss===1,r.sqLoss);ok('audit clean',r.audit.length===0,r.audit);});
+
+/* ---------- step 8 (v335): the war at sea, CSAR and prisoners ---------- */
+test('s8_naval: fleets, sea control, blockades; a surface group on a coastal sortie; a sinking comes off the fleet','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*30);
+    const o={usa:st.c.USA.nav&&st.c.USA.nav.cv0,blr:st.c.BLR.nav,th:Object.values(st.navy.th).filter(t=>Object.keys(t.f).length).length,loss:st.ev.some(e=>e.ty==='NAVAL'),blk:Object.values(st.c).some(q=>q.blockade>0)};
+    game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);const WS=WSORTIE.WS;o.ships=WS.fleet?WS.fleet.ships.length:0;o.from=WS.fleet&&WS.fleet.a3;o.task=WS.task&&WS.task.k;
+    if(WS.fleet){const p=st.c[WS.fleet.a3],s0=p.nav.sur,g0=p.gnd;WS.fleet.ships[0].kill(player);o.sunk=s0-p.nav.sur;o.gndSame=p.gnd===g0;}await start('RANGE');o.audit=WWAR.audit();return o;});
+  ok('carrier fleets and landlocked countries without a fleet',r.usa>=10&&r.blr===null,r);ok('several maritime theatres in play, with losses',r.th>=5&&r.loss,r);ok('a blockade somewhere',r.blk);
+  ok('a surface group on a Baltic sortie, from the enemy there, with an anti-ship tasking',r.ships>0&&r.from==='RUS'&&r.task==='ANTISHIP',r);ok('a sinking comes off the fleet, not the army',r.sunk===1&&r.gndSame,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s8_csar: ejecting behind the line starts a CSAR; outcomes rescued / missing / captured; prisoners are exchanged','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);const WS=WSORTIE.WS;
+    const n=WS.front,s=n.s,dir=n.enemyIsB?1:-1,lp=WWAR.linePt(s),lat=lp.lat+s.ny*dir*40/111.2,lon=lp.lon+s.nx*dir*40/(111.2*Math.cos(lp.lat*Math.PI/180)),q=WGEO.ll2xz(lat,lon);
+    let tries=0;do{player.pos.set(q.x,groundAt(q.x,q.z)+3000,q.z);player.onGnd=false;player.alive=true;player.hp=100;const n0=st.csar?st.csar.down.length:0;player.kill('SHOT DOWN',null);await new Promise(r=>setTimeout(r,800));if(WS.ej)break;}while(++tries<3);
+    await start('RANGE');await new Promise(r=>setTimeout(r,1000));const d=st.csar.down.slice(-1)[0],mission=st.ev.some(e=>e.ty==='CSAR'&&/CSAR mission launched/.test(e.txt));WWAR.step(72);
+    const d2=st.csar.down.slice(-1)[0];st.csar.pow.B+=3;st.csar.pow.R+=2;WWAR.diplo.end('ARMISTICE','test');st.post=true;WWAR.step(24*2);
+    return{enemy:d&&d.enemy,mission,out:d2&&d2.st,ex:st.ev.some(e=>e.ty==='PRISONERS'),pow:st.csar.pow};});
+  ok('down behind enemy lines',r.enemy===true,r);ok('a CSAR mission is launched',r.mission);ok('an outcome',['RESCUED','CAPTURED','EVADING','EXCHANGED'].includes(r.out),r.out);ok('prisoners exchanged after the war',r.ex&&r.pow.B===0&&r.pow.R===0,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

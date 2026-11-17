@@ -613,10 +613,12 @@
    "line": 1304,
    "owner": "js/world/geo.js, worldflight.js, worldmap.js (the Earth); js/core/game.js cmpRaw / cmpH (the 300 km campaign theatre)",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: rest of global geography (regions, routing, ecology) not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/world/wtrees.js): forests with collision proxies. Not yet: roads, rivers, land cover data",
+   "tests": [
+    "s6_world"
+   ]
   },
   {
    "id": "R03-004",
@@ -2102,10 +2104,12 @@
    "line": 4157,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-050",
@@ -2117,10 +2121,12 @@
    "line": 4172,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-051",
@@ -2132,10 +2138,12 @@
    "line": 4287,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333 (js/war/justice.js): case stages, legal elements, safeguards, allegations, tribunals. Not yet: courts as institutions, witnesses, defence rights, appeals, reparations as records",
+   "tests": [
+    "s6_justice"
+   ]
   },
   {
    "id": "R05-052",
@@ -2162,10 +2170,12 @@
    "line": 4610,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v333: ranks by national tradition, front commanders relieved / promoted / killed, player service record",
+   "tests": [
+    "s6_leaders"
+   ]
   },
   {
    "id": "R06-002",
@@ -2207,10 +2217,13 @@
    "line": 4863,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
+   "tests": [
+    "s7_orbat",
+    "s7_ground"
+   ]
   },
   {
    "id": "R06-005",
@@ -2237,12 +2250,11 @@
    "line": 4947,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v333: ranks by national tradition, front commanders relieved / promoted / killed, player service record",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s6_leaders"
    ]
   },
   {
@@ -2351,12 +2363,12 @@
    "line": 5139,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {
@@ -2399,12 +2411,12 @@
    "line": 5215,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {
@@ -2480,12 +2492,12 @@
    "line": 5417,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {
@@ -4613,10 +4625,12 @@
    "line": 7381,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335 (js/war/naval.js): fleets, maritime theatres, sea control, blockades, ships on sorties. Not yet: ships as named entities, ports, convoys, submarine warfare detail",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R06-164",
@@ -8234,10 +8248,12 @@
    "line": 17169,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R11-017",
@@ -8279,10 +8295,12 @@
    "line": 17215,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R11-020",
@@ -8769,11 +8787,11 @@
    "line": 18594,
    "owner": "js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records",
    "phase": 9,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Player pilot is a person record with a service history; ejection over enemy territory leads to missing / rescued / captured; succession when your pilot is lost. No downed-pilot gameplay or CSAR missions yet",
+   "note": "v335 (js/war/csar.js): ejection judged against the front, CSAR missions, evasion, capture, prisoner status, exchanges. Not yet: flying the CSAR yourself, downed-pilot gameplay",
    "tests": [
-    "cw_player_loss"
+    "s8_csar"
    ]
   },
   {

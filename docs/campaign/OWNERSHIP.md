@@ -36,6 +36,14 @@ individual records (the spec allows this where individual detail is not needed).
 | National economy and infrastructure (energy, fuel, industry, transport, food, infrastructure) | `js/war/economy.js` | `st.c[].ecn` | WWAR.mod (front supply), production, support |
 | Government, mobilisation, strategic decisions (posture, concentration, estimates, calls for help) | `js/war/strategy.js` | `st.c[].govt`, `st.fronts[].post / .w / .est` | WWAR.mod, panel |
 | Population, households, media reports, investigations | `js/war/society.js` | `st.c[].soc`, `st.soc` | panel (reports never change events) |
+| Leaders, commanders, ranks, abstract incidents, your service record | `js/war/leaders.js` | `st.lead`, `st.c[].ldr`, `st.fronts[].cmd` | strategy (caution / resolve), diplomacy (pragmatism), panel |
+| Legal cases, allegations, intimidation policy, tribunals | `js/war/justice.js` | `st.law` | panel |
+| Infrastructure targets, civilian harm records | `js/war/targets.js` | `st.tg`; ground objects in GND | economy (damage), justice (cases), leaders (inquiries) |
+| Forests and tree collisions | `js/world/wtrees.js` | generated per geographic cell (not saved) | world flight |
+| Order of battle (squadrons, brigades, battalions): the detailed allocation of `p.air` / `p.gnd`, never a second total | `js/war/orbat.js` | `st.ob` | warsortie (flights from squadrons), gfight (companies from brigades), panel |
+| Ground combat on sorties | `js/war/gfight.js` | GND units (not saved) | brigades (losses) |
+| Fleets, sea control, blockades, ships on sorties | `js/war/naval.js` | `st.c[].nav`, `st.navy` | economy (imports), fronts (amphibious threat), panel |
+| Downed pilots, CSAR, prisoners, exchanges | `js/war/csar.js` | `st.csar` | service record (leaders.js) |
 | World-war clock | `WWAR.step` (`st.t`, hours since the scenario start) | `viper.ww` | warmap.js. **Separate from `CAMP.st.t` until step 2 joins the theatre campaign to the world war** |
 | Co-op campaign state | the host (`CAMP.publish`) | — | clients apply it; the ledger read model goes out as `wrv` every 40 publishes; clients never write the ledger |
 

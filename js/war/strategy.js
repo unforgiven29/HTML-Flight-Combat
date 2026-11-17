@@ -38,7 +38,7 @@ function daily(){const st=W.st,secs=new Map();
     for(const f of mine){const en=st.c[f.a===p.a3?f.b:f.a],truth=en.gnd/Math.max(1,secs.get(en.a3));
       const sup=f.sec.reduce((t,s)=>t+supOver(s),0)/f.sec.length,mySup=p.side==='B'?sup:-sup,err=Math.max(.08,.35-.25*Math.max(0,mySup));
       const est=truth*Math.max(.3,1+gauss()*err);f.est=f.est||{};f.est[p.a3]=est;const ratio=own/Math.max(1e-3,est);
-      const fuel=p.ecn?p.ecn.fuel:60,post=ratio>S.attack&&(p.sup??1)>.3&&fuel>15?'ATTACK':ratio<S.defend?'DEFEND':'HOLD';
+      const fuel=p.ecn?p.ecn.fuel:60,post=ratio>S.attack*(W.atkK?W.atkK(p):1)&&(p.sup??1)>.3&&fuel>15?'ATTACK':ratio<S.defend?'DEFEND':'HOLD';
       f.post=f.post||{};const was=f.post[p.a3];f.post[p.a3]=post;if(post==='DEFEND')defs.push(f);
       if(was&&was!==post)decide(p,(post==='ATTACK'?'goes on the offensive':post==='DEFEND'?'digs in':'holds its positions')+' on the front with '+en.n+' (believes the force ratio is '+ratio.toFixed(2)+').');}
     // concentration, conserved across this country's fronts

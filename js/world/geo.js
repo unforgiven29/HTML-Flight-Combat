@@ -111,7 +111,8 @@ G.search=(q,n=40)=>{q=String(q||'').trim().toLowerCase();if(!q||!G.airports)retu
 // runway geometry in the local frame: centre, half-length, half-width, unit axis along the runway (le -> he), true heading
 G.runway=(a,r)=>{let le,he;
   if(r.le_lat!=null&&r.he_lat!=null){le=G.ll2xz(r.le_lat,r.le_lon);he=G.ll2xz(r.he_lat,r.he_lon);}
-  else{const c=G.ll2xz(a.lat,a.lon),h=(r.le_hdg_true!=null?r.le_hdg_true:0)*D,L=r.len_m/2;le={x:c.x-Math.sin(h)*L,z:c.z+Math.cos(h)*L};he={x:c.x+Math.sin(h)*L,z:c.z-Math.cos(h)*L};}
+  // ends missing, or recorded on top of each other (some OurAirports entries): build it from the airport and the heading
+  if(!le||Math.hypot(he.x-le.x,he.z-le.z)<r.len_m*.3){const c=G.ll2xz(a.lat,a.lon),h=(r.le_hdg_true!=null?r.le_hdg_true:0)*D,L=r.len_m/2;le={x:c.x-Math.sin(h)*L,z:c.z+Math.cos(h)*L};he={x:c.x+Math.sin(h)*L,z:c.z-Math.cos(h)*L};}
   const dx=he.x-le.x,dz=he.z-le.z,L=Math.hypot(dx,dz)||r.len_m;
   return{cx:(le.x+he.x)/2,cz:(le.z+he.z)/2,hl:Math.max(L,r.len_m*.9)/2,hw:Math.max(15,r.wid_m||45)/2,ux:dx/L,uz:dz/L,hdg:(Math.atan2(dx,-dz)/D+360)%360,le,he,paved:!!r.paved,len:r.len_m,id:r.le_id+'/'+r.he_id};};
 
