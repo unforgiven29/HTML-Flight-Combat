@@ -110,5 +110,5 @@ async function start(a3,ap){const p=W.st.c[a3];if(!W.bell(p))return;WS.me=a3;WS.
 // the world-flight tick: AI traffic; ending the sortie or leaving the world closes it
 {let last=performance.now();setInterval(()=>{const n=performance.now(),dt=Math.min(2,(n-last)/1000);last=n;try{airTick(dt);}catch(e){console.warn('[ws]',e);}
   if(WS.on&&(!WF.on||game.scen!=='WORLD'||!game.active))finish();},1000);}
-window.WSORTIE={WS,start,finish,basesFor,nearestSector,typesOf};
+window.WSORTIE={WS,start,finish,basesFor,nearestSector,typesOf,spawnFlight,xz};
 })();

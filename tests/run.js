@@ -708,6 +708,36 @@ test('s12_route: a route plan with legs, drawn on the map','F-16C',async p=>{
     const C=X.candidates('POL');pl.wp.push(C[0],C[1]);const L=X.legs();const c=document.createElement('canvas').getContext('2d');let n=0;const s=c.stroke.bind(c);c.stroke=function(){n++;return s();};WARMAP.draw(c,(la,lo)=>[lo,la],{W:360,ppd:1},'over');
     return{c:C.length,L:L.length,d:L[0].d,h:L[0].h,strokes:n,ui:X.box(WWAR.st.c.POL).includes('ADD WAYPOINT')};});
   ok('waypoints from the war\'s places',r.c>2,r);ok('legs with distance and heading',r.L===2&&r.d>0&&r.h>=0&&r.h<360,r);ok('drawn on the map, planner UI',r.strokes>0&&r.ui,r);});
+
+/* ---------- step 13 (v349+): national names and politics ---------- */
+test('s13_natpol: titles, heads of state, parties, elections, organizations, equipment names','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*3);const N=WWAR.natpol,L=WWAR.lead;
+    const o=st.pol.DEU,hs=L.who(o.hs),hg=L.who(o.hg),us=st.pol.USA;const sameUS=us.hs===us.hg;
+    for(const a of['DEU','GBR','JPN','IND','BRA'])st.pol[a].next=st.t;WWAR.step(24*2);
+    const ev=st.ev.filter(e=>e.ty==='ELECTION');const pol=st.c.POL,head=pol.ldr&&L.who(pol.ldr.HEAD);
+    const ars=NATPANEL.tabs.ARSENAL(st.c.RUS);const civ=N.civName('CHN','MAIN');
+    return{hsT:hs&&hs.role,hgT:hg&&hg.role,sameUS,seats:o.parties.reduce((t,x)=>t+x.seats,0),gov:o.gov.length,ev:ev.length,head:head&&head.role,org:N.orgsOf('POL'),su35:ars.includes('Su-35S'),civ,
+      tab:N.tab(st.c.DEU).length,reg:N.regions().includes('REGIONAL PROFILES'),prk:st.pol.PRK&&st.pol.PRK.parties.length,audit:WWAR.audit()};});
+  ok('real titles, fictional people',/Federal President/.test(r.hsT)&&/Federal Chancellor/.test(r.hgT),r);ok('one person where the offices are joined',r.sameUS,r);
+  ok('legislature seats add up, a governing coalition',r.seats===630&&r.gov>=1,r);ok('elections held',r.ev>0,r);ok('a country at war: its HEAD has the national title',/Prime Minister of Poland/.test(r.head||''),r);
+  ok('organizations',r.org.includes('NATO')&&r.org.includes('EU'),r.org);ok('equipment and airliner names',r.su35&&/C919/.test(r.civ),r);ok('POLITICS tab and regional profiles',r.tab>300&&r.reg,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s13_deep: tanker and AWACS fly, the planning room, depots, lives','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*60);const D=WWAR.deep;
+    const dep=st.dep&&st.dep.POL,sup=Object.keys(st.ops.sup).length;const T=D.targets('POL');const k=D.PLN();k.k='STRIKE';k.tgt=T.find(t=>t.kind==='AIRFIELD')||T[0];k.esc=1;
+    const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);await new Promise(r=>setTimeout(r,1500));
+    const task=WSORTIE.WS.task,fr=WSORTIE.WS.friend.length,tnk=typeof TNK!=='undefined'&&TNK.on,aw=D.SUP.aw.length,gnd=WSORTIE.WS.ground.filter(u=>u.kind==='BLDG'||u.kind==='TRUCK'||u.kind==='SURN').length;
+    WSORTIE.finish();const after=typeof TNK!=='undefined'&&TNK.on;const H=st.lives&&st.lives.POL;
+    return{dep:dep&&dep.length,sup,tgts:T.length,task:task&&task.k,fr,tnk,after,aw,gnd,lives:H&&H.length,members:H&&H.reduce((t,h)=>t+h.m.length,0),logs:H&&H.some(h=>h.log.length),life:NATPANEL.tabs.LIFE(st.c.POL).includes('LIVES'),plan:NATPANEL.tabs.DEBRIEF(st.c.POL).includes('PLANNING ROOM'),audit:WWAR.audit()};});
+  ok('depots per country with stocks feeding fronts',r.dep>=2&&r.sup>0,r);ok('planning room: strike package with escorts',r.task==='STRIKE'&&r.fr>=2&&r.gnd>=2,r);ok('tanker and AWACS in the air, gone after the sortie',r.tnk&&!r.after&&r.aw>=1,r);
+  ok('fictional families live through the war',r.lives===6&&r.members>=6&&r.logs,r);ok('panels',r.life&&r.plan);ok('audit clean',r.audit.length===0,r.audit);});
+test('s13_ships: compartment damage control, better navies save more ships','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const f=WWAR.forces.dcSim;let a=0,b=0;for(let i=0;i<400;i++){if(f(3).saved)a++;if(f(1).saved)b++;}const one=f(2);return{a,b,why:one.why,c:one.C.length};});
+  ok('six compartments with a stated outcome',r.c===6&&r.why.length>5,r);ok('better-trained crews save more ships',r.a>r.b,r);});
+test('s13_move: front vehicles disperse from a threat','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);
+    const G=WSORTIE.WS.ground.filter(u=>WWAR.deep.MOV.has(u.kind)&&u.alive);if(G.length<2)return{n:G.length};const a=G[0],b=G.find(u=>u!==a&&u.pos.distanceTo(a.pos)<1500)||G[1];b.pos.copy(a.pos).add(new THREE.Vector3(300,0,0));
+    const x0=b.pos.x,z0=b.pos.z;a.kill(player);await new Promise(r=>setTimeout(r,3500));const moved=Math.hypot(b.pos.x-x0,b.pos.z-z0);WSORTIE.finish();return{n:G.length,moved,cov:!!b._cov};});
+  ok('vehicles near a destroyed one move to cover',r.moved>5&&r.cov,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

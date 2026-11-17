@@ -1,0 +1,122 @@
+# a3|system|head of state|head of government (blank = same)|legislature|seats|term years|competitive elections (1/0)
+USA|PRESIDENTIAL|President||Congress (House of Representatives)|435|4|1
+CAN|CONST_MONARCHY|Monarch (Governor General)|Prime Minister|House of Commons|343|4|1
+MEX|PRESIDENTIAL|President||Chamber of Deputies|500|6|1
+BRA|PRESIDENTIAL|President||Chamber of Deputies|513|4|1
+ARG|PRESIDENTIAL|President||Chamber of Deputies|257|4|1
+CHL|PRESIDENTIAL|President||Chamber of Deputies|155|4|1
+COL|PRESIDENTIAL|President||Chamber of Representatives|188|4|1
+PER|PRESIDENTIAL|President||Congress|130|5|1
+VEN|PRESIDENTIAL|President||National Assembly|277|6|0
+CUB|ONE_PARTY|President|Prime Minister|National Assembly of People's Power|470|5|0
+GBR|CONST_MONARCHY|Monarch|Prime Minister|House of Commons|650|5|1
+IRL|PARLIAMENTARY|President|Taoiseach|Dáil Éireann|174|5|1
+FRA|SEMI_PRESIDENTIAL|President|Prime Minister|National Assembly|577|5|1
+DEU|PARLIAMENTARY|Federal President|Federal Chancellor|Bundestag|630|4|1
+ITA|PARLIAMENTARY|President|President of the Council of Ministers|Chamber of Deputies|400|5|1
+ESP|CONST_MONARCHY|King|President of the Government|Congress of Deputies|350|4|1
+PRT|SEMI_PRESIDENTIAL|President|Prime Minister|Assembly of the Republic|230|4|1
+NLD|CONST_MONARCHY|King|Prime Minister|House of Representatives|150|4|1
+BEL|CONST_MONARCHY|King|Prime Minister|Chamber of Representatives|150|5|1
+LUX|CONST_MONARCHY|Grand Duke|Prime Minister|Chamber of Deputies|60|5|1
+CHE|DIRECTORIAL|Federal Council (collective)||National Council|200|4|1
+AUT|PARLIAMENTARY|Federal President|Federal Chancellor|National Council|183|5|1
+NOR|CONST_MONARCHY|King|Prime Minister|Storting|169|4|1
+SWE|CONST_MONARCHY|King|Prime Minister|Riksdag|349|4|1
+DNK|CONST_MONARCHY|King|Prime Minister|Folketing|179|4|1
+FIN|SEMI_PRESIDENTIAL|President|Prime Minister|Eduskunta|200|4|1
+ISL|PARLIAMENTARY|President|Prime Minister|Althing|63|4|1
+EST|PARLIAMENTARY|President|Prime Minister|Riigikogu|101|4|1
+LVA|PARLIAMENTARY|President|Prime Minister|Saeima|100|4|1
+LTU|SEMI_PRESIDENTIAL|President|Prime Minister|Seimas|141|4|1
+POL|PARLIAMENTARY|President|Prime Minister|Sejm|460|4|1
+CZE|PARLIAMENTARY|President|Prime Minister|Chamber of Deputies|200|4|1
+SVK|PARLIAMENTARY|President|Prime Minister|National Council|150|4|1
+HUN|PARLIAMENTARY|President|Prime Minister|National Assembly|199|4|1
+ROU|SEMI_PRESIDENTIAL|President|Prime Minister|Chamber of Deputies|330|4|1
+BGR|PARLIAMENTARY|President|Prime Minister|National Assembly|240|4|1
+GRC|PARLIAMENTARY|President|Prime Minister|Hellenic Parliament|300|4|1
+HRV|PARLIAMENTARY|President|Prime Minister|Sabor|151|4|1
+SVN|PARLIAMENTARY|President|Prime Minister|National Assembly|90|4|1
+SRB|PARLIAMENTARY|President|Prime Minister|National Assembly|250|4|1
+BIH|PARLIAMENTARY|Presidency (collective)|Chairman of the Council of Ministers|House of Representatives|42|4|1
+MNE|PARLIAMENTARY|President|Prime Minister|Parliament|81|4|1
+MKD|PARLIAMENTARY|President|Prime Minister|Assembly|120|4|1
+ALB|PARLIAMENTARY|President|Prime Minister|Parliament|140|4|1
+MDA|PARLIAMENTARY|President|Prime Minister|Parliament|101|4|1
+UKR|SEMI_PRESIDENTIAL|President|Prime Minister|Verkhovna Rada|450|5|1
+BLR|PRESIDENTIAL_AUTH|President|Prime Minister|House of Representatives|110|5|0
+RUS|SEMI_PRESIDENTIAL_AUTH|President|Chairman of the Government|State Duma|450|6|0
+GEO|PARLIAMENTARY|President|Prime Minister|Parliament|150|4|1
+ARM|PARLIAMENTARY|President|Prime Minister|National Assembly|107|5|1
+AZE|PRESIDENTIAL_AUTH|President|Prime Minister|Milli Majlis|125|7|0
+KAZ|PRESIDENTIAL_AUTH|President|Prime Minister|Mazhilis|98|7|0
+UZB|PRESIDENTIAL_AUTH|President|Prime Minister|Legislative Chamber|150|7|0
+TKM|PRESIDENTIAL_AUTH|President||Mejlis|125|7|0
+KGZ|PRESIDENTIAL_AUTH|President|Chairman of the Cabinet|Jogorku Kenesh|90|5|0
+TJK|PRESIDENTIAL_AUTH|President|Prime Minister|Assembly of Representatives|63|7|0
+TUR|PRESIDENTIAL|President||Grand National Assembly|600|5|1
+CYP|PRESIDENTIAL|President||House of Representatives|56|5|1
+ISR|PARLIAMENTARY|President|Prime Minister|Knesset|120|4|1
+LBN|PARLIAMENTARY|President|Prime Minister|Parliament|128|4|1
+SYR|PRESIDENTIAL_AUTH|Head of State (transitional)||People's Assembly|210|5|0
+JOR|CONST_MONARCHY_STRONG|King|Prime Minister|House of Representatives|138|4|1
+IRQ|PARLIAMENTARY|President|Prime Minister|Council of Representatives|329|4|1
+IRN|THEOCRATIC_REPUBLIC|Supreme Leader|President|Islamic Consultative Assembly|290|4|0
+SAU|ABSOLUTE_MONARCHY|King|Prime Minister (Crown Prince)|Consultative Assembly (appointed)|150|4|0
+ARE|FEDERAL_MONARCHY|President (a ruler of the federation)|Prime Minister|Federal National Council|40|4|0
+QAT|ABSOLUTE_MONARCHY|Emir|Prime Minister|Consultative Assembly|45|4|0
+KWT|CONST_MONARCHY_STRONG|Emir|Prime Minister|National Assembly (suspended)|50|4|0
+BHR|CONST_MONARCHY_STRONG|King|Prime Minister|Council of Representatives|40|4|0
+OMN|ABSOLUTE_MONARCHY|Sultan||Council of Oman|86|4|0
+YEM|DIVIDED|Presidential Leadership Council|Prime Minister|House of Representatives|301|6|0
+EGY|PRESIDENTIAL_AUTH|President|Prime Minister|House of Representatives|596|6|0
+LBY|DIVIDED|Presidential Council|Prime Minister|House of Representatives|200|4|0
+TUN|PRESIDENTIAL_AUTH|President|Prime Minister|Assembly of the Representatives of the People|161|5|0
+DZA|PRESIDENTIAL_AUTH|President|Prime Minister|People's National Assembly|407|5|0
+MAR|CONST_MONARCHY_STRONG|King|Head of Government|House of Representatives|395|5|1
+SDN|MILITARY|Chairman of the Sovereignty Council|Prime Minister|Legislative Council (dissolved)|0|4|0
+ETH|PARLIAMENTARY|President|Prime Minister|House of Peoples' Representatives|547|5|0
+ERI|ONE_PARTY|President||National Assembly (inactive)|150|5|0
+SOM|PARLIAMENTARY|President|Prime Minister|House of the People|275|4|0
+KEN|PRESIDENTIAL|President||National Assembly|349|5|1
+UGA|PRESIDENTIAL_AUTH|President|Prime Minister|Parliament|529|5|0
+TZA|PRESIDENTIAL|President|Prime Minister|National Assembly|393|5|0
+RWA|PRESIDENTIAL_AUTH|President|Prime Minister|Chamber of Deputies|80|5|0
+COD|PRESIDENTIAL|President|Prime Minister|National Assembly|500|5|1
+NGA|PRESIDENTIAL|President||House of Representatives|360|4|1
+GHA|PRESIDENTIAL|President||Parliament|276|4|1
+SEN|PRESIDENTIAL|President|Prime Minister|National Assembly|165|5|1
+CIV|PRESIDENTIAL|President|Prime Minister|National Assembly|255|5|1
+MLI|MILITARY|President of the Transition|Prime Minister|National Transitional Council|147|5|0
+BFA|MILITARY|President of the Transition|Prime Minister|Transitional Legislative Assembly|71|5|0
+NER|MILITARY|President of the CNSP|Prime Minister|-|0|5|0
+CMR|PRESIDENTIAL_AUTH|President|Prime Minister|National Assembly|180|7|0
+AGO|PRESIDENTIAL|President||National Assembly|220|5|0
+ZAF|PARLIAMENTARY_EXEC_PRESIDENT|President||National Assembly|400|5|1
+ZWE|PRESIDENTIAL_AUTH|President||National Assembly|280|5|0
+MOZ|PRESIDENTIAL|President|Prime Minister|Assembly of the Republic|250|5|0
+AFG|THEOCRATIC_EMIRATE|Supreme Leader|Prime Minister|-|0|5|0
+PAK|PARLIAMENTARY|President|Prime Minister|National Assembly|336|5|1
+IND|PARLIAMENTARY|President|Prime Minister|Lok Sabha|543|5|1
+BGD|PARLIAMENTARY|President|Chief Adviser (interim)|Jatiya Sangsad|350|5|1
+LKA|SEMI_PRESIDENTIAL|President|Prime Minister|Parliament|225|5|1
+NPL|PARLIAMENTARY|President|Prime Minister|House of Representatives|275|5|1
+MMR|MILITARY|Acting President|Prime Minister|-|0|5|0
+CHN|ONE_PARTY|President (General Secretary of the Party)|Premier of the State Council|National People's Congress|2977|5|0
+TWN|SEMI_PRESIDENTIAL|President|Premier|Legislative Yuan|113|4|1
+MNG|PARLIAMENTARY|President|Prime Minister|State Great Khural|126|4|1
+PRK|ONE_PARTY|President of State Affairs|Premier|Supreme People's Assembly|687|5|0
+KOR|PRESIDENTIAL|President|Prime Minister|National Assembly|300|5|1
+JPN|CONST_MONARCHY|Emperor|Prime Minister|House of Representatives|465|4|1
+VNM|ONE_PARTY|President|Prime Minister|National Assembly|500|5|0
+LAO|ONE_PARTY|President|Prime Minister|National Assembly|164|5|0
+KHM|CONST_MONARCHY_DOMINANT|King|Prime Minister|National Assembly|125|5|0
+THA|CONST_MONARCHY|King|Prime Minister|House of Representatives|500|4|1
+MYS|CONST_MONARCHY|King (elected)|Prime Minister|Dewan Rakyat|222|5|1
+SGP|PARLIAMENTARY|President|Prime Minister|Parliament|97|5|1
+IDN|PRESIDENTIAL|President||People's Representative Council|580|5|1
+PHL|PRESIDENTIAL|President||House of Representatives|316|6|1
+AUS|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|House of Representatives|150|3|1
+NZL|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|House of Representatives|123|3|1
+PNG|CONST_MONARCHY|Monarch (Governor-General)|Prime Minister|National Parliament|118|5|1
