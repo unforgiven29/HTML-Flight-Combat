@@ -45,9 +45,10 @@ function salvos(){const st=W.st,s=S();if(st.over)return;
     for(let i=0;i<n;i++){const shots=Math.min(2,Math.floor(tryI/n)+(i<tryI%n?1:0));let ok=false;for(let k=0;k<shots;k++){rq.abm--;if(rn()<pk){ok=true;break;}}if(ok)intc++;else through++;}
     rq.intc+=intc;r.hit+=through;
     // what gets hit: an airbase or a depot
-    let what='';const m=st.mil&&st.mil[q.a3];if(through&&m&&Object.keys(m.bases).length&&rn()<.6){const b=Object.values(m.bases)[(rn()*Object.keys(m.bases).length)|0];b.c=Math.max(0,b.c-.08*through);what='the airbase at '+b.n;}
-    else if(through&&st.dep&&st.dep[q.a3]&&st.dep[q.a3].length){const d=st.dep[q.a3][(rn()*st.dep[q.a3].length)|0];d.stock=Math.max(0,d.stock-1.5*through);what='the supply depot at '+d.n;}
-    W.emit('MISSILE',{e:[p.a3,q.a3],cf:'REPORTED',txt:p.n+' fires '+n+' conventional long-range missiles ('+(CONV[p.a3]||'cruise and ballistic missiles')+') at '+q.n+'. '+(rq.abm>0||intc?q.n+'\'s missile defence ('+(ABM[q.a3]||'air defence')+') intercepts '+intc+'. ':'')+(through?through+' get through'+(what?' and strike '+what:'')+'.':'None get through.')});}
+    let what='',loc=null;const m=st.mil&&st.mil[q.a3];if(through&&m&&Object.keys(m.bases).length&&rn()<.6){const ks=Object.keys(m.bases),k=ks[(rn()*ks.length)|0],b=m.bases[k];b.c=Math.max(0,b.c-.08*through);what='the airbase at '+b.n;const ap=G.airports.find(a=>a.ident===k);if(ap)loc=[ap.lat,ap.lon];}
+    else if(through&&st.dep&&st.dep[q.a3]&&st.dep[q.a3].length){const d=st.dep[q.a3][(rn()*st.dep[q.a3].length)|0];d.stock=Math.max(0,d.stock-1.5*through);what='the supply depot at '+d.n;loc=[d.lat,d.lon];}
+    if(!loc){const c=G.byA3.get(q.a3);if(c)loc=[c.ly,c.lx];}const salvo={n,intc,through,from:p.a3};
+    W.emit('MISSILE',{e:[p.a3,q.a3],cf:'REPORTED',loc,salvo,txt:p.n+' fires '+n+' conventional long-range missiles ('+(CONV[p.a3]||'cruise and ballistic missiles')+') at '+q.n+'. '+(rq.abm>0||intc?q.n+'\'s missile defence ('+(ABM[q.a3]||'air defence')+') intercepts '+intc+'. ':'')+(through?through+' get through'+(what?' and strike '+what:'')+'.':'None get through.')});}
   // industry replenishes slowly
   for(const p of Object.values(st.c)){const r=S().c[p.a3];if(!r)continue;const ind=p.ecn?p.ecn.ind:1;if(CONV[p.a3])r.conv+=.6*ind;if(ABM[p.a3])r.abm+=.8*ind;}}
 /* ------------------------------------------------------------------ strategic submarines */

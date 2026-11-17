@@ -1,3 +1,11 @@
+## v368 (the war you can see from the cockpit)
+- **Missile salvos in the sky** (js/war/visible.js): during a world sortie long-range salvos are fired at airbases near you (and by your side at the enemy's), from the strategic stocks: trails arcing in, interceptors climbing to meet them, flashes where they meet, impacts where they get through (base damage applies). Day-level salvos now carry the target's location.
+- **Merchant convoys at sea** with an escort near open water; an enemy convoy is a target (ships sunk count as convoy losses), your own can be attacked.
+- **On the war map**: last day's air battles marked per theatre, and sectors where the line moved marked as ground fighting.
+- **Intelligence in the cockpit**: poor intelligence makes AWACS miss some calls and give ranges with error; the sortie briefing states the quality of the picture.
+- Fix: city notices (shelling, alerts, evacuations, repairs) use their own event type (MUNICIPAL); CITY is for cities changing hands, so news claims and corrections are no longer crowded out.
+- Tests: `node tests/run.js s23_`.
+
 ## v367 (level of detail; more national data)
 - **3D level of detail** (js/world/wlod.js): in world flight the forest is not drawn above 2,500 m above the ground (back below 2,000 m), and ground units beyond 30 km are not drawn (they keep fighting and stay sensor targets; back inside 28 km). On top of the game's existing automatic render-resolution scaling.
 - **Equipment names for 126 countries** (29 more, mostly in Africa, Central Asia, Latin America and Southeast Asia); **real formation names for 18 countries** (adds Turkey, Israel, Italy, Spain, Australia, Canada; positions and fate fictional); **seven verified quotations** (adds Washington 1785, Hoover 1944).

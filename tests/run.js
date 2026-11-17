@@ -751,7 +751,7 @@ test('s14_land: brigades hold sectors, concentrate, redeploy; terrain and artill
 test('s14_cities: cities allocate national figures, mayors act, occupation appoints administrators','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*150);const S=st.city;let bad=0,n=0,anyDisp=0;
     for(const a in S){const p=st.c[a],L=S[a];n+=L.length;const d=L.reduce((t,c)=>t+c.disp,0);if(d>(p.disp||0)+1)bad++;anyDisp+=d;}
-    const ev=st.ev.filter(e=>e.ty==='CITY').length+((st.fold||{}).CITY||0);const a3=Object.keys(S)[0];
+    const ev=st.ev.filter(e=>e.ty==='CITY'||e.ty==='MUNICIPAL').length+((st.fold||{}).CITY||0)+((st.fold||{}).MUNICIPAL||0);const a3=Object.keys(S)[0];
     return{n,bad,anyDisp,ev,mayor:!!WWAR.lead.who(S[a3][0].mayor),tab:NATPANEL.tabs.CITIES(st.c[a3]).length,svc:Object.values(S).flat().some(c=>c.pow<1),audit:WWAR.audit()};});
   ok('city records for countries at war',r.n>20,r);ok('cities never hold more displaced than the country (one authority)',r.bad===0&&r.anyDisp>0,r);ok('services fall near the war; events',r.svc&&r.ev>0,r);ok('mayors, CITIES tab',r.mayor&&r.tab>500,r);ok('audit clean',r.audit.length===0,r.audit);});
 test('s14_air: air battles form near you and their losses count; theatre statistics ease','F-16C',async p=>{
@@ -870,6 +870,16 @@ test('s21_media: guided munitions on CAS, mission replay, battle sound','F-16C',
     await new Promise(r=>setTimeout(r,6000));WSORTIE.finish();const R=WWAR.media.RP.list[0];const html=NATPANEL.tabs.DEBRIEF(WWAR.st.c.POL);
     return{gB:gB&&Object.values(gB).filter(v=>AGW[v]&&AGW[v].k!=='bomb'&&AGW[v].k!=='pod').length,gR:gR&&Object.values(gR).some(v=>/KAB|Kh-/.test(v)),guided,fired,frames:R&&R.f.length,ui:html.includes('MISSION REPLAY'),au:!!WWAR.media.AU};});
   ok('guided loads for both sides (GBU / Maverick; KAB / Kh)',r.gB>0&&r.gR,r);ok('CAS flights carry and release guided weapons',r.guided&&r.fired,r);ok('a sortie is recorded for replay and shown',r.frames>=1&&r.ui,r);ok('battle sound module',r.au);});
+
+/* ---------- step 20 (v368+): the war you can see, intelligence in the cockpit ---------- */
+test('s23_visible: salvos in the sky, merchant convoys, map markers, intelligence in the cockpit','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*20);const V=WWAR.visible;const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);
+    const e0=WWAR.st.seq;for(let i=0;i<8&&!V.FX.list.length;i++)V.localSalvo();const trails=V.FX.list.length,ev=WWAR.st.ev.some(e=>e.ty==='MISSILE'&&parseInt(e.id.slice(1),36)>=e0);
+    for(let i=0;i<5&&!V.CV.list.length;i++)V.convoy();const cv=V.CV.list.flat().length;
+    const c=document.createElement('canvas').getContext('2d');let n=0;const s=c.stroke.bind(c);c.stroke=function(){n++;return s();};WARMAP.draw(c,(la,lo)=>[lo*4,la*4],{W:1440,ppd:4},'over');
+    const X=WWAR.st.intel,me=WWAR.st.c.POL.side,q0=X[me].q;X[me].q=.1;let said=0;const el=document.getElementById('radio');const n0=el?el.children.length:0;for(let i=0;i<40;i++)radio('DARKSTAR: test call for 40 miles.',false);const n1=el?el.children.length:0;X[me].q=q0;
+    WSORTIE.finish();return{trails,ev,cv,strokes:n,suppressed:n1-n0<40};});
+  ok('salvos are visible as trails and reported',r.trails>0&&r.ev,r);ok('the map marks the air war and ground fighting',r.strokes>0,r);ok('poor intelligence: some AWACS calls missed',r.suppressed,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
