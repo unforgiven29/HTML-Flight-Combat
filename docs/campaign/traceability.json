@@ -2345,12 +2345,11 @@
    "line": 5138,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v336: unit readiness from operations, rest, spares and supply. Not yet: individual equipment condition",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s9_supply"
    ]
   },
   {
@@ -5248,12 +5247,11 @@
    "line": 8455,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v336: unit readiness from operations, rest, spares and supply. Not yet: individual equipment condition",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s9_supply"
    ]
   },
   {
@@ -8329,10 +8327,13 @@
    "line": 17333,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/world/wnet.js, js/war/supply.js): roads, rivers, bridges as targets cutting front supply. Not yet: rail network, freight flows",
+   "tests": [
+    "s9_net",
+    "s9_supply"
+   ]
   },
   {
    "id": "R11-022",
@@ -8376,10 +8377,12 @@
    "line": 17455,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-002",
@@ -8455,10 +8458,12 @@
    "line": 17833,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-007",
@@ -8470,10 +8475,12 @@
    "line": 17857,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-008",
@@ -8575,10 +8582,12 @@
    "line": 18187,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-015",
@@ -8590,10 +8599,12 @@
    "line": 18199,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-016",
@@ -8605,10 +8616,12 @@
    "line": 18200,
    "owner": "js/core/game.js — CAMP.wxStep, seasons, ENV weather",
    "phase": 7,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 7: climate, hazards, emergencies not started (weather and seasons exist)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v336 (js/war/hazards.js): hazards by region and season, emergency response, aid, humanitarian pauses, recovery (estimates). Not yet: emergency services as entities, shelters, evacuation logistics",
+   "tests": [
+    "s9_hazards"
+   ]
   },
   {
    "id": "R12-017",

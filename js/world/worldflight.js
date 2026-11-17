@@ -158,6 +158,6 @@ WF.start=async function(ap,rwIdx,end){if(startBusy)return;
     if(res.have<res.need)setTimeout(()=>flash('SOME TERRAIN TILES DID NOT LOAD · COARSE GROUND THERE',3000),4600);note('');}
   catch(e){console.error('[world] start',e);flash('WORLD FLIGHT FAILED · '+(e&&e.message||e),4000);leave();$('#menu').hidden=false;}
   finally{startBusy=false;WF.busy=false;}};
-WF.leave=leave;WF.nearRunway=nearRunway;WF.build=build;WF.shift=shift;WF.rebase=rebase;WF.hfn=hfn;
+WF.leave=leave;WF.nearRunway=nearRunway;WF.cells=CELLS;WF.loadCells=loadCells;WF.build=build;WF.shift=shift;WF.rebase=rebase;WF.hfn=hfn;
 window.WF=WF;
 })();

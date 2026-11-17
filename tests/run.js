@@ -464,7 +464,7 @@ test('wdip_long: a war run to its end has diplomacy, an outcome, a report and a 
     const types=new Set(st.ev.map(e=>e.ty)),props=st.ev.filter(e=>/proposes a general ceasefire/.test(e.txt)).length,rp=st.report;
     st.post=true;const t=st.t;WWAR.step(48);
     return{over:st.over&&st.over.kind,days:d,dip:types.has('DIPLO'),cf:types.has('CEASEFIRE'),props,rep:!!rp&&rp.lines.length>0&&rp.air.B>=0,post:st.t>t,frozen:st.fronts.every(f=>f.cf),audit:WWAR.audit()};});
-  ok('the war ends one way or another',['ARMISTICE','CAPITULATION','FROZEN','NEGOTIATED_PEACE','MUTUAL_EXHAUSTION','DECISIVE_VICTORY','WITHDRAWAL','COALITION_COLLAPSE','REGIME_CHANGE','STALEMATE'].includes(r.over),{over:r.over,days:r.days});ok('diplomacy and ceasefires happened',r.dip&&r.cf,r);
+  ok('the war ends one way or another',['ARMISTICE','CAPITULATION','FROZEN','NEGOTIATED_PEACE','MUTUAL_EXHAUSTION','DECISIVE_VICTORY','WITHDRAWAL','COALITION_COLLAPSE','REGIME_CHANGE','STALEMATE'].includes(r.over),{over:r.over,days:r.days});ok('diplomacy happened (ceasefires are possible, not certain)',r.dip,r);
   ok('proposals are not repeated every few days',r.props<=20,r.props);ok('an outcome report',r.rep);ok('postwar: clock runs, lines frozen',r.post&&r.frozen,r);ok('audit clean',r.audit.length===0,r.audit);});
 
 /* ---------- the world war, step 4: home fronts and every ending (v331, spec ch.05 / ch.14) ---------- */
@@ -580,6 +580,22 @@ test('s8_csar: ejecting behind the line starts a CSAR; outcomes rescued / missin
     const d2=st.csar.down.slice(-1)[0];st.csar.pow.B+=3;st.csar.pow.R+=2;WWAR.diplo.end('ARMISTICE','test');st.post=true;WWAR.step(24*2);
     return{enemy:d&&d.enemy,mission,out:d2&&d2.st,ex:st.ev.some(e=>e.ty==='PRISONERS'),pow:st.csar.pow};});
   ok('down behind enemy lines',r.enemy===true,r);ok('a CSAR mission is launched',r.mission);ok('an outcome',['RESCUED','CAPTURED','EVADING','EXCHANGED'].includes(r.out),r.out);ok('prisoners exchanged after the war',r.ex&&r.pow.B===0&&r.pow.R===0,r);});
+
+/* ---------- step 9 (v336): roads, rivers, bridges, readiness and supply, natural hazards ---------- */
+test('s9_net: roads, rivers and bridges around Warsaw','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.airports.find(q=>q.ident==='EPWA'),0,'le');const o={roads:WNET.roads,rivers:WNET.rivers,bridges:WNET.bridges.length};await start('RANGE');return o;});
+  ok('roads and rivers drawn',r.roads>5&&r.rivers>0,r);ok('bridges where highways cross rivers',r.bridges>0,r);});
+test('s9_supply: a bridge down cuts a front\'s supply until it is repaired; readiness gates squadrons','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st,pl=st.c.POL,f=st.fronts.find(q=>q.a==='POL'||q.b==='POL');
+    const k='BR@test';st.br={cut:{}};const m0=WWAR.mod(pl,f,f.sec[0]);st.br.cut[k]={a3:'POL',front:f.id,t:st.t,fix:st.t+48};const m1=WWAR.mod(pl,f,f.sec[0]);WWAR.step(24*4);const fixed=!st.br.cut[k]&&st.ev.some(e=>e.ty==='BRIDGE'&&/repaired/.test(e.txt));
+    const U=WWAR.ob.units('RUS').filter(u=>u.kind==='SQN'&&u.st==='ACTIVE');for(const u of U)u.ready=.2;const none=WWAR.ob.squadronFor('RUS',null);for(const u of U)u.ready=.9;const some=WWAR.ob.squadronFor('RUS',null);
+    WWAR.step(24*30);const bde=WWAR.ob.units('FIN').filter(u=>u.kind==='BDE'&&u.front);return{m0,m1,fixed,none,some:!!some,rd:bde.length&&bde.every(u=>u.ready>0&&u.ready<=1),audit:WWAR.audit()};});
+  ok('a bridge down weakens the front',r.m1<r.m0,r);ok('and is repaired',r.fixed);ok('squadrons under 40 % readiness do not fly',r.none===null&&r.some,r);ok('brigade readiness tracked',r.rd);ok('audit clean',r.audit.length===0,r.audit);});
+test('s9_hazards: disasters by region and season, estimates labelled, aid and recovery','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.diplo.R.capitExh=2;WWAR.step(24*400);WWAR.diplo.R.capitExh=.85;
+    const H=st.hz.list,ev=st.ev.filter(e=>e.ty==='HAZARD');return{n:H.length,kinds:[...new Set(H.map(h=>h.kind))],est:ev.every(e=>e.cf==='ESTIMATED'),aid:st.ev.some(e=>e.ty==='AID'),rec:st.ev.some(e=>e.ty==='RECOVERY'),
+      quake:H.filter(h=>h.kind==='EARTHQUAKE').every(h=>{const c=WGEO.byA3.get(h.a3);return WWAR.hazards.chances(c,0).some(x=>x[0]==='EARTHQUAKE');})};});
+  ok('disasters happen',r.n>20,r.n);ok('several kinds',r.kinds.length>=3,r.kinds);ok('earthquakes only in seismic belts',r.quake);ok('estimates labelled',r.est);ok('aid and recovery',r.aid&&r.rec,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

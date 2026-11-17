@@ -91,7 +91,17 @@ const UR=JSON.parse(await get(NE+'ne_10m_urban_areas.geojson',path.join(CACHE,'u
 for(const f of UR.features){const g=f.geometry;if(!g)continue;const polys=g.type==='Polygon'?[g.coordinates]:g.coordinates;
   for(const poly of polys){const ring=poly[0];if(ring.length<4)continue;const m=ring.length>>1,r=dp(ring.slice(0,m+1),.004).concat(dp(ring.slice(m),.004).slice(1));if(r.length<4)continue;
     let sx=0,sy=0;for(const[x,y]of r){sx+=x;sy+=y;}const q=[];for(const[x,y]of r)q.push(Math.round(x*1e3),Math.round(y*1e3));tt(tileKey(sy/r.length,sx/r.length)).u.push(q);nU++;}}
-for(const[k,v]of Object.entries(TT)){v.t.sort((a,b)=>b[3]-a[3]);fs.writeFileSync(path.join(OUT,'tiles',k+'.json'),JSON.stringify({q:1000,t:v.t,u:v.u}));}
+// roads (major and secondary highways) and rivers, simplified 0.005 deg, split into pieces of at most ~60 points, by midpoint tile
+const lines=(f,eps)=>{const g=f.geometry;if(!g)return[];const L=g.type==='LineString'?[g.coordinates]:g.type==='MultiLineString'?g.coordinates:[];const out=[];
+  for(const l of L){const r=l.length>2?dp(l,eps):l;for(let i=0;i<r.length-1;i+=59){const seg=r.slice(i,i+60);if(seg.length<2)continue;const q=[];for(const[x,y]of seg)q.push(Math.round(x*1e3),Math.round(y*1e3));out.push({q,mid:seg[seg.length>>1]});}}return out;};
+const RD=JSON.parse(await get(NE+'ne_10m_roads.geojson',path.join(CACHE,'roads.geojson')));let nR=0;
+for(const f of RD.features){const t=f.properties.type;if(!/Major Highway|Secondary Highway|Beltway/.test(t||''))continue;const cls=/Major|Beltway/.test(t)?1:2;
+  for(const l of lines(f,.005)){const k=tileKey(l.mid[1],l.mid[0]);(tt(k).r||(tt(k).r=[])).push([cls,...l.q]);nR++;}}
+const RV=JSON.parse(await get(NE+'ne_10m_rivers_lake_centerlines.geojson',path.join(CACHE,'rivers.geojson')));let nV=0;
+for(const f of RV.features){if(!/River/.test(f.properties.featurecla||''))continue;const sr=f.properties.scalerank||10,w=sr<=3?3:sr<=6?2:1;
+  for(const l of lines(f,.004)){const k=tileKey(l.mid[1],l.mid[0]);(tt(k).v||(tt(k).v=[])).push([w,...l.q]);nV++;}}
+console.log('road pieces',nR,'river pieces',nV);
+for(const[k,v]of Object.entries(TT)){v.t.sort((a,b)=>b[3]-a[3]);fs.writeFileSync(path.join(OUT,'tiles',k+'.json'),JSON.stringify({q:1000,t:v.t,u:v.u,r:v.r||[],v:v.v||[]}));}
 console.log('towns',nT,'urban polygons',nU,'tiles',Object.keys(TT).length);
 
 /* ---------------- elevation: Terrarium z4 (Web Mercator) -> 2048 x 1024 equirectangular ---------------- */
@@ -119,6 +129,7 @@ Built by \`node scripts/build-world-data.js\` on ${new Date().toISOString().slic
 | airports.json | ${aps.length} airports (large, medium, and paved small fields of 1,500 m or more) with runway ends, headings, length, width, surface | OurAirports (ourairports.com, data mirror github.com/davidmegginson/ourairports-data) | Public domain | Community-maintained; runway ends missing for some fields (placed from the heading instead). Military flag inferred from the name |
 | tiles/*.json | Per 10-degree cell: towns and cities of 1,000+ people (name, position, population) and urban-area outlines (simplified 0.004 deg) | GeoNames via github.com/lmfmaier/cities-json (cities500); Natural Earth 1:10m Urban Areas | GeoNames: CC BY 4.0 (attribution: GeoNames, geonames.org). Natural Earth: public domain | Town positions are the GeoNames point (the centre); urban outlines come from 2002-era satellite land cover, so recent growth is missing |
 | borders.json | Shared land borders: country pair and border lines (simplified 0.02 deg) | Natural Earth 1:50m Admin 0 Boundary Lines (Land); sides found by locating points either side of each line in the country polygons | Public domain | Disputed and indefinite lines included as Natural Earth draws them |
+| tiles/*.json (r, v) | Roads (major and secondary highways, class 1 / 2) and rivers (width class 1-3 from scale rank), simplified | Natural Earth 1:10m Roads, 1:10m Rivers and Lake Centerlines | Public domain | Generalised: minor roads and small rivers are not in the data; bridges are computed where these roads cross these rivers |
 | countries.json | ${countries.length} countries: outline (simplified 0.04 deg, quantised 0.01 deg), codes, sovereign, population estimate and year, GDP estimate (USD million) and year, region, label point, land neighbours (computed: borders within 0.03 deg) | Natural Earth 1:50m Admin 0 Countries (v5) | Public domain | Map display only; boundaries as Natural Earth draws them (de facto), not a statement on any dispute |
 | elev-2048.png | Global elevation and bathymetry, 2048 x 1024 equirectangular (about 20 km per cell), Terrarium encoding (R*256 + G - 32768 m) | AWS Open Data Terrain Tiles, zoom 4 | Open; attribution: SRTM (NASA), GMTED2010 (USGS), ETOPO1 (NOAA), and others listed at github.com/tilezen/joerd/blob/master/docs/attribution.md | Coarse: world map and offline fallback only |
 
