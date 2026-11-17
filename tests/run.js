@@ -1005,6 +1005,33 @@ test('s34_infworld: infantry in the live world while the war runs; backup, engin
     I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));out.after={inf:!!player&&!!player.infantry,cls:document.body.classList.contains('infWorld'),wf:WF.on};return out;});
   ok('battle in the live world',r.wm&&r.wf&&r.ws&&r.run&&r.prox,r);ok('at a real place',!!r.loc,r.loc);ok('camera at the soldier, on the real ground',r.cam&&r.gy,r);ok('Q aims',r.ads);
   ok('engineer digs',r.dig);ok('enemy calls for backup, artillery falls',r.call&&r.arty&&r.craters,r);ok('offensive called, front pushed',r.off,r);ok('walls holed',r.holes);ok('back to the aircraft, world closed',!r.after.inf&&!r.after.cls&&!r.after.wf,r.after);});
+test('s35_fortify: building types with interiors, collapse, bunkers / dugouts / command posts, armour hit overview, your FPV, medevac, grass, explore the live world','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;I.step(1/30,3);
+    out.kinds=[...new Set(S.BLD.map(b=>b.kind))];out.forts=S.STR.map(c=>c.kind+':'+c.side);out.grass=S.grass.count>1000;
+    out.furn=S.blds.filter(b=>b.y1-b.y0<2&&b.y1-b.y0>.4).length>20;
+    // armour: an RPG on a tank's front bounces or stops; on the rear it goes through
+    const tk=S.veh.find(v=>v.tank&&v.side==='E');const P=tk.m.position;
+    const f=I.armorHit(tk,new V(P.x,P.y+1.4,P.z-3.8),new V(0,0,1),'RPG');out.front=f.res;const b=I.armorHit(tk,new V(P.x,P.y+1.4,P.z),new V(-1,0,0),'RIFLE');out.bullet=b.res;
+    const rr=I.armorHit(tk,new V(P.x,P.y+1.2,P.z+3.8),new V(0,0,-1),'ATGM');out.rear=rr.res;out.dmg=rr.dmg;out.panel=!!document.getElementById('iArmC');
+    // a bomb-size blast on a house brings it down; a rocket on a bunker repeatedly destroys it
+    const h=S.BLD.find(x=>x.kind==='HOUSE'||x.kind==='APARTMENTS');const hp0=h.w*h.d*(h.fl||1)*25;for(let i=0;i<Math.ceil(hp0/2200)+1&&!h.down;i++)I.structHit(new V(h.x,h.parts[0].y1+1.5,h.z),14);out.house=h.down;
+    const bk=S.STR.find(c=>c.kind==='BUNKER'&&c.side==='E');for(let i=0;i<6;i++)I.structHit(new V(bk.cx,bk.y0+1,bk.cz),5);out.bunker=bk.down;
+    const cp=S.STR.find(c=>c.kind==='COMMAND POST'&&c.side==='E');I.collapse(cp,'x');out.silent=S.eCP;
+    // your FPV: placed, the operator lifts it and strikes the enemy IFV
+    for(const e of S.them)e.alive=false;S.calls=9;const iv=S.veh.find(v=>v.side==='E'&&!v.tank&&v.alive);const d=I.placeFpv();S.pos.set(iv.x+30,S.pos.y,iv.z+30);d.m.position.set(iv.x+25,d.m.position.y,iv.z+25);I.step(1/30,30*20);out.fpv=!d.alive&&S.armLog.some(a=>a.wpn==='FPV');
+    // medevac: a wounded man is flown out, you are treated
+    for(const v of S.veh)if(v.side==='E')v.alive=false;S.airT=1e9;S.air.length=0;S.heliT=1e9;S.waveT=1e9;const u=S.us[0];u.alive=false;u.down=true;u.m.position.copy(S.pos);S.hp=40;I.medevac();const lz=S.med.lz;S.pos.set(lz.x+3,S.pos.y,lz.z);u.m.position.set(lz.x+5,u.m.position.y,lz.z);I.step(1/30,30*30);out.evac=S.evac>=1&&S.hp===100;out.med={evac:S.evac,hp:S.hp,res:S.res,st:S.med&&S.med.st,medN:S.medN};
+    I.stop(false);
+    // the live world: real blocks become enterable buildings; you can walk off well beyond the battle
+    game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'APC',mis:'ATTACK'});S=I.S;I.land();S.hp=1e9;S.dT=1e9;
+    out.real=S.hidden.length;S.keys.KeyW=true;S.yaw=Math.PI/2;for(let i=0;i<30*60;i++)I.step(1/30);S.keys.KeyW=false;out.far=Math.round(Math.hypot(S.pos.x,S.pos.z-200));
+    I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));return out;});
+  ok('building types',['HOUSE','CHURCH'].every(k=>r.kinds.includes(k))&&r.kinds.some(k=>k==='WAREHOUSE'||k==='FACTORY'||k==='APARTMENTS'),r.kinds);ok('interiors furnished',r.furn);ok('grass',r.grass);
+  ok('bunkers, dugout, command posts both sides',['BUNKER:E','DUGOUT:E','COMMAND POST:E','COMMAND POST:F'].every(k=>r.forts.includes(k)),r.forts);
+  ok('RPG on tank front does not go through',/RICOCHET|NO PENETRATION/.test(r.front),r.front);ok('bullet bounces off',/RICOCHET|NO PENETRATION/.test(r.bullet),r.bullet);ok('ATGM in the rear penetrates and damages',/PENETRATED/.test(r.rear)&&r.dmg.length>0,r);ok('overview diagram',r.panel);
+  ok('house collapses',r.house);ok('bunker destroyed',r.bunker);ok('enemy radio silenced',r.silent);ok('your FPV strikes armour',r.fpv);ok('medevac',r.evac);
+  ok('live world: real buildings replaced',r.real>0,r.real);ok('explore beyond the battle',r.far>250,r.far);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
