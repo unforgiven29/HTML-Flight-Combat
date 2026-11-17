@@ -26,7 +26,7 @@ const QUOTES=[{q:'Every gun that is made, every warship launched, every rocket f
   a:'Dwight D. Eisenhower',w:'"The Chance for Peace" address to the American Society of Newspaper Editors',d:'16 April 1953',s:'Public Papers of the Presidents of the United States: Dwight D. Eisenhower, 1953'}];
 let page=0,burnt=false;
 function css(){if(document.getElementById('wwEndCss'))return;const s=document.createElement('style');s.id='wwEndCss';s.textContent=
- '#wwEnd{position:fixed;inset:0;z-index:9999;background:rgba(14,16,17,.97);color:#d9dcd8;overflow:auto;font:14px/1.6 Georgia,serif;opacity:0;transition:opacity 2s}#wwEnd.on{opacity:1}'+
+ '#wwEnd{position:fixed;inset:0;z-index:9999;background:#0e1011;color:#d9dcd8;overflow:auto;font:14px/1.6 Georgia,serif;opacity:0;transition:opacity 2s}#wwEnd.on{opacity:1}'+
  '#wwEnd .w{max-width:760px;margin:0 auto;padding:36px 20px 90px}#wwEnd h1{font-weight:normal;letter-spacing:.2em;font-size:20px;color:#e8e8e2;text-align:center}#wwEnd h2{font-weight:normal;letter-spacing:.14em;font-size:13px;color:#9aa19c}'+
  '#wwEnd .nav{position:sticky;top:0;background:rgba(14,16,17,.95);display:flex;flex-wrap:wrap;gap:3px;padding:6px 0;border-bottom:1px solid #333}#wwEnd .nav button{font-size:11px;padding:3px 7px}'+
  '#wwEnd .wall{columns:2;column-gap:28px;font-size:13px}#wwEnd .wall div{break-inside:avoid;padding:2px 0;border-bottom:1px dotted #2c2c2c}#wwEnd .q{font-style:italic;color:#b8bcb6;text-align:center;margin:22px 0}'+

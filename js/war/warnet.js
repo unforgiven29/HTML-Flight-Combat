@@ -44,18 +44,23 @@ let hooked=null;
 function hooks(){if(hooked===net.r)return;hooked=net.r;const r=net.r,U=net.unsub;
   U.push(r.on('wreq',m=>{if(!N.host||m.sameTab||!W.st)return;r.emit('wst',{to:m.peer,st:W.st}).catch(()=>{});}));
   U.push(r.on('wst',m=>{if(N.host||!m.data||!m.data.st||(m.data.to&&m.data.to!==net.me))return;const st=m.data.st;if(!st.c||!st.fronts)return;
-    const first=!N.got;W.st=st;W.run=false;N.got=1;if(first){status('In the host\'s war · pick a country and an airfield on the WORLD WAR map.');}
+    const first=!N.got;W.st=st;W.run=false;N.got=1;N.quiet=0;if(first){status('In the host\'s war · pick a country and an airfield on the WORLD WAR map.');}
     try{WARMAP.panel();}catch(e){}render();}));
   U.push(r.on('wai',m=>{if(N.host||m.sameTab||!m.data||!WS.on)return;applyAI(m.data);}));
   U.push(r.on('wgu',m=>{if(N.host||m.sameTab||!m.data||!WS.on)return;applyGU(m.data);}));
-  U.push(r.on('chit',m=>{if(!N.host||m.sameTab||!m.data)return;const j=[...WS.jets].find(q=>q.cid===m.data.cid);if(!j||!j.alive)return;
+  U.push(r.on('chit',m=>{if(!N.host||m.sameTab||!m.data||!rate(m.peer))return;const j=[...WS.jets].find(q=>q.cid===m.data.cid);if(!j||!j.alive)return;
     j.lastWeapon=String(m.data.w||'');j.damage(Math.max(0,Math.min(250,n2(m.data.dmg))),net.jetByPeer(m.peer));}));
-  U.push(r.on('wgk',m=>{if(!N.host||m.sameTab||!m.data)return;const d=m.data,src=net.jetByPeer(m.peer);
-    const u=d.br?GND.units.find(q=>q._bridge===d.br&&q.alive):WS.ground.find(q=>q.cid===d.id&&q.alive);if(u)u.kill(src);}));
+  U.push(r.on('wgk',m=>{if(!N.host||m.sameTab||!m.data||!rate(m.peer))return;const d=m.data,src=net.jetByPeer(m.peer);
+    const u=d.br?GND.units.find(q=>q._bridge===d.br&&q.alive):WS.ground.find(q=>q.cid===d.id&&q.alive);if(u&&plausible(src,u))u.kill(src);else if(u)N.rej=(N.rej||0)+1;}));
   U.push(r.on('wsx',m=>{if(!N.host||m.sameTab||!m.data||!W.st)return;const d=m.data,c=W.st.c[d.a3];if(!c)return;
-    W.emit('SORTIE',{e:[d.a3],txt:'A '+c.n+' '+String(d.ac||'').slice(0,12)+' sortie (wingman '+String(d.cs||'Pilot').slice(0,16)+'): '+(+d.air|0)+' aircraft and '+(+d.gnd|0)+' ground targets destroyed'+(d.lost?'; the aircraft was lost':'')+'.'});
+    W.emit('SORTIE',{e:[d.a3],txt:'A '+c.n+' '+String(d.ac||'').slice(0,12)+' sortie (wingman '+String(d.cs||'Pilot').slice(0,16)+'): '+Math.min(8,+d.air|0)+' aircraft and '+Math.min(40,+d.gnd|0)+' ground targets destroyed'+(d.lost?'; the aircraft was lost':'')+'.'});
     if(d.lost){const sq=W.ob&&W.ob.squadronFor(d.a3,String(d.base||''));if(sq)W.unitLoss(sq,1);}}));}
 
+/* ------------------------------------------------------------------ validation of guests' messages (ch.16 security) */
+// at most 10 hit / kill reports a second per player; a ground kill only from a player whose aircraft is within 15 km of
+// the target (in the host's frame); sortie summaries clamped. Rejected reports are counted (DEBUG view), never applied.
+const RL=new Map();function rate(peer){const now=Date.now(),r=RL.get(peer)||{t:now,n:0};if(now-r.t>1000){r.t=now;r.n=0;}r.n++;RL.set(peer,r);if(r.n>10){N.rej=(N.rej||0)+1;return false;}return true;}
+function plausible(src,u){if(!src||!src.pos)return false;return Math.hypot(src.pos.x-u.pos.x,src.pos.z-u.pos.z)<15000;}
 /* ------------------------------------------------------------------ host: publish */
 function pubAI(){const A=[],M=[];for(const j of WS.jets){if(j.gone)continue;
     A.push([cid(j),ACK.indexOf(j.type),ABS(j.side),r1(j.pos.x),r1(j.pos.y),r1(j.pos.z),r4(j.q.x),r4(j.q.y),r4(j.q.z),r4(j.q.w),r1(j.vel.x),r1(j.vel.y),r1(j.vel.z),j.alive?1:0,j.trigger?1:0,
@@ -112,7 +117,9 @@ setInterval(()=>{if(N.on&&!N.host&&N.got)W.run=false;},500);
 
 /* ------------------------------------------------------------------ tick */
 {let last=Date.now();setInterval(()=>{const now=Date.now(),dt=(now-last)/1000;last=now;if(!N.on||!net.on)return;
-  if(N.host!==!!net.isHost){N.host=!!net.isHost;}   // the room may promote a guest when the host leaves
+  if(N.host!==!!net.isHost){N.host=!!net.isHost;if(N.host){   // host migration: the room promoted this guest; it already holds the latest war state
+      WS.client=false;for(const j of N.prox.values())drop(j);N.prox.clear();N.got=1;W.run=true;status('The host left: your game now runs the war for the room.');if(W.st)W.emit('MULTIPLAYER',{txt:'Host migration: '+(net.cs||'a guest')+' now runs the war for the room.'});}}
+  if(!N.host&&N.on){N.quiet=(N.quiet||0)+dt;if(N.quiet>45){N.quiet=0;net.r.emit('wreq',{}).catch(()=>{});status('No word from the host for 45 s: asking for the war again…');}}
   if(!N.host)return;N.T.st-=dt;N.T.ai-=dt;N.T.gu-=dt;
   if(N.T.st<=0&&W.st){N.T.st=15;net.r.emit('wst',{st:W.st}).catch(()=>{});}
   if(WS.on&&G.o){if(N.T.ai<=0){N.T.ai=.2;pubAI();}if(N.T.gu<=0){N.T.gu=1;pubGU();}}},100);}
@@ -127,5 +134,5 @@ function render(){const el=document.getElementById('wmWar');if(!el)return;let b=
   el.insertAdjacentHTML('beforeend',h);}
 if(window.WARMAP&&WARMAP.after)WARMAP.after.push(render);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wwMp [data-wwmp]');if(!b)return;if(b.dataset.wwmp==='join'){const i=document.getElementById('wwCode');N.code=i?i.value:'';join();}else leave();});
-window.WWNET={N,join,leave,render,off,applyAI,applyGU};
+window.WWNET={N,join,leave,render,off,applyAI,applyGU,rate,plausible};
 })();

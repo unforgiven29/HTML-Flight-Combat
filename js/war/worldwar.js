@@ -45,9 +45,9 @@ const W={st:null,run:false,speed:6,listeners:[]};
 const warn=(k,e)=>{if(!warn[k]){warn[k]=1;console.warn('[war] '+k,e);}};
 
 /* ------------------------------------------------------------------ events (same contract as the campaign ledger) */
-function emit(ty,o){const st=W.st;const e={id:'W'+(st.seq++).toString(36).toUpperCase(),v:1,ty,dm:o.dm||'war',t:st.t,e:o.e||[],c:o.c||[],cf:o.cf||'CONFIRMED',txt:o.txt};
+function emit(ty,o){const st=W.st,cz=W._cz;const e={id:'W'+(st.seq++).toString(36).toUpperCase(),v:1,ty,dm:o.dm||'war',t:st.t,e:o.e||[],c:o.c||(cz&&cz.length?[cz[cz.length-1]]:[]),cf:o.cf||'CONFIRMED',txt:o.txt};   /* c: the events that caused this one (an event emitted while another is being handled is caused by it; ch.02 causality) */
   if(o.loc)e.loc=o.loc;st.ev.push(e);if(st.ev.length>900){const n=st.ev.length-900;for(const x of st.ev.splice(0,n))st.fold[x.ty]=(st.fold[x.ty]||0)+1;st.folded+=n;}
-  for(const f of W.listeners)try{f(e);}catch(_){}return e;}
+  (W._cz||(W._cz=[])).push(e.id);for(const f of W.listeners)try{f(e);}catch(_){}W._cz.pop();return e;}
 
 /* ------------------------------------------------------------------ national profiles */
 function milBases(){const m=new Map();for(const a of G.airports){if(!a.mil)continue;const c=G.byA2.get(a.iso2);if(!c)continue;(m.get(c.a3)||m.set(c.a3,[]).get(c.a3)).push(a);}return m;}

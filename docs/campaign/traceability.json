@@ -200,10 +200,12 @@
    "line": 505,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-002",
@@ -305,10 +307,12 @@
    "line": 725,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-008",
@@ -354,10 +358,12 @@
    "line": 808,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-011",
@@ -369,10 +375,12 @@
    "line": 829,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-012",
@@ -401,10 +409,12 @@
    "line": 897,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-014",
@@ -450,10 +460,12 @@
    "line": 1071,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R02-017",
@@ -560,10 +572,12 @@
    "line": 1200,
    "owner": "js/campaign/world.js — WORLD event ledger and identities",
    "phase": 1,
-   "status": "extend",
-   "progress": "none",
-   "note": "Phase 1 foundation; slice covers the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (js/war/integrity.js, worldwar.js emit): causes on every event (automatic for reactions, explicit with W.because), cause chains, reconciliation checks added to the audit (cities vs country, seats, depots, munitions, finite numbers, sectors, event references)",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R03-001",
@@ -11591,10 +11605,13 @@
    "line": 21209,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-003",
@@ -11606,10 +11623,13 @@
    "line": 21240,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-004",
@@ -11621,10 +11641,13 @@
    "line": 21253,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R16-005",
@@ -11651,10 +11674,13 @@
    "line": 21335,
    "owner": "js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)",
    "phase": 9,
-   "status": "extend",
-   "progress": "none",
-   "note": "v337: world war multiplayer on the existing rooms",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v337 / v355 (js/war/warnet.js): host-authoritative war rooms, guests co-op or PvP, per-peer frames, host migration, rejoin after silence, validated reports (rate limit, plausible distance, clamped summaries), only callsign / aircraft / flight data shared",
+   "tests": [
+    "s10_mp",
+    "s16_mp"
+   ]
   },
   {
    "id": "R17-001",
@@ -12186,9 +12212,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-002",
@@ -12201,9 +12231,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-003",
@@ -12216,9 +12250,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-004",
@@ -12231,9 +12269,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-005",
@@ -12246,9 +12288,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-006",
@@ -12261,9 +12307,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-007",
@@ -12276,9 +12326,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-008",
@@ -12291,9 +12345,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-009",
@@ -12306,9 +12364,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-010",
@@ -12321,9 +12383,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-011",
@@ -12336,9 +12402,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-012",
@@ -12351,9 +12421,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-013",
@@ -12366,9 +12440,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-014",
@@ -12381,9 +12459,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-015",
@@ -12396,9 +12478,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-016",
@@ -12411,9 +12497,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R18-017",
@@ -12426,9 +12516,13 @@
    "owner": "tests/run.js (cw_* tests)",
    "phase": 2,
    "status": "implement",
-   "progress": "none",
-   "note": "Integration scenarios: first slice scenarios tested",
-   "tests": []
+   "progress": "partial",
+   "note": "v355 (tests/run.js s16_scen_*): whole-war scenarios — estimated balance to an ending with reconciliation at every checkpoint, save / reload and causality; REDFOR on an even war with commander orders and the end page; a sortie inside a long war (planning, air battle, ground fight, results)",
+   "tests": [
+    "s16_scen_est",
+    "s16_scen_red",
+    "s16_scen_sortie"
+   ]
   },
   {
    "id": "R19-001",
@@ -12470,10 +12564,12 @@
    "line": 23351,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-002",
@@ -12485,10 +12581,12 @@
    "line": 23352,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-003",
@@ -12500,10 +12598,12 @@
    "line": 23364,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-004",
@@ -12515,10 +12615,12 @@
    "line": 23417,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-005",
@@ -12530,10 +12632,12 @@
    "line": 24132,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   },
   {
    "id": "R20-006",
@@ -12545,10 +12649,12 @@
    "line": 24203,
    "owner": "tests/run.js",
    "phase": 2,
-   "status": "extend",
-   "progress": "none",
-   "note": "Gates partly automated (cw_* tests, existing regression suite)",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v355 (scripts/release-check.js, integrity.js budget): syntax of every script, script list, national data integrity, traceability, step-time and save-size budgets; the regression list every merge must pass",
+   "tests": [
+    "s16_scen_est"
+   ]
   }
  ]
 }

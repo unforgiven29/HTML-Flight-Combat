@@ -760,6 +760,41 @@ test('s14_air: air battles form near you and their losses count; theatre statist
     const e=J.find(j=>j.side===1),a3=e&&e._ws,air0=a3&&WWAR.st.c[a3].air;if(e)e.kill('test',player);const air1=a3&&WWAR.st.c[a3].air;WSORTIE.finish();const w2=th?WWAR.airWx(th):1;
     return{battles:B.length,fr:J.filter(j=>j.side===0).length,en:J.filter(j=>j.side===1).length,w,w2,loss:air0-air1};});
   ok('battles with both sides',r.battles>=1&&r.fr>0&&r.en>0,r);ok('a loss in the battle counts for its country',r.loss>=1,r);ok('theatre statistics ease while you fly, restored after',r.w<r.w2,r);});
+
+/* ---------- step 15 (v354+): armour, shells, body armour ---------- */
+test('s15_armor: penetration by aspect, national guns, body armour','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const A=ARMOR,us=A.prof('USA'),ru=A.prof('RUS'),ng=A.prof('NGA');
+    const mk=(a3,k,hdg,x)=>({_ws:a3,_gk:k,hdg,pos:new THREE.Vector3(x,0,0),alive:true,callsign:a3+' '+k,damage(d){if(d>=9999)this.alive=false;}});
+    let front=0,rear=0;for(let i=0;i<300;i++){const s=mk('RUS','MBT',0,0),t1=mk('USA','MBT',90,2000),t2=mk('USA','MBT',270,2000);   // t1 faces away? heading 90 = east: shooter to the west → rear; 270 faces the shooter → front
+      A.resolve(s,t1,{fx:'tank'},2000);A.resolve(s,t2,{fx:'tank'},2000);if(!t1.alive)rear++;if(!t2.alive)front++;}
+    let inf3=0,inf1=0;for(let i=0;i<300;i++){const s=mk('RUS','INF',0,0),a=mk('USA','INF',0,300),b=mk('NGA','INF',0,300);A.resolve(s,a,{fx:'mg'},300);A.resolve(s,b,{fx:'mg'},300);inf3+=9-(a._men);inf1+=9-(b._men);}
+    return{usGun:us.gun[0],ruGun:ru.gun[0],usM:us.mcls,ruM:ru.mcls,ngBody:ng.body.n,front,rear,inf3,inf1,log:A.LOG.length,tab:NATPANEL.tabs.LAND(WWAR.st.c.RUS).includes('2A46')};});
+  ok('national guns and protection classes',/M256/.test(r.usGun)&&/2A46/.test(r.ruGun)&&r.usM==='MODERN'&&r.ruM==='MODERN_ERA',r);ok('rear shots kill far more than frontal ones',r.rear>r.front*2,r);
+  ok('body armour: better-protected infantry take fewer casualties',r.inf3<r.inf1,r);ok('engagements logged, LAND tab shows the guns',r.log>0&&r.tab,r);});
+
+/* ---------- step 15 (v355): end-to-end scenarios (ch.18), integrity, causality, multiplayer hardening, budgets (ch.20) ---------- */
+test('s16_scen_est: a whole war, estimated balance — runs to an ending, stays reconciled, saves and reloads','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;const au=[];for(let i=0;i<12&&!st.over;i++){WWAR.step(24*60);au.push(WWAR.audit().length);}
+    const ended=!!st.over;if(st.over){st.post=true;WWAR.step(24*120);}const Tl=WWAR.tools;Tl.saveSlot(1,'scen');const day=Math.floor(WWAR.st.t/24);Tl.loadSlot(1);const back=Math.floor(WWAR.st.t/24);
+    const caused=WWAR.st.ev.filter(e=>e.c&&e.c.length).length,b=WWAR.integrity.budget();return{ended,kind:st.over&&st.over.kind,au,final:WWAR.audit(),day,back,caused,b};});
+  ok('the war reaches an ending within two years',r.ended,r.kind);ok('reconciled at every checkpoint',r.au.every(n=>n===0)&&r.final.length===0,{au:r.au,final:r.final.slice(0,5)});
+  ok('save and reload keep the war',r.day===r.back,r);ok('events carry their causes',r.caused>0,r.caused);ok('performance and size within budget',r.b.ok,r.b);});
+test('s16_scen_red: playing REDFOR on an even war — your side, your orders, the end page','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='RED';await WWAR.newWar('EVEN');const st=WWAR.st;const me=Object.values(st.c).find(q=>q.side==='R'&&q.al==='CORE');const m=WWAR.mil.M(me.a3);
+    const f=st.fronts.find(q=>q.a===me.a3||q.b===me.a3);if(f){m.cmd={[f.id]:'DEFEND'};}WWAR.step(24*30);const intent=f&&m.intent[f.id];for(let i=0;i<12&&!st.over;i++)WWAR.step(24*60);
+    if(!st.over)WWAR.diplo.end('ARMISTICE','Scenario end.');WWAR.endscreen.open();const ok1=!!document.getElementById('wwEnd');const oc=WWAR.endscreen.outcome();WWAR.endscreen.close();game.team='BLUE';
+    return{me:me.a3,intent,ok1,oc,audit:WWAR.audit()};});
+  ok('your order holds on your front',!r.intent||r.intent==='DEFEND',r);ok('the end page opens with an outcome for your side',r.ok1&&['WIN','LOSE','NEITHER'].includes(r.oc),r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s16_scen_sortie: a sortie in a long war — planning, air battle, ground fight, results into the war','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*90);const L=WSORTIE.basesFor('POL');const k=WWAR.deep.PLN();k.k='CAS';k.tgt=WWAR.deep.targets('POL')[0];
+    const ev0=st.ev.length;await WSORTIE.start('POL',L[0].a);WWAR.airbattle.form();await new Promise(r=>setTimeout(r,4000));const gf=window.GFIGHT?GFIGHT.GF.units.length:0;WSORTIE.WS.kills.gnd=2;WSORTIE.finish();
+    return{task:k.k,gf,sortie:st.ev.slice(ev0).some(e=>e.ty==='SORTIE'),rec:WWAR.player.PL().rec.length,audit:WWAR.audit()};});
+  ok('the sortie is logged into the war and recorded',r.sortie&&r.rec>0,r);ok('audit clean after the sortie',r.audit.length===0,r.audit);});
+test('s16_mp: guest messages validated; host migration','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{const N=WWNET.N;let ok=0,bad=0;for(let i=0;i<15;i++)WWNET.rate('px')?ok++:bad++;const far=WWNET.plausible({pos:new THREE.Vector3(0,0,0)},{pos:new THREE.Vector3(30000,0,0)}),near=WWNET.plausible({pos:new THREE.Vector3(0,0,0)},{pos:new THREE.Vector3(3000,0,0)});
+    localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const R={emit:()=>Promise.resolve(),on:()=>()=>{},peers:()=>[],presence:()=>Promise.resolve(),leave:()=>Promise.resolve()};net.on=true;net.r=R;net.ww=true;N.on=true;N.host=false;net.isHost=true;WWAR.run=false;
+    await new Promise(r=>setTimeout(r,400));const migrated=N.host&&WWAR.run;net.on=false;N.on=false;net.ww=false;WWAR.run=false;return{ok,bad,far,near,migrated};});
+  ok('rate limit on reports',r.ok===10&&r.bad===5,r);ok('kills only from a plausible distance',!r.far&&r.near,r);ok('a promoted guest takes over the war',r.migrated,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
