@@ -1,3 +1,7 @@
+## v329 (the world war on the CAMPAIGN tab)
+- The CAMPAIGN tab opens on the **WORLD WAR**: the world map with the war panel inside the campaign screen (start or load the war, run the clock, fronts, theatres, country profiles, FLY FOR a country). A switch at the top flips to **THEATRE**, the original 300 km campaign, unchanged. The choice is remembered.
+- QUICK FLIGHT's WORLD MAP card still opens the same map full screen for free flight.
+
 ## v328 (world war, step 2: fly in it)
 On the WORLD MAP with a world war running, click a country at war: **FLY FOR <COUNTRY>** lists its real military airfields, nearest to the front first. Pick one and you take off there (world flight terrain, runways, towns) into the war around you.
 - The nearest front is on the ground where the war has moved it: armour and infantry carriers on both sides of the line, a SAM battery and two anti-aircraft gun systems behind the enemy line.
