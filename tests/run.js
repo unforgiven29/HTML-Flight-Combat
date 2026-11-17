@@ -1097,6 +1097,29 @@ test('s39_battle: choose the battle location; varied soldiers that move; vehicle
   ok('soldiers vary in colour',r.cols>=4,r.cols);ok('soldiers move their legs',r.anim);ok('they crouch and bound',r.crouch&&r.bound,r);
   ok('enemy tank of the Soviet family for Poland',r.fam==='SOV',r);ok('ERA disrupts the first rocket, then is spent; tandem defeats it',/ERA brick detonated/.test(r.era[0])&&/spent/.test(r.era[1])&&/tandem/.test(r.era[2]),r.era);
   ok('roofs on houses',r.roofs>5,r.roofs);ok('Western tank for Russia\'s enemy',r.wfam==='WEST',r.wfam);ok('bustle hit vents through blow-out panels',!!r.bus,r.bus);});
+test('s40_hit3d: the hit overview draws the vehicle in 3D with the round path and damaged parts','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
+    const tk=S.veh.find(v=>v.tank&&v.side==='E');const P=tk.m.position;let rr;for(let i=0;i<20;i++){tk.alive=true;rr=I.armorHit2(tk,new V(P.x+1.5,P.y+1.0,P.z+.5),new V(-1,-.15,0).normalize(),'ATGM');if(/PENETRATED/.test(rr.res)&&rr.dmg.length)break;}
+    const host=document.getElementById('iArm3h'),cv=host&&host.querySelector('canvas');let red=0,lines=0;I.A3.root.traverse(o=>{if(o.isMesh&&o.material.color&&(o.material.color.getHex()===0xff4a30||o.material.color.getHex()===0xff3a2a))red++;if(o.isLine)lines++;});
+    const parts=Object.keys(I.compLayout('MBT','SOV')).length;I.stop(false);return{cv:!!cv,red,dmg:rr.dmg.length,lines,parts};});
+  ok('3D view in the overview',r.cv);ok('damaged parts shown in red',r.red>=r.dmg,r);ok('round path drawn',r.lines>=2,r);ok('internal layout',r.parts>=12,r.parts);});
+test('s41_conditions: battle time and weather follow the war / campaign; crew seats and the commander; turret thrown to the ground','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};const st=WWAR.st;
+    const C=I.locChoices({a3:'POL'})[0];const lon=C.place.lon;
+    // set the war clock so that it is 02:00 local at the place, and the theatre's weather to snow
+    const d0=new Date(Date.parse(st.start));const utc=d0.getUTCHours()+d0.getUTCMinutes()/60;let dh=((2-lon/15-utc)%24+24)%24;st.t=Math.ceil(st.t/24)*24+dh;
+    for(const th of st.th){const T=WWAR.THEATRES.find(q=>q.id===th.id);if(C.place.lat>=T.lat[0]&&C.place.lat<=T.lat[1]&&lon>=T.lon[0]&&lon<=T.lon[1])th.wx='SNOW';}
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',loc0:C.id});out.env=S.env.n;out.dark=S.env.dark;out.snow=S.env.snow;out.tod=S.cfg.cond.tod;I.land();S.hp=1e9;S.dT=1e9;I.step(1/30,5);out.pp=!!S.pp;
+    // crew: the commander rides in the hatch; a detonation throws the turret to the ground and kills the crew
+    const tk=S.veh.find(v=>v.tank&&v.side==='E');out.cmdr=!!tk.m.userData.cmdr&&tk.m.userData.cmdr.visible;let rr=null;const P=tk.m.position;
+    for(let i=0;i<40;i++){tk.alive=true;rr=I.armorHit2(tk,new V(P.x+1.5,P.y+1.0,P.z+.5),new V(-1,-.15,0).normalize(),'ATGM');if(/DETONATED/.test(rr.res))break;}
+    out.det=/DETONATED/.test(rr.res);const tu=tk.m.userData.tu;tk.m.updateMatrixWorld(true);const wp=new V();tu.getWorldPosition(wp);out.tuY=+(wp.y-P.y).toFixed(2);out.cmdrGone=!tk.m.userData.cmdr.visible;
+    let figs=0;I.A3.root.traverse(o=>{if(o.isMesh&&o.geometry.type==='SphereGeometry'&&o.material.color&&(o.material.color.getHex()===0xff3a2a||o.material.color.getHex()===0xd8c49a))figs++;});out.figs=figs;I.stop(false);
+    // campaign: its clock and weather
+    localStorage.removeItem('viper.camp');CAMP.st=null;CAMP.newState(game.era,1);CAMP.st.wx.s='STORM';S=I.start({...I.K,camp:true,ins:'APC',mis:'ATTACK'});out.camp=S.env.wx+' '+S.cfg.cond.src;out.campTod=Math.abs(S.cfg.cond.tod-CAMP.clock().hod)<.01;I.stop(false);return out;});
+  ok('night at the place by the war clock',r.dark&&(r.tod<5||r.tod>=21),r);ok('the theatre\'s snow',r.snow&&r.pp,r);ok('commander in the hatch',r.cmdr);
+  ok('detonation throws the turret down beside the hull',r.det&&r.tuY<1,r);ok('commander gone after it',r.cmdrGone);ok('crew figures in the 3D overview',r.figs>=3,r.figs);
+  ok('campaign battle uses the campaign weather and clock',r.camp==='STORM campaign'&&r.campTod,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
