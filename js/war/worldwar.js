@@ -104,7 +104,7 @@ function gndStep(dh){const st=W.st,secs=new Map();
   // coalition pool: each belligerent without its own front sends 20 % of its ground forces, shared over all its side's sectors
   const pool={B:0,R:0},tot={B:0,R:0};for(const p of Object.values(st.c))if(bell(p)&&!secs.get(p.a3))pool[p.side]+=p.gnd*.2;
   for(const f of st.fronts){tot[st.c[f.a].side]+=f.sec.length;tot[st.c[f.b].side]+=f.sec.length;}
-  for(const f of st.fronts){const A=st.c[f.a],B=st.c[f.b];
+  for(const f of st.fronts){if(f.cf)continue;   /* a front under ceasefire does not move (diplomacy.js) */const A=st.c[f.a],B=st.c[f.b];
     for(const s of f.sec){const sup=supAt(s.lat,s.lon),aSup=A.side==='B'?sup:-sup;
       const pa=(A.gnd/Math.max(1,secs.get(A.a3))+pool[A.side]/Math.max(1,tot[A.side]))*A.ready*(1+.6*aSup),pb=(B.gnd/Math.max(1,secs.get(B.a3))+pool[B.side]/Math.max(1,tot[B.side]))*B.ready*(1-.6*aSup);
       // supply: the deeper a side is past the border, the weaker it is at the front (halved at 150 km)
@@ -129,13 +129,13 @@ function prodStep(dh){for(const p of Object.values(W.st.c)){if(!bell(p))continue
   p.exh=Math.min(1,.5*p.lostAir/Math.max(1,p.air0)+.5*p.lostGnd/Math.max(1,p.gnd0));p.ready=Math.max(.35,.8-.4*p.exh);}}
 
 /* ------------------------------------------------------------------ the clock */
-W.step=(hours)=>{const st=W.st;if(!st||st.over)return;let left=hours;
+W.step=(hours)=>{const st=W.st;if(!st||(st.over&&!st.post))return;let left=hours;
   while(left>1e-9){const dh=Math.min(1,left);left-=dh;const d0=Math.floor(st.t/24);st.t+=dh;airStep(dh);gndStep(dh);prodStep(dh);
     if(Math.floor(st.t/24)!==d0)daily();}
   for(const f of st.fronts){const m=f.sec.filter(s=>s.mv);if(m.length){for(const s of m)s.mv=0;const avg=f.sec.reduce((t,s)=>t+s.off,0)/f.sec.length;
       emit('FRONT',{e:[f.a,f.b],cf:'REPORTED',txt:'Front '+st.c[f.a].n+' / '+st.c[f.b].n+': '+(Math.abs(avg)<5?'holding near the border':(avg>0?st.c[f.a].n:st.c[f.b].n)+' forces '+Math.round(Math.abs(avg))+' km beyond the border on average')+'.'});}}
   cityScan(false);const n=performance.now();if(!W._sv||n-W._sv>10000||hours>=1){W._sv=n;save();}};
-function daily(){const st=W.st;for(const th of st.th){if((th.lB||0)+(th.lR||0)<.5)continue;
+function daily(){const st=W.st;for(const f of W.daily)try{f();}catch(e){warn('daily',e);}for(const th of st.th){if((th.lB||0)+(th.lR||0)<.5)continue;
   emit('AIR',{cf:'ESTIMATED',txt:th.name+', day '+Math.floor(st.t/24)+': about '+Math.round(th.lB||0)+' BLUEFOR and '+Math.round(th.lR||0)+' REDFOR aircraft lost · air '+(Math.abs(th.sup)<.1?'contested':(th.sup>0?'BLUEFOR':'REDFOR')+' advantage')+'.'});th.lB=th.lR=0;}}
 W.date=t=>{const d=new Date(Date.parse(W.st.start)+t*3600e3);return d.toISOString().slice(0,16).replace('T',' ')+'Z';};
 
@@ -149,5 +149,5 @@ W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
 // background running: one campaign hour per real second x speed while the map is open, real time in world flight
 let last=performance.now();
 setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!W.st||!W.run)return;try{W.step(dt*W.speed);}catch(e){warn('step',e);}},1000);
-window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
+window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.daily=[];W.setAl=(p,al,side,why)=>setAl(p,al,side,why);W.rebuild=()=>{const old=new Map(W.st.fronts.map(f=>[f.id,f]));buildFronts();W.st.fronts=W.st.fronts.map(f=>old.get(f.id)||f);assignAir();};W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
 })();

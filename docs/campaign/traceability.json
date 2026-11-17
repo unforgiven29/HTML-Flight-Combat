@@ -1491,10 +1491,13 @@
    "line": 3303,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records",
+   "tests": [
+    "wdip_rules",
+    "wdip_long"
+   ]
   },
   {
    "id": "R05-011",
@@ -1506,10 +1509,13 @@
    "line": 3317,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records",
+   "tests": [
+    "wdip_rules",
+    "wdip_long"
+   ]
   },
   {
    "id": "R05-012",
@@ -1796,10 +1802,13 @@
    "line": 3596,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records",
+   "tests": [
+    "wdip_rules",
+    "wdip_long"
+   ]
   },
   {
    "id": "R05-031",
@@ -1811,10 +1820,13 @@
    "line": 3609,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records",
+   "tests": [
+    "wdip_rules",
+    "wdip_long"
+   ]
   },
   {
    "id": "R05-032",
@@ -1826,10 +1838,13 @@
    "line": 3613,
    "owner": "none (front and escalation only: game.js CAMP, strategic.js)",
    "phase": 8,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 8: countries, diplomacy, law and peace processes not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records",
+   "tests": [
+    "wdip_rules",
+    "wdip_long"
+   ]
   },
   {
    "id": "R05-033",
@@ -8974,10 +8989,12 @@
    "line": 19173,
    "owner": "js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab",
    "phase": 9,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 9: anti-war presentation, awards, epilogue; loss ledger started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "End-of-war report (cost, lines, cities, alignment changes) and postwar continuation on the war panel. Not yet: awards, memorials, epilogue chapters",
+   "tests": [
+    "wdip_long"
+   ]
   },
   {
    "id": "R14-003",
