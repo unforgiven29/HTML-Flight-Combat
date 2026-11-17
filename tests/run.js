@@ -1066,6 +1066,16 @@ test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarre
   ok('attachments change handling',r.h.sup&&r.h.zoom&&r.h.grip&&r.h.laser&&r.h.am==='AMR',r.h);
   ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='Glock 18'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
   ok('hits by zone, each piece protects its own',r.zones.head>20&&r.zones.limb>60&&r.per.torso<20*.4&&r.per.limb>20*.6,r);ok('heavy armour slows you',r.spd<.85,r.spd);ok('laser beam shown',r.laser);});
+test('s38_sound: flight sound muted on foot; shots, footsteps, explosions; engine and drone loops; cleaned up','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};const cnt={};for(const k of Object.keys(I.SND)){const f=I.SND[k];I.SND[k]=function(){cnt[k]=(cnt[k]||0)+1;return f.apply(this,arguments);};}
+    game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);sfx.init&&sfx.init();sfx.mute(false);await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'IFV',mis:'ATTACK'});const S=I.S;out.ctx=!!I.AU.C;
+    I.step(1/30,30);out.insertLoop=[...I.AU.loops.values()].some(L=>L.kind==='IFV');I.land();S.hp=1e9;S.dT=1e9;
+    I.step(1/30,40);out.muted=sfx.m?sfx.m.gain.value<.01:true;
+    S.keys.KeyW=true;I.step(1/30,90);S.keys.KeyW=false;S.cool=0;S.reload=0;I.shoot();{const dr=I.spawnDrone('FPV','E');dr.m.position.copy(S.pos).add(new THREE.Vector3(0,20,-40));}I.step(1/30,5);
+    out.loops=[...new Set([...I.AU.loops.values()].map(L=>L.kind))];I.grenade();I.step(1/30,120);out.cnt={...cnt};
+    I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));out.after=I.AU.loops.size;return out;});
+  ok('own audio',r.ctx);ok('plane sound muted on foot',r.muted,r);ok('engine heard on the ride in',r.insertLoop);ok('footsteps',(r.cnt.step||0)>=5,r.cnt);ok('your shot',(r.cnt.shot||0)>=1,r.cnt);ok('explosion',(r.cnt.boom||0)>=1,r.cnt);
+  ok('tank / IFV engines and FPV buzz',r.loops.includes('FPV')&&r.loops.some(k=>k==='TANK'||k==='IFV'),r.loops);ok('loops stop afterwards',r.after===0,r.after);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

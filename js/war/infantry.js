@@ -153,7 +153,7 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
       if(g==='pri'){K.gun=gunDef(k,K.a3);if(k==='SNP')K.att={...K.att,optic:'X8'};}}
     kitMenu(K.a3,K.ap,K.camp);}
   else if(d.ix){const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&window.UI2)UI2.setup(K.a3,K.ap);}
-  else if(d.igo){const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&K.ap&&K.ap.runways&&window.WSORTIE)startWorld({...K});else start({...K});}});
+  else if(d.igo){auInit();if(AU.C&&AU.C.state==='suspended')AU.C.resume();const m=document.getElementById('u2m');if(m)m.remove();if(!K.camp&&K.ap&&K.ap.runways&&window.WSORTIE)startWorld({...K});else start({...K});}});
 
 /* ------------------------------------------------------------------ the battle */
 const V3=THREE.Vector3;let S=null;
@@ -296,6 +296,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   const cs=cfg.camp&&typeof CAMP!=='undefined'&&CAMP.st?(CAMP.st.hot&&CAMP.st.hot.length?CAMP.st.hot[0]:(CAMP.st.front.length>>1)):null;
   if(typeof game!=='undefined'&&!cfg.world){S0.paused=game.paused;game.paused=true;}
   const LOC=cfg.world?cfg.loc:resolveLoc(cfg,fr,cs);cfg.loc=LOC;HF=cfg.world?((x,z)=>groundAt(cfg.O.x+x,cfg.O.z+z)):LOC.H;cfg.mis=cfg.mis||'ATTACK';
+  auInit();try{if(typeof sfx!=='undefined'&&sfx.mute)sfx.mute(true);}catch(e){}
   const B=build(cfg);const pri=makeGun(cfg.pri,cfg.gun&&GUNS[cfg.gun]&&GUNS[cfg.gun].cls===cfg.pri?cfg.gun:gunDef(cfg.pri,cfg.a3),cfg.att),lau={...LAU[cfg.lau]},sd=makeSide(cfg.side,cfg.satt);pri.cur=pri.mag;sd.cur=sd.mag;if(lau.mag)lau.cur=lau.mag;
   S={fpvKit:cfg.role==='AT'||cfg.role==='ENGINEER'?3:2,myFpv:[],feed:null,med:null,medN:0,wia:0,evac:0,armLog:[],O:cfg.world?cfg.O.clone():new V3(),smk:[],craters:[],fires:[],calls:0,callDead:0,pend:null,arty:null,offN:0,bags:cfg.role==='ENGINEER'?8:2,dug:0,cfg,cs,loc:LOC,mission:cfg.mis,trZ:-470,wave:0,air:[],airT:8,me,en,fr,enA3,N,EN,...B,t:0,phase:'INSERT',ins:cfg.ins,pos:new V3(0,0,250),vel:new V3(),yaw:0,pitch:0,hp:100,arm:cfg.helm?armOf(cfg):armOf({helm:ARMSET[cfg.arm||'PLATE'][0],vest:ARMSET[cfg.arm||'PLATE'][1],extra:ARMSET[cfg.arm||'PLATE'][2]}),uglN:0,laserOn:true,loudT:0,vlow:false,bc:0,crouch:false,ads:false,w:'pri',wp:{pri,lau,side:sd},gren:cfg.gren,
     reload:0,cool:0,fire:false,keys:{},drones:[],dT:20,us:[],them:[],veh:[],gnades:[],rk:[],kills:0,lost:0,hold:0,res:null,ifv:null,eheli:null,shots:0,hits:0,heliT:60+rn()*60,waveT:70,msg:'',msgT:0};
@@ -367,7 +368,7 @@ function land(){if(S.res)return;S.phase='FIGHT';const C=S.carrier;S.pos.y=H(S.po
   else S.leave=C;say(S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
 
 /* ------------------------------------------------------------------ input */
-function bind(){const c=S.cv;c.addEventListener('click',()=>{if(document.pointerLockElement!==c&&c.requestPointerLock)c.requestPointerLock();});
+function bind(){const c=S.cv;c.addEventListener('click',()=>{if(AU.C&&AU.C.state==='suspended')AU.C.resume();if(document.pointerLockElement!==c&&c.requestPointerLock)c.requestPointerLock();});
   S.onK=e=>{if(!S)return;S.keys[e.code]=e.type==='keydown';if(e.type!=='keydown')return;e.stopPropagation();
     if(e.code==='Escape'){stop(true,'LEFT');}if(e.code==='KeyR')reload();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='KeyO')offensive();if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
   S.onM=e=>{if(!S||document.pointerLockElement!==S.cv)return;const k=S.ads?1/(S.wp[S.w].ads||1):1;S.yaw-=e.movementX*.0022*k;S.pitch=Math.max(-1.45,Math.min(1.45,S.pitch-e.movementY*.0022*k));};
@@ -375,7 +376,7 @@ function bind(){const c=S.cv;c.addEventListener('click',()=>{if(document.pointer
   addEventListener('keydown',S.onK,true);addEventListener('keyup',S.onK,true);addEventListener('mousemove',S.onM);S.cv.addEventListener('mousedown',S.onD);addEventListener('mouseup',S.onD);S.cv.addEventListener('contextmenu',S.onC);addEventListener('resize',S.onR);}
 function unbind(){removeEventListener('keydown',S.onK,true);removeEventListener('keyup',S.onK,true);removeEventListener('mousemove',S.onM);removeEventListener('mouseup',S.onD);removeEventListener('resize',S.onR);if(document.pointerLockElement)document.exitPointerLock();}
 function swap(w){if(S.w===w)return;S.w=w;S.reload=0;S.cool=.6;}
-function reload(){const g=S.wp[S.w];if(S.reload>0||!g.mag||g.cur>=g.mag||g.res<=0)return;S.reload=g.rl;}
+function reload(){const g=S.wp[S.w];if(S.reload>0||!g.mag||g.cur>=g.mag||g.res<=0)return;S.reload=g.rl;SND.click();}
 function say(t,s){S.msg=t;S.msgT=s||3;}
 
 /* ------------------------------------------------------------------ combat */
@@ -383,8 +384,8 @@ const ray=new THREE.Raycaster();
 function aimDir(spr){const d=new V3(0,0,-1).applyEuler(new THREE.Euler(S.pitch,S.yaw,0,'YXZ'));if(spr){d.x+=(rn()-.5)*spr;d.y+=(rn()-.5)*spr;d.z+=(rn()-.5)*spr;d.normalize();}return d;}
 function shoot(){const g=S.wp[S.w];if(S.reload>0||S.cool>0)return;if(g.cur<=0){reload();return;}g.cur--;S.shots++;
   if(S.w==='lau'){S.cool=1;const d=aimDir(.004);const air=g.air?(S.eheli&&S.eheli.alive?S.eheli:S.drones.filter(x=>x.alive&&x.side==='E'&&x.k!=='FPV').sort((a,b)=>a.m.position.distanceTo(S.pos)-b.m.position.distanceTo(S.pos))[0]):null;
-  S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided?pickVeh():null)});if(g.cur<=0)reload();return;}
-  S.cool=60/g.rpm;if(g.burst){S.bc++;if(S.bc>=g.burst){S.fire=false;S.bc=0;S.cool=.25;}}else if(!g.auto)S.fire=false;if(!g.quiet)S.loudT=4;const lz=S.laserOn?(g.hipK||1):1;const mv=S.vel.length()>2?1.8*(g.moveK||1):1,spr=g.spr*(S.ads?.35:lz)*(S.crouch?.7*(g.crouchK||1):1)*mv;let r=null;for(let i=0;i<(g.pel||1);i++)r=hitscan(S.pos,aimDir(g.pel?g.spr:spr),g.dmg,true)||r;
+  SND.launch();S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided?pickVeh():null)});if(g.cur<=0)reload();return;}
+  S.cool=60/g.rpm;if(g.burst){S.bc++;if(S.bc>=g.burst){S.fire=false;S.bc=0;S.cool=.25;}}else if(!g.auto)S.fire=false;if(!g.quiet)S.loudT=4;SND.shot(g);const lz=S.laserOn?(g.hipK||1):1;const mv=S.vel.length()>2?1.8*(g.moveK||1):1,spr=g.spr*(S.ads?.35:lz)*(S.crouch?.7*(g.crouchK||1):1)*mv;let r=null;for(let i=0;i<(g.pel||1);i++)r=hitscan(S.pos,aimDir(g.pel?g.spr:spr),g.dmg,true)||r;
   S.kick=(S.kick||0)+(g.dmg>60?.03:.008)*(g.kickK||1)*(S.crouch&&g.crouchK<1?.5:1);if(g.cur<=0)reload();return r;}
 function pickVeh(){let b=null,bd=1e9;for(const v of S.veh)if(v.alive&&v.side==='E'){const d=Math.hypot(v.x-S.pos.x,v.z-S.pos.z);if(d<bd){bd=d;b=v;}}return b;}
 function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900);ray.set(o.clone().add(S.O),d);ray.far=Math.min(900,tS);const targets=[];const owner=new Map();
@@ -398,9 +399,9 @@ function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900
   const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'?.7:1;hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
 function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;if(own){say('FRIENDLY FIRE',3);S.ff=(S.ff||0)+1;}}else if(own)S.kills++;}}
 function mark(hd){const e=document.getElementById('iHit');if(e){e.style.color=hd?'#ff5a4a':'#fff';e.style.opacity=1;clearTimeout(mark.t);mark.t=setTimeout(()=>e.style.opacity=0,120);}}
-function hurt(d,why){let k=1;if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';}}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0)end('KIA');}
+function hurt(d,why){if(why==='bullet')SND.hit();let k=1;if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';}}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0)end('KIA');}
 function grenade(){if(S.gren<=0||S.phase!=='FIGHT')return;S.gren--;const d=aimDir(0);S.gnades.push({p:S.pos.clone(),v:d.multiplyScalar(18).add(new V3(0,4,0)),t:0,own:true});}
-function blast(p,r,dmg,own){fx(p,1.4);if(r>=5)scar(p,r);for(const u of[...S.us,...S.them]){if(!u.alive)continue;const d=u.m.position.distanceTo(p);if(d<r)hitMan(u,dmg*(1-d/r),own);}
+function blast(p,r,dmg,own){fx(p,1.4);SND.boom(p,r);if(r>=5)scar(p,r);for(const u of[...S.us,...S.them]){if(!u.alive)continue;const d=u.m.position.distanceTo(p);if(d<r)hitMan(u,dmg*(1-d/r),own);}
   for(const v of S.veh){if(!v.alive)continue;const d=Math.hypot(v.x-p.x,v.z-p.z);if(d<4)hitVeh(v,dmg,own);}
   const d=S.pos.distanceTo(p);if(d<r)hurt(dmg*(1-d/r)*.8,'blast');}
 function hitVeh(v,dmg,own){v.hp-=dmg;if(v.hp<=0&&v.alive){v.alive=false;S.fires.push({p:v.m.position.clone().setY(v.m.position.y+2.5),t:0});fx(v.m.position.clone().setY(v.m.position.y+2),3);v.m.traverse(x=>{if(x.isMesh)x.material=new THREE.MeshLambertMaterial({color:0x222018});});if(own&&v.side==='E'){S.kills++;S.vk=(S.vk||0)+1;say('VEHICLE DESTROYED',2);}}}
@@ -415,10 +416,10 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
   let mv=0;if(goal&&(!u.tgt||u.sup>0&&u.friend)){const d=goal.clone().sub(P).setY(0);if(d.length()>3){d.normalize();P.x+=d.x*2.6*dt;P.z+=d.z*2.6*dt;mv=1;u.m.rotation.y=Math.atan2(-d.x,-d.z);}}
   if(u.tgt){const tp=u.tgt.m.position,d=tp.clone().sub(P);u.m.rotation.y=Math.atan2(-d.x,-d.z);const L=d.length();
     if(L>60&&!mv&&u.friend&&S.phase==='FIGHT'&&S.mission!=='DEFEND'){d.setY(0).normalize();P.x+=d.x*2*dt;P.z+=d.z*2*dt;}
-    if(u.cool<=0){u.cool=.5+rn()*1.2;const o=P.clone().setY(P.y+1.5);
+    if(u.cool<=0){u.cool=.5+rn()*1.2;const o=P.clone().setY(P.y+1.5);if(rn()<.6)SND.far(o,false);
       const acc=Math.max(.04,.55-L/500)*(u.sup>0?.5:1)*(u.tgt.player?(S.crouch?.6:1)*(S.vel.length()>3?.6:1):1);
       if(los(o,tp.clone().setY(tp.y+(u.tgt.player?0:1.3)))){if(rn()<acc){if(u.tgt.player)hurt(14+rn()*10,'bullet');else hitMan(u.tgt,22+rn()*14,false);}
-        else if(u.tgt.player&&L<120)S.near=.3;}}}
+        else if(u.tgt.player&&L<120){S.near=.3;if(rn()<.5)SND.whiz(S.pos.clone().add(new V3((rn()-.5)*3,0,(rn()-.5)*3)));}}}}
   const gy=H(P.x,P.z),top=collide(P,P.y,P.y+1.7,.35);P.y=Math.max(gy,top>-1e8?top:gy);}
 function collide(P,feet,head,r){let top=-1e9;for(const b of near(P.x-r-1,P.z-r-1,P.x+r+1,P.z+r+1,_nb)){if(P.x<b.x0-r||P.x>b.x1+r||P.z<b.z0-r||P.z>b.z1+r)continue;
     if(b.y1<=feet+.45){if(P.x>b.x0-.05&&P.x<b.x1+.05&&P.z>b.z0-.05&&P.z<b.z1+.05)top=Math.max(top,b.y1);continue;}if(b.y0>=head)continue;
@@ -440,7 +441,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     if(inZone&&!enemyNear){S.hold+=dt;if(S.hold>=30)end('WON');}else S.hold=Math.max(0,S.hold-dt*.5);
     S.waveT-=dt;if(S.waveT<=0&&S.them.filter(u=>u.alive).length<6){S.waveT=80;const n=4;for(let i=0;i<n;i++)S.them.push(man(false,S.village.x+(rn()-.5)*60,S.village.z-160-rn()*40));say('ENEMY REINFORCEMENTS FROM THE NORTH',3);}}
     S.heliT-=dt;if(S.heliT<=0&&!S.eheli){const h=helo(0x6a5a3a);h.position.set(400,80,-500);S.sc.add(h);S.eheli={m:h,hp:500,alive:true,cool:3,t:0};say('ENEMY HELICOPTER',3);S.heliT=1e9;}}
-  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);v385Step(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
+  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);v385Step(dt);audioStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
@@ -629,6 +630,61 @@ function rayBoxes(o,d,far){const seen=rayBoxes.seen||(rayBoxes.seen=new Set());s
 function rayGround(o,d,far){let t=0,prev=0;while(t<far){const st=t<60?2:t<300?6:15;t=Math.min(far,t+st);const x=o.x+d.x*t,y=o.y+d.y*t,z=o.z+d.z*t;if(y<H(x,z)-.05)return prev+(t-prev)*.5;prev=t;}return Infinity;}
 function rayWorld(o,d,far){return Math.min(rayBoxes(o,d,far),rayGround(o,d,far));}
 
+/* ------------------------------------------------------------------ v386: infantry sound */
+// Its own synthesised sound (Web Audio), not the flight sim's: that is muted while you are on foot (no jet engine).
+// Everything is placed left / right by bearing and falls off with distance: your shots by gun class (a suppressor
+// muffles them), enemy fire, rounds cracking past you, hits on you, explosions, footsteps (walk, run, crouch, indoors),
+// reloads, the launcher, and running loops for tank / IFV engines, FPV and one-way and armed drones, helicopters and
+// the transport plane.
+const AU={C:null,M:null,nb:null,loops:new Map(),fs:0};
+function auInit(){if(AU.C)return AU.C;const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;try{const C=new A();AU.C=C;AU.M=C.createGain();
+  AU.M.gain.value=.8*((typeof SET!=='undefined'&&SET.vol!=null)?SET.vol/80:1);AU.M.connect(C.destination);const b=C.createBuffer(1,C.sampleRate*1.5,C.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.nb=b;}catch(e){AU.C=null;}return AU.C;}
+// where a sound at local point p sits for you: gain by distance, pan by bearing
+function place(p,ref){if(!p||!S)return{g:1,pan:0};const dx=p.x-S.pos.x,dz=p.z-S.pos.z,dy=(p.y||S.pos.y)-S.pos.y,d=Math.hypot(dx,dz,dy);const fx=-Math.sin(S.yaw),fz=-Math.cos(S.yaw),rx=-fz,rz=fx;
+  const pan=d<.5?0:Math.max(-1,Math.min(1,(dx*rx+dz*rz)/d));return{g:1/(1+Math.pow(d/(ref||25),1.3)),pan,d};}
+function out(g0,pan){const C=AU.C,g=C.createGain();g.gain.value=g0;let n=g;if(C.createStereoPanner){const P=C.createStereoPanner();P.pan.value=pan||0;g.connect(P);P.connect(AU.M);}else g.connect(AU.M);return g;}
+function nz(dest,t0,dur,type,f,q,a,decay){const C=AU.C,src=C.createBufferSource();src.buffer=AU.nb;src.loop=true;const fl=C.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q||.7;const e=C.createGain();
+  e.gain.setValueAtTime(0,t0);e.gain.linearRampToValueAtTime(a,t0+.004);e.gain.exponentialRampToValueAtTime(.0005,t0+(decay||dur));src.connect(fl);fl.connect(e);e.connect(dest);src.start(t0,Math.random());src.stop(t0+dur+.05);}
+function tone(dest,t0,type,f0,f1,dur,a){const C=AU.C,o=C.createOscillator(),e=C.createGain();o.type=type;o.frequency.setValueAtTime(f0,t0);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t0+dur);
+  e.gain.setValueAtTime(a,t0);e.gain.exponentialRampToValueAtTime(.0005,t0+dur);o.connect(e);e.connect(dest);o.start(t0);o.stop(t0+dur+.02);}
+const SND={
+  shot(g){if(!AU.C)return;const t=AU.C.currentTime,cls=g.cls||'PISTOL',big=cls==='SNP'||cls==='DMR'||g.am,q=g.quiet;const o=out(q?.35:big?1:.8,0);
+    if(cls==='SHOT'){nz(o,t,.35,'lowpass',q?1200:2600,.7,1,.3);tone(o,t,'sine',110,40,.25,.9);return;}
+    nz(o,t,big?.45:.18,'highpass',q?300:900,.6,q?.5:1,big?.4:.14);nz(o,t,big?.6:.25,'lowpass',q?700:1600,.8,q?.4:.8,big?.55:.2);tone(o,t,'sine',big?80:110,35,big?.3:.14,big?1:.7);
+    if(g.am)tone(o,t,'sine',55,25,.6,1);},
+  launch(){if(!AU.C)return;const t=AU.C.currentTime,o=out(.9,0);nz(o,t,.9,'bandpass',700,.6,.9,.85);tone(o,t,'sawtooth',90,40,.5,.25);},
+  thunk(){if(!AU.C)return;const t=AU.C.currentTime,o=out(.7,0);tone(o,t,'sine',160,60,.18,.9);nz(o,t,.12,'lowpass',900,.7,.4,.1);},
+  far(p,big){if(!AU.C)return;const P=place(p,40);if(P.g<.03)return;const t=AU.C.currentTime+Math.min(1.2,P.d/340),o=out(P.g*(big?1:.75),P.pan);nz(o,t,.3,'lowpass',Math.max(400,2600-P.d*4),.7,.9,.25);tone(o,t,'sine',90,40,.18,.5);},
+  whiz(p){if(!AU.C)return;const P=place(p,8),t=AU.C.currentTime,o=out(.55,P.pan);nz(o,t,.07,'highpass',3000,.8,.9,.06);tone(o,t,'sine',2400,500,.09,.25);},
+  hit(){if(!AU.C)return;const t=AU.C.currentTime,o=out(.9,0);tone(o,t,'sine',70,40,.2,1);nz(o,t,.1,'lowpass',500,.7,.7,.08);},
+  boom(p,r){if(!AU.C)return;const P=place(p,60+(r||5)*6);if(P.g<.02)return;const t=AU.C.currentTime+Math.min(2,P.d/340),o=out(Math.min(1.4,P.g*(.5+(r||5)/10)),P.pan);
+    nz(o,t,1.6,'lowpass',Math.max(150,900-P.d*.6),.7,1,1.4);tone(o,t,'sine',60,25,1,1);if(P.d<120)nz(o,t,.25,'highpass',1500,.6,.5,.2);},
+  step(run,crouch,indoor){if(!AU.C)return;const t=AU.C.currentTime,o=out(crouch?.12:run?.35:.22,(AU.fs++%2)?.15:-.15);nz(o,t,.09,'bandpass',indoor?1800:(500+Math.random()*250),indoor?2.5:1.2,1,.07);if(!indoor)nz(o,t+.02,.06,'highpass',2500,.6,.25,.05);},
+  click(){if(!AU.C)return;const t=AU.C.currentTime,o=out(.4,.2);tone(o,t,'square',1800,900,.03,.4);tone(o,t+.35,'square',1400,700,.04,.5);nz(o,t+.6,.05,'highpass',2000,1,.4,.05);}};
+// running loops: one per vehicle, drone, helicopter or plane in earshot
+function loopFor(key,kind){let L=AU.loops.get(key);if(L)return L;const C=AU.C,g=C.createGain();g.gain.value=0;let pn=null;if(C.createStereoPanner){pn=C.createStereoPanner();g.connect(pn);pn.connect(AU.M);}else g.connect(AU.M);
+  const nodes=[];const osc=(type,f)=>{const o=C.createOscillator();o.type=type;o.frequency.value=f;o.start();nodes.push(o);return o;},filt=(type,f,q)=>{const b=C.createBiquadFilter();b.type=type;b.frequency.value=f;b.Q.value=q||.7;return b;};
+  const noise=()=>{const src=C.createBufferSource();src.buffer=AU.nb;src.loop=true;src.start(0,Math.random());nodes.push(src);return src;};let pitch=null;
+  if(kind==='TANK'||kind==='IFV'||kind==='APC'){const a=osc('sawtooth',kind==='TANK'?34:46),b=osc('sawtooth',kind==='TANK'?68:92),f=filt('lowpass',kind==='TANK'?220:300);a.connect(f);b.connect(f);const n=noise(),fn=filt('bandpass',kind==='TANK'?900:1200,2);const gn=C.createGain();gn.gain.value=.15;n.connect(fn);fn.connect(gn);gn.connect(g);f.connect(g);pitch=[a,b];}
+  else if(kind==='FPV'){const a=osc('sawtooth',190),l=osc('sine',28),lg=C.createGain();lg.gain.value=18;l.connect(lg);lg.connect(a.frequency);const f=filt('bandpass',1300,1.2);a.connect(f);f.connect(g);const b=osc('sawtooth',380);const g2=C.createGain();g2.gain.value=.4;b.connect(g2);g2.connect(f);pitch=[a,b];}
+  else if(kind==='OWA'){const a=osc('sawtooth',92),b=osc('square',184),f=filt('lowpass',900);const l=osc('sine',6),lg=C.createGain();lg.gain.value=4;l.connect(lg);lg.connect(a.frequency);a.connect(f);b.connect(f);f.connect(g);}
+  else if(kind==='MALE'){const a=osc('triangle',118),f=filt('lowpass',420);a.connect(f);f.connect(g);const n=noise(),fn=filt('lowpass',300);n.connect(fn);fn.connect(g);}
+  else if(kind==='HELO'){const n=noise(),f=filt('lowpass',320),am=C.createGain();am.gain.value=.5;const l=osc('square',17),lg=C.createGain();lg.gain.value=.5;l.connect(lg);lg.connect(am.gain);n.connect(f);f.connect(am);am.connect(g);const t=osc('sawtooth',55),tf=filt('lowpass',160);t.connect(tf);tf.connect(g);}
+  else{const a=osc('sawtooth',62),n=noise(),f=filt('lowpass',520);a.connect(f);n.connect(f);f.connect(g);}
+  L={g,pn,nodes,pitch,kind,seen:0};AU.loops.set(key,L);return L;}
+function audioStep(dt){if(!AU.C)return;AU.mt=(AU.mt||0)-dt;if(AU.mt<=0){AU.mt=1;try{if(typeof sfx!=='undefined'&&sfx.mute)sfx.mute(true);}catch(e){}if(AU.C.state==='suspended')AU.C.resume();}
+  const now=(AU.tick=(AU.tick||0)+1);const want=(key,kind,p,vol,ref,f)=>{const P=place(p,ref);if(P.g<.01)return;const L=loopFor(key,kind);L.seen=now;L.g.gain.setTargetAtTime(Math.min(1,P.g*vol),AU.C.currentTime,.08);if(L.pn)L.pn.pan.setTargetAtTime(P.pan,AU.C.currentTime,.08);
+    if(L.pitch&&f)L.pitch.forEach((o,i)=>o.frequency.setTargetAtTime(f*(i+1),AU.C.currentTime,.2));};
+  for(const v of S.veh)if(v.alive){const k=v.tank?'TANK':v.m.userData.gun?'IFV':'APC';want(v,k,v.m.position,.6,60,(k==='TANK'?34:46)*(v.mv&&Math.abs((v.stop||v.z)-v.z)>2?1.25:1));}
+  for(const d of S.drones)if(d.alive&&!(d.mine&&d.wait>0))want(d,d.k,d.m.position,d.k==='FPV'?.7:d.k==='OWA'?.9:.5,d.k==='FPV'?30:d.k==='OWA'?120:400,d.k==='FPV'?(d.dive?240:190):0);
+  if(S.carrier&&S.phase==='INSERT'){const k=S.ins==='HELO'?'HELO':S.ins==='AIR'?'PLANE':S.ins;want('carrier',k,S.carrier.m.position,S.ins==='AIR'?.8:.7,40,0);}
+  if(S.leave)want('leave',S.ins==='HELO'?'HELO':S.ins,S.leave.m.position,.6,50,0);if(S.med)want('med','HELO',S.med.h.position,.8,60,0);if(S.eheli&&S.eheli.alive)want('eheli','HELO',S.eheli.m.position,.8,80,0);
+  for(const a of S.air||[])if(a.alive)want(a,'PLANE',a.m.position,.5,500,0);
+  for(const[k,L]of AU.loops)if(L.seen!==now){L.g.gain.setTargetAtTime(0,AU.C.currentTime,.1);if(now-L.seen>40){for(const n of L.nodes)try{n.stop();}catch(e){}L.g.disconnect();AU.loops.delete(k);}}
+  // footsteps
+  const sp=Math.hypot(S.vel.x,S.vel.z);if(S.phase==='FIGHT'&&sp>.5&&S.vel.y===0){AU.sd=(AU.sd||0)+sp*dt;const run=sp>5,str=run?1.9:S.crouch?.9:1.3;if(AU.sd>=str){AU.sd=0;const inside=S.blds&&near(S.pos.x-.2,S.pos.z-.2,S.pos.x+.2,S.pos.z+.2,_nb).some(b=>b.y1<=S.pos.y-1.2&&b.y1>S.pos.y-2.4);SND.step(run,S.crouch,inside);}}}
+function auStop(){for(const[,L]of AU.loops){for(const n of L.nodes)try{n.stop();}catch(e){}try{L.g.disconnect();}catch(e){}}AU.loops.clear();try{if(typeof sfx!=='undefined'&&sfx.mute&&typeof game!=='undefined'&&game.active&&!game.paused)sfx.mute(false);}catch(e){}}
+
 /* ------------------------------------------------------------------ v385: weapons, attachments */
 // reticles over the view: red dot, holographic ring, scope reticles (chevron for prism scopes, mil-dot for long scopes)
 function reticle(k){let el=document.getElementById('iRet');if(!el){el=document.createElement('div');el.id='iRet';el.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none';S.hud.appendChild(el);}
@@ -656,7 +712,7 @@ function v385Step(dt){S.loudT=Math.max(0,S.loudT-dt);const g=S.wp[S.w]||{};const
   const vis=fw&&g.laser==='VIS';S.lzLine.visible=vis;S.lzDot.visible=vis;if(vis){const t=Math.min(300,rayWorld(S.pos,d,300));const e=S.pos.clone().addScaledVector(d,t);S.lzLine.geometry.setFromPoints([m,e]);S.lzDot.position.copy(e);}
   const li=fw&&g.light;S.wlight.visible=!!li;if(li){S.wlight.position.copy(m);S.wlight.target.position.copy(S.pos).addScaledVector(d,20);}}
 // the underbarrel grenade launcher (4): a fast arc, bursts on impact
-function ugl(){if(S.phase!=='FIGHT'||S.w!=='pri')return;if(S.uglN<=0){say('NO LAUNCHER GRENADES',1.2);return;}S.uglN--;const d=aimDir(.004);S.gnades.push({p:S.pos.clone().addScaledVector(d,.8),v:d.multiplyScalar(70).add(new V3(0,2,0)),t:0,own:true,impact:true});}
+function ugl(){if(S.phase!=='FIGHT'||S.w!=='pri')return;if(S.uglN<=0){say('NO LAUNCHER GRENADES',1.2);return;}S.uglN--;const d=aimDir(.004);SND.thunk();S.gnades.push({p:S.pos.clone().addScaledVector(d,.8),v:d.multiplyScalar(70).add(new V3(0,2,0)),t:0,own:true,impact:true});}
 
 /* ------------------------------------------------------------------ v381 */
 // STRUCTURAL DAMAGE: every heavy blast (rocket, grenade, FPV, artillery, one-way drone, bomb) hits bunkers, dugouts and
@@ -792,6 +848,6 @@ function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cf
     (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="note">The front line in this sector moves forward a little.</div>':'')+'</div>'+
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
-function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();auStop();if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
+window.INFANTRY={AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();
