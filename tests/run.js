@@ -854,6 +854,16 @@ test('s20_airops: interceptors scramble, CAS flights attack the ground fight, RE
     if(window.GFIGHT&&!GFIGHT.GF.on){}const gf=window.GFIGHT?GFIGHT.GF.units.length:0;O.casFlight(true);const cas=O.OPS.cas.length,casJ=O.OPS.cas.flatMap(c=>c.j);
     const bombs=casJ.some(j=>typeof agTypes==='function'&&agTypes(j).length>0);WSORTIE.finish();return{gci,sites,ints,gf,cas,bombs};});
   ok('REDFOR GCI network up (radars, picture)',r.gci&&r.sites>=2,r);ok('interceptors scramble against an intruder',r.ints>=2,r);ok('CAS flights with bombs against the ground fight',r.gf===0||(r.cas>0&&r.bombs),r);});
+
+/* ---------- step 19 (v365+): guided CAS, battle sound, mission replay ---------- */
+test('s21_media: guided munitions on CAS, mission replay, battle sound','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const O=WWAR.airops;
+    const gB=O.guidedLoad('F-16C',0),gR=O.guidedLoad('MiG-29',1);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);
+    O.casFlight(true);const J=O.OPS.cas.flatMap(c=>c.j);const guided=J.some(j=>typeof agTypes==='function'&&agTypes(j).some(k=>AGW[k]&&(AGW[k].k==='lgb'||AGW[k].k==='agm')));
+    let fired=false;const j=J.find(x=>x.side===0)||J[0];const t=GFIGHT&&GFIGHT.GF.units.find(u=>u.alive&&u.side!==j.side);if(j&&t){j.pos.set(t.pos.x+3000,t.pos.y+3000,t.pos.z);fired=O.guidedPass(j,t,3000,{});}
+    await new Promise(r=>setTimeout(r,6000));WSORTIE.finish();const R=WWAR.media.RP.list[0];const html=NATPANEL.tabs.DEBRIEF(WWAR.st.c.POL);
+    return{gB:gB&&Object.values(gB).filter(v=>AGW[v]&&AGW[v].k!=='bomb'&&AGW[v].k!=='pod').length,gR:gR&&Object.values(gR).some(v=>/KAB|Kh-/.test(v)),guided,fired,frames:R&&R.f.length,ui:html.includes('MISSION REPLAY'),au:!!WWAR.media.AU};});
+  ok('guided loads for both sides (GBU / Maverick; KAB / Kh)',r.gB>0&&r.gR,r);ok('CAS flights carry and release guided weapons',r.guided&&r.fired,r);ok('a sortie is recorded for replay and shown',r.frames>=1&&r.ui,r);ok('battle sound module',r.au);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
