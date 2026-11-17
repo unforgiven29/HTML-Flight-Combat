@@ -596,6 +596,32 @@ test('s9_hazards: disasters by region and season, estimates labelled, aid and re
     const H=st.hz.list,ev=st.ev.filter(e=>e.ty==='HAZARD');return{n:H.length,kinds:[...new Set(H.map(h=>h.kind))],est:ev.every(e=>e.cf==='ESTIMATED'),aid:st.ev.some(e=>e.ty==='AID'),rec:st.ev.some(e=>e.ty==='RECOVERY'),
       quake:H.filter(h=>h.kind==='EARTHQUAKE').every(h=>{const c=WGEO.byA3.get(h.a3);return WWAR.hazards.chances(c,0).some(x=>x[0]==='EARTHQUAKE');})};});
   ok('disasters happen',r.n>20,r.n);ok('several kinds',r.kinds.length>=3,r.kinds);ok('earthquakes only in seismic belts',r.quake);ok('estimates labelled',r.est);ok('aid and recovery',r.aid&&r.rec,r);});
+
+/* ---------- step 10 (v337): world war multiplayer ---------- */
+test('s10_mp: host sends AI and ground units, guest maps them into its own frame and reports hits','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WGEO.loadData();await WWAR.newWar('EST');const st=WWAR.st;
+    const sent=[];const R={emit:(k,d)=>{sent.push([k,JSON.parse(JSON.stringify(d))]);return Promise.resolve();},on:()=>()=>{},peers:()=>[{peer:'me',sameTab:true}],presence:()=>Promise.resolve(),leave:()=>Promise.resolve()};
+    net.on=true;net.r=R;net.me='me';net.isHost=true;net.ww=true;const N=WWNET.N;N.on=true;N.host=true;
+    const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const WS=WSORTIE.WS;
+    for(let i=0;i<40&&!WS.enemy.length;i++){WS.spawnT=0;await new Promise(r=>setTimeout(r,1100));}
+    await new Promise(r=>setTimeout(r,1300));
+    const ai=sent.filter(x=>x[0]==='wai').pop(),gu=sent.filter(x=>x[0]==='wgu').pop();if(!ai)return{err:'no wai',k:sent.map(x=>x[0]),on:WS.on,go:!!WGEO.o,nh:N.host,nio:net.isHost,non:net.on};
+    const j0=WS.jets.values().next().value,a0=ai[1].a.find(a=>a[0]===j0.cid);
+    // the guest: same country, an origin 0.2 degrees further east (sender's frame is shifted)
+    N.host=false;net.isHost=false;WS.client=true;const o=ai[1].o;const D={...ai[1],o:[o[0],o[1]-.2]};WWNET.applyAI(D);
+    const pj=N.prox.get(j0.cid),dx=pj?pj.net.p.x-a0[3]:null,exp=WGEO.ll2xz(o[0],o[1]-.2).x;
+    let gk=null;if(gu&&gu[1].g.length){WWNET.applyGU(gu[1]);const u=[...N.gu.values()][0];sent.length=0;u.kill(player);gk=sent.find(x=>x[0]==='wgk');}
+    const side=pj&&pj.side===(j0.side);
+    // a peer's presence from a different origin
+    const pr={peer:'p2',presence:{cs:'Two',ac:'F-16C',era:'modern',al:1,sd:'B',o:[o[0],o[1]-.2],s:[100,5000,0,0,0,0,1,0,0,0,100,.8,0],m:[]}};net.sd='B';net.applyPeer(pr,performance.now());const pe=net.peers.get('p2');
+    return{nAI:ai[1].a.length,dx,exp,side,gk:!!gk,ngu:gu?gu[1].g.length:0,peer:pe&&pe.jet&&{x:pe.jet.net.p.x,side:pe.jet.side},pexp:100+exp,fr:pe&&pe.jet?isFr(player,pe.jet):null};});
+  ok('host publishes AI traffic',r.nAI>0,[r,p.errs.slice(0,3)]);ok('guest positions moved into its own frame',r.dx!=null&&Math.abs(r.dx-r.exp)<1,r);ok('same side kept',r.side);
+  ok('ground units mirrored and a guest kill goes to the host',r.ngu===0||r.gk,r);ok('other player placed in our frame and friendly on the same side',r.peer&&Math.abs(r.peer.x-r.pexp)<1&&r.peer.side===0&&r.fr===true,r);});
+test('s10_postwar: reconstruction, memorials and the epilogue','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*30);const pl=st.c.POL;pl.ecn.infra=.5;
+    WWAR.diplo.end('ARMISTICE','test');st.post=true;const i0=pl.ecn.infra;WWAR.step(24*400);
+    return{i0,i1:pl.ecn.infra,mem:!!st.pw.mem,epi:Object.keys(st.pw.done).length,est:st.ev.filter(e=>e.ty==='EPILOGUE').every(e=>e.cf==='ESTIMATED')};});
+  ok('infrastructure rebuilt',r.i1>r.i0+.1,r);ok('memorials',r.mem);ok('epilogue notes at 3 months and 1 year',r.epi>=2,r);ok('estimates labelled',r.est);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -23,13 +23,13 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 13 | Player Campaign, Missions, Flight Experience, Career, Training, Commander Mode, and Player-Facing Operations | 22 | defer 14, implement 4, extend 1, existing 3 | none 14, partial 8 |
 | 14 | Anti-War Consequences, Accountability, Awards, Memorials, Epilogue, and Postwar Continuity | 48 | implement 6, defer 42 | partial 6, none 42 |
 | 15 | Autonomous AI, Institutional Decisions, Learning, and World Agency | 26 | defer 21, implement 5 | none 21, partial 5 |
-| 16 | Multiplayer Authority, Cooperative Campaigns, Security, Privacy, and Concurrency | 6 | extend 2, defer 4 | partial 2, none 4 |
+| 16 | Multiplayer Authority, Cooperative Campaigns, Security, Privacy, and Concurrency | 6 | extend 6 | partial 2, none 4 |
 | 17 | User Interface, Map Presentation, Dashboards, Reports, Accessibility, and Explainability | 29 | defer 23, extend 6 | none 23, partial 6 |
 | 18 | Cross-System Contracts and End-to-End Integration Scenarios | 17 | implement 17 | none 17 |
 | 19 | Implementation Order and Claude Execution Workflow | 2 | existing 2 | partial 2 |
 | 20 | Acceptance Criteria, Regression, Data Integrity, Performance, and Release Gates | 6 | extend 6 | none 6 |
 
-Total: 719 blocks; 144 with code behind them (partial or done), 545 deferred with a phase and reason.
+Total: 719 blocks; 144 with code behind them (partial or done), 541 deferred with a phase and reason.
 
 ## Explicit scope exclusions (unchanged)
 
@@ -698,12 +698,12 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R15-024 | 21133 | AI DIFFERENCES BETWEEN COUNTRIES AND COMMANDERS | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |
 | R15-025 | 21144 | AI personality, doctrine, learning, and military adaptation | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |
 | R15-026 | 21155 | Learning, lessons identified, and adaptation over time | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |
-| R16-001 | 21208 | Multiplayer authority, cooperative play, and shared-world synchronization | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | extend | partial | Co-op host is the only ledger writer; clients render the read model the host sends. Peers' own sorties are not tracked by airframe yet |  |
-| R16-002 | 21209 | Unified multiplayer authority, cooperative command, shared campaigns, security, and synchronization | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | defer | none | Phase 9: cooperative command and shared campaigns beyond the existing co-op |  |
-| R16-003 | 21240 | Shared campaign lifecycle and peer participation | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | defer | none | Phase 9: cooperative command and shared campaigns beyond the existing co-op |  |
-| R16-004 | 21253 | Cooperative command and persistent shared campaigns | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | defer | none | Phase 9: cooperative command and shared campaigns beyond the existing co-op |  |
-| R16-005 | 21266 | Authority, synchronization, and conflict resolution | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | extend | partial | Co-op host is the only ledger writer; clients render the read model the host sends. Peers' own sorties are not tracked by airframe yet |  |
-| R16-006 | 21335 | Cooperative squadron rooms, shared briefings, and human crew stations | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes | 9 | defer | none | Phase 9: cooperative command and shared campaigns beyond the existing co-op |  |
+| R16-001 | 21208 | Multiplayer authority, cooperative play, and shared-world synchronization | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | partial | Co-op host is the only ledger writer; clients render the read model the host sends. Peers' own sorties are not tracked by airframe yet |  |
+| R16-002 | 21209 | Unified multiplayer authority, cooperative command, shared campaigns, security, and synchronization | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | none | v337: world war multiplayer on the existing rooms |  |
+| R16-003 | 21240 | Shared campaign lifecycle and peer participation | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | none | v337: world war multiplayer on the existing rooms |  |
+| R16-004 | 21253 | Cooperative command and persistent shared campaigns | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | none | v337: world war multiplayer on the existing rooms |  |
+| R16-005 | 21266 | Authority, synchronization, and conflict resolution | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | partial | Co-op host is the only ledger writer; clients render the read model the host sends. Peers' own sorties are not tracked by airframe yet |  |
+| R16-006 | 21335 | Cooperative squadron rooms, shared briefings, and human crew stations | js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP) | 9 | extend | none | v337: world war multiplayer on the existing rooms |  |
 | R17-001 | 21556 | Player interfaces, reporting, permissions, and information presentation | js/core/game.js — CMPUI; js/campaign/warrecord.js | 9 | defer | none | Phase 9: not started |  |
 | R17-002 | 21557 | Player interface and understandable feedback | js/core/game.js — CMPUI; js/campaign/warrecord.js | 9 | defer | none | Phase 9: not started |  |
 | R17-003 | 21567 | SQUADRON READINESS BOARD AND DAILY DUTY VIEW | js/core/game.js — CMPUI; js/campaign/warrecord.js | 9 | extend | partial | WAR RECORD panel on the CAMPAIGN tab: fields (stock, convoys), roster, sorties, history, losses, audit | cw_ui |

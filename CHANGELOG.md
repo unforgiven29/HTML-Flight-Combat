@@ -1,3 +1,10 @@
+## v337 (step 10: world war multiplayer; reconstruction, memorials and the epilogue)
+- **Multiplayer war** on the existing room system (PeerJS rooms): the **MULTIPLAYER WAR** box on the WORLD WAR map panel takes a room code (HOST / JOIN). The first player hosts: their game runs the war. Guests get the host's war state on joining and every 15 s (their own simulation pauses) and fly for any country at war: the host's side (co-op, friendly) or the other side (PvP).
+- During a host sortie, AI jets and their missiles (5 Hz) and ground units (1 Hz) are sent to guests with absolute sides. Guests' hits on AI jets, ground units and bridges go to the host, which counts the losses in the war; a guest's sortie summary is logged in the war.
+- Each game keeps its own floating origin; every position sent carries the sender's origin and is moved into the receiver's frame, so players can be anywhere on Earth.
+- **After the war** (CONTINUE POSTWAR): reconstruction of infrastructure, transport, energy and industry; the displaced return; memorials 30 days after the end; epilogue notes at 3 months, 1 year and 5 years (estimates, labelled).
+- Tests: `node tests/run.js s10_` (the multiplayer test uses a loopback room; there is no network in the test browser).
+
 ## v336 (step 9: roads, rivers and bridges; unit readiness and supply; natural disasters and emergency response)
 - **Roads and rivers** on the Earth (Natural Earth 1:10m: major and secondary highways, rivers; generalised, so minor roads and small rivers are not there), drawn as ribbons following the terrain.
 - **Bridges** wherever a highway crosses a river; in a country at war they are targets. Destroying one cuts that country's transport and, within 150 km of a front, its units' supply there (front power x0.85 per bridge, at most x0.6) until engineers repair it (about ten war days). Events for both.

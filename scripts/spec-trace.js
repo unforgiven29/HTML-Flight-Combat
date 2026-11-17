@@ -25,7 +25,7 @@ const CH={
  '13':['js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records',9,'defer','Phase 9: not started'],
  '14':['js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab',9,'defer','Phase 9: anti-war presentation, awards, epilogue; loss ledger started'],
  '15':['js/core/game.js — CAMP.airOps, pickHot (scripted AI)',8,'defer','Phase 8: institutional AI not started'],
- '16':['js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes',9,'defer','Phase 9: cooperative command and shared campaigns beyond the existing co-op'],
+ '16':['js/core/game.js — CAMP.publish / applyWorld, campmp.js; world.js host-only ledger writes; js/war/warnet.js world war rooms (host-authoritative war, guests co-op or PvP)',9,'extend','v337: world war multiplayer on the existing rooms'],
  '17':['js/core/game.js — CMPUI; js/campaign/warrecord.js',9,'defer','Phase 9: not started'],
  '18':['tests/run.js (cw_* tests)',2,'implement','Integration scenarios: first slice scenarios tested'],
  '19':['docs/campaign/IMPLEMENTATION.md',0,'existing','Followed'],

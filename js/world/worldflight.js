@@ -143,7 +143,7 @@ WF.start=async function(ap,rwIdx,end){if(startBusy)return;
   try{startBusy=true;await G.loadData();const rw=ap.runways[rwIdx|0]||ap.runways[0];
     note('LOADING TERRAIN AROUND '+(ap.iata||ap.ident)+' …');G.setOrigin(ap.lat,ap.lon);
     const[res]=await Promise.all([G.prefetch(ap.lat,ap.lon,SZ/2,(d,n)=>note('LOADING TERRAIN '+d+' / '+n),30000),loadCells(ap.lat,ap.lon)]);
-    sfx.init();sfx.mute(false);if(net.on)await net.leave();
+    sfx.init();sfx.mute(false);if(net.on&&!net.ww)await net.leave();   /* a world war room stays open (warnet.js) */
     clearWorld();WING.list.length=0;rio.reset();game.scen='WORLD';game.stats={shots:0,hits:0,t0:performance.now()};game.over=false;game.endT=0;game.paused=false;game.result='';game.respawnT=0;game.total=0;
     enter();build();WF.ap=ap;WF.reb=0;
     const r=WF.rwys.find(q=>q.ap===ap&&q.id===(rw.le_id+'/'+rw.he_id))||WF.rwys.find(q=>q.ap===ap)||null;
