@@ -21,7 +21,7 @@
 (function(){'use strict';
 if(typeof Jet==='undefined'||typeof AC==='undefined'){console.warn('[structure] Jet/AC missing');return;}
 const SX=window.STRUCT={pull:1.3,tear:.35,debug:false};   // pull: stick authority above rated G (stays under the 1.5x ultimate, so one hard pull overstresses but does not instantly fold a wing); tear: seconds above ultimate before a wing goes
-Object.defineProperty(SX,'on',{get(){try{return SET.struct!=='OFF';}catch(e){return true;}},set(v){try{SET.struct=v?'REAL':'OFF';}catch(e){}}});
+Object.defineProperty(SX,'on',{get(){try{return SET.struct==='REAL';}catch(e){return true;}},set(v){try{SET.struct=v?'REAL':'OFF';}catch(e){}}});
 const sm=x=>{x=x<0?0:x>1?1:x;return x*x*(3-2*x);};
 const PL=()=>{try{return player;}catch(e){return null;}};
 const f0=v=>Math.round(v);

@@ -917,6 +917,20 @@ test('s27_census: a year of war resolves deaths for soldiers, sailors, aircrew a
     const view=C.view(null);return{kM:T.kM,mM:T.mM,kC:T.kC,nat:T.nat,n:pg.n,mid:e0&&C.nameFor(e0.r,e0.i),pol:pol&&{pop0:pol.pop0,now:st.c.POL.pop},mun,tab:tab.includes('artillery rounds'),pt:pt.includes('THE LIVING ACCOUNT'),view:view.length,audit:WWAR.audit()};});
   ok('a year of war: thousands of military dead, civilians killed, natural deaths',r.kM>1000&&r.kC>0&&r.nat>1000,r);ok('every death has an entry the archive can page to',r.n>=r.kM+r.kC+r.mM&&!!r.mid,r);
   ok('the living account',r.pol&&r.pt,r);ok('munitions counted (strategic expenditure at least)',r.mun>0&&r.tab,r);ok('archive view renders with millions of entries',r.view>500,r);ok('audit clean',r.audit.length===0,r.audit);});
+
+/* ---------- step 25 (v373-v374): the interface, airliners, G toggle, the end of the war restyled ---------- */
+test('s28_ui: sortie setup and debriefing, INDEX tab, controls in SETTINGS, grouped panel, airliners, G toggle, ammo picture','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{const out={};SET.struct='NONE';const P=player;P.hp=100;P.nz=14;try{P.step&&0;}catch(e){}out.gOff=STRUCT&&!STRUCT.on;SET.struct='REAL';
+    localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*30);WARMAP.UI.sel='POL';
+    const L=WSORTIE.basesFor('POL');UI2.setup('POL',L[0].a);out.setup=!!document.getElementById('u2m')&&document.getElementById('u2m').textContent.includes('MISSION');
+    UI2.SU.mis='CAP';UI2.SU.ac='F-16C';await UI2.go();out.flying=WSORTIE.WS.on&&player.type==='F-16C';TRAFFIC.spawn();TRAFFIC.spawn();out.airliners=TRAFFIC.list.length;
+    WSORTIE.finish();out.debrief=!!document.getElementById('u2m')&&document.getElementById('u2m').textContent.includes('DEBRIEFING');UI2.close();
+    out.index=!!document.querySelector('[data-tab="index"]');UI2.renderIndex();out.ixN=(document.getElementById('pIndex')||{}).innerHTML.length;
+    out.ctl=!!document.getElementById('ctlSec');
+    const el=document.getElementById('wmWar')||document.body.appendChild(Object.assign(document.createElement('div'),{id:'wmWar'}));NATPANEL.render();WARMAP.after.forEach(f=>{try{f();}catch(e){}});out.grp=!!document.querySelector('#wsNat .grp');
+    WWAR.step(24*60);WWAR.diplo.end('ARMISTICE','t');WWAR.endscreen.open();WWAR.endscreen.go(7);await new Promise(r=>setTimeout(r,300));const cv=document.getElementById('ammoCv');out.ammo=!!cv&&cv.height>100;out.rows=WWAR.endscreen.ammoTotals().length;WWAR.endscreen.close();return out;});
+  ok('over-G stress can be switched off entirely',r.gOff,r);ok('sortie setup menu before flying, chosen aircraft flown',r.setup&&r.flying,r);ok('debriefing after the sortie',r.debrief,r);
+  ok('INDEX tab with entries; controls section in SETTINGS',r.index&&r.ixN>2000&&r.ctl,r);ok('country panel grouped',r.grp,r);ok('ammunition used drawn lined up',r.ammo&&r.rows>0,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
