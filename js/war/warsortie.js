@@ -45,7 +45,8 @@ const xz=(lat,lon)=>G.ll2xz(lat,lon);
 function placeFront(){const n=WS.front;if(!n)return;const sg=n.enemyIsB?1:-1,s=n.s;
   // along the line: three points 8 km apart; the enemy holds the side the normal points to when it is country b
   const tx=-s.ny,ty=s.nx;   // tangent (km frame: east, north)
-  for(const k of[-1,0,1]){const base={lat:n.p.lat+ty*k*8/111.2,lon:n.p.lon+tx*k*8/(111.2*Math.cos(n.p.lat*D))};
+  // gfight.js builds the ground war from the brigades actually at this front; the generic groups below are the fallback
+  if(!(window.GFIGHT&&GFIGHT.spawn(n,sg,tx,ty)))for(const k of[-1,0,1]){const base={lat:n.p.lat+ty*k*8/111.2,lon:n.p.lon+tx*k*8/(111.2*Math.cos(n.p.lat*D))};
     // vehicles look like the side that owns them: flying for REDFOR, the enemy armour is western and yours is not
     const red=W.st.c[WS.me].side==='R',eK=red?['MBTB','MBTB','IFVB','IFVB']:['MBTR','MBTR','IFVR','IFVR'],fK=red?['MBTR','IFVR','IFVR']:['MBTB','IFVB','IFVB'];
     for(const[side,off,kinds]of[[1,1.6*sg,eK],[0,-1.6*sg,fK]]){
@@ -69,7 +70,7 @@ function spawnFlight(side,a3,from,toLat,toLon,role){const types=typesOf(a3,W.st.
   for(let i=0;i<2;i++){let j;try{j=new Jet(side,type,side?foeLoad(type,era):getLoad(era,type),era);}catch(e){return out;}
     j.spawn(p.x+(i?400:0),Math.max(groundAt(p.x,p.z)+1500,role==='CAP'?7500:6000)+i*100,p.z+(i?300:0),hd,230);j.ai=new AI(j);j.ai.skill(side?+SET.skill:1);
     j.ai.route=role==='CAP'?[{x:t.x-9000,z:t.z,alt:7500},{x:t.x+9000,z:t.z,alt:7500}]:[{x:t.x,z:t.z,alt:6000}];j.ai.wi=0;j.ai.engaged=false;j.ai.det=role==='CAP'?60000:90000;
-    j.callsign=(side?'BANDIT ':'')+(G.byA3.get(a3)?G.byA3.get(a3).a2:a3)+' '+type;j._ws=a3;WS.jets.add(j);(side?WS.enemy:WS.friend).push(j);out.push(j);}
+    const sq=W.ob&&W.ob.squadronFor(a3,from.ident);j._sqn=sq&&sq.id;j.callsign=(side?'BANDIT ':'')+(G.byA3.get(a3)?G.byA3.get(a3).a2:a3)+' '+type+(sq&&sq.num?' · '+sq.name:'');j._ws=a3;WS.jets.add(j);(side?WS.enemy:WS.friend).push(j);out.push(j);}
   return out;}
 function airTick(dt){if(!WS.on||!player||!game.active)return;const me=W.st.c[WS.me];WS.spawnT-=dt;WS.capT-=dt;
   const alive=L=>L.filter(j=>j.alive).length,th=W.st.th.filter(t=>{const T=W.THEATRES.find(q=>q.id===t.id);return WS.base.lat>=T.lat[0]&&WS.base.lat<=T.lat[1];})[0];
@@ -91,9 +92,9 @@ function credit(a3,kind,what){const p=W.st&&W.st.c[a3];if(!p)return;
   if(kind==='air'){p.air=Math.max(0,p.air-1);p.lostAir+=1;}else{const v=what==='SITE'?.15:.03;p.gnd=Math.max(0,p.gnd-v);p.lostGnd+=v;   // a vehicle is a small share of a brigade
     if(WS.front&&W.st.c[WS.me]){const s=WS.front.s;s.off+=(a3===WS.front.f.a?-1:1)*.05;}}}   // a few dozen metres of ground for the side that won the fight
 {const _k=Jet.prototype.kill;Jet.prototype.kill=function(why,src){const was=this.alive,r=_k.apply(this,arguments);
-  if(was&&!this.alive&&WS.on&&W.st)try{if(this===player){credit(WS.me,'air');WS.lost=1;}else if(this._ws){credit(this._ws,'air');if(src===player)WS.kills.air++;}}catch(e){console.warn('[ws]',e);}return r;};}
+  if(was&&!this.alive&&WS.on&&W.st)try{const sq=this._sqn&&W.st.ob&&W.st.ob.u[this._sqn];if(this===player){const ps=W.ob&&W.ob.squadronFor(WS.me,WS.base.ident);if(ps)W.unitLoss(ps,1);else credit(WS.me,'air');WS.lost=1;}else if(this._ws){if(sq)W.unitLoss(sq,1);else credit(this._ws,'air');if(src===player)WS.kills.air++;}}catch(e){console.warn('[ws]',e);}return r;};}
 if(typeof GUnit!=='undefined'){const _k=GUnit.prototype.kill;GUnit.prototype.kill=function(src){const was=this.alive,r=_k.apply(this,arguments);
-  if(was&&!this.alive&&WS.on&&this._ws&&W.st)try{credit(this._ws,'gnd',this.kind==='SURN'||this.kind==='TEL'?'SITE':'');if(src===player)WS.kills.gnd++;}catch(e){console.warn('[ws]',e);}return r;};}
+  if(was&&!this.alive&&WS.on&&this._ws&&W.st)try{const bd=this._bde&&W.st.ob&&W.st.ob.u[this._bde];if(bd)W.unitLoss(bd,.01);else credit(this._ws,'gnd',this.kind==='SURN'||this.kind==='TEL'?'SITE':'');   /* a vehicle of a known brigade: about 1 % of it */if(src===player)WS.kills.gnd++;}catch(e){console.warn('[ws]',e);}return r;};}
 function finish(){if(!WS.on)return;WS.on=false;W.run=false;W.speed=WS.speed0||6;const me=W.st&&W.st.c[WS.me];
   if(me)W.emit('SORTIE',{e:[WS.me],txt:'A '+me.n+' '+(player&&player.type||'')+' sortie from '+WS.base.name+': '+WS.kills.air+' aircraft and '+WS.kills.gnd+' ground targets destroyed'+(WS.lost?'; the aircraft was lost':'')+(WS.task?' · tasking: '+WS.task.k:'')+'.'});
   try{localStorage.setItem('viper.ww',JSON.stringify(W.st));}catch(e){}WS.enemy=[];WS.friend=[];WS.ground=[];WS.jets.clear();}

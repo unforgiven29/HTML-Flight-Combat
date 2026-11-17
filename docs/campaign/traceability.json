@@ -2217,10 +2217,13 @@
    "line": 4863,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
+   "tests": [
+    "s7_orbat",
+    "s7_ground"
+   ]
   },
   {
    "id": "R06-005",
@@ -2360,12 +2363,12 @@
    "line": 5139,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {
@@ -2408,12 +2411,12 @@
    "line": 5215,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {
@@ -2489,12 +2492,12 @@
    "line": 5417,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v334 (js/war/orbat.js, gfight.js): squadrons at real airfields, brigades and battalions on fronts as the allocation of national totals; ground combat on sorties. Not yet: naval forces, maintenance and logistics per unit, training pipeline",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s7_orbat",
+    "s7_ground"
    ]
   },
   {

@@ -546,6 +546,22 @@ test('s6_justice: cases move through the stages; judgments only after the war; n
     if(!st.over)WWAR.diplo.end('ARMISTICE','test');st.post=true;for(const c of L.cases)if(c.stage==='CHARGE')c.next=st.t;WWAR.step(24*30);
     return{stages:[...stages],judgedEarly,prelim,judg:L.cases.filter(c=>c.stage==='JUDGMENT').length,charged:L.cases.some(c=>c.hist.some(h=>/charges brought/.test(h[1])))};});
   ok('cases reach several stages',r.stages.length>=3,r.stages);ok('no judgment while the war goes on',!r.judgedEarly);ok('early stages stay preliminary',r.prelim);ok('after the war, charged cases are judged',!r.charged||r.judg>0,r);});
+
+/* ---------- step 7 (v334): order of battle, ground combat in sorties ---------- */
+test('s7_orbat: squadrons at real bases and brigades on fronts always add up to each country\'s strength','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EVEN');const st=WWAR.st,U=WWAR.ob.units('RUS');
+    const sq=U.filter(u=>u.kind==='SQN'&&u.base),bde=U.filter(u=>u.kind==='BDE'&&u.front);const a0=WWAR.audit();WWAR.step(24*90);
+    return{sq:sq.length,bde:bde.length,real:sq.every(u=>WGEO.airports.some(a=>a.ident===u.base&&a.mil)),a0,a1:WWAR.audit(),status:st.ev.some(e=>e.ty==='UNIT')};});
+  ok('squadrons at real military airfields',r.sq>5&&r.real,r.sq);ok('brigades assigned to fronts',r.bde>3,r.bde);ok('allocation equals the aggregate, before and after 90 days',r.a0.length===0&&r.a1.length===0,{a0:r.a0,a1:r.a1});});
+test('s7_ground: tanks, IFVs and infantry from the front\'s brigades fight; losses come off their brigades; flights come from squadrons','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;game.ac='F-16C';const L=WSORTIE.basesFor('FIN');await WSORTIE.start('FIN',L[0].a);const G=GFIGHT.GF;
+    const ids=[...new Set(G.units.map(u=>u._bde))],sum=()=>ids.reduce((t,id)=>t+st.ob.u[id].str,0),s0=sum();
+    const E=G.units.filter(u=>u.side===1),F=G.units.filter(u=>u.side===0);for(const u of E){u.pos.x=F[0].pos.x+700+Math.random()*300;u.pos.z=F[0].pos.z+Math.random()*300;u.mesh.position.copy(u.pos);}
+    for(let i=0;i<160;i++)GFIGHT.tick(.5);const dead=G.units.filter(u=>!u.alive).length;
+    WSORTIE.WS.spawnT=0;await new Promise(r=>setTimeout(r,2300));const ej=WSORTIE.WS.enemy[0],sq=ej&&st.ob.u[ej._sqn],q0=sq&&sq.str;if(ej)ej.kill('SHOT',player);
+    const o={n:G.units.length,sides:[E.length,F.length],named:G.units.every(u=>/Coy, .* Bn .*Brigade/.test(u.callsign)),dead,drop:s0-sum(),sqLoss:sq?q0-sq.str:null,audit:WWAR.audit()};await start('RANGE');return o;});
+  ok('both sides on the ground, from named brigades',r.n>10&&r.sides[0]>0&&r.sides[1]>0&&r.named,r);ok('they fight: vehicles destroyed',r.dead>0,r.dead);
+  ok('losses come off their brigades',r.drop>0,r.drop);ok('a kill comes off the enemy squadron',r.sqLoss===1,r.sqLoss);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
