@@ -67,7 +67,7 @@ function civil(){const st=W.st,x=X();for(const p of Object.values(st.c)){const w
   const short=p.ecn?(1-p.ecn.food)+(1-p.ecn.fuel/60):0;c.crime=cl(c.crime+short*.004-.002,0,1);
   if(war&&!x.emb[p.a3]){x.emb[p.a3]=st.t;W.emit('EVACUATION',{e:[p.a3],txt:'Embassies in '+p.n+' reduce their staff and help their citizens leave by road, rail and charter flights while borders are still open.'});}
   if(c.crime>.4&&rn()<.004)W.emit('JUSTICE',{e:[p.a3],txt:'Police in '+p.n+' break up a ring selling stolen fuel and food aid on the black market; officials are among those charged with corruption.'});
-  if(war&&c.vol>.3&&rn()<.003)W.emit('CIVIL',{e:[p.a3],txt:'Volunteers in '+p.n+' run shelters, field kitchens and transport for the displaced; mutual-aid networks link towns across the country.'});}
+  if(war&&c.vol>.3&&rn()<.003)W.emit('VOLUNTEERS',{e:[p.a3],txt:'Volunteers in '+p.n+' run shelters, field kitchens and transport for the displaced; mutual-aid networks link towns across the country.'});}
   if(!st.over&&rn()<.02){const f=st.fronts.find(q=>!q.cf);if(f){x.corr++;W.emit('PRESS',{e:[f.a,f.b],cf:'REPORTED',txt:'A war correspondent (fictional) reports from near the '+st.c[f.a].n+' / '+st.c[f.b].n+' front: damaged villages, a field hospital, soldiers waiting. Journalists are civilians and must be protected.'});}}}
 /* ------------------------------------------------------------------ surrender of cut-off units */
 function surrender(){const st=W.st,x=X();if(st.over)return;for(const f of st.fronts){if(f.cf||rn()>.004)continue;const A=st.c[f.a],B=st.c[f.b];const weak=A.gnd<B.gnd*.5?A:B.gnd<A.gnd*.5?B:null;if(!weak)continue;const o=weak===A?B:A;x.surr++;
