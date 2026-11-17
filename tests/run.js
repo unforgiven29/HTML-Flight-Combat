@@ -1040,6 +1040,32 @@ test('s36_green: grass and bushes grow outside town, not in it; laying grass nev
     S.pos.set(S.village.x,S.pos.y,S.village.z);for(let i=0;i<60;i++){const t=Date.now();I.step(1/30);mx=Math.max(mx,Date.now()-t);}const in1=count(S.grass);
     return{out:out1,inn:in1,bush:count(S.bush),worst:mx};});
   ok('grass in the fields',r.out.n>1500,r.out);ok('no grass in town',r.inn.bad===0,r.inn);ok('no bushes in town',r.bush.bad===0&&r.bush.n>300,r.bush);ok('no stall laying grass',r.worst<200,r.worst);});
+test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarrel, laser), armour pieces, saved kits','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');localStorage.removeItem('viper.kits');await WWAR.newWar();const I=INFANTRY,K=I.K,out={};
+    out.iss=I.issued('POL');out.nGuns=Object.keys(I.GUNS).length;out.nSides=Object.keys(I.SIDES).length;
+    // menu: pick a class, a model, attachments, armour pieces, save and load
+    I.kitMenu('POL',{name:'t'});const click=sel=>{const b=document.querySelector('[data-ik="'+sel+'"]');if(!b)throw new Error('no '+sel);b.click();};
+    click('pri:DMR');click('gun:SVD');click('att.optic:X4');click('att.muzzle:SUP');click('att.under:BIPOD');click('att.laser:VIS');click('side:DEAGLE');click('satt.optic:RDS');click('helm:VISOR');click('vest:P4');click('extra:FULL');
+    out.k={pri:K.pri,gun:K.gun,att:K.att,side:K.side,satt:K.satt,helm:K.helm,vest:K.vest,extra:K.extra};click('kitsave:0');
+    click('pri:SNP');out.snpOptic=K.att.optic;out.snpUnder=document.querySelector('[data-ik="att.under:UGL"]')===null;click('kitload:0');out.loaded=K.gun==='SVD'&&K.att.optic==='X4';
+    out.card=/SVD/.test(document.querySelector('.ks').textContent)&&/Suppressor/.test(document.querySelector('.ks').textContent);document.getElementById('u2m').remove();
+    // handling
+    const a=I.makeGun('RIFLE','AK74M',{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'}),b=I.makeGun('RIFLE','AK74M',{optic:'V16',muzzle:'SUP',under:'GRIP',laser:'VIS'});
+    out.h={sup:b.dmg<a.dmg&&b.quiet,zoom:b.ads===6&&b.vari>1,grip:b.moveK<1,laser:b.hipK<1,am:I.makeGun('SNP','M82',{}).pen};
+    // in battle: the gun you chose, the launcher, burst, armour by zone
+    const S=I.start({...K,a3:'POL',ins:'APC',gun:'M16A4',pri:'RIFLE',att:{optic:'RDS',muzzle:'COMP',under:'UGL',laser:'VIS'},side:'G18',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'LIGHT'},helm:'VISOR',vest:'HEAVY',extra:'NONE'});I.land();S.hp=1e9;S.dT=1e9;
+    out.b={gun:S.wp.pri.n,side:S.wp.side.n,ugl:S.uglN,att:!!S.vms.rifle.userData.att};
+    S.fire=true;let n=0;for(let i=0;i<20;i++){S.cool=0;S.reload=0;const n0=S.shots;I.shoot();if(S.shots>n0)n++;if(!S.fire)break;}out.burst=n;
+    const g0=S.gnades.length;I.ugl();out.uglFired=S.gnades.length===g0+1&&S.uglN===3;
+    S.hp=1000;const z={head:0,torso:0,limb:0},dm={head:0,torso:0,limb:0};for(let i=0;i<400;i++){const h=S.hp;I.hurt(20,'bullet');z[S.lastZone]++;dm[S.lastZone]+=h-S.hp;S.hp=1000;}
+    out.zones=z;out.per={head:dm.head/z.head,torso:dm.torso/z.torso,limb:dm.limb/z.limb};out.spd=S.arm.spd;
+    I.step(1/30,3);out.laser=S.lzLine.visible;I.stop(false);return out;});
+  ok('dozens of models and sidearms',r.nGuns>=35&&r.nSides>=10,r);ok('issued rifle found for Poland',r.iss==='GROT',r.iss);
+  ok('menu picks class, model, attachments, sidearm, armour pieces',r.k.gun==='SVD'&&r.k.att.optic==='X4'&&r.k.att.muzzle==='SUP'&&r.k.side==='DEAGLE'&&r.k.satt.optic==='RDS'&&r.k.helm==='VISOR'&&r.k.vest==='P4'&&r.k.extra==='FULL',r.k);
+  ok('sniper gets a scope, no grenade launcher',r.snpOptic==='X8'&&r.snpUnder,r);ok('saved kit loads back',r.loaded);ok('loadout card shows it',r.card);
+  ok('attachments change handling',r.h.sup&&r.h.zoom&&r.h.grip&&r.h.laser&&r.h.am==='AMR',r.h);
+  ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='Glock 18'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
+  ok('hits by zone, each piece protects its own',r.zones.head>20&&r.zones.limb>60&&r.per.torso<20*.4&&r.per.limb>20*.6,r);ok('heavy armour slows you',r.spd<.85,r.spd);ok('laser beam shown',r.laser);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
