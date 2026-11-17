@@ -26,5 +26,13 @@ if(window.WWAR&&WWAR.strategic){const S=WWAR.strategic.S;const _d=WWAR.daily;WWA
   if(window.NATPANEL&&NATPANEL.tabs&&NATPANEL.tabs.STRATEGIC){const _t=NATPANEL.tabs.STRATEGIC;NATPANEL.tabs.STRATEGIC=p=>_t(p).replace('never, under this scenario','possible').replace('possible under the scenario switch','possible');}}
 /* ------------------------------------------------------------------ military bases only */
 if(window.WF){const _s=WF.start;WF.start=async function(ap){if(ap&&!ap.mil){if(typeof flash==='function')flash('MILITARY AIRFIELDS ONLY · '+String(ap.name||ap.ident).toUpperCase()+' IS A CIVIL AIRPORT',3500);const el=document.getElementById('wmStatus');if(el)el.textContent='Pick a military airfield: civil airports cannot be used as a starting point.';return;}return _s.apply(this,arguments);};}
-window.FIXES={v:371};
+
+/* ------------------------------------------------------------------ wingmen lined up on the real runway */
+// spawnWingmen() places runway wingmen by the classic airfield (heading 0). In world flight the runway is real and has its
+// own heading: the wingmen are put on that runway behind and beside you, pointing down it, wheels on the surface.
+if(typeof spawnWingmen==='function'){const _w=spawnWingmen;spawnWingmen=function(n,runway){const r=_w.apply(this,arguments);
+  try{if(window.WF&&WF.on&&runway&&typeof player!=='undefined'&&player&&typeof WING!=='undefined'){const P=player,hd=P.hdg,f=new THREE.Vector3(Math.sin(hd*Math.PI/180),0,-Math.cos(hd*Math.PI/180)),rr=new THREE.Vector3(-f.z,0,f.x);
+    WING.list.forEach((w,i)=>{const sx=[-18,18,0][i%3],sz=[30,30,75][i%3]+60*Math.floor(i/3);const x=P.pos.x+rr.x*sx-f.x*sz,z=P.pos.z+rr.z*sx-f.z*sz,y=groundAt(x,z);
+      w.spawn(x,y+GH,z,hd,0);w.gHdg=hd;w.onGnd=true;w.thr=0;w.gearPos=1;w.gearCmd=1;if(w.ai){w.ai.tx=x;w.ai.tz=z;w.ai.rwHdg=hd;}});}}catch(e){console.warn('[fixes] wingmen',e);}return r;};}
+window.FIXES={v:374};
 })();

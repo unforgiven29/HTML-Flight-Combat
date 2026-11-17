@@ -1,3 +1,12 @@
+## v373–v374 (the interface; airliners; G toggle; the end of the war, restyled)
+- **Sortie setup** before every world-war sortie: aircraft (your country's types first, then the hangar), mission (AUTO, CAP, CAS, SEAD, STRIKE, ESCORT, INTERCEPT, ANTI-SHIP), target, escorts, runway or carrier. **Debriefing** after: mission, results, your aircraft, munitions you used, events.
+- **INDEX tab** on the main menu: searchable aircraft, weapons and countries. **Controllers** section in SETTINGS (axis setup). **Country panel grouped** into OVERVIEW · GOVERNMENT · MILITARY · RECORD.
+- **Over-G stress toggle**: REALISTIC (wings can fail) / SIMPLE (damage over limit) / OFF (no G damage).
+- **Civilian airliners** fly between civil airports in world flight, at cruise altitude, kept 150 km from the fronts; never targets.
+- **Wingmen lined up on real runways** (world flight runways have their own heading; wingmen were placed for the classic airfield).
+- **The end of the war, restyled**: chapter cards that fade in, round chapter markers, a progress bar, readable type; "What was spent" draws all the ammunition used lined up by kind, each mark standing for a stated number.
+- Tests: `node tests/run.js s28_`.
+
 ## v371–v372 (corrections; every person accounted for; munitions ledger)
 - **Anti-ship missiles by aircraft** (js/war/fixes.js): added F/A-18E Harpoon, Mirage F1 Exocet, Su-24M and MiG-29SMT Kh-31A, Sea Harrier FRS.1 / FA2 Sea Eagle; removed Harpoon from the F-15E / F-15EX and the air-launched P-800 from the Su-30SM, Su-35S and Su-34.
 - **Nuclear warfare is always possible** (no switch); still shown abstractly.

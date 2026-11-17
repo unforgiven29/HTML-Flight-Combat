@@ -744,7 +744,7 @@ class Jet{
     this.rr=lerp(this.rr,c.r*rMax*auth+rock+this.rBias()+this.spinDir*dp.spin*dep,1-Math.exp(-dt*7));
     const vw=this.ac.vstol&&this.vtHook?this.vtHook(dt,a,c,T,m,f,u,rt,V,pr,yr):null;if(vw)this.rr=vw.rr;
     this.nz=(a.dot(u)+G*u.y)/G;if(this===player)this.maxNz=Math.max(this.maxNz,this.nz);
-    if(!(window.STRUCT&&STRUCT.on)&&this.nz>(ac.gUlt||9.6)){this.hp-=(this.nz-(ac.gUlt||9.6))*6*dt;if(this===player&&Math.random()<dt*2)flash('OVER-G',800);if(this.hp<=0){this.kill('AIRFRAME FAILURE');return;}}
+    if(SET.struct!=='NONE'&&!(window.STRUCT&&STRUCT.on)&&this.nz>(ac.gUlt||9.6)){this.hp-=(this.nz-(ac.gUlt||9.6))*6*dt;if(this===player&&Math.random()<dt*2)flash('OVER-G',800);if(this.hp<=0){this.kill('AIRFRAME FAILURE');return;}}
     if(this===player)this.gEffects(dt);
     this.vel.addScaledVector(a,dt);this.pos.addScaledVector(this.vel,dt);
     _w.set(vw?vw.pr:pr,-(vw?vw.yr:yr),0);const wl=_w.length();if(wl>1e-6){_dq.setFromAxisAngle(_w.divideScalar(wl),wl*dt);this.q.multiply(_dq);}

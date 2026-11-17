@@ -184,7 +184,7 @@
         </div>
         <div class="sgrp"><h3>GAMEPLAY</h3>
           <div class="fld"><span class="lb">BANDIT SKILL (MERGE &amp; GUNS)</span><div class="seg" data-s="skill" role="group" aria-label="Bandit skill"><button data-v="0">ROOKIE</button><button data-v="1">VETERAN</button><button data-v="2">ACE</button></div></div>
-          <div class="fld"><span class="lb">AIRFRAME OVERSTRESS · NON-FBW JETS CAN BREAK</span><div class="seg" data-s="struct" role="group" aria-label="Airframe overstress"><button data-v="REAL">REALISTIC</button><button data-v="OFF">OFF (CLASSIC LIMIT)</button></div></div>
+          <div class="fld"><span class="lb">OVER-G STRESS</span><div class="seg" data-s="struct" role="group" aria-label="Over-G stress"><button data-v="REAL">REALISTIC (WINGS CAN FAIL)</button><button data-v="OFF">SIMPLE (DAMAGE OVER LIMIT)</button><button data-v="NONE">OFF (NO G DAMAGE)</button></div></div>
           <div class="fld"><span class="lb">G EFFECTS ON THE PILOT</span><div class="seg" data-s="geff" role="group" aria-label="G effects"><button data-v="FULL">REALISTIC</button><button data-v="REDUCED">REDUCED</button><button data-v="OFF">OFF</button></div></div>
           <div class="fld"><span class="lb">MISSILE RESULT CALLS</span><div class="seg" data-s="calls" role="group" aria-label="Missile result calls"><button data-v="ON">ON</button><button data-v="OFF">OFF</button></div></div>
           <div class="mprow"><button class="srst" id="setReset">RESET SETTINGS</button></div>
@@ -420,6 +420,7 @@
 <script src="js/world/wtrees.js?v=333"></script>
 <script src="js/world/wnet.js?v=336"></script>
 <script src="js/world/wlod.js?v=367"></script>
+<script src="js/world/traffic.js?v=374"></script>
 <!-- ── WAR · the world war, strategic layer (spec ch.05), and its map layer ── -->
 <script src="js/war/worldwar.js?v=332"></script>
 <script src="js/war/warmap.js?v=331"></script>
@@ -476,6 +477,7 @@
 <script src="js/war/localroom.js?v=370"></script>
 <script src="js/war/fixes.js?v=371"></script>
 <script src="js/war/census.js?v=372"></script>
+<script src="js/war/ui2.js?v=373"></script>
 <script src="js/war/warnet.js?v=337"></script>
 <!-- ── CAMPAIGN WORLD · event ledger, airframes, aircrew, supply, war record (spec v49 phases 0-2). Must load LAST: it wraps CAMP, the campaign layers and Jet.kill ── -->
 <script src="js/campaign/world.js?v=325"></script>
