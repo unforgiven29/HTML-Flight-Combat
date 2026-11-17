@@ -1021,8 +1021,8 @@ test('s35_fortify: building types with interiors, collapse, bunkers / dugouts / 
     // your FPV: placed, the operator lifts it and strikes the enemy IFV
     for(const e of S.them)e.alive=false;S.calls=9;const iv=S.veh.find(v=>v.side==='E'&&!v.tank&&v.alive);const d=I.placeFpv();S.pos.set(iv.x+30,S.pos.y,iv.z+30);d.m.position.set(iv.x+25,d.m.position.y,iv.z+25);I.step(1/30,30*20);out.fpv=!d.alive&&S.armLog.some(a=>a.wpn==='FPV');
     // medevac: a wounded man is flown out, you are treated
-    for(const v of S.veh)if(v.side==='E')v.alive=false;S.airT=1e9;S.air.length=0;S.heliT=1e9;S.waveT=1e9;const u=S.us[0];u.alive=false;u.down=true;u.m.position.copy(S.pos);S.hp=40;I.medevac();const lz=S.med.lz;S.pos.set(lz.x+3,S.pos.y,lz.z);u.m.position.set(lz.x+5,u.m.position.y,lz.z);I.step(1/30,30*30);out.evac=S.evac>=1&&S.hp===100;out.med={evac:S.evac,hp:S.hp,res:S.res,st:S.med&&S.med.st,medN:S.medN};
-    I.stop(false);
+    for(const v of S.veh)if(v.side==='E')v.alive=false;S.airT=1e9;S.air.length=0;S.heliT=1e9;S.waveT=1e9;const u=S.us[0];u.alive=false;u.down=true;u.m.position.copy(S.pos);S.hp=40;I.medevac();const lz=S.med.lz;S.pos.set(lz.x+3,S.pos.y,lz.z);u.m.position.set(lz.x+5,u.m.position.y,lz.z);I.step(1/30,30*40);out.evac=S.evac>=1&&S.res==='EVACUATED';out.med={evac:S.evac,hp:S.hp,res:S.res,st:S.med&&S.med.st,medN:S.medN};
+    document.querySelectorAll('#u2m').forEach(x=>x.remove());I.stop(false);
     // the live world: real blocks become enterable buildings; you can walk off well beyond the battle
     game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'APC',mis:'ATTACK'});S=I.S;I.land();S.hp=1e9;S.dT=1e9;
     out.real=S.hidden.length;S.keys.KeyW=true;S.yaw=Math.PI/2;for(let i=0;i<30*60;i++)I.step(1/30);S.keys.KeyW=false;out.far=Math.round(Math.hypot(S.pos.x,S.pos.z-200));
@@ -1030,7 +1030,7 @@ test('s35_fortify: building types with interiors, collapse, bunkers / dugouts / 
   ok('building types',['HOUSE','CHURCH'].every(k=>r.kinds.includes(k))&&r.kinds.some(k=>k==='WAREHOUSE'||k==='FACTORY'||k==='APARTMENTS'),r.kinds);ok('interiors furnished',r.furn);ok('grass',r.grass);
   ok('bunkers, dugout, command posts both sides',['BUNKER:E','DUGOUT:E','COMMAND POST:E','COMMAND POST:F'].every(k=>r.forts.includes(k)),r.forts);
   ok('RPG on tank front does not go through',/RICOCHET|NO PENETRATION/.test(r.front),r.front);ok('bullet bounces off',/RICOCHET|NO PENETRATION/.test(r.bullet),r.bullet);ok('ATGM in the rear penetrates and damages',/PENETRATED/.test(r.rear)&&r.dmg.length>0,r);ok('overview diagram',r.panel);
-  ok('house collapses',r.house);ok('bunker destroyed',r.bunker);ok('enemy radio silenced',r.silent);ok('your FPV strikes armour',r.fpv);ok('medevac',r.evac);
+  ok('house collapses',r.house);ok('bunker destroyed',r.bunker);ok('enemy radio silenced',r.silent);ok('your FPV strikes armour',r.fpv);ok('medevac flies the wounded and you out',r.evac,r.med);
   ok('live world: real buildings replaced',r.real>0,r.real);ok('explore beyond the battle',r.far>250,r.far);});
 test('s36_green: grass and bushes grow outside town, not in it; laying grass never stalls a frame','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
@@ -1120,6 +1120,28 @@ test('s41_conditions: battle time and weather follow the war / campaign; crew se
   ok('night at the place by the war clock',r.dark&&(r.tod<5||r.tod>=21),r);ok('the theatre\'s snow',r.snow&&r.pp,r);ok('commander in the hatch',r.cmdr);
   ok('detonation throws the turret down beside the hull',r.det&&r.tuY<1,r);ok('commander gone after it',r.cmdrGone);ok('crew figures in the 3D overview',r.figs>=3,r.figs);
   ok('campaign battle uses the campaign weather and clock',r.camp==='STORM campaign'&&r.campTod,r);});
+test('s42_front: trench lines; push, take and dig in; counter-attack pushes us back; fall back; command post and planning; ride an APC; downed and evacuated','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT'});I.land();S.hp=1e9;S.dT=1e9;S.waveT=1e9;S.airT=1e9;
+    out.lines=S.lines.map(l=>l.own).join('');out.cur=S.cur;
+    // push: the offensive sends us at line 3; clear it, put two of ours in it
+    I.offensive();out.push=S.push;const N=S.lines[2];for(const u of S.them)if(Math.abs(u.m.position.z-N.z)<15)u.alive=false;S.us.slice(0,3).forEach((u,i)=>{u.m.position.set(-20+i*10,u.m.position.y,N.z);});I.frontStep(1/30);
+    out.taken=S.cur===2&&S.lines[2].own==='F';out.dig=S.digQ.length;const d0=S.dug;for(let i=0;i<30*15;i++)I.frontStep(1/30);out.dug=S.dug-d0;
+    // a counter-attack: three of theirs in our line, none of ours: back to the older trench
+    for(const u of S.us){if(Math.abs(u.m.position.z-S.lines[2].z)<12)u.m.position.z+=60;}S.pos.z=S.lines[2].z+80;const att=S.them.filter(u=>u.alive).slice(0,3);if(att.length<3){for(let i=0;i<3;i++)I.counter();}
+    S.them.filter(u=>u.alive).slice(0,3).forEach((u,i)=>u.m.position.set(-10+i*8,u.m.position.y,S.lines[2].z));I.frontStep(1/30);out.pushedBack=S.cur===1;
+    I.fallBack(true);out.fellBack=S.cur===0;
+    // command post behind the line; the planning table; resupply; a vehicle to ride
+    S.pos.set(0,0,S.lines[0].z+60);S.pos.y=S.lines[0].slots[0].y+1.7;for(const u of S.them)if(u.m.position.distanceTo(S.pos)<80)u.alive=false;S.yaw=0;
+    const c=I.buildCP();out.cp=!!c&&c.parts.length>15&&!!c.plan;S.pos.set(c.cx,S.pos.y,c.cz);I.interact();out.plan=!!document.querySelector('#iPan [data-ip="off"]');
+    const g0=S.gren;S.gren=0;I.doPan('sup');out.sup=S.gren>=4;I.panel('plan',c);I.doPan('veh');for(let i=0;i<30*120&&S.taxiCall;i++)I.step(1/30);const taxi=S.veh.find(v=>v.taxi);out.taxi=!!taxi&&!taxi.goal;
+    S.pos.set(taxi.x+2,S.pos.y,taxi.z);I.interact();out.ride=!!document.querySelector('#iPan [data-ip="r:front"]');I.doPan('r:front');out.riding=!!S.ride;for(let i=0;i<30*90&&S.ride;i++)I.step(1/30);out.arrived=!S.ride&&Math.abs(S.pos.z-(S.lines[0].z+18))<25;
+    // downed: a medevac comes to you and takes you out
+    S.hp=10;I.hurt(30,'blast');out.downed=S.downed;for(let i=0;i<30*45&&!S.res;i++)I.step(1/30);out.res=S.res;
+    document.querySelectorAll('#u2m,#iPan').forEach(x=>x.remove());I.stop(false);return out;});
+  ok('four trench lines, ours and theirs',r.lines==='FFEE'&&r.cur===1,r);ok('offensive pushes',r.push);ok('enemy trench taken',r.taken,r);ok('engineers dig it in',r.dig>20&&r.dug>5,r);
+  ok('counter-attack pushes us back to the older trench',r.pushedBack,r);ok('fall back on order',r.fellBack);ok('command post built with planning table',r.cp&&r.plan,r);ok('resupply',r.sup);
+  ok('called APC arrives',r.taxi,r);ok('ride menu and the ride to the front',r.ride&&r.riding&&r.arrived,r);ok('downed, medevac takes you out',r.downed&&r.res==='EVACUATED',r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
