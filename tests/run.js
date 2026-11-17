@@ -622,6 +622,21 @@ test('s10_postwar: reconstruction, memorials and the epilogue','F-16C',async p=>
     WWAR.diplo.end('ARMISTICE','test');st.post=true;const i0=pl.ecn.infra;WWAR.step(24*400);
     return{i0,i1:pl.ecn.infra,mem:!!st.pw.mem,epi:Object.keys(st.pw.done).length,est:st.ev.filter(e=>e.ty==='EPILOGUE').every(e=>e.cf==='ESTIMATED')};});
   ok('infrastructure rebuilt',r.i1>r.i0+.1,r);ok('memorials',r.mem);ok('epilogue notes at 3 months and 1 year',r.epi>=2,r);ok('estimates labelled',r.est);});
+
+/* ---------- step 11 (v338): chapter 6 armed forces ---------- */
+test('s11_mil: mobilization, training, command, munitions, airbases, hazards','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const L=Object.values(st.c).filter(q=>q.side&&(q.al==='CORE'||q.al==='ALLY'));
+    const M=a=>st.mil[a];const mob=L.filter(q=>M(q.a3)&&M(q.a3).state!=='PEACETIME').length;
+    const ok1=WWAR.mil.order('POL','GENERAL','test'),g0=st.c.POL.gnd,m=M('POL');WWAR.step(24*100);
+    const ev=t=>st.ev.filter(e=>e.ty===t).length;
+    const rus=M('RUS');rus.mun.ART=1;const f=st.fronts.find(q=>q.a==='RUS'||q.b==='RUS');const k1=WWAR.mod(st.c.RUS,f,f.sec[0]);rus.mun.ART=20;const k2=WWAR.mod(st.c.RUS,f,f.sec[0]);
+    const tab=WWAR.mil.tab(st.c.POL);
+    return{mob,ok1,called:m.called,gained:m.gained,gGrew:st.c.POL.gnd0>=g0,hq:L.filter(q=>M(q.a3)&&M(q.a3).hq).length,intents:L.reduce((t,q)=>t+Object.keys((M(q.a3)||{intent:{}}).intent).length,0),
+      crews:L.every(q=>!M(q.a3)||M(q.a3).crews>=0),exp:m.exp,k1,k2,art:ev('ARMS'),base:ev('AIRBASE'),uxo:Object.keys(m.uxo).length,tab:tab.length,audit:WWAR.audit(),
+      evs:{MOB:ev('MOBILIZATION'),ORD:ev('ORDERS'),CMD:ev('COMMAND')}};});
+  ok('countries mobilize as they lose',r.mob>0,r);ok('a general mobilization calls people up and trains them into units',r.ok1&&r.called>0&&r.gained>0,r);
+  ok('headquarters and intents',r.hq>0&&r.intents>0,r);ok('artillery shortage weakens the front',r.k1<r.k2,r);
+  ok('arms transfers or base strikes happen',r.art+r.base>0,r);ok('battle areas contaminated',r.uxo>0);ok('MILITARY tab renders',r.tab>200);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
