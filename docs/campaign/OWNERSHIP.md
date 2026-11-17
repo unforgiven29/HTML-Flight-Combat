@@ -42,6 +42,8 @@ individual records (the spec allows this where individual detail is not needed).
 | Forests and tree collisions | `js/world/wtrees.js` | generated per geographic cell (not saved) | world flight |
 | Order of battle (squadrons, brigades, battalions): the detailed allocation of `p.air` / `p.gnd`, never a second total | `js/war/orbat.js` | `st.ob` | warsortie (flights from squadrons), gfight (companies from brigades), panel |
 | Ground combat on sorties | `js/war/gfight.js` | GND units (not saved) | brigades (losses) |
+| Fleets, sea control, blockades, ships on sorties | `js/war/naval.js` | `st.c[].nav`, `st.navy` | economy (imports), fronts (amphibious threat), panel |
+| Downed pilots, CSAR, prisoners, exchanges | `js/war/csar.js` | `st.csar` | service record (leaders.js) |
 | World-war clock | `WWAR.step` (`st.t`, hours since the scenario start) | `viper.ww` | warmap.js. **Separate from `CAMP.st.t` until step 2 joins the theatre campaign to the world war** |
 | Co-op campaign state | the host (`CAMP.publish`) | — | clients apply it; the ledger read model goes out as `wrv` every 40 publishes; clients never write the ledger |
 

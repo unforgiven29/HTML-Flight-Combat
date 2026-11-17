@@ -4625,10 +4625,12 @@
    "line": 7381,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335 (js/war/naval.js): fleets, maritime theatres, sea control, blockades, ships on sorties. Not yet: ships as named entities, ports, convoys, submarine warfare detail",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R06-164",
@@ -8246,10 +8248,12 @@
    "line": 17169,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R11-017",
@@ -8291,10 +8295,12 @@
    "line": 17215,
    "owner": "js/core/game.js — CBASE airfields; campplus.js towns, FARPs",
    "phase": 4,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 4: infrastructure networks not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities",
+   "tests": [
+    "s8_naval"
+   ]
   },
   {
    "id": "R11-020",
@@ -8781,11 +8787,11 @@
    "line": 18594,
    "owner": "js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records",
    "phase": 9,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Player pilot is a person record with a service history; ejection over enemy territory leads to missing / rescued / captured; succession when your pilot is lost. No downed-pilot gameplay or CSAR missions yet",
+   "note": "v335 (js/war/csar.js): ejection judged against the front, CSAR missions, evasion, capture, prisoner status, exchanges. Not yet: flying the CSAR yourself, downed-pilot gameplay",
    "tests": [
-    "cw_player_loss"
+    "s8_csar"
    ]
   },
   {

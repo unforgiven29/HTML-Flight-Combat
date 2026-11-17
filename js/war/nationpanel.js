@@ -37,6 +37,10 @@ function orbat(p){if(!W.ob||!W.st.ob||!W.st.ob.by[p.a3])return'<div>No order of 
   return'<div style="color:#8a9a92">SQUADRONS · '+Math.round(p.air)+' aircraft (est.)</div><div class="nw">'+S.map(u=>'<div>'+esc(u.name)+' · '+esc(u.equip)+' · '+Math.round(u.str)+'/'+u.str0+(u.baseName?' · '+esc(u.baseName):'')+(u.st!=='ACTIVE'?' · '+u.st.toLowerCase():'')+'</div>').join('')+'</div>'+
     '<div style="color:#8a9a92">BRIGADES · '+p.gnd.toFixed(1)+' brigade-equivalents (est.)</div><div class="nw">'+B.map(u=>{const c=u.cmd&&Ld&&Ld.who(u.cmd);return'<div>'+esc(u.name)+' · '+esc(fr(u.front))+' · '+Math.round(u.str/u.str0*100)+' %'+(u.st!=='ACTIVE'?' · <span class="k">'+u.st+'</span>':'')+(c?' · '+esc(c.rank+' '+c.name):'')+'</div>';}).join('')+'</div>'+
     '<div style="color:#8a9a92">Unit strengths always add up to the country\'s totals. Names are generic and fictional.</div>';}
+function navy(p){const f=p.nav;if(!f)return'<div>'+esc(p.n)+' has no fleet in the war (not coastal, or not at war).</div>';const S=W.sea,n=W.st.navy;
+  return row('Aircraft carriers',f.cv+' / '+f.cv0)+row('Surface combatants',f.sur+' / '+f.sur0)+row('Submarines',f.sub+' / '+f.sub0)+row('Amphibious ships',f.amp+' / '+f.amp0)+(p.blockade?row('Blockade','imports cut ('+Math.round(p.blockade*100)+' %)'):'')+
+    (n?'<div style="color:#8a9a92">SEA CONTROL</div>'+S.SEAS.filter(q=>n.th[q.id]&&Object.keys(n.th[q.id].f).length).map(q=>row(esc(q.name),Math.abs(n.th[q.id].sup)<.1?'contested':n.th[q.id].sup>0?'BLUEFOR '+Math.round(n.th[q.id].sup*100)+' %':'REDFOR '+Math.round(-n.th[q.id].sup*100)+' %')).join(''):'')+
+    '<div style="color:#8a9a92">Fleet sizes are estimates (carriers: approximate public numbers).</div>';}
 function justice(){const L=W.st.law,tg=W.st.tg;let h='';
   if(tg&&tg.tot.bld)h+=row('Civilian buildings destroyed in flight (all sides)',tg.tot.bld)+row('People killed (est. range)',tg.tot.kLo+'-'+tg.tot.kHi)+row('People injured (est. range)',tg.tot.iLo+'-'+tg.tot.iHi);
   if(!L||!L.cases.length)return h+'<div>No cases opened.</div>';
@@ -55,8 +59,8 @@ function render(){const el=document.getElementById('wmWar'),st=W.st;if(!el||!st)
     '<div style="color:#8a9a92">Pick a country, then an airfield under FLY FOR.</div>'+
     '<div style="color:#8a9a92;margin-top:3px">WEATHER</div>'+st.th.map(th=>row(esc(th.name),esc((th.season||'').toLowerCase())+(th.wx?' · '+th.wx.toLowerCase():''))).join('')+'</div>';
   const p=WARMAP.UI.sel&&st.c[WARMAP.UI.sel];
-  if(p){h+='<div id="wsNat"><b>'+esc(p.n)+'</b><div class="tabs">'+['PEOPLE','ECONOMY','GOVERNMENT','LEADERS','FORCES','STRATEGY','NEWS','JUSTICE'].map(k=>'<button data-nt="'+k+'" aria-pressed="'+(UI.tab===k)+'">'+(k==='NEWS'?'NEWS & COURTS':k)+'</button>').join('')+'</div>'+
-    ({PEOPLE:people,ECONOMY:economy,GOVERNMENT:government,LEADERS:leaders,FORCES:orbat,STRATEGY:strategy,NEWS:newsTab,JUSTICE:justice}[UI.tab])(p)+'</div>';}
+  if(p){h+='<div id="wsNat"><b>'+esc(p.n)+'</b><div class="tabs">'+['PEOPLE','ECONOMY','GOVERNMENT','LEADERS','FORCES','NAVY','STRATEGY','NEWS','JUSTICE'].map(k=>'<button data-nt="'+k+'" aria-pressed="'+(UI.tab===k)+'">'+(k==='NEWS'?'NEWS & COURTS':k)+'</button>').join('')+'</div>'+
+    ({PEOPLE:people,ECONOMY:economy,GOVERNMENT:government,LEADERS:leaders,FORCES:orbat,NAVY:navy,STRATEGY:strategy,NEWS:newsTab,JUSTICE:justice}[UI.tab])(p)+'</div>';}
   h=careerBox()+h;el.insertAdjacentHTML('afterbegin',h);}
 WARMAP.after.push(render);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsNat [data-nt],#wsNat [data-nw],#wsSide [data-tm],#wsSide [data-sel]');if(!b)return;

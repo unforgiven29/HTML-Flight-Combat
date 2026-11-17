@@ -13,14 +13,14 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 03 | Global Geography, Map, Terrain, Territory, Navigation, and Spatial Foundations | 16 | implement 9, defer 7 | partial 9, none 7 |
 | 04 | World Clock, Simulation Scheduling, Persistence, Streaming, Performance, and Recovery | 33 | defer 27, existing 1, implement 1, extend 4 | none 27, done 1, partial 5 |
 | 05 | Countries, Governments, Alliances, Diplomacy, Conflict, Law, Occupation, Security, and Peace | 52 | defer 37, implement 15 | none 37, partial 15 |
-| 06 | Armed Forces, Command, Personnel, Units, Weapons, Readiness, Operations, and Sustainment | 237 | implement 6, defer 225, extend 6 | partial 12, none 225 |
+| 06 | Armed Forces, Command, Personnel, Units, Weapons, Readiness, Operations, and Sustainment | 237 | implement 7, defer 224, extend 6 | partial 13, none 224 |
 | 07 | Sensors, Radar, Intelligence, Electronic Warfare, Communications, Cyber, Space, and Information Integrity | 17 | existing 4, defer 13 | partial 4, none 13 |
 | 08 | Population, Individuals, Families, Households, Demographics, Migration, Health, Education, and Personal Life | 58 | implement 4, defer 54 | partial 4, none 54 |
 | 09 | Civil Institutions, Public Services, Local Administration, Justice, Culture, Media, and Global Governance | 24 | implement 6, defer 18 | partial 6, none 18 |
 | 10 | Global Economy, Resources, Energy, Industry, Trade, Finance, Labor, and Consumption | 48 | implement 12, defer 36 | partial 12, none 36 |
-| 11 | Cities, Housing, Infrastructure, Utilities, Water, Food, Transportation, Aviation, and Connectivity | 23 | implement 8, defer 15 | partial 8, none 15 |
+| 11 | Cities, Housing, Infrastructure, Utilities, Water, Food, Transportation, Aviation, and Connectivity | 23 | implement 10, defer 13 | partial 10, none 13 |
 | 12 | Weather, Climate, Ecology, Hazards, Emergencies, Humanitarian Response, and Recovery | 21 | defer 19, implement 2 | none 19, partial 2 |
-| 13 | Player Campaign, Missions, Flight Experience, Career, Training, Commander Mode, and Player-Facing Operations | 22 | defer 14, implement 3, extend 2, existing 3 | none 14, partial 8 |
+| 13 | Player Campaign, Missions, Flight Experience, Career, Training, Commander Mode, and Player-Facing Operations | 22 | defer 14, implement 4, extend 1, existing 3 | none 14, partial 8 |
 | 14 | Anti-War Consequences, Accountability, Awards, Memorials, Epilogue, and Postwar Continuity | 48 | implement 6, defer 42 | partial 6, none 42 |
 | 15 | Autonomous AI, Institutional Decisions, Learning, and World Agency | 26 | defer 21, implement 5 | none 21, partial 5 |
 | 16 | Multiplayer Authority, Cooperative Campaigns, Security, Privacy, and Concurrency | 6 | extend 2, defer 4 | partial 2, none 4 |
@@ -29,7 +29,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 19 | Implementation Order and Claude Execution Workflow | 2 | existing 2 | partial 2 |
 | 20 | Acceptance Criteria, Regression, Data Integrity, Performance, and Release Gates | 6 | extend 6 | none 6 |
 
-Total: 719 blocks; 134 with code behind them (partial or done), 555 deferred with a phase and reason.
+Total: 719 blocks; 137 with code behind them (partial or done), 552 deferred with a phase and reason.
 
 ## Explicit scope exclusions (unchanged)
 
@@ -336,7 +336,7 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R06-160 | 7248 | Air-defense radar, command, and counter-UAS support units | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
 | R06-161 | 7290 | SUPPORT AVIATION AS PERSISTENT CAMPAIGN ENTITIES | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
 | R06-162 | 7380 | Operations, formations, and force employment | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
-| R06-163 | 7381 | NAVAL TASK FORCE, FLEET READINESS, AND MARITIME OPERATIONS | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
+| R06-163 | 7381 | NAVAL TASK FORCE, FLEET READINESS, AND MARITIME OPERATIONS | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | implement | partial | v335 (js/war/naval.js): fleets, maritime theatres, sea control, blockades, ships on sorties. Not yet: ships as named entities, ports, convoys, submarine warfare detail | s8_naval |
 | R06-164 | 7405 | Naval warfare and coastal operations | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
 | R06-165 | 7417 | Special operations, infiltration, sabotage, and irregular warfare | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
 | R06-166 | 7431 | United Kingdom | js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness | 3 | defer | none | Phase 3: the military enterprise beyond the player side air arm |  |
@@ -573,10 +573,10 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R11-013 | 16888 | Civil aviation, airports, airspace management, air traffic control, and flight safety | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
 | R11-014 | 17012 | Airline, airport economics, airspace management, and humanitarian aviation | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
 | R11-015 | 17116 | DEDICATED AVIATION SAFETY INVESTIGATIONS AND ACCIDENT REPORTS | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
-| R11-016 | 17169 | Ports, shipping, maritime operations, and subsea infrastructure | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
+| R11-016 | 17169 | Ports, shipping, maritime operations, and subsea infrastructure | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | implement | partial | v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities | s8_naval |
 | R11-017 | 17170 | Global maritime war, trade routes, and undersea operations | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
 | R11-018 | 17190 | UNDERWATER WARFARE AND SUBSEA INFRASTRUCTURE | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
-| R11-019 | 17215 | Maritime transport, ports, merchant shipping, and ocean economy | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
+| R11-019 | 17215 | Maritime transport, ports, merchant shipping, and ocean economy | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | implement | partial | v335: blockades cut seaborne imports. Not yet: ports and merchant shipping as entities | s8_naval |
 | R11-020 | 17332 | Transport, freight, rail, and public mobility | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | implement | partial | v332: national infrastructure condition, power, transport, food indices damaged and repaired. Not yet: networks, facilities as entities | s5_econ |
 | R11-021 | 17333 | RAILWAYS AND STRATEGIC RAIL TRANSPORT | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
 | R11-022 | 17344 | CIVILIAN PASSENGER TRANSPORT AND PUBLIC MOBILITY | js/core/game.js — CBASE airfields; campplus.js towns, FARPs | 4 | defer | none | Phase 4: infrastructure networks not started |  |
@@ -608,7 +608,7 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R13-004 | 18456 | ADVANCED HOTAS, JOYSTICK, RUDDER PEDAL, AND MULTI-DEVICE INPUT CONFIGURATION | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | defer | none | Phase 9: not started |  |
 | R13-005 | 18506 | PLAYER-INTERACTIVE PREFLIGHT AND STARTUP CHECKLIST COMPLETION | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | defer | none | Phase 9: not started |  |
 | R13-006 | 18551 | LOCAL VISUAL GROUND-SERVICE AND FLIGHT-LINE ACTIVITY | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | defer | none | Phase 9: not started |  |
-| R13-007 | 18594 | PLAYER PILOT RECOVERY, CAPTURE, AND RETURN TO CAMPAIGN | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | extend | partial | Player pilot is a person record with a service history; ejection over enemy territory leads to missing / rescued / captured; succession when your pilot is lost. No downed-pilot gameplay or CSAR missions yet | cw_player_loss |
+| R13-007 | 18594 | PLAYER PILOT RECOVERY, CAPTURE, AND RETURN TO CAMPAIGN | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | implement | partial | v335 (js/war/csar.js): ejection judged against the front, CSAR missions, evasion, capture, prisoner status, exchanges. Not yet: flying the CSAR yourself, downed-pilot gameplay | s8_csar |
 | R13-008 | 18608 | PLAYER CAREER, PERSONAL AGENCY, AND OPTIONAL COMMAND ROLES | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | defer | none | Phase 9: not started |  |
 | R13-009 | 18621 | PLAYER PILOT CAREER, SERVICE RECORD, AND FLIGHT STATISTICS | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | extend | partial | Player pilot is a person record with a service history; ejection over enemy territory leads to missing / rescued / captured; succession when your pilot is lost. No downed-pilot gameplay or CSAR missions yet | cw_player_loss |
 | R13-010 | 18651 | FLIGHT ACADEMY, QUALIFICATIONS, AND NON-CAMPAIGN TRAINING RANGE | js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records | 9 | defer | none | Phase 9: not started |  |
