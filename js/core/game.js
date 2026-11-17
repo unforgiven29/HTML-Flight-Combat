@@ -8989,13 +8989,13 @@ Object.assign(CAMP,{
 }
 
 // ---------- trees ----------
-const TREE={R:5200,CH:1000,cache:new Map(),last:null,N:9000,grp:null,key:'',need:[],dirty:true,
+const TREE={R:5200,CH:1000,cache:new Map(),last:null,N:16000,grp:null,key:'',need:[],dirty:true,
   init(){if(this.grp)return;this.grp=new THREE.Group();const cg=new THREE.ConeGeometry(3.6,14,7);cg.translate(0,7,0);const dg=new THREE.IcosahedronGeometry(4.4,0);dg.scale(1,1.15,1);dg.translate(0,8,0);
     this.con=new THREE.InstancedMesh(cg,new THREE.MeshLambertMaterial({color:0x173d1c}),this.N);this.dec=new THREE.InstancedMesh(dg,new THREE.MeshLambertMaterial({color:0x2d5c1c}),this.N);
     for(const m of[this.con,this.dec]){m.frustumCulled=false;m.count=0;this.grp.add(m);}},
   show(on){this.init();if(on){if(!this.grp.parent)scene.add(this.grp);this.last=null;this.dirty=true;}else if(this.grp.parent)scene.remove(this.grp);},
   chunk(cx,cz){const key=cx+','+cz;let c=this.cache.get(key);if(c)return c;c=[];let s=((cx*73856093)^(cz*19349663))>>>0;const rn=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};
-    for(let k=0;k<260;k++){const x=cx*1000+rn()*1000,z=cz*1000+rn()*1000,r1=rn(),r2=rn(),r3=rn();const f=vnoise(x/7000+11.3,z/7000+3.1)*.5+.5;if(r1>clamp((f-.4)*3.2,0,1))continue;
+    for(let k=0;k<420;k++){const x=cx*1000+rn()*1000,z=cz*1000+rn()*1000,r1=rn(),r2=rn(),r3=rn();const f=vnoise(x/7000+11.3,z/7000+3.1)*.5+.5;if(r1>clamp((f-.34)*3.2,0,1))continue;
       const h=cmpRaw(x,z);if(h<8||h>1450||cmpBW(x,z)>0)continue;if(Math.abs(cmpRaw(x+30,z)-h)>16||Math.abs(cmpRaw(x,z+30)-h)>16)continue;
       const con=h>650||vnoise(x/2500+5.5,z/2500+1.1)>-.1;c.push([x,h,z,1.1+r2*.9,con?1:0,r3]);}
     if(this.cache.size>600)this.cache.clear();this.cache.set(key,c);return c;},

@@ -68,8 +68,13 @@ for(const b of NEWB)if(!CBASE.find(q=>q.id===b.id)){let h=0;for(const [dx,dz] of
 {const _ld=CAMP.load;CAMP.load=function(){const ok=_ld.call(this);if(ok&&this.st)for(const b of NEWB)if(!this.st.bases.find(q=>q.id===b.id))this.st.bases.push({id:b.id,side:b.side,pool:b.side?8:6,dmg:0});return ok;};}
 const FARPX=[-70000,-30000,10000,50000,85000];
 const farps=()=>{const st=CAMP.st;if(!st)return[];const o=[];for(const x of FARPX)for(const s of[0,1]){const fz=CAMP.frontZ(x),z=fz+(s?-1:1)*rr(0,0)+(s?-14000:14000);o.push({x,z,s,lost:s===0?z<fz+3000:z>fz-3000});}return o;};
-const TOWNS=[{x:-40000,z:40000,n:90,r:900,big:0},{x:30000,z:30000,n:60,r:700},{x:-80000,z:-20000,n:70,r:800},{x:20000,z:-40000,n:200,r:1600,big:1},{x:-10000,z:80000,n:150,r:1300,big:1},
-  {x:60000,z:-90000,n:50,r:600},{x:-60000,z:100000,n:60,r:700},{x:-15000,z:-80000,n:80,r:900}];
+// v379: named (fictional) and eighteen more towns and villages across the map, so the front runs through settled country
+const TOWNS=[{x:-40000,z:40000,n:90,r:900,big:0,nm:'Velden'},{x:30000,z:30000,n:60,r:700,nm:'Korsk'},{x:-80000,z:-20000,n:70,r:800,nm:'Marnow'},{x:20000,z:-40000,n:200,r:1600,big:1,nm:'Ostbrück'},{x:-10000,z:80000,n:150,r:1300,big:1,nm:'Hadley Cross'},
+  {x:60000,z:-90000,n:50,r:600,nm:'Pirna'},{x:-60000,z:100000,n:60,r:700,nm:'Lesk'},{x:-15000,z:-80000,n:80,r:900,nm:'Drovna'},
+  {x:-95000,z:10000,n:45,r:550,nm:'Altheim'},{x:-70000,z:-2000,n:40,r:500,nm:'Brenno'},{x:-30000,z:5000,n:55,r:600,nm:'Sakra'},{x:5000,z:-5000,n:50,r:600,nm:'Tolvi'},{x:45000,z:5000,n:45,r:550,nm:'Rusk'},
+  {x:85000,z:-10000,n:60,r:650,nm:'Elmsted'},{x:110000,z:20000,n:40,r:500,nm:'Gorzan'},{x:-50000,z:-55000,n:45,r:550,nm:'Vira'},{x:0,z:40000,n:55,r:600,nm:'Halvik'},{x:70000,z:50000,n:70,r:800,nm:'Brask'},
+  {x:-90000,z:60000,n:40,r:500,nm:'Oderin'},{x:40000,z:-70000,n:50,r:600,nm:'Kamsk'},{x:95000,z:-50000,n:45,r:550,nm:'Lindor'},{x:-35000,z:-30000,n:40,r:500,nm:'Pelka'},{x:15000,z:15000,n:35,r:450,nm:'Morva'},
+  {x:-120000,z:-40000,n:35,r:450,nm:'Sedlin'},{x:125000,z:-25000,n:35,r:450,nm:'Varen'},{x:-20000,z:120000,n:45,r:550,nm:'Ilsk'}];
 function townGroup(){const g=new THREE.Group(),geo=new THREE.BoxGeometry(1,1,1),mats=[SKIN(0x9a958a,8),SKIN(0x8a7f70,8),SKIN(0xa8a49a,8),SKIN(0x6e7378,10)];
   for(const T of TOWNS){if(cmpRaw(T.x,T.z)<15)continue;const per=mats.map(m=>new THREE.InstancedMesh(geo,m,T.n));const cnt=[0,0,0,0],mx=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler();
     for(let i=0;i<T.n;i++){const a=Math.random()*6.283,d=Math.sqrt(Math.random())*T.r,x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=cmpH(x,z);if(y<5)continue;
