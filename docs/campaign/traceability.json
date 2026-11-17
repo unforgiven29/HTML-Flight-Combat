@@ -2258,9 +2258,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v333: ranks by national tradition, front commanders relieved / promoted / killed, player service record",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s6_leaders"
+    "s11_forces"
    ]
   },
   {
@@ -2388,10 +2388,12 @@
    "line": 5168,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-015",
@@ -2405,9 +2407,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -2422,9 +2424,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -2456,9 +2458,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -2471,10 +2473,12 @@
    "line": 5383,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-020",
@@ -2486,10 +2490,12 @@
    "line": 5416,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-021",
@@ -2534,10 +2540,12 @@
    "line": 5449,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-024",
@@ -2639,10 +2647,12 @@
    "line": 5594,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-031",
@@ -2654,10 +2664,12 @@
    "line": 5610,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-032",
@@ -2714,10 +2726,12 @@
    "line": 5677,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-036",
@@ -2759,10 +2773,12 @@
    "line": 5696,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-039",
@@ -2789,10 +2805,12 @@
    "line": 5713,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-041",
@@ -2864,10 +2882,12 @@
    "line": 5792,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-046",
@@ -2973,10 +2993,12 @@
    "line": 5916,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-053",
@@ -2988,10 +3010,12 @@
    "line": 5935,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-054",
@@ -3003,10 +3027,12 @@
    "line": 5957,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-055",
@@ -3033,10 +3059,12 @@
    "line": 5963,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-057",
@@ -3183,10 +3211,12 @@
    "line": 6151,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-067",
@@ -3198,10 +3228,12 @@
    "line": 6171,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-068",
@@ -3213,10 +3245,12 @@
    "line": 6208,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-069",
@@ -3318,10 +3352,12 @@
    "line": 6375,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-076",
@@ -3333,10 +3369,12 @@
    "line": 6447,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-077",
@@ -3738,10 +3776,12 @@
    "line": 6755,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-104",
@@ -4503,10 +4543,12 @@
    "line": 7119,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-155",
@@ -4518,10 +4560,12 @@
    "line": 7201,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-156",
@@ -4865,10 +4909,12 @@
    "line": 7542,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-179",
@@ -4898,10 +4944,12 @@
    "line": 7641,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-181",
@@ -4930,10 +4978,12 @@
    "line": 7680,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-183",
@@ -4992,10 +5042,12 @@
    "line": 7830,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-187",
@@ -5022,12 +5074,11 @@
    "line": 7844,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "extend",
+   "status": "implement",
    "progress": "partial",
-   "note": "Airframes with tail numbers, maintenance turnaround, crew rest, pilot fate states (killed / missing / captured / wounded / medically withdrawn)",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "s11_forces"
    ]
   },
   {
@@ -5040,10 +5091,12 @@
    "line": 7898,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-190",
@@ -5055,10 +5108,12 @@
    "line": 7934,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-191",
@@ -5070,10 +5125,12 @@
    "line": 8001,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-192",
@@ -5085,10 +5142,12 @@
    "line": 8149,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-193",
@@ -5209,9 +5268,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -5224,10 +5283,12 @@
    "line": 8362,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-202",
@@ -5239,10 +5300,12 @@
    "line": 8387,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-203",
@@ -5286,10 +5349,12 @@
    "line": 8489,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-206",
@@ -5301,10 +5366,12 @@
    "line": 8534,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-207",
@@ -5348,10 +5415,12 @@
    "line": 8781,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-210",
@@ -5560,9 +5629,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -5577,9 +5646,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v338 (js/war/military.js): mobilization states and the draft (exemptions, non-compliance, training pipeline, workforce and support effects, demobilization; player orders for own countries), aircrew pool and training, experience, lessons learned, theatre headquarters with fictional commanders, intents per front with order friction, fortification, headquarters succession, munitions stockpiles in four classes with production and allied transfers, airbase condition / strikes / repair / dispersal, engineering capacity, airborne early warning and tankers, unexploded ordnance and clearance. Not modelled: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
    "tests": [
-    "s11_mil"
+    "s11_forces"
    ]
   },
   {
@@ -5637,10 +5706,12 @@
    "line": 9447,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-229",
@@ -5667,10 +5738,12 @@
    "line": 9560,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-231",
@@ -5682,10 +5755,12 @@
    "line": 9608,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-232",
@@ -5712,10 +5787,12 @@
    "line": 9643,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-234",
@@ -5727,10 +5804,12 @@
    "line": 9661,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-235",
@@ -5742,10 +5821,12 @@
    "line": 9696,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-236",
@@ -5757,10 +5838,12 @@
    "line": 9744,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R06-237",
@@ -5772,10 +5855,12 @@
    "line": 9862,
    "owner": "js/core/game.js — CAMP ground units, air ops; world.js airframes / aircrew / readiness",
    "phase": 3,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 3: the military enterprise beyond the player side air arm",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "v339 (js/war/forces.js): class catalogue and national inventories (generic classes, estimates), infantry issue profiles, civil aircraft rosters, arms trade (sales, donations, end-use, licences, delays, diversion audits), development programmes, ship damage control and repair, carrier deck cycle, uncrewed systems, civil defence, private military companies (fictional), player squadron roster and wingman, briefings, claim / assessment record, deployment album, retirement. Named national products are not listed (no reachable source)",
+   "tests": [
+    "s11_forces"
+   ]
   },
   {
    "id": "R07-001",

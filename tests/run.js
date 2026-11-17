@@ -637,6 +637,17 @@ test('s11_mil: mobilization, training, command, munitions, airbases, hazards','F
   ok('countries mobilize as they lose',r.mob>0,r);ok('a general mobilization calls people up and trains them into units',r.ok1&&r.called>0&&r.gained>0,r);
   ok('headquarters and intents',r.hq>0&&r.intents>0,r);ok('artillery shortage weakens the front',r.k1<r.k2,r);
   ok('arms transfers or base strikes happen',r.art+r.base>0,r);ok('battle areas contaminated',r.uxo>0);ok('MILITARY tab renders',r.tab>200);ok('audit clean',r.audit.length===0,r.audit);});
+test('s11_forces: catalogue, inventories, arms trade, ships, carriers, drones, civil, contractors, roster','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*240);const Fo=WWAR.forces,us=Fo.F('USA'),pl=Fo.F('POL');
+    const ev=t=>st.ev.filter(e=>e.ty===t).length;const inv=Object.keys(us.inv).length,low=Object.keys(Fo.F('LUX')||{inv:{}}).length;
+    const sideOK=st.frc.deals.every(d=>!(st.c[d.buyer].side&&st.c[d.seller].side&&st.c[d.buyer].side!==st.c[d.seller].side));
+    Fo.afterSortie('POL',2,3,false);const R0=st.frc.roster;
+    return{inv,cv:us.cv.length,cvN:(st.c.USA.nav||{}).cv,deals:st.frc.deals.length,sideOK,cats:Fo.CAT.filter(e=>e.c==='WEAPON').length,civ:pl.civ.MAIN>0,cd:pl.cd.level,gr:pl.grounded,
+      roster:R0&&R0.ppl.length,wing:R0&&R0.ppl.find(q=>q.id===R0.wing).sorties,ops:st.frc.ops.length,tab:Fo.tab(st.c.USA).length,drone:pl.drones.lost,audit:WWAR.audit(),
+      ev:{ARMS:ev('ARMS'),AV:ev('AVIATION'),NAV:ev('NAVAL'),CON:ev('CONTRACTOR'),PRG:ev('PROGRAMME')}};});
+  ok('national inventories by class',r.inv>25,r);ok('carriers tracked',r.cv===r.cvN,r);ok('arms deals, never across the line',r.deals>0&&r.sideOK,r);
+  ok('civil aviation and civil defence',r.civ&&r.cd>0&&r.gr===1,r);ok('squadron roster, wingman and claim / assessment record',r.roster===12&&r.wing>=1&&r.ops>=1,r);
+  ok('ARSENAL tab renders',r.tab>500);ok('drones lost over active fronts',r.drone>0,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
