@@ -684,7 +684,7 @@ test('s12_life: population, services, money, homes, environment, politics','F-16
   ok('homes lost and pollution at war',r.house>0&&r.pol>0,r);ok('trade and treaties',r.trade>20&&r.tr>0,r);ok('LIFE tab renders',r.tab>800);ok('audit clean',r.audit.length===0,r.audit);});
 test('s12_player: recorder, patches, rehearsal, difficulty, remembrance','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;const L=WSORTIE.basesFor('POL');const pl=WWAR.player.PL();
-    await WSORTIE.start('POL',L[0].a);await new Promise(r=>setTimeout(r,3200));WSORTIE.WS.kills.air=1;WSORTIE.finish();const rec=pl.rec[0];
+    await WSORTIE.start('POL',L[0].a);await new Promise(r=>setTimeout(r,6000));WSORTIE.WS.kills.air=1;WSORTIE.finish();const rec=pl.rec[0];
     pl.diff.rehearse=true;const lost0=st.c.POL.lostAir;await WSORTIE.start('POL',L[0].a);WSORTIE.WS.lost=1;WSORTIE.finish();const lost1=st.c.POL.lostAir;pl.diff.rehearse=false;
     WWAR.diplo.end('ARMISTICE','t');st.post=true;WWAR.step(24*366);const rem=st.ev.some(e=>e.ty==='REMEMBRANCE');
     return{trk:rec&&rec.trk.length,out:rec&&rec.out,patch:Object.keys(pl.patch),lost0,lost1,rem,tab:WWAR.player.tab(st.c.POL).length,svg:WWAR.player.tab(st.c.POL).includes('<polyline')};});
@@ -860,6 +860,16 @@ test('s22_lod: trees off at altitude, far ground units hidden; more data','F-16C
     const u=GND.add('TRUCK',1,camera.position.x+40000,camera.position.z,0);await new Promise(r=>setTimeout(r,300));const hid=!u.mesh.visible;u.pos.x=camera.position.x+1000;await new Promise(r=>setTimeout(r,300));const back=u.mesh.visible;WSORTIE.finish();
     return{off,hid,back,eq:Object.keys(NATDATA.EQ).length,un:Object.keys(NATDATA.UNITS).length,q:WWAR.endscreen.QUOTES.length};});
   ok('trees not drawn high above the ground',r.off,r);ok('far ground units hidden, shown again near',r.hid&&r.back,r);ok('equipment for 120+ countries, units for 18, 7 quotations',r.eq>=120&&r.un>=18&&r.q>=7,r);});
+
+/* ---------- step 19 (v365+): guided CAS, battle sound, mission replay ---------- */
+test('s21_media: guided munitions on CAS, mission replay, battle sound','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const O=WWAR.airops;
+    const gB=O.guidedLoad('F-16C',0),gR=O.guidedLoad('MiG-29',1);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);
+    O.casFlight(true);const J=O.OPS.cas.flatMap(c=>c.j);const guided=J.some(j=>typeof agTypes==='function'&&agTypes(j).some(k=>AGW[k]&&(AGW[k].k==='lgb'||AGW[k].k==='agm')));
+    let fired=false;const j=J.find(x=>x.side===0)||J[0];const t=GFIGHT&&GFIGHT.GF.units.find(u=>u.alive&&u.side!==j.side);if(j&&t){j.pos.set(t.pos.x+3000,t.pos.y+3000,t.pos.z);fired=O.guidedPass(j,t,3000,{});}
+    await new Promise(r=>setTimeout(r,6000));WSORTIE.finish();const R=WWAR.media.RP.list[0];const html=NATPANEL.tabs.DEBRIEF(WWAR.st.c.POL);
+    return{gB:gB&&Object.values(gB).filter(v=>AGW[v]&&AGW[v].k!=='bomb'&&AGW[v].k!=='pod').length,gR:gR&&Object.values(gR).some(v=>/KAB|Kh-/.test(v)),guided,fired,frames:R&&R.f.length,ui:html.includes('MISSION REPLAY'),au:!!WWAR.media.AU};});
+  ok('guided loads for both sides (GBU / Maverick; KAB / Kh)',r.gB>0&&r.gR,r);ok('CAS flights carry and release guided weapons',r.guided&&r.fired,r);ok('a sortie is recorded for replay and shown',r.frames>=1&&r.ui,r);ok('battle sound module',r.au);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
