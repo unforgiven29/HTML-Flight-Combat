@@ -1,3 +1,15 @@
+## v330 (world war, step 3: countries changing sides, diplomacy, how the war ends; spec ch.05 and ch.14)
+- **Neutral countries react**: fighting within 300 km makes a country debate its position. Countries with an existing partnership with one side (a documented scenario table: e.g. Ukraine, Moldova, Georgia toward BLUEFOR; Iran, Venezuela, Cuba toward REDFOR) may support and later join it. Everyone else stays out unless fighting spills onto its own territory (border incidents, attribution reported and disputed), and then turns against the side blamed. Ireland, Austria, Switzerland, Malta never join.
+- **Allies can leave**: an exhausted ally that has lost cities may make a separate settlement; its fronts fall quiet where the lines stand.
+- **Ceasefires**: local ceasefires on stalled fronts between tired countries (renewed, lapsed or violated); general ceasefire proposals from the side with less leverage, accepted only if the other side is tired too and neither holds a clear advantage, refused with a reason otherwise (and not repeated every few days). Fourteen quiet days of general ceasefire become an armistice.
+- **Endings**: armistice, capitulation (a principal power at the end of its strength leaves; its allies decide for themselves; the war ends when a side has no principal power left) or a frozen conflict (a year in, lines unmoved for two months).
+- **The end-of-war report** on the panel: how it ended and after how long, what it cost (labelled estimates, with the people behind the numbers acknowledged), where the lines stand, cities under another country's control and how many people live in them, who changed sides and why. **CONTINUE POSTWAR** keeps the clock running with the lines frozen.
+- Tests: `node tests/run.js wdip_`.
+
+## v329 (the world war on the CAMPAIGN tab)
+- The CAMPAIGN tab opens on the **WORLD WAR**: the world map with the war panel inside the campaign screen (start or load the war, run the clock, fronts, theatres, country profiles, FLY FOR a country). A switch at the top flips to **THEATRE**, the original 300 km campaign, unchanged. The choice is remembered.
+- QUICK FLIGHT's WORLD MAP card still opens the same map full screen for free flight.
+
 ## v328 (world war, step 2: fly in it)
 On the WORLD MAP with a world war running, click a country at war: **FLY FOR <COUNTRY>** lists its real military airfields, nearest to the front first. Pick one and you take off there (world flight terrain, runways, towns) into the war around you.
 - The nearest front is on the ground where the war has moved it: armour and infantry carriers on both sides of the line, a SAM battery and two anti-aircraft gun systems behind the enemy line.

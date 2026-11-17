@@ -450,6 +450,22 @@ test('wsortie: fly for a country from a real airbase; the front, enemy flights, 
   ok('airbases offered',r.bases>0,r.bases);ok('sortie running in world flight',r.on&&r.scen==='WORLD',r);ok('front on the ground, enemy side included',r.gr>10&&r.enemySide>4,{gr:r.gr,e:r.enemySide});ok('tasking given',r.task);
   ok('world war runs in real time',r.wwReal);ok('enemy flight from the enemy and a friendly CAP',r.enemy>=1&&r.friend>=1&&r.red,{e:r.enemy,f:r.friend,from:r.from});
   ok('kills come off the enemy country',r.dAir>=1-1e-6&&r.dGnd>0,{dAir:r.dAir,dGnd:r.dGnd});ok('leaving closes the sortie and writes the diary',r.off&&r.diary,r);ok('audit clean',r.audit.length===0,r.audit);});
+
+/* ---------- the world war, step 3: alignment changes, diplomacy, endings (v330, spec ch.05 / ch.14) ---------- */
+test('wdip_rules: a ceasefire stops a front; a capitulation leaves allies fighting; constitutional neutrals stay out','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,f=st.fronts[0];f.cf={kind:'LOCAL',t:0,until:1e9};const o0=f.sec.map(s=>s.off).join();
+    WWAR.step(24*5);const still=f.sec.map(s=>s.off).join()===o0;f.cf=null;
+    st.c.RUS.lostGnd=st.c.RUS.gnd0*.9;st.c.RUS.lostAir=st.c.RUS.air0*.9;WWAR.step(24);
+    return{still,rus:st.c.RUS.al,chn:st.c.CHN.al,over:!!st.over,aut:st.c.AUT.al,irl:st.c.IRL.al,audit:WWAR.audit()};});
+  ok('front under ceasefire does not move',r.still);ok('Russia capitulates and leaves',r.rus==='NEUTRAL',r.rus);ok('China fights on, the war goes on',r.chn==='CORE'&&!r.over,r);
+  ok('Austria and Ireland stay out',r.aut!=='ALLY'&&r.irl!=='ALLY',r);ok('audit clean',r.audit.length===0,r.audit);});
+test('wdip_long: a war run to its end has diplomacy, an outcome, a report and a postwar','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;let d=0;for(;d<500&&!st.over;d++)WWAR.step(24);
+    const types=new Set(st.ev.map(e=>e.ty)),props=st.ev.filter(e=>/proposes a general ceasefire/.test(e.txt)).length,rp=st.report;
+    st.post=true;const t=st.t;WWAR.step(48);
+    return{over:st.over&&st.over.kind,days:d,dip:types.has('DIPLO'),cf:types.has('CEASEFIRE'),props,rep:!!rp&&rp.lines.length>0&&rp.air.B>=0,post:st.t>t,frozen:st.fronts.every(f=>f.cf),audit:WWAR.audit()};});
+  ok('the war ends one way or another',['ARMISTICE','CAPITULATION','FROZEN'].includes(r.over),{over:r.over,days:r.days});ok('diplomacy and ceasefires happened',r.dip&&r.cf,r);
+  ok('proposals are not repeated every few days',r.props<=20,r.props);ok('an outcome report',r.rep);ok('postwar: clock runs, lines frozen',r.post&&r.frozen,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
