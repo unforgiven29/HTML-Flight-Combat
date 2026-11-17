@@ -32,9 +32,12 @@ function record(o){const l=L(),id='D'+(l.seq++).toString(36).toUpperCase(),t=W.s
   if(r.n<1)return null;l.ev.push(r);return r;}
 // a stable, culturally appropriate name per person slot, collision-checked across the archive
 function rng(seed){let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619);}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%1e6)/1e6;};}
-function nameFor(r,i){if(r.named&&r.named[i])return r.named[i];const l=L(),k=r.id+'.'+i;if(l.names[k])return l.names[k];const P=Ld.POOL[Ld.REG(r.a3)]||Ld.POOL.EN,R=rng(k);
+function nameFor(r,i){if(r.named&&r.named[i])return r.named[i];const l=L(),k=r.id+'.'+i;if(r.n<=50&&l.names[k])return l.names[k];const P=Ld.POOL[Ld.REG(r.a3)]||Ld.POOL.EN,R=rng(k);
+  if(r.n>50){const f=P[0][(R()*P[0].length)|0],g=P[1][(R()*P[1].length)|0];return f+' '+String.fromCharCode(65+((R()*26)|0))+'. '+g;}   // large cohorts: a stable name derived from the record id and person number (not cached); the archive id keeps it unique
   for(let tries=0;tries<20;tries++){const n=P[0][(R()*P[0].length)|0]+' '+P[1][(R()*P[1].length)|0]+(tries>5?' '+String.fromCharCode(65+((R()*26)|0))+'.':'');if(!l.used||!l.used[n]){(l.used||(l.used={}))[n]=1;return l.names[k]=n;}}return l.names[k]=r.id+'-'+i;}
-function entries(f){const out=[];for(const r of L().ev){if(f&&!f(r))continue;for(let i=0;i<r.n;i++)out.push({r,i});}return out;}
+function entries(f,max){const out=[];for(const r of L().ev){if(f&&!f(r))continue;for(let i=0;i<r.n;i++){out.push({r,i});if(max&&out.length>=max)return out;}}return out;}
+// lazy paging over every entry (millions): records sorted by time, cumulative counts, entry k -> (record, person)
+function pager(f){const R=L().ev.filter(r=>!f||f(r)).sort((a,b)=>a.t-b.t);const cum=[];let c=0;for(const r of R){c+=r.n;cum.push(c);}return{n:c,at(k){let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]>k)hi=m;else lo=m+1;}const r=R[lo];return{r,i:k-(lo?cum[lo-1]:0)};}};}
 /* ------------------------------------------------------------------ sources */
 const srcEv=()=>{const e=W.st.ev[W.st.ev.length-1];return e&&e.id;};
 // aircraft destroyed in a world sortie
@@ -59,15 +62,17 @@ W.listeners.push(e=>{if(!W.st)return;if(e.ty==='COMMAND'&&/has been killed/.test
   if(/is killed in an assassination/.test(e.txt)){const m=/^(.+?), (.+?), is killed/.exec(e.txt);if(m)record({kind:'CIV',a3:(e.e||[])[0],role:m[2],place:NR,cause:'killed in an assassination',named:[m[1]],src:e.id});}
   if(e.ty==='SQUADRON'&&/missing after a mission/.test(e.txt)){const m=/mourns (.+?) \((.+?)\), missing/.exec(e.txt);if(m)record({kind:'MIL',a3:(e.e||[])[0],role:'pilot, '+m[1],st:'MISSING',cause:'missing after a mission',named:[m[2]],src:e.id});}});
 /* ------------------------------------------------------------------ totals (read model) */
-function totals(a3){const T={kM:0,mM:0,kC:0};for(const r of L().ev){if(a3&&r.a3!==a3)continue;if(r.kind==='MIL'){if(r.st==='KILLED')T.kM+=r.n;else T.mM+=r.n;}else T.kC+=r.n;}return T;}
+function totals(a3){const T={kM:0,mM:0,kC:0,nat:0};for(const r of L().ev){if(a3&&r.a3!==a3)continue;if(r.nat){T.nat+=r.n;continue;}if(r.kind==='MIL'){if(r.st==='KILLED')T.kM+=r.n;else T.mM+=r.n;}else T.kC+=r.n;}return T;}
 /* ------------------------------------------------------------------ the archive view: paged, searchable, filterable, detail page */
-const UI={f:'ALL',q:'',pg:0,sel:null,a3:null};const PG=20;const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function view(a3){const st=W.st,T=totals(a3);const flt=r=>(!a3||r.a3===a3)&&(UI.f==='ALL'||(UI.f==='MIL'&&r.kind==='MIL'&&r.st==='KILLED')||(UI.f==='CIV'&&r.kind==='CIV')||(UI.f==='MISSING'&&r.st==='MISSING'));
-  let E=entries(flt).sort((x,y)=>x.r.t-y.r.t||x.i-y.i);const q=UI.q.toLowerCase();if(q)E=E.filter(x=>(nameFor(x.r,x.i)+' '+x.r.unit+' '+x.r.role+' '+x.r.place+' '+x.r.cause).toLowerCase().includes(q));
-  const pages=Math.max(1,Math.ceil(E.length/PG));UI.pg=Math.min(UI.pg,pages-1);const S=E.slice(UI.pg*PG,UI.pg*PG+PG);
+const UI={f:'WAR',q:'',pg:0,sel:null,a3:null};const PG=20;const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function view(a3){const st=W.st,T=totals(a3);const flt=r=>(!a3||r.a3===a3)&&(UI.f==='ALL'||(UI.f==='WAR'&&!r.nat)||(UI.f==='MIL'&&r.kind==='MIL'&&r.st==='KILLED')||(UI.f==='CIV'&&r.kind==='CIV'&&!r.nat)||(UI.f==='MISSING'&&r.st==='MISSING'));
+  const q=UI.q.toLowerCase();let PGR;
+  if(q){const recHit=r=>(r.unit+' '+r.role+' '+r.place+' '+r.cause+' '+(r.named||[]).join(' ')).toLowerCase().includes(q);let E=[];for(const r of L().ev.filter(flt).sort((a,b)=>a.t-b.t)){if(recHit(r)){for(let i=0;i<r.n&&E.length<20000;i++)E.push({r,i});}else if(r.n<=5000){for(let i=0;i<r.n;i++)if(nameFor(r,i).toLowerCase().includes(q))E.push({r,i});}if(E.length>=20000)break;}PGR={n:E.length,at:k=>E[k]};}
+  else PGR=pager(flt);
+  const E={length:PGR.n};const pages=Math.max(1,Math.ceil(PGR.n/PG));UI.pg=Math.min(UI.pg,pages-1);const S=[];for(let k=UI.pg*PG;k<Math.min(PGR.n,UI.pg*PG+PG);k++)S.push(PGR.at(k));
   let h='<div style="font-size:10px;color:#8a9a92">Every death the campaign has resolved has one entry here. Names are assigned by the archive (fictional people). Fields the record does not contain say “not recorded”. Losses of aircraft, formations and ships far from your flights are recorded as equipment losses: the people in them are not resolved one by one, and no death figure is estimated for them.</div>'+
-    '<div class="row"><span>Military killed</span><b>'+T.kM+'</b></div><div class="row"><span>Military missing (fate unknown)</span><b>'+T.mM+'</b></div><div class="row"><span>Civilians killed</span><b>'+T.kC+'</b></div>'+
-    '<div class="tc">'+['ALL','MIL','CIV','MISSING'].map(k=>'<button data-cm="'+k+'" aria-pressed="'+(UI.f===k)+'">'+{ALL:'ALL',MIL:'MILITARY KILLED',CIV:'CIVILIANS',MISSING:'MISSING'}[k]+'</button>').join(' ')+'</div>'+
+    '<div class="row"><span>Military killed</span><b>'+T.kM.toLocaleString('en')+'</b></div>'+(T.nat?'<div class="row"><span>Deaths from natural causes (not war-related; included under ALL)</span><b>'+T.nat.toLocaleString('en')+'</b></div>':'')+'<div class="row"><span>Military missing (fate unknown)</span><b>'+T.mM.toLocaleString('en')+'</b></div><div class="row"><span>Civilians killed</span><b>'+T.kC.toLocaleString('en')+'</b></div>'+
+    '<div class="tc">'+['WAR','MIL','CIV','MISSING','ALL'].map(k=>'<button data-cm="'+k+'" aria-pressed="'+(UI.f===k)+'">'+{WAR:'WAR DEAD',ALL:'ALL DEATHS',MIL:'MILITARY',CIV:'CIVILIANS',MISSING:'MISSING'}[k]+'</button>').join(' ')+'</div>'+
     '<div><input id="cmQ" aria-label="search the archive" value="'+esc(UI.q)+'" placeholder="name, unit, place" style="width:140px"> <button data-cm="q">FIND</button> <button data-cm="clr">CLEAR</button> · '+E.length+' entr'+(E.length===1?'y':'ies')+' · chronological</div>';
   if(UI.sel){const[rid,i]=UI.sel.split('.');const r=L().ev.find(x=>x.id===rid);if(r){const src=st.ev.find(e=>e.id===r.src);
     h+='<div style="border:1px solid #444;padding:6px;margin:4px 0"><b>'+esc(nameFor(r,+i))+'</b><br>'+[['Status',r.st==='KILLED'?'killed':'missing — fate not yet known'],['Role',r.role],['Unit or organisation',r.unit],['Country',st.c[r.a3]?st.c[r.a3].n:NR],['Date',W.date(r.t)],['Place',r.place],['How',r.cause],['Age',NR],['Home town',NR],['Identification',r.named?'confirmed name':'name assigned by the archive'],['Record',r.st==='MISSING'?'unresolved':'confirmed by the campaign\'s own record'],['Source event',src?src.txt.slice(0,140):(r.src||NR)]].map(([a,b])=>'<div class="row"><span>'+a+'</span><b>'+esc(b)+'</b></div>').join('')+'<button data-cm="back">BACK TO THE LIST</button></div>';}}
@@ -76,9 +81,9 @@ function view(a3){const st=W.st,T=totals(a3);const flt=r=>(!a3||r.a3===a3)&&(UI.
   return h;}
 if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.CEMETERY=p=>view(p.a3);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cm],[data-cme]');if(!b||!W.st)return;const d=b.dataset;
-  if(d.cme)UI.sel=d.cme;else if(d.cm==='q'){const i=document.getElementById('cmQ');UI.q=i?i.value:'';UI.pg=0;}else if(d.cm==='clr'){UI.q='';UI.f='ALL';UI.pg=0;}else if(d.cm==='back')UI.sel=null;else if(d.cm==='prev')UI.pg--;else if(d.cm==='next')UI.pg++;else{UI.f=d.cm;UI.pg=0;}
+  if(d.cme)UI.sel=d.cme;else if(d.cm==='q'){const i=document.getElementById('cmQ');UI.q=i?i.value:'';UI.pg=0;}else if(d.cm==='clr'){UI.q='';UI.f='WAR';UI.pg=0;}else if(d.cm==='back')UI.sel=null;else if(d.cm==='prev')UI.pg--;else if(d.cm==='next')UI.pg++;else{UI.f=d.cm;UI.pg=0;}
   if(document.getElementById('wwEnd')&&W.endscreen)W.endscreen.go(10);else WARMAP.panel();});
 // the epilogue's "Names and places": the archive itself
 if(W.endscreen&&W.endscreen.CH){const ch=W.endscreen.CH.find(c=>c[0]==='Names and places');if(ch){const _f=ch[1];ch[1]=(F,st)=>_f(F,st)+'<h2>THE MEMORIAL ARCHIVE</h2>'+view(null);}}
-W.cemetery={L,record,entries,nameFor,totals,view,buildingDeaths,UI};
+W.cemetery={L,record,entries,pager,nameFor,totals,view,buildingDeaths,UI};
 })();

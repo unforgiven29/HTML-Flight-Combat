@@ -1,3 +1,11 @@
+## v371–v372 (corrections; every person accounted for; munitions ledger)
+- **Anti-ship missiles by aircraft** (js/war/fixes.js): added F/A-18E Harpoon, Mirage F1 Exocet, Su-24M and MiG-29SMT Kh-31A, Sea Harrier FRS.1 / FA2 Sea Eagle; removed Harpoon from the F-15E / F-15EX and the air-launched P-800 from the Su-30SM, Su-35S and Su-34.
+- **Nuclear warfare is always possible** (no switch); still shown abstractly.
+- **World flight starts only at military airfields** (civil airports are refused with a message).
+- **Every person accounted for** (js/war/census.js): losses of strength are people — ground forces, aircrew and ship crews have their fates resolved each day (killed, missing, wounded; deaths of wounds later); civilians in cities under fire, under occupation and in overloaded shelters face daily hazards; natural deaths monthly. Every death has a memorial entry; the archive pages lazily through tens of millions and defaults to war dead. A living account per country (start, births, natural deaths, war deaths, displaced, refugees, alive now).
+- **Munitions ledger** (MUNITIONS tab): every weapon fired in sorties by type (missiles, bombs, Mavericks, gun rounds), strategic expenditure by class (rounds-per-day rule, labelled) and long-range missiles fired.
+- Tests: `node tests/run.js s26_`, `node tests/run.js s27_`; world-flight tests now start at military bases.
+
 ## v370 (multiplayer between two real pages)
 - **Same-browser room** (js/war/localroom.js): a BroadcastChannel room with the same interface as the PeerJS rooms; used with `?room=local` (or window.LOCAL_ROOM). Two tabs can play the same war, and the oldest page is promoted host if the host leaves.
 - **Test with two real pages**: a host page and a guest page join one war room; the guest receives the war, sees the host's AI aircraft and ground units in its sortie, and the host sees the guest's aircraft.
