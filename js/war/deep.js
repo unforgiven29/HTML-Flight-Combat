@@ -68,7 +68,7 @@ function network(){const st=W.st,o=W.ops&&W.ops.O();if(!o)return;
     // the capital fills from industry and imports (ports unless blockaded)
     const imp=p.nav&&!p.blk?.4:.1;cap.stock=Math.min(60,cap.stock+(e?e.ind*.9+imp:1));
     for(const d of L.slice(1)){const dist=G.dist(cap.lat,cap.lon,d.lat,d.lon)/1000,cut=d.fr.reduce((t,f)=>t+(W.supply?W.supply.cutOn(p.a3,f):0),0);
-      const capy=(e?e.trans:1)*(rail*1.4+(1-rail))*Math.max(.25,1-dist/3000)*(1-inter*.35)*Math.pow(.85,cut)*3;const mv=Math.min(capy,cap.stock*.5,30-d.stock);if(mv>0){cap.stock-=mv;d.stock+=mv;}
+      const capy=(e?e.trans:1)*(rail*1.4+(1-rail))*Math.max(.25,1-dist/3000)*(1-inter*.35)*Math.pow(.85,cut)*(d.cutRoute?.3:1)*3;const mv=Math.min(capy,cap.stock*.5,30-d.stock);if(mv>0){cap.stock-=mv;d.stock+=mv;}
       // fronts draw, PRIORITY first
       const F=d.fr.map(id=>st.fronts.find(f=>f.id===id)).filter(f=>f&&!f.cf).sort((a,b)=>(o.prio[p.a3]===b.id)-(o.prio[p.a3]===a.id));
       for(const f of F){const need=1,take=Math.min(need,d.stock);d.stock-=take;o.sup[p.a3+':'+f.id]=cl(take/need*(.6+.4*Math.min(1,d.stock/10)),0,1.2);
@@ -76,7 +76,7 @@ function network(){const st=W.st,o=W.ops&&W.ops.O();if(!o)return;
       // depots struck where the enemy holds the air
       if(inter>.4&&rn()<.01*inter){const lost=d.stock*.3;d.stock-=lost;W.emit('DEPOT',{e:[p.a3],txt:'Enemy aircraft strike the supply depot at '+d.n+' ('+p.n+'): about '+Math.round(lost)+' days of stocks are destroyed.'});}}}}
 // replace ops.js's single-route estimate with the network (run after it, the same day)
-W.daily.push(()=>{if(W.st&&!W.st.over)network();});
+W.daily.push(()=>{if(W.st&&!W.st.over)W.deep.network();});   /* through W.deep so realwar.js can mark routes cut by destroyed bridges */
 // a strike on a depot in your sortie destroys stocks
 if(typeof GUnit!=='undefined'){const _k=GUnit.prototype.kill;GUnit.prototype.kill=function(src){const was=this.alive,r=_k.apply(this,arguments);if(was&&!this.alive&&this._depot&&W.st&&W.st.dep){const L=W.st.dep[this._ws]||[],d=L.find(x=>x.n===this._depot);if(d)d.stock=Math.max(0,d.stock-2.5);}return r;};}
 /* ================================================================== lives */

@@ -68,3 +68,31 @@ ETH|Su-27|-|-|-|-|-|C-130|Mi-35|Mi-8|T-72|-|BTR-60|2S19|BM-21|-|Pantsir-S1|-|-|-
 QAT|Rafale, Typhoon, F-15QA|-|-|-|-|A330 MRTT|C-17|AH-64E|NH90|Leopard 2A7|-|VBCI|PzH 2000|-|Patriot|NASAMS|-|-|Al Zubarah class (corvette)|-|-|-|Al Fulk (LPD)|-|-|AIM-9X|Meteor, AIM-120|-|SCALP-EG|Exocet|HK416|-|Javelin
 KWT|F/A-18C/D, Typhoon, F/A-18E/F|-|-|-|-|KC-130J|C-17|AH-64D|UH-60|M1A2K Abrams|BMP-3, Desert Warrior|-|PLZ-45|BM-30|Patriot|NASAMS|-|-|-|-|-|-|-|-|-|AIM-9|AIM-120|-|-|-|M16|-|TOW
 JOR|F-16AM|-|-|-|-|-|C-130H|AH-1F|UH-60|Challenger 1 (Al Hussein)|-|M113|M109|HIMARS|Patriot|-|-|-|-|-|-|-|-|-|-|AIM-9|AIM-120|-|-|-|M4|-|Javelin
+AUT|Typhoon|-|-|-|-|-|C-130K, C-390 (on order)|-|S-70 Black Hawk, AW169|Leopard 2A4|Ulan (ASCOD)|Pandur Evolution|M109A5Ö|-|-|-|Mistral|-|-|-|-|-|-|-|-|IRIS-T|-|-|-|-|StG 77 (AUG)|Mistral|Spike
+CHE|F/A-18C/D Hornet|F-35A (on order)|-|-|-|-|-|-|AS532 Cougar|Leopard 2 (Pz 87)|CV90 (Spz 2000)|Piranha|M109 (Pz Hb 79)|-|Patriot (on order)|-|Stinger|-|-|-|-|-|-|-|-|AIM-9X|AIM-120|-|-|-|SIG 550 (Stgw 90)|Stinger|NLAW
+IRL|-|-|PC-9M|-|-|-|C-295|-|AW139|-|-|Piranha III|-|-|-|-|RBS 70|-|-|-|-|-|-|-|-|-|-|-|-|-|Steyr AUG|RBS 70|Javelin
+HRV|Rafale (deliveries)|-|-|-|-|-|-|-|UH-60M|M-84|M-80A, Bradley|Patria AMV|PzH 2000|-|-|Mistral|Mistral|-|-|-|-|-|-|Bayraktar TB2|Bayraktar TB2|MICA IR|MICA EM|-|-|-|VHS-2|Mistral|Spike
+SVN|-|-|PC-9M|-|-|-|-|-|Bell 412|M-84|-|Patria AMV|-|-|-|IRIS-T SLM (on order)|-|-|-|-|-|-|-|-|-|-|-|-|-|-|FN F2000|Mistral|Spike
+CYP|-|-|-|-|-|-|-|Mi-35|AW139|T-80U|BMP-3|VAB|Zuzana|BM-21|-|Tor-M1, Barak MX|-|-|-|-|-|-|-|-|-|-|-|-|-|-|G3|Mistral|Kornet
+LBN|-|-|A-29 Super Tucano|-|-|-|-|-|UH-1H|M60|M2 Bradley|M113|M198|-|-|-|-|-|-|-|-|-|-|ScanEagle|-|-|-|-|-|-|M16|-|TOW
+BGD|MiG-29, F-7BGI|-|Yak-130|-|-|-|C-130J|Mi-171Sh|Bell 212|MBT-2000, Type 59G|BTR-80|BTR-80|Nora B-52|WS-22|-|FM-90|QW-2|-|Bangabandhu / Ulsan class|-|Ming class|-|-|-|-|PL-5|PL-12|-|-|C-802|BD-08|QW-2|Metis-M
+LKA|Kfir|-|-|-|-|-|C-130|Mi-24|Mi-17|T-55|BMP-2|WZ-551|Type 66|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|Type 56|-|-
+MMR|MiG-29, Su-30SME, JF-17|-|Yak-130|-|-|-|Y-8|Mi-35|Mi-17|MBT-2000, T-72S|BTR-3U|BTR-3U|Nora B-52|-|S-125|Kvadrat|Igla|-|Kyan Sittha class|-|Kilo (Min Ye Thein Kha Thu)|-|-|CH-3|CH-4|R-73|R-77|-|-|C-802|MA-1|Igla|-
+PER|Mirage 2000P, MiG-29S|-|Su-25|-|-|-|C-27J|Mi-35P|Mi-17|T-55|-|LAV II|-|-|-|-|Igla|-|Lupo class|-|Type 209 class|-|-|-|-|R-73|R-27|-|-|Otomat|Galil ACE|Igla|Spike
+ECU|Cheetah (retired), Super Tucano|-|A-29 Super Tucano|-|-|-|C-130|-|Mi-171|-|-|EE-11 Urutu|-|-|-|-|Igla|-|-|-|Type 209 class|-|-|-|-|-|-|-|-|Exocet|Steyr AUG|Igla|-
+BOL|K-8|-|-|-|-|-|C-130|-|H425|-|-|EE-9 Cascavel|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|M16|-|-
+URY|A-37|-|-|-|-|-|C-130|-|AS365|Tiran-5|BMP-1|M113|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|FN FAL|-|-
+CUB|MiG-29, MiG-23|-|-|-|-|-|An-26|Mi-24|Mi-17|T-62, T-55|BMP-1|BTR-60|2S1|BM-21|S-125|2K12 Kub|-|-|-|-|-|-|-|-|-|R-60|R-27|-|-|-|AKM|Igla|-
+AGO|Su-30K, Su-27|-|Su-25|-|-|-|C-295|Mi-24|Mi-17|T-72|BMP-2|BTR-80|2S1|BM-21|-|-|-|-|-|-|-|-|-|-|-|R-73|R-27|-|-|-|AK-47|Igla|-
+KEN|F-5E|-|-|-|-|-|C-27J|AH-1F|MD 530F|Vickers Mk3|-|WZ-551|-|-|-|-|-|-|Jasiri|-|-|-|-|ScanEagle|-|-|-|-|-|-|G3|-|-
+TZA|J-7, K-8|-|-|-|-|-|-|-|-|Type 59, Type 63A|-|WZ-551|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|Type 56|-|-
+UGA|Su-30MK2|-|-|-|-|-|-|Mi-24|Mi-17|T-90S, T-55|BMP-2|BTR-80|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|AK-47|-|-
+MOZ|-|-|-|-|-|-|-|Mi-24|Mi-8|T-54|BMP-1|BTR-60|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|AK-47|-|-
+ZWE|K-8, J-7|-|-|-|-|-|-|Mi-35|AB 412|Type 59, T-54|-|EE-9|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|AK-47|-|-
+SDN|Su-24, Su-25, MiG-29|-|-|-|-|-|Il-76|Mi-24|Mi-17|T-72, Type 85-IIM|BMP-2|BTR-80|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|AK-47|-|-
+TUN|F-5E|-|-|-|-|-|C-130J|-|UH-60M|M60A3|-|Kirpi|M109|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|Steyr AUG|-|-
+OMN|F-16 Block 50, Typhoon|-|Hawk|-|-|-|A400M, C-130J|-|NH90|Challenger 2|-|Piranha|G6|-|-|NASAMS|-|-|Khareef class|-|-|-|-|-|-|AIM-9|AIM-120|-|-|Exocet|Steyr AUG|Mistral|Javelin
+BHR|F-16V Block 70|-|-|-|-|-|-|AH-1Z|UH-60M|M60A3|-|-|M109|M270|Patriot|-|-|-|Sabha (FFG-7)|-|-|-|-|-|-|AIM-9X|AIM-120|-|-|Harpoon|M16|-|TOW
+UZB|Su-30, MiG-29|-|Su-25|-|-|-|C-295|Mi-35M|H225M|T-72|BMP-2|BTR-80|2S3|BM-21|S-300PS|-|-|-|-|-|-|-|-|-|Wing Loong|R-73|R-27|-|-|-|AK-74|Igla|-
+MNG|MiG-29|-|-|-|-|-|An-26|Mi-24|Mi-171|T-72|BMP-1|BTR-80|2S1|BM-21|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|AK-74|Igla|-
+LBY|MiG-23, Mirage F1|-|-|-|-|-|-|Mi-35|Mi-17|T-72|BMP-1|-|-|BM-21|-|-|-|-|-|-|-|-|-|-|Wing Loong II, Bayraktar TB2|-|-|-|-|-|AK-47|Igla|Kornet

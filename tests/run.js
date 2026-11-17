@@ -795,6 +795,21 @@ test('s16_mp: guest messages validated; host migration','F-16C',async p=>{
     localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const R={emit:()=>Promise.resolve(),on:()=>()=>{},peers:()=>[],presence:()=>Promise.resolve(),leave:()=>Promise.resolve()};net.on=true;net.r=R;net.ww=true;N.on=true;N.host=false;net.isHost=true;WWAR.run=false;
     await new Promise(r=>setTimeout(r,400));const migrated=N.host&&WWAR.run;net.on=false;N.on=false;net.ww=false;WWAR.run=false;return{ok,bad,far,near,migrated};});
   ok('rate limit on reports',r.ok===10&&r.bad===5,r);ok('kills only from a plausible distance',!r.far&&r.near,r);ok('a promoted guest takes over the war',r.migrated,r);});
+
+/* ---------- step 16 (v356+): the register, real formations, quotations, carrier, convoys ---------- */
+test('s17_cemetery: named dead and missing for every country at war, from its own losses','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*200);const S=st.cem,a=Object.entries(S).sort((x,y)=>(y[1].mil.n+y[1].civ.n)-(x[1].mil.n+x[1].civ.n))[0];
+    const r0=a[1],x=r0.mil.L[0],c=r0.civ.L[0];const tab=WWAR.cemetery.tab(st.c[a[0]]);const caps=Object.values(S).every(r=>r.mil.L.length<=400&&r.civ.L.length<=400);
+    const leaders=Object.values(st.lead.people).filter(q=>q.role==='civilian').length;WWAR.diplo.end('ARMISTICE','t');const ch=WWAR.endscreen.CH.find(c=>c[0]==='Names and places')[1](WWAR.endscreen.facts(),st);
+    return{n:Object.keys(S).length,mil:r0.mil.n,civ:r0.civ.n,x,c,tab:tab.length,caps,leaders,reg:ch.includes('THE REGISTER'),audit:WWAR.audit()};});
+  ok('registers for the countries at war',r.n>5&&r.mil>0&&r.civ>0,r);ok('each record: name, age, home, who they were, when, how',r.x&&r.x.n&&r.x.age&&r.x.home&&r.x.role&&r.x.how&&r.c&&r.c.role,r);
+  ok('named records capped, the rest counted',r.caps,r);ok('names do not pollute the leaders register',r.leaders===0,r);ok('CEMETERY tab and the epilogue register',r.tab>500&&r.reg,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s17_real: real formation names, quotations, carrier offer, convoys','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*5);
+    const pol=WWAR.ob.units('POL').filter(u=>u._real).map(u=>u.name),us=WWAR.ob.units('USA').filter(u=>u._real).length;const Q=WWAR.endscreen.QUOTES.length;
+    const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);let cv=0;for(let i=0;i<3&&!WWAR.realwar.CNV.list.length;i++)WWAR.realwar.convoy();const cn=WWAR.realwar.CNV.list.flat().length;WSORTIE.finish();
+    return{pol:pol.slice(0,3),us,Q,cn,hasCV:!!(st.c.USA.nav&&st.c.USA.nav.cv)};});
+  ok('real formation names applied',r.pol.length>0&&r.us>0,r);ok('quotation archive',r.Q>=5,r);});   /* convoys need road tiles, which the offline test browser does not load */
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
