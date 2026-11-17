@@ -20,7 +20,7 @@ const W=WWAR;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+' million':n>=1e4?Math.round(n/1e3)+',000':String(Math.round(n||0));
 const KIND={ARMISTICE:'An armistice',NEGOTIATED_PEACE:'A negotiated peace treaty',MUTUAL_EXHAUSTION:'A peace of mutual exhaustion',DECISIVE_VICTORY:'A military decision',COALITION_COLLAPSE:'The collapse of a coalition',
-  STALEMATE:'An unresolved stalemate',REGIME_CHANGE:'A change of government',WITHDRAWAL:'A withdrawal to the prewar borders',PARTIAL:'A partial settlement'};
+  STALEMATE:'An unresolved stalemate',REGIME_CHANGE:'A change of government',WITHDRAWAL:'A withdrawal to the prewar borders',NUCLEAR_CATASTROPHE:'A nuclear catastrophe',PARTIAL:'A partial settlement'};
 // the verified quotation archive: author, occasion, date, source — public-domain, checked wording
 const QUOTES=[{q:'Every gun that is made, every warship launched, every rocket fired signifies, in the final sense, a theft from those who hunger and are not fed, those who are cold and are not clothed.',
   a:'Dwight D. Eisenhower',w:'"The Chance for Peace" address to the American Society of Newspaper Editors',d:'16 April 1953',s:'Public Papers of the Presidents of the United States: Dwight D. Eisenhower, 1953'}];
@@ -37,7 +37,7 @@ function css(){if(document.getElementById('wwEndCss'))return;const s=document.cr
 /* ------------------------------------------------------------------ facts from the war's own records */
 function outcome(){const st=W.st,me=(typeof game!=='undefined'&&game.team==='RED')?'R':'B';let gainB=0,gainR=0;
   for(const v of Object.values(st.cities||{})){if(v.h===v.own)continue;const h=st.c[v.h];if(!h)continue;if(h.side==='B')gainB+=v.pop;else if(h.side==='R')gainR+=v.pop;}
-  const neg=/NEGOTIATED|MUTUAL|ARMISTICE|STALEMATE|PARTIAL/.test(st.over.kind);if(neg||Math.abs(gainB-gainR)<5e5)return'NEITHER';return (gainB>gainR?'B':'R')===me?'WIN':'LOSE';}
+  const neg=/NEGOTIATED|MUTUAL|ARMISTICE|STALEMATE|PARTIAL|NUCLEAR/.test(st.over.kind);if(neg||Math.abs(gainB-gainR)<5e5)return'NEITHER';return (gainB>gainR?'B':'R')===me?'WIN':'LOSE';}
 function facts(){const st=W.st,r=st.report||W.diplo.report(),L=Object.values(st.c);const sum=k=>L.reduce((t,p)=>t+(p[k]||0),0);
   const life=L.map(p=>p.life).filter(Boolean),mil=Object.values(st.mil||{});
   return{r,disp:sum('disp'),ref:sum('ref'),air:r.air.B+r.air.R,gnd:r.gnd.B+r.gnd.R,uxo:mil.reduce((t,m)=>t+(m.harm||0),0),homes:life.reduce((t,l)=>t+l.house.lost,0),school:life.reduce((t,l)=>t+l.edu.lost,0),

@@ -829,6 +829,23 @@ test('s18_perf: level of detail, smooth stepping, bounded saves','F-16C',async p
     WWAR.run=true;const t0=st.t;WWAR.step(24);const first=st.t-t0;await new Promise(r=>setTimeout(r,1500));const after=st.t-t0;WWAR.run=false;
     const big=JSON.stringify(st).length;WWAR.compact();const small=JSON.stringify(st).length;return{sk,first,after,big,small,ev:st.ev.length};});
   ok('distant neutral countries update weekly',r.sk>0,r);ok('a long running step is split into chunks',r.first<=6&&r.after>=r.first,r);ok('compaction keeps the save bounded',r.small<=r.big&&r.ev<=600,r);});
+
+/* ---------- step 18 (v362): submarines, strategic forces, long-range strike, missile defence, nuclear switch ---------- */
+test('s19_strat: strike and interception; nuclear use off by default; on, it ends the war with no death figure','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;const S=WWAR.strategic;WWAR.step(24*150);const s=S.S();
+    const fired=Object.values(s.c).reduce((t,x)=>t+x.fired,0),intc=Object.values(s.c).reduce((t,x)=>t+x.intc,0),off=!s.nuke&&!s.used&&!st.ev.some(e=>e.ty==='NUCLEAR');
+    const us=S.rec(st.c.USA),tab=S.tab(st.c.RUS);
+    // force the threshold conditions with the switch on
+    s.nuke=true;st.wx2.det.lvl=4;const ru=st.c.RUS;ru.gnd=ru.gnd0*.2;if(ru.ldr&&WWAR.lead.who(ru.ldr.HEAD))WWAR.lead.who(ru.ldr.HEAD).prag=.1;let k=0;while(!st.over&&k<400){S.threshold();k++;}
+    const ev=st.ev.find(e=>e.ty==='NUCLEAR');return{fired,intc,off,icbm:us.icbm,tab:tab.includes('ICBM'),over:st.over&&st.over.kind,noFig:ev&&!/\d[\d,]* (people|dead|killed)/.test(ev.txt),oc:WWAR.endscreen.outcome(),audit:WWAR.audit()};});
+  ok('conventional salvos are fired and some intercepted',r.fired>0&&r.intc>0,r);ok('strategic inventories shown',r.icbm>0&&r.tab,r);ok('nuclear use never happens with the switch off',r.off,r);
+  ok('switch on, conditions met: the war ends in catastrophe, no death figure, no side wins',r.over==='NUCLEAR_CATASTROPHE'&&r.noFig&&r.oc==='NEITHER',r);});
+test('s19_cockpit: flight line, start-up checklist, wear, academy, controls setup, spoken radio toggle','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');['viper.wear','viper.quals'].forEach(k=>localStorage.removeItem(k));await WWAR.newWar('EST');const C=COCKPIT;C.SU.on=true;
+    const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const crew=!!C.FL.g,lock=C.SU.lock;player.thr=1;readControls(1/30);const idle=player.thr<=.05;for(let i=0;i<9;i++)C.tick();const free=!C.SU.lock;
+    WSORTIE.finish();const w=JSON.parse(localStorage.getItem('viper.wear')||'{}'),q=JSON.parse(localStorage.getItem('viper.quals')||'{}');C.SU.on=false;C.openSetup();const setup=!!document.getElementById('ctlSetup');C.closeSetup();
+    return{crew,lock,idle,free,wear:Object.values(w)[0]&&Object.values(w)[0].n,ws:!!q.WS,setup,deb:NATPANEL.tabs.DEBRIEF(WWAR.st.c.POL).includes('COCKPIT AND ACADEMY')};});
+  ok('ground crew by the aircraft on a ground start',r.crew,r);ok('start-up checklist holds the throttle at idle until done',r.lock&&r.idle&&r.free,r);ok('airframe wear counted',r.wear===1,r);ok('qualification recorded',r.ws,r);ok('controls setup and settings panel',r.setup&&r.deb,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
