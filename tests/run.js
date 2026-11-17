@@ -987,6 +987,24 @@ test('s33_trenches: battles at real places, defend the trenches against waves wi
     out.towns=CAMPPLUS.TOWNS.length;return out;});
   ok('battle at a real place',r.real&&r.loc&&r.loc!=='the village',r.loc);ok('trench line, riflemen and our tanks',r.trench&&r.fr>=12&&r.ftank===2,r);ok('a wave with named enemy tanks',r.wave1&&!!r.tname,r.tname);
   ok('enemy advances',r.adv,r);ok('air war overhead',r.air);ok('trenches held after four waves',r.res==='HELD',r.res);ok('campaign battle at a named town',/^[A-Z]/.test(r.camp)&&r.camp!=='the village',r.camp);ok('more campaign towns',r.towns>=20,r.towns);});
+test('s34_infworld: infantry in the live world while the war runs; backup, engineers, offensive, battle damage, Q aims','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);out.base=B[0]&&B[0].ident;
+    await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'APC',mis:'ATTACK',role:'ENGINEER'});const S=I.S;out.wm=!!(S&&S.WM);out.loc=S&&S.loc.name;out.wf=WF.on;out.run=WWAR.run;out.ws=WSORTIE.WS.on;out.prox=!!player.infantry;
+    I.land();S.hp=1e9;S.dT=1e9;const t0=WWAR.st.t;I.step(1/30,30);
+    // the game renders the main scene: the camera must be where the soldier is
+    renderer.render(scene,camera);out.cam=camera.position.distanceTo(S.pos.clone().add(S.O))<.5;out.gy=Math.abs(S.pos.y-1.7-groundAt(S.O.x+S.pos.x,S.O.z+S.pos.z))<.6;
+    // Q toggles aiming
+    window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ'}));out.ads=S.ads;window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ'}));
+    // engineer builds; backup is called when the enemy loses men
+    const nb=S.blds.length;I.dig(true);out.dig=S.blds.length===nb+1;
+    for(const u of S.them.slice(0,5))u.alive=false;I.battleStep(1/30);out.call=!!S.pend;S.pend.t=0;S.pend.k='ARTY';I.battleStep(1/30);out.arty=!!S.arty;
+    const nC=S.craters.length;for(let i=0;i<30*15;i++)I.battleStep(1/30);out.craters=S.craters.length>nC;
+    const fr=S.fr,mid=fr.sec[(fr.sec.length/2)|0],o0=mid.off,nu=S.us.length;I.offensive();out.off=S.us.length===nu+10&&mid.off!==o0;
+    // walls get holed by heavy blasts
+    const w=S.blds.find(b=>b.y1-b.y0>2.5&&b.m);const h0=S.blds.length;for(let i=0;i<20;i++)I.S&&(function(){const p=new THREE.Vector3((w.x0+w.x1)/2,(w.y0+w.y1)/2,(w.z0+w.z1)/2);I.arty(p,1,'F');S.arty.t=0;I.battleStep(1/30);})();out.holes=(S.holes||0)>0;
+    I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));out.after={inf:!!player&&!!player.infantry,cls:document.body.classList.contains('infWorld'),wf:WF.on};return out;});
+  ok('battle in the live world',r.wm&&r.wf&&r.ws&&r.run&&r.prox,r);ok('at a real place',!!r.loc,r.loc);ok('camera at the soldier, on the real ground',r.cam&&r.gy,r);ok('Q aims',r.ads);
+  ok('engineer digs',r.dig);ok('enemy calls for backup, artillery falls',r.call&&r.arty&&r.craters,r);ok('offensive called, front pushed',r.off,r);ok('walls holed',r.holes);ok('back to the aircraft, world closed',!r.after.inf&&!r.after.cls&&!r.after.wf,r.after);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -1,3 +1,12 @@
+## v380 (infantry in the live world; backup, engineers, offensives, battle damage; Q and iron sights)
+- **Battles in the live world**: GO AS INFANTRY from a world-war sortie starts the sortie and moves to the battle site on the front (the real town nearest your front), and you fight on foot in the game's own world: its terrain, its towns, real AI flights of both sides fighting overhead, missiles, radio calls and the war's clock all keep going. Your aircraft waits out of sight; when the battle ends the sortie closes and the debrief follows. The flight HUD is hidden while on foot.
+- **Enemy troops call for backup** when they lose men: reinforcements with an IFV, an artillery strike, or FPV drones (up to four calls).
+- **Engineers dig in**: two in each squad (and the enemy's) build trench sections where it is quiet; the new ENGINEER role (and anyone, with fewer sandbags) builds a sandbag wall with **B**.
+- **Offensives** with **O** (twice a battle): a barrage on the enemy, ten riflemen and a tank; the sector of the war front (or campaign front) pushes.
+- **The ground scars as the fight goes on**: craters from every heavy blast, walls holed and collapsed into rubble, wrecks burning and smoking; the separate battlefield's ground darkens.
+- **Q** toggles aiming down the sights; every gun without a scope has **iron sights** (rear posts and front post line up on the centre).
+- Tests: `node tests/run.js s34_`.
+
 ## v379 (battles in real places, the trenches, the air war overhead, more trees and towns)
 - **Infantry battles at real places**: in the world war, at the real town or city nearest your front (GeoNames / Natural Earth), sized by its population (high-rises in cities), on the real elevation; in the campaign, at the named campaign town nearest the hot sector, on the campaign's terrain.
 - **DEFEND THE TRENCHES** mission: a zig-zag trench line (earth parapet, sandbags, dugouts) before the town, held by your squad, more riflemen and two of your country's tanks; four waves of enemy infantry with their real tanks (T-90M, M1A2 and so on, from the equipment table) and IFVs advance and fire. Hold all four waves; the trench is lost if the enemy stands in it and none of yours do.
