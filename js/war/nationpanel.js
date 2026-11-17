@@ -52,6 +52,7 @@ function newsTab(){const n=W.st.soc;if(!n)return'';const L=n.news.filter(x=>x.ou
   return'<div class="tabs">'+[['N','NEUTRAL WIRE'],['B','BLUEFOR MEDIA'],['R','REDFOR MEDIA']].map(([k,l])=>'<button data-nw="'+k+'" aria-pressed="'+(UI.out===k)+'">'+l+'</button>').join('')+'</div>'+
     '<div class="nw">'+(L.map(x=>'<div><em>'+esc(W.date(x.t).slice(5,16))+'</em>'+(x.k!=='REPORT'?'<span class="k">'+x.k+'</span>':'')+esc(x.txt)+'</div>').join('')||'<div>No reports yet.</div>')+'</div>'+
     '<div style="color:#8a9a92;margin-top:3px">INVESTIGATIONS</div><div class="nw">'+(n.inv.slice(-8).reverse().map(v=>'<div><em>'+v.id+'</em>'+(v.st==='OPEN'?'open: '+esc(v.txt.slice(0,90)):esc(v.find))+'</div>').join('')||'<div>None opened.</div>')+'</div>';}
+const XT={};   /* extra tabs from later modules (military.js) */
 function render(){const el=document.getElementById('wmWar'),st=W.st;if(!el||!st)return;for(const id of['wsNat','wsSide','wsCar'])el.querySelector('#'+id)&&el.querySelector('#'+id).remove();
   const team=(typeof game!=='undefined'&&game.team==='RED')?'R':'B',mine=Object.values(st.c).filter(p=>p.side===team&&(p.al==='CORE'||p.al==='ALLY'));
   let h='<div id="wsSide"><div class="row"><span>YOU FLY FOR</span><span><button data-tm="BLUE" aria-pressed="'+(team==='B')+'">BLUEFOR</button> <button data-tm="RED" aria-pressed="'+(team==='R')+'">REDFOR</button></span></div>'+
@@ -59,13 +60,13 @@ function render(){const el=document.getElementById('wmWar'),st=W.st;if(!el||!st)
     '<div style="color:#8a9a92">Pick a country, then an airfield under FLY FOR.</div>'+
     '<div style="color:#8a9a92;margin-top:3px">WEATHER</div>'+st.th.map(th=>row(esc(th.name),esc((th.season||'').toLowerCase())+(th.wx?' · '+th.wx.toLowerCase():''))).join('')+'</div>';
   const p=WARMAP.UI.sel&&st.c[WARMAP.UI.sel];
-  if(p){h+='<div id="wsNat"><b>'+esc(p.n)+'</b><div class="tabs">'+['PEOPLE','ECONOMY','GOVERNMENT','LEADERS','FORCES','NAVY','STRATEGY','NEWS','JUSTICE'].map(k=>'<button data-nt="'+k+'" aria-pressed="'+(UI.tab===k)+'">'+(k==='NEWS'?'NEWS & COURTS':k)+'</button>').join('')+'</div>'+
-    ({PEOPLE:people,ECONOMY:economy,GOVERNMENT:government,LEADERS:leaders,FORCES:orbat,NAVY:navy,STRATEGY:strategy,NEWS:newsTab,JUSTICE:justice}[UI.tab])(p)+'</div>';}
+  if(p){h+='<div id="wsNat"><b>'+esc(p.n)+'</b><div class="tabs">'+['PEOPLE','ECONOMY','GOVERNMENT','LEADERS','FORCES','NAVY','STRATEGY','NEWS','JUSTICE',...Object.keys(XT)].map(k=>'<button data-nt="'+k+'" aria-pressed="'+(UI.tab===k)+'">'+(k==='NEWS'?'NEWS & COURTS':k)+'</button>').join('')+'</div>'+
+    (({PEOPLE:people,ECONOMY:economy,GOVERNMENT:government,LEADERS:leaders,FORCES:orbat,NAVY:navy,STRATEGY:strategy,NEWS:newsTab,JUSTICE:justice,...XT})[UI.tab]||people)(p)+'</div>';}
   h=careerBox()+h;el.insertAdjacentHTML('afterbegin',h);}
 WARMAP.after.push(render);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsNat [data-nt],#wsNat [data-nw],#wsSide [data-tm],#wsSide [data-sel]');if(!b)return;
   if(b.dataset.nt)UI.tab=b.dataset.nt;else if(b.dataset.nw)UI.out=b.dataset.nw;
   else if(b.dataset.tm){const t=document.querySelector('.seg[data-k="team"] button[data-v="'+b.dataset.tm+'"]');if(t)t.click();else game.team=b.dataset.tm;WARMAP.UI.sel=null;}   // the game's own side switch (it checks the hangar jet fits the side)
   else if(b.dataset.sel)WARMAP.UI.sel=b.dataset.sel;WARMAP.panel();if(window.WMAP)WMAP.draw();});
-window.NATPANEL={UI,render};
+window.NATPANEL={UI,render,tabs:XT};
 })();

@@ -132,8 +132,8 @@ function cityScan(init){const st=W.st,secs=[];
     st.cities[k]={h:holder,own:pl.a3,lat:pl.lat,lon:pl.lon,pop:pl.pop};
     if(!init&&was&&was.h!==holder)emit('CITY',{e:[holder,pl.a3],loc:[pl.lat,pl.lon],txt:pl.name+' ('+st.c[pl.a3].n+') '+(holder===pl.a3?'retaken by '+st.c[holder].n:'falls to '+st.c[holder].n+' forces')+'.'});}}
 function prodStep(dh){for(const p of Object.values(W.st.c)){if(!bell(p))continue;const g=Math.pow(Math.max(1,p.gdp/1000),.6)*(p.econ==null?1:p.econ);   /* p.econ: the war economy index (nations.js) */
-  p.air=Math.min(p.air0*1.2,p.air+C.prodAir*g*dh*(1-p.exh));p.gnd=Math.min(p.gnd0*1.2,p.gnd+C.prodGnd*g*dh*(1-p.exh));
-  p.exh=Math.min(1,.5*p.lostAir/Math.max(1,p.air0)+.5*p.lostGnd/Math.max(1,p.gnd0));p.ready=Math.max(.35,.8-.4*p.exh);}}
+  p.air=Math.min(p.air0*1.2,p.air+C.prodAir*g*dh*(1-p.exh)*W.prodK(p,'air'));p.gnd=Math.min(p.gnd0*1.2*W.prodK(p,'cap'),p.gnd+C.prodGnd*g*dh*(1-p.exh)*W.prodK(p,'gnd'));   /* W.prodK: pilots, mobilization (military.js) */
+  p.exh=Math.min(1,.5*p.lostAir/Math.max(1,p.air0)+.5*p.lostGnd/Math.max(1,p.gnd0));p.ready=Math.max(.2,Math.max(.35,.8-.4*p.exh)*W.rdy(p));}}
 
 /* ------------------------------------------------------------------ the clock */
 W.step=(hours)=>{const st=W.st;if(!st||(st.over&&!st.post))return;let left=hours;
@@ -156,5 +156,5 @@ W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
 // background running: one campaign hour per real second x speed while the map is open, real time in world flight
 let last=performance.now();
 setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!W.st||!W.run)return;try{W.step(dt*W.speed);}catch(e){warn('step',e);}},1000);
-window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.daily=[];W.mod=()=>1;W.mob=()=>1;W.airWx=()=>1;W.setAl=(p,al,side,why)=>setAl(p,al,side,why);W.rebuild=()=>{const old=new Map(W.st.fronts.map(f=>[f.id,f]));buildFronts();W.st.fronts=W.st.fronts.map(f=>old.get(f.id)||f);assignAir();};W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
+window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.daily=[];W.prodK=()=>1;W.rdy=()=>1;W.mod=()=>1;W.mob=()=>1;W.airWx=()=>1;W.setAl=(p,al,side,why)=>setAl(p,al,side,why);W.rebuild=()=>{const old=new Map(W.st.fronts.map(f=>[f.id,f]));buildFronts();W.st.fronts=W.st.fronts.map(f=>old.get(f.id)||f);assignAir();};W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
 })();

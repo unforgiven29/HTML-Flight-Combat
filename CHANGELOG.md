@@ -1,3 +1,25 @@
+## v339 (step 11, part 2: the rest of chapter 6)
+- New **ARSENAL** tab per country (js/war/forces.js). **Equipment catalogue**: one record per class (platforms and weapons kept apart: fighters, bombers, early warning, tankers, transports, helicopters, tanks, IFVs, artillery, rocket artillery, air defence by range, radars, destroyers, frigates, submarines, carriers, amphibious ships, drones, missiles, guided bombs, cruise missiles, shells and rockets) by technology tier. National inventories split from the war's aggregates (estimates, no double counting). Generic classes, not named national products (a scenario table can name them later).
+- **Infantry issue profiles** per brigade type (rifles, machine guns, marksman and sniper rifles, grenade launchers, mortars, anti-tank weapons, portable air defence, night vision, radios); civilian and police weapons are a separate register, never military.
+- **Arms trade and procurement**: sales and donations along alliance lines (never across the line; neutrals under end-use conditions), training packages, licensed production, delays and cost overruns, audits of diversion (alleged), development programmes that are fielded or cancelled.
+- **Ships**: hits that do not sink a ship go to damage control (saved and towed for repair, or abandoned with the crew rescued); repaired ships return. **Carriers**: deck cycle (suspended in storms), air wing, readiness, deck accidents.
+- **Uncrewed systems** (reconnaissance and armed drones, ground and surface vehicles): lost over active fronts and replaced; reconnaissance helps the front.
+- **Civil aviation** (fleet categories, airspace restrictions in war, reopening) and **civil defence** (readiness, shelter places).
+- **Private military companies** (fictional, civilians under the hiring country's law; logistics, security, maintenance, training, transport; oversight inquiries).
+- **Your squadron**: twelve fictional pilots with ranks and callsigns, a stable wingman with trust, currency, losses; sortie briefings on take-off; the **operational record** keeps claims and assessments apart. **Deployment album**: a picture at the end of each sortie (kept in this browser). Peacetime **retirement** of older aircraft (storage, parts, museum).
+- Tests: `node tests/run.js s11_`.
+
+## v338 (step 11: chapter 6 — armed forces, command, personnel, readiness, operations and sustainment)
+- New **MILITARY** tab for every country (js/war/military.js). Estimates are marked ~; people are fictional.
+- **Mobilization and the draft**: PEACETIME / PARTIAL / GENERAL / DEMOBILIZED; service law per country (an estimate); call-ups with exemptions and people who do not report (counted, never targeted; courts hear appeals); reservists in 30 days and draftees in 90 join the ground force; the economy loses workers and support falls. Countries mobilize after two weeks of fighting or heavy losses; for countries on your side you can order it yourself. Demobilization after the war.
+- **Personnel and training**: aircrew pool (losses cost crews, flight schools replace them), experience from exercises in peacetime, "lessons learned" after heavy losses. Short of crews, a force flies fewer aircraft.
+- **Command**: theatre headquarters with a fictional commander; an intent per front (ATTACK / HOLD / DEFEND) from the force ratio, reaching the front after 1-3 days; fronts on DEFEND dig in; headquarters hit in heavy fighting hand over to the deputy for a few days.
+- **Munitions**: stocks in days of combat supply (air-to-air, surface-to-air, precision strike, artillery), used in fighting, produced by industry, transferred by allied producers with a lead time. Artillery short: the front weakens; missiles short: readiness falls (and your sortie warns you).
+- **Airbases**: condition per military airfield; strikes where the enemy holds the air, repair by engineers, dispersal under 50 %; your sortie base shows its condition on take-off.
+- **Support aircraft** (airborne early warning, tankers; estimates) and **post-battle hazards** (unexploded ordnance in former battle areas, estimated monthly harm, clearance after the war).
+- Not modelled from ch.06: per-country weapon catalogues, ship compartments and damage control, carrier deck cycles, private military companies.
+- Tests: `node tests/run.js s11_`.
+
 ## v337 (step 10: world war multiplayer; reconstruction, memorials and the epilogue)
 - **Multiplayer war** on the existing room system (PeerJS rooms): the **MULTIPLAYER WAR** box on the WORLD WAR map panel takes a room code (HOST / JOIN). The first player hosts: their game runs the war. Guests get the host's war state on joining and every 15 s (their own simulation pauses) and fly for any country at war: the host's side (co-op, friendly) or the other side (PvP).
 - During a host sortie, AI jets and their missiles (5 Hz) and ground units (1 Hz) are sent to guests with absolute sides. Guests' hits on AI jets, ground units and bridges go to the host, which counts the losses in the war; a guest's sortie summary is logged in the war.
