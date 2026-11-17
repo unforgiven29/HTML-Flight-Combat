@@ -1,3 +1,9 @@
+## v382 (infantry: no aircraft on the way in, much faster)
+- **The move to the front is covered**: a loading screen while the sortie starts and the world moves to the battle site; your aircraft is hidden and held still the whole time (it used to show on the runway and then in the ground at the site before the terrain there had loaded).
+- **Riding in**: in the APC or IFV you ride in the open commander's hatch (the view used to be inside the hull), in the helicopter at the open door, in the transport at the open ramp.
+- **Much faster**: each building is drawn as one merged mesh per material instead of dozens of boxes (rebuilt when a wall is blown out); walls are found through a spatial grid; shots, lines of sight and drones are tested against boxes by plain maths and against the ground by its height, not by raycasting thousands of meshes and the terrain. Measured in a live-world battle: draw calls 12,946 → 451, frame render 122 → 7 ms, simulation step 13 → 5 ms.
+- Grass blades finer and lit on both sides.
+
 ## v381 (buildings with insides that come down, fortifications, armour hit overview, your FPV drones, medevac, grass, the whole map)
 - **Buildings you can enter, of every kind**: houses and apartment blocks (furnished rooms on every floor, stairs, windows), warehouses and factories (open halls with columns, racks, machines), a church with pews and a tower. In the live world the town's real buildings around the battle (up to 60) are replaced by enterable ones of the same footprint and height, and put back afterwards.
 - **They can be destroyed**: each building has a strength from its size and storeys; bombs, artillery, one-way drones, rockets and grenades use it up and blow out walls, and it collapses into rubble (hurting anyone inside).

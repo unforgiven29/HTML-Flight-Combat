@@ -102,7 +102,7 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?4:LOC.pop
    '<div id="iDmg" style="position:absolute;inset:0;background:radial-gradient(transparent 50%,rgba(160,0,0,.6));opacity:0"></div>';document.body.appendChild(hud);
   const WM=!!cfg.world;let R=null,sc,cam,ter=null;
   if(WM){cv.style.background='transparent';sc=new THREE.Group();sc.position.copy(cfg.O);scene.add(sc);cam=camera;}
-  else{try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(innerWidth,innerHeight,false);}catch(e){R=null;}
+  else{try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(1.25,devicePixelRatio||1));R.setSize(innerWidth,innerHeight,false);}catch(e){R=null;}
   sc=new THREE.Scene();sc.background=new THREE.Color(0x9fb8c8);sc.fog=new THREE.Fog(0x9fb8c8,250,900);sc.add(new THREE.HemisphereLight(0xdfeeff,0x4a5038,.85));const sun=new THREE.DirectionalLight(0xffffff,.7);sun.position.set(200,400,100);sc.add(sun);
   cam=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,3000);
   const tg=new THREE.PlaneGeometry(2400,2400,200,200);tg.rotateX(-Math.PI/2);const pa=tg.attributes.position;for(let i=0;i<pa.count;i++)pa.setY(i,H(pa.getX(i),pa.getZ(i)));tg.computeVertexNormals();
@@ -112,8 +112,8 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?4:LOC.pop
   // a town on a street grid: houses of one to three storeys, hollow, with doors, windows, floors and stairs
   const wallM=[0xa49a86,0x9a8a74,0xb6aa92,0x8c8478].map(c=>new THREE.MeshLambertMaterial({color:c})),flM=new THREE.MeshLambertMaterial({color:0x6e6253}),rfM=new THREE.MeshLambertMaterial({color:0x7a3a2e});
   let CB=null;const BLD=[],STR=[];
-  const box=(x0,y0,z0,x1,y1,z1,m,nos)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),m);g.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);sc.add(g);solid.push(g);const b={x0,y0,z0,x1,y1,z1,m:g,bid:CB?CB.id:null};boxes.push(b);if(CB){CB.parts.push(b);if(y1-y0>2.4&&!nos)CB.walls++;}return g;};
-  const begin=(kind,x,z,w,d,fl)=>{CB={id:BLD.length,kind,x,z,w,d,fl,parts:[],walls:0,lost:0,down:false};BLD.push(CB);return CB;},done=()=>{const c=CB;CB=null;return c;};
+  const box=(x0,y0,z0,x1,y1,z1,m,nos)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),m);g.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);if(!CB){sc.add(g);solid.push(g);}const b={x0,y0,z0,x1,y1,z1,m:g,bid:CB?CB.id:null};boxes.push(b);if(CB){CB.parts.push(b);if(y1-y0>2.4&&!nos)CB.walls++;}return g;};
+  const begin=(kind,x,z,w,d,fl)=>{CB={id:BLD.length,kind,x,z,w,d,fl,parts:[],walls:0,lost:0,down:false,sc,meshes:[]};BLD.push(CB);return CB;},done=()=>{const c=CB;CB=null;mergeB(c);return c;};
   const fuM=new THREE.MeshLambertMaterial({color:0x5a4a38}),fuM2=new THREE.MeshLambertMaterial({color:0x7a7468});
   // furniture on a floor: a table, a bed or sofa, shelves; kept clear of the door and the stairs
   const furnish=(x0,z0,x1,z1,y)=>{if(x1-x0<5||z1-z0<5)return;const cx=(x0+x1)/2+.7,cz=(z0+z1)/2;box(cx-.6,y,cz-.4,cx+.6,y+.75,cz+.4,fuM,1);
@@ -187,7 +187,7 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?4:LOC.pop
   {const bg=new THREE.IcosahedronGeometry(1,0),bm2=new THREE.MeshLambertMaterial({color:0x35552a}),N=900,im=new THREE.InstancedMesh(bg,bm2,N),M=new THREE.Matrix4();let n=0;
     for(let i=0;i<N*2&&n<N;i++){const x=(rn()-.5)*1400,z=(rn()-.5)*1400-200;if(inB(x,z)||(cfg.mis==='DEFEND'&&Math.abs(z+470)<12&&Math.abs(x)<180))continue;const s=.6+rn()*1.4;M.makeScale(s*1.3,s,s*1.3).setPosition(x,H(x,z)+s*.5,z);im.setMatrixAt(n++,M);}
     im.count=n;sc.add(im);}
-  const gq=new THREE.PlaneGeometry(.5,.6);gq.translate(0,.3,0);const grM=new THREE.MeshLambertMaterial({color:0x5f7d3a,side:THREE.DoubleSide});const grass=new THREE.InstancedMesh(gq,grM,4500);grass.frustumCulled=false;sc.add(grass);grass.count=0;
+  const gq=new THREE.PlaneGeometry(.22,.5);gq.translate(0,.25,0);const grM=new THREE.MeshLambertMaterial({color:0x5f7d3a,emissive:0x1c2a10,side:THREE.DoubleSide});const grass=new THREE.InstancedMesh(gq,grM,4500);grass.frustumCulled=false;sc.add(grass);grass.count=0;
   village.y=H(village.x,village.z);const flag=new THREE.Mesh(new THREE.CylinderGeometry(25,25,.3,32,1,true),new THREE.MeshBasicMaterial({color:0xffe14a,transparent:true,opacity:.25,side:THREE.DoubleSide}));flag.position.copy(village).setY(village.y+.4);sc.add(flag);
   // first-person weapons held in view, one model per kind
   const vmRoot=new THREE.Group();(WM?scene:sc).add(vmRoot);
@@ -229,7 +229,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   else{for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
     {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
     {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:S.EN.MBT||'main battle tank'});}}
-  S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
+  gridBuild();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
   if(S.WM)worldOn();
   {const eb=S.STR.filter(c=>c.side==='E'&&c.kind!=='COMMAND POST');const al=S.them.filter(u=>u.alive);eb.forEach((c,i)=>{const u=al[i];if(!u)return;u.m.position.set(c.cx,c.y0,c.cz);u.ox=c.cx-S.village.x;u.oz=c.cz-S.village.z;u.bunk=c;});}
   for(const u of S.us)u.m.visible=false;insertion();bind();loop.last=performance.now();if(!loop.on){loop.on=true;requestAnimationFrame(loop);}
@@ -262,7 +262,7 @@ function insertion(){const k=S.ins;S.ins_t=0;
   else{const a=plane();S.sc.add(a);S.carrier={m:a,from:new V3(-900,600,250),to:new V3(900,600,250),dur:20,jump:.5};S.chute=null;}
   say(INS[k].toUpperCase()+(S.N[k]?' · '+S.N[k]:'')+(k==='AIR'?' · SPACE TO JUMP':' · SPACE TO SKIP'),5);}
 function insertStep(dt){const C=S.carrier,k=S.ins;S.ins_t+=dt;const u=Math.min(1,S.ins_t/C.dur);
-  if(k==='AIR'){if(!S.jumped){const p=C.from.clone().lerp(C.to,u);C.m.position.copy(p);C.m.rotation.y=-Math.PI/2;S.pos.copy(p).add(new V3(0,-3,0));S.yaw=-Math.PI/2;
+  if(k==='AIR'){if(!S.jumped){const p=C.from.clone().lerp(C.to,u);C.m.position.copy(p);C.m.rotation.y=-Math.PI/2;S.pos.copy(p).add(new V3(-15.6,-.6,0));if(!S.rampLook){S.yaw=Math.PI/2;S.rampLook=1;}
       if(u>=C.jump&&S.keys.Space||u>=.75){S.jumped=true;S.jt=0;S.vel.set(55,0,0);say('JUMP · SPACE OPENS THE PARACHUTE',3);}return;}
     C.m.position.x+=60*dt;S.jt+=dt;
     const g=H(S.pos.x,S.pos.z);if(!S.chute&&(S.keys.Space&&S.jt>2&&S.pos.y-g<520||S.pos.y-g<220)){S.chute=true;const c=new THREE.Mesh(new THREE.SphereGeometry(4,12,6,0,7,0,1.3),new THREE.MeshLambertMaterial({color:0x56603c}));S.sc.add(c);S.chuteM=c;say('CANOPY · STEER WITH WASD',3);}
@@ -274,7 +274,7 @@ function insertStep(dt){const C=S.carrier,k=S.ins;S.ins_t+=dt;const u=Math.min(1
     S.pos.addScaledVector(S.vel,dt);if(S.pos.y<=g+1.7){S.pos.y=g+1.7;if(!S.chute&&S.vel.y<-15){hurt(200,'fall');}land();}return;}
   // vehicles and helicopter: ride in the back, look around
   const e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2,p=C.from.clone().lerp(C.to,e);if(k==='HELO'){const g=H(p.x,p.z);p.y=Math.max(g,g+C.from.y*(1-Math.min(1,Math.max(0,(u-.6)/.4))));C.m.userData.rotor.rotation.y+=dt*30;}
-  else p.y=H(p.x,p.z);C.m.position.copy(p);C.m.rotation.y=0;S.pos.copy(p).add(new V3(k==='HELO'?1.6:0,k==='HELO'?2:2.2,k==='HELO'?0:1.5));
+  else p.y=H(p.x,p.z);C.m.position.copy(p);C.m.rotation.y=0;S.pos.copy(p).add(new V3(k==='HELO'?1.6:0,k==='HELO'?2:3.4,k==='HELO'?0:1.2));
   // incoming fire near the end
   if(u>.7&&rn()<dt*.6)fx(S.pos.clone().add(new V3((rn()-.5)*20,0,-10-rn()*20)),.6);
   if(u>=1||S.keys.Space&&S.ins_t>1.5){C.m.position.copy(C.to).setY(H(C.to.x,C.to.z));land();}}
@@ -306,12 +306,12 @@ function shoot(){const g=S.wp[S.w];if(S.reload>0||S.cool>0)return;if(g.cur<=0){r
   S.cool=60/g.rpm;if(!g.auto)S.fire=false;const mv=S.vel.length()>2?1.8:1,spr=g.spr*(S.ads?.35:1)*(S.crouch?.7:1)*mv;let r=null;for(let i=0;i<(g.pel||1);i++)r=hitscan(S.pos,aimDir(g.pel?g.spr:spr),g.dmg,true)||r;
   S.kick=(S.kick||0)+(g.dmg>60?.03:.008);if(g.cur<=0)reload();return r;}
 function pickVeh(){let b=null,bd=1e9;for(const v of S.veh)if(v.alive&&v.side==='E'){const d=Math.hypot(v.x-S.pos.x,v.z-S.pos.z);if(d<bd){bd=d;b=v;}}return b;}
-function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();ray.set(o.clone().add(S.O),d);ray.far=900;const targets=[...S.solid];const owner=new Map();
+function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900);ray.set(o.clone().add(S.O),d);ray.far=Math.min(900,tS);const targets=[];const owner=new Map();
   for(const u of[...S.us,...S.them])if(u.alive)u.m.traverse(x=>{if(x.isMesh&&x.userData.part){targets.push(x);owner.set(x,u);}});
   const vown=new Map();if(own)for(const v of S.veh)if(v.alive)v.m.traverse(x=>{if(x.isMesh){targets.push(x);vown.set(x,v);}});
   if(own)for(const dr of S.drones){if(!dr.alive)continue;const c=dr.m.position,t=c.clone().sub(o).dot(d);if(t<0||t>900)continue;const cl=o.clone().addScaledVector(d,t);
-    if(cl.distanceTo(c)<(dr.k==='FPV'?.6:dr.k==='OWA'?1.8:4)){const wall=ray.intersectObjects(S.solid,false)[0];if(!wall||wall.distance>t){hitDrone(dr,dmg,true);S.hits++;mark(false);return dr;}}}
-  const hs=ray.intersectObjects(targets,false);if(!hs.length)return null;const h=hs[0],u=owner.get(h.object);
+    if(cl.distanceTo(c)<(dr.k==='FPV'?.6:dr.k==='OWA'?1.8:4)){if(tS>t){hitDrone(dr,dmg,true);S.hits++;mark(false);return dr;}}}
+  const hs=ray.intersectObjects(targets,false);if(!hs.length){if(tS<900)fx(o.clone().addScaledVector(d,tS),.15);return null;}const h=hs[0],u=owner.get(h.object);
   {const v=vown.get(h.object);if(v){if(v.side==='E')armorHit(v,h.point.clone().sub(S.O),d.clone(),S.w==='side'?'PISTOL':S.cfg.pri);fx(h.point.clone().sub(S.O),.1);return null;}}
   if(!u){fx(h.point.clone().sub(S.O),.15);return null;}
   const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'?.7:1;hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
@@ -339,10 +339,10 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
       if(los(o,tp.clone().setY(tp.y+(u.tgt.player?0:1.3)))){if(rn()<acc){if(u.tgt.player)hurt(14+rn()*10,'bullet');else hitMan(u.tgt,22+rn()*14,false);}
         else if(u.tgt.player&&L<120)S.near=.3;}}}
   const gy=H(P.x,P.z),top=collide(P,P.y,P.y+1.7,.35);P.y=Math.max(gy,top>-1e8?top:gy);}
-function collide(P,feet,head,r){let top=-1e9;for(const b of S.blds){if(P.x<b.x0-r||P.x>b.x1+r||P.z<b.z0-r||P.z>b.z1+r)continue;
+function collide(P,feet,head,r){let top=-1e9;for(const b of near(P.x-r-1,P.z-r-1,P.x+r+1,P.z+r+1,_nb)){if(P.x<b.x0-r||P.x>b.x1+r||P.z<b.z0-r||P.z>b.z1+r)continue;
     if(b.y1<=feet+.45){if(P.x>b.x0-.05&&P.x<b.x1+.05&&P.z>b.z0-.05&&P.z<b.z1+.05)top=Math.max(top,b.y1);continue;}if(b.y0>=head)continue;
     const dx0=P.x-(b.x0-r),dx1=(b.x1+r)-P.x,dz0=P.z-(b.z0-r),dz1=(b.z1+r)-P.z,m=Math.min(dx0,dx1,dz0,dz1);if(m===dx0)P.x=b.x0-r;else if(m===dx1)P.x=b.x1+r;else if(m===dz0)P.z=b.z0-r;else P.z=b.z1+r;}return top;}
-function los(a,b){const d=b.clone().sub(a),L=d.length();ray.set(a.clone().add(S.O),d.normalize());ray.far=L;return ray.intersectObjects(S.solid,false).length===0;}
+function los(a,b){const d=b.clone().sub(a),L=d.length();if(L<.5)return true;d.divideScalar(L);return rayWorld(a,d,L-.4)>=L-.4;}
 
 function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld();
   if(S.phase==='INSERT'){insertStep(dt);}
@@ -359,7 +359,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     if(inZone&&!enemyNear){S.hold+=dt;if(S.hold>=30)end('WON');}else S.hold=Math.max(0,S.hold-dt*.5);
     S.waveT-=dt;if(S.waveT<=0&&S.them.filter(u=>u.alive).length<6){S.waveT=80;const n=4;for(let i=0;i<n;i++)S.them.push(man(false,S.village.x+(rn()-.5)*60,S.village.z-160-rn()*40));say('ENEMY REINFORCEMENTS FROM THE NORTH',3);}}
     S.heliT-=dt;if(S.heliT<=0&&!S.eheli){const h=helo(0x6a5a3a);h.position.set(400,80,-500);S.sc.add(h);S.eheli={m:h,hp:500,alive:true,cool:3,t:0};say('ENEMY HELICOPTER',3);S.heliT=1e9;}}
-  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);
+  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
@@ -437,7 +437,7 @@ function airStep(dt){if(S.phase!=='FIGHT')return;S.airT-=dt;const c=S.village;
 // simulation keeps running: real AI flights of both sides, missiles and the war's clock go on around you. Your
 // aircraft waits out of the way (hidden, untouchable) until the battle ends; then the sortie closes.
 if(typeof Jet!=='undefined'){const _s=Jet.prototype.step,_d=Jet.prototype.damage;
-  Jet.prototype.step=function(h){if(this.infantry&&S&&S.WM){this.pos.copy(S.pos).add(S.O);this.pos.y+=60;this.vel.set(0,0,0);return;}return _s.apply(this,arguments);};
+  Jet.prototype.step=function(h){if(this.infantry&&S&&S.WM){this.pos.copy(S.pos).add(S.O);this.pos.y+=60;this.vel.set(0,0,0);if(this.mesh)this.mesh.visible=false;return;}if(this.infantry&&!S){if(this.mesh)this.mesh.visible=false;this.vel.set(0,0,0);return;}return _s.apply(this,arguments);};
   if(_d)Jet.prototype.damage=function(){if(this.infantry&&S&&S.WM)return;return _d.apply(this,arguments);};}
 function worldOn(){S.view0=typeof view!=='undefined'?view:null;try{view='chase';}catch(e){}if(player){player.infantry=true;if(player.mesh)player.mesh.visible=false;}S.near0=camera.near;S.fov0=camera.fov;document.body.classList.add('infWorld');
   if(!document.getElementById('infWCss')){const st=document.createElement('style');st.id='infWCss';st.textContent='body.infWorld #hud,body.infWorld #iffbar,body.infWorld #dmg,body.infWorld .mfd,body.infWorld #rwrBox,body.infWorld #touch{display:none!important}';document.head.appendChild(st);}}
@@ -450,10 +450,17 @@ function worldOff(){showFlight();if(S.hidden&&window.WF&&WF.townMesh){for(const[
 async function startWorld(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.WF||!G||!W.st){return start(cfg);}
   const st=W.st,p=st.c[cfg.a3],me=p.side;const fr=st.fronts.find(f=>!f.cf&&(f.a===cfg.a3||f.b===cfg.a3))||st.fronts.find(f=>!f.cf&&(st.c[f.a].side===me||st.c[f.b].side===me));
   const loc=resolveLoc(cfg,fr,null);if(!loc.real){return start(cfg);}
-  if(typeof flash==='function')flash('MOVING TO THE FRONT · '+loc.name.toUpperCase(),3000);
+  // a loading screen covers the move: you do not see your aircraft on the runway, at the site, or under unloaded ground
+  const cov=document.createElement('div');cov.id='infLoad';cov.style.cssText='position:fixed;inset:0;z-index:9999;background:#0b0f0d;color:#cfe3d6;display:flex;align-items:center;justify-content:center;font:14px "B612 Mono",monospace;letter-spacing:.14em';
+  cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' …';document.body.appendChild(cov);const unc=()=>cov.remove();
+  try{
   await WSORTIE.start(cfg.a3,cfg.ap);for(let i=0;i<200&&!(WF.on&&player);i++)await new Promise(r=>setTimeout(r,100));if(!WF.on||!player)return start(cfg);
-  const q=G.ll2xz(loc.lat,loc.lon);player.pos.set(q.x,groundAt(q.x,q.z)+60,q.z);player.vel.set(0,0,0);player.infantry=true;try{await WF.rebase();}catch(e){}
-  const q2=G.ll2xz(loc.lat,loc.lon);cfg.world=true;cfg.loc=loc;cfg.O=new V3(q2.x,0,q2.z+260);return start(cfg);}
+  if(player.mesh)player.mesh.visible=false;player.infantry=true;
+  const q=G.ll2xz(loc.lat,loc.lon);player.pos.set(q.x,groundAt(q.x,q.z)+60,q.z);player.vel.set(0,0,0);try{await WF.rebase();}catch(e){}
+  // wait for the ground at the site to be loaded (its height settles)
+  {const q1=G.ll2xz(loc.lat,loc.lon);let h0=groundAt(q1.x,q1.z);for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,100));const h=groundAt(q1.x,q1.z);if(Math.abs(h-h0)<.05&&i>3)break;h0=h;}}
+  const q2=G.ll2xz(loc.lat,loc.lon);cfg.world=true;cfg.loc=loc;cfg.O=new V3(q2.x,0,q2.z+260);const r=start(cfg);unc();return r;}
+  catch(e){unc();console.warn('[infantry] world start',e);return start(cfg);}}
 
 if(window.WF&&WF.shift&&!WF._inf){const _sh=WF.shift;WF.shift=function(dx,dz){const r=_sh.apply(this,arguments);if(S&&S.WM){S.O.x-=dx;S.O.z-=dz;S.sc.position.copy(S.O);}return r;};WF._inf=1;}
 
@@ -485,7 +492,7 @@ function dig(mine,at,dir){if(mine){if(S.bags<=0||S.phase!=='FIGHT'){say('NO SAND
   const g=H(P.x,P.z),earth=new THREE.MeshLambertMaterial({color:mine?0x8c7d5a:0x5a4630});const w=4,t=.9,h=1.3;let b;
   if(ax)b={x0:P.x+sg*.2,x1:P.x+sg*.2+sg*t,z0:P.z-w/2,z1:P.z+w/2};else b={x0:P.x-w/2,x1:P.x+w/2,z0:P.z+sg*.2,z1:P.z+sg*.2+sg*t};
   const x0=Math.min(b.x0,b.x1),x1=Math.max(b.x0,b.x1),z0=Math.min(b.z0,b.z1),z1=Math.max(b.z0,b.z1);
-  const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h+.4,z1-z0),earth);m.position.set((x0+x1)/2,g+h/2-.2,(z0+z1)/2);S.sc.add(m);S.solid.push(m);S.blds.push({x0,y0:g-.4,z0,x1,y1:g+h,z1,m});S.dug++;
+  const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h+.4,z1-z0),earth);m.position.set((x0+x1)/2,g+h/2-.2,(z0+z1)/2);S.sc.add(m);S.solid.push(m);{const bb={x0,y0:g-.4,z0,x1,y1:g+h,z1,m};S.blds.push(bb);gridAdd(bb);}S.dug++;
   if(mine)say('SANDBAG WALL BUILT · '+S.bags+' LEFT',1.5);return m;}
 function offensive(){if(S.phase!=='FIGHT')return;if(S.fCP){say('OUR COMMAND POST IS GONE · NO OFFENSIVES',2);return;}if(S.offN>=2){say('NO MORE OFFENSIVES THIS BATTLE',2);return;}S.offN++;
   const tgt=S.mission==='DEFEND'?new V3(0,0,S.trZ-300):S.village.clone();arty(tgt,10,'F');
@@ -500,8 +507,35 @@ function scar(p,r){structHit(p,r);const g=H(p.x,p.z),cm=new THREE.Mesh(new THREE
   if(S.craters.length>300)S.sc.remove(S.craters.shift());
   if(S.ter&&S.craters.length%10===0){const c=S.ter.material.color;c.lerp(new THREE.Color(0x4a4636),.04);}
   for(let i=S.blds.length-1;i>=0;i--){const b=S.blds[i];if(b.y1-b.y0<2||!b.m)continue;const cx=(b.x0+b.x1)/2,cz=(b.z0+b.z1)/2,cy=(b.y0+b.y1)/2;if(Math.hypot(cx-p.x,cz-p.z,cy-p.y)>r*.45||rn()<.4)continue;
-    S.sc.remove(b.m);const k=S.solid.indexOf(b.m);if(k>=0)S.solid.splice(k,1);S.blds.splice(i,1);S.holes=(S.holes||0)+1;
+    removeBox(b);S.holes=(S.holes||0)+1;
     const rb=new THREE.Mesh(new THREE.BoxGeometry(b.x1-b.x0+.6,.5,b.z1-b.z0+.6),new THREE.MeshLambertMaterial({color:0x6d665a}));rb.position.set(cx,b.y0+.25,cz);S.sc.add(rb);}}
+
+/* ------------------------------------------------------------------ v382: performance */
+// A building is drawn as one merged mesh per material (not dozens of boxes), rebuilt when a wall is blown out. Walls and
+// floors are found through a 20 m grid; rays (shots, line of sight, drones) are tested against their boxes by plain
+// slab maths and against the ground by sampling its height, instead of raycasting thousands of meshes and the terrain.
+function mergeB(c){for(const m of c.meshes){c.sc.remove(m);m.geometry.dispose();}c.meshes=[];const by=new Map();
+  for(const q of c.parts){if(q.gone)continue;const mat=q.m.material;let L=by.get(mat);if(!L){L={p:[],n:[]};by.set(mat,L);}const g=q.m.geometry.index?q.m.geometry.toNonIndexed():q.m.geometry;
+    const P=g.attributes.position.array,N=g.attributes.normal.array,o=q.m.position;for(let i=0;i<P.length;i+=3){L.p.push(P[i]+o.x,P[i+1]+o.y,P[i+2]+o.z);L.n.push(N[i],N[i+1],N[i+2]);}}
+  for(const[mat,L]of by){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(L.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(L.n,3));g.computeBoundingSphere();
+    const m=new THREE.Mesh(g,mat);m.matrixAutoUpdate=false;m.updateMatrix();c.sc.add(m);c.meshes.push(m);}}
+const GC=20,gk=(i,j)=>i*100003+j;
+function gridAdd(b){const G=S.grid;for(let i=Math.floor(b.x0/GC);i<=Math.floor(b.x1/GC);i++)for(let j=Math.floor(b.z0/GC);j<=Math.floor(b.z1/GC);j++){const k=gk(i,j);let L=G.get(k);if(!L){L=[];G.set(k,L);}L.push(b);}}
+function gridBuild(){S.grid=new Map();for(const b of S.blds)gridAdd(b);}
+function near(x0,z0,x1,z1,out){const G=S.grid;out.length=0;const seen=near.seen||(near.seen=new Set());seen.clear();
+  for(let i=Math.floor(x0/GC);i<=Math.floor(x1/GC);i++)for(let j=Math.floor(z0/GC);j<=Math.floor(z1/GC);j++){const L=G.get(gk(i,j));if(!L)continue;for(const b of L)if(!b.gone&&!seen.has(b)){seen.add(b);out.push(b);}}return out;}
+const _nb=[];
+// the nearest box a ray meets within far (local coordinates), or Infinity
+function rayBoxes(o,d,far){const seen=rayBoxes.seen||(rayBoxes.seen=new Set());seen.clear();let best=Infinity;const st=Math.max(4,far/200);
+  for(let t=0;t<=far+st;t+=st){const x=o.x+d.x*t,z=o.z+d.z*t;const L=S.grid.get(gk(Math.floor(x/GC),Math.floor(z/GC)));if(!L)continue;
+    for(const b of L){if(b.gone||seen.has(b))continue;seen.add(b);let t0=0,t1=far;
+      const sl=(oa,da,lo,hi)=>{if(Math.abs(da)<1e-9){if(oa<lo||oa>hi){t0=1e9;}return;}let a=(lo-oa)/da,c=(hi-oa)/da;if(a>c){const q=a;a=c;c=q;}if(a>t0)t0=a;if(c<t1)t1=c;};
+      sl(o.x,d.x,b.x0,b.x1);sl(o.y,d.y,b.y0,b.y1);sl(o.z,d.z,b.z0,b.z1);if(t0<=t1&&t0<best&&t0<=far)best=t0;}
+    if(best<t)break;}
+  return best;}
+// where a ray first goes under the ground (sampled), or Infinity
+function rayGround(o,d,far){let t=0,prev=0;while(t<far){const st=t<60?2:t<300?6:15;t=Math.min(far,t+st);const x=o.x+d.x*t,y=o.y+d.y*t,z=o.z+d.z*t;if(y<H(x,z)-.05)return prev+(t-prev)*.5;prev=t;}return Infinity;}
+function rayWorld(o,d,far){return Math.min(rayBoxes(o,d,far),rayGround(o,d,far));}
 
 /* ------------------------------------------------------------------ v381 */
 // STRUCTURAL DAMAGE: every heavy blast (rocket, grenade, FPV, artillery, one-way drone, bomb) hits bunkers, dugouts and
@@ -513,10 +547,10 @@ function structHit(p,r){const sd=SDMG(r);
   for(const b of S.BLD){if(b.down||!b.walls||b.kind==='BUNKER'||b.kind==='DUGOUT'||b.kind==='COMMAND POST')continue;const near=Math.abs(p.x-b.x)<b.w/2+3&&Math.abs(p.z-b.z)<b.d/2+3;if(!near)continue;
     // each building has a strength from its size and storeys; heavy blasts on or by it use it up, and walls blown out weaken it
     b.hp=b.hp??b.w*b.d*(b.fl||1)*25;b.hp-=sd;const lost=b.parts.filter(q=>q.gone&&q.y1-q.y0>2.4).length;if(b.hp<=0||lost/b.walls>.42)collapse(b,b.kind.toLowerCase()+' collapses');}}
-function removeBox(q){if(q.gone)return;q.gone=true;S.sc.remove(q.m);const k=S.solid.indexOf(q.m);if(k>=0)S.solid.splice(k,1);const j=S.blds.indexOf(q);if(j>=0)S.blds.splice(j,1);}
+function removeBox(q){if(q.gone)return;q.gone=true;S.sc.remove(q.m);const k=S.solid.indexOf(q.m);if(k>=0)S.solid.splice(k,1);const j=S.blds.indexOf(q);if(j>=0)S.blds.splice(j,1);if(q.bid!=null&&S.BLD[q.bid])(S.dirtyB||(S.dirtyB=new Set())).add(S.BLD[q.bid]);}
 function collapse(c,why){if(c.down)return;c.down=true;const ys=c.parts.map(q=>q.y0),y0=Math.min(...ys);
   for(const q of c.parts)if(q.y0>y0+.5||c.kind==='BUNKER'||c.kind==='DUGOUT'||c.kind==='COMMAND POST')removeBox(q);
-  const h=Math.min(3.5,1+(c.fl||1)*.6),rb=new THREE.Mesh(new THREE.BoxGeometry(c.w*.9,h,c.d*.9),new THREE.MeshLambertMaterial({color:0x6d665a}));rb.position.set(c.x,y0+h/2,c.z);rb.rotation.y=(rn()-.5)*.3;S.sc.add(rb);
+  mergeB(c);if(S.dirtyB)S.dirtyB.delete(c);const h=Math.min(3.5,1+(c.fl||1)*.6),rb=new THREE.Mesh(new THREE.BoxGeometry(c.w*.9,h,c.d*.9),new THREE.MeshLambertMaterial({color:0x6d665a}));rb.position.set(c.x,y0+h/2,c.z);rb.rotation.y=(rn()-.5)*.3;S.sc.add(rb);
   smoke(new V3(c.x,y0+2,c.z));for(let i=0;i<6;i++)smoke(new V3(c.x+(rn()-.5)*c.w,y0+3,c.z+(rn()-.5)*c.d));
   for(const u of[...S.us,...S.them])if(u.alive&&Math.abs(u.m.position.x-c.x)<c.w/2+.5&&Math.abs(u.m.position.z-c.z)<c.d/2+.5)hitMan(u,400,false);
   if(Math.abs(S.pos.x-c.x)<c.w/2&&Math.abs(S.pos.z-c.z)<c.d/2)hurt(120,'blast');
