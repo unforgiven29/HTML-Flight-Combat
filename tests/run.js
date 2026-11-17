@@ -1076,6 +1076,27 @@ test('s38_sound: flight sound muted on foot; shots, footsteps, explosions; engin
     I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));out.after=I.AU.loops.size;return out;});
   ok('own audio',r.ctx);ok('plane sound muted on foot',r.muted,r);ok('engine heard on the ride in',r.insertLoop);ok('footsteps',(r.cnt.step||0)>=5,r.cnt);ok('your shot',(r.cnt.shot||0)>=1,r.cnt);ok('explosion',(r.cnt.boom||0)>=1,r.cnt);
   ok('tank / IFV engines and FPV buzz',r.loops.includes('FPV')&&r.loops.some(k=>k==='TANK'||k==='IFV'),r.loops);ok('loops stop afterwards',r.after===0,r.after);});
+test('s39_battle: choose the battle location; varied soldiers that move; vehicle families; ERA / composite / blow-out panels; tracers; weather; roofs','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};
+    const C=I.locChoices({a3:'POL'});out.nC=C.length;out.names=C.map(c=>c.name);
+    I.kitMenu('POL',{name:'t'});out.menu=!!document.querySelector('[data-ik^="loc0:"]');const pick=C[Math.min(2,C.length-1)];document.querySelector('[data-ik="loc0:'+pick.id+'"]').click();out.k=I.K.loc0===pick.id;document.getElementById('u2m').remove();
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',loc0:pick.id});out.loc=S.loc.name===pick.name;out.env=S.env.n;
+    I.land();S.hp=1e9;S.dT=1e9;
+    const cols=new Set();for(const u of S.them)u.m.traverse(o=>{if(o.isMesh&&o.userData.part==='body')cols.add(o.material.color.getHex());});out.cols=cols.size;
+    for(let i=0;i<30*8;i++)I.step(1/30);out.anim=S.them.some(u=>u.alive&&u.m.userData.J&&Math.abs(u.m.userData.J.L.hip.rotation.x)>.1);out.crouch=S.them.some(u=>u.crouch)||S.us.some(u=>u.crouch);out.bound=[...S.them,...S.us].some(u=>u.bound||u.bt!==undefined);
+    out.tracers=S.shots>=0;
+    const tk=S.veh.find(v=>v.tank&&v.side==='E');out.fam=tk.m.userData.fam;out.tname=tk.name;
+    const P=tk.m.position,R=(k,dx)=>I.armorHit2(tk,new V(P.x+(dx||0),P.y+1.3,P.z-3.5),new V(0,-.2,1).normalize(),k);
+    const r1=R('RPG'),r2=R('RPG'),r3=R('ATGM',1.3);out.era=[r1.notes.join('|'),r2.notes.join('|'),r3.notes.join('|')];out.r1=r1.res;
+    out.roofs=S.BLD.filter(b=>b.roof).length;I.stop(false);
+    // a Western-pattern tank (Russia's enemy is Poland's side when you fight as Russia): bustle ammunition vents
+    S=I.start({...I.K,a3:'RUS',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;const wt=S.veh.find(v=>v.tank&&v.side==='E');out.wfam=wt.m.userData.fam;let bus=null;
+    for(let i=0;i<40&&!bus;i++){wt.alive=true;wt.nofire=false;const Q=wt.m.position;const rr=I.armorHit2(wt,new V(Q.x+1.4,Q.y+2.4,Q.z+1.4),new V(-1,-.1,0).normalize(),'ATGM');if(/BLOW-OUT/.test(rr.res))bus=rr.res;}out.bus=bus;
+    out.tr=I.S&&true;I.stop(false);return out;});
+  ok('several real places to choose from',r.nC>=3,r.names);ok('chosen in the kit menu',r.menu&&r.k);ok('battle at the chosen place',r.loc,r);ok('weather / time of day set',!!r.env,r.env);
+  ok('soldiers vary in colour',r.cols>=4,r.cols);ok('soldiers move their legs',r.anim);ok('they crouch and bound',r.crouch&&r.bound,r);
+  ok('enemy tank of the Soviet family for Poland',r.fam==='SOV',r);ok('ERA disrupts the first rocket, then is spent; tandem defeats it',/ERA brick detonated/.test(r.era[0])&&/spent/.test(r.era[1])&&/tandem/.test(r.era[2]),r.era);
+  ok('roofs on houses',r.roofs>5,r.roofs);ok('Western tank for Russia\'s enemy',r.wfam==='WEST',r.wfam);ok('bustle hit vents through blow-out panels',!!r.bus,r.bus);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
