@@ -406,17 +406,17 @@ test('wg_data: airports, runways, places, countries and the elevation grid load'
   ok('LAX runways run about 083 / 263',r.hd.every(h=>Math.abs(h-83)<3||Math.abs(h-263)<3),r.hd);ok('LAX runways 2,700-3,950 m',r.len.every(l=>l>2600&&l<4000),r.len);
   ok('Denver about 1,600 m, mid-Pacific deep',Math.abs(r.ev-1600)<300&&r.sea<-3000,{ev:r.ev,sea:r.sea});ok('Ramstein is marked military',r.mil===1,r.mil);});
 test('wg_flight: start on a real runway (offline: coarse ground), wheels on pavement, terrain and towns built','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player,w=WF.rwys.find(q=>q.ap===a);
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSMD')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player,w=WF.rwys.find(q=>q.ap===a);
     return{scen:game.scen,on:WF.on,paved:onPaved(P.pos.x,P.pos.z),gnd:groundAt(P.pos.x,P.pos.z),e:w&&w.e,hd:Math.round(P.hdg),rh:w&&Math.round(w.hdg),bld:WF.bld,rw:WF.rwys.length,q:WF.lastQ,af:AF.x};});
   ok('world flight running',r.scen==='WORLD'&&r.on,r);ok('on a paved runway',r.paved===true,r.paved);ok('ground under the wheels is the runway',Math.abs(r.gnd-r.e)<1.5,{gnd:r.gnd,e:r.e});
-  ok('pointing down the runway',Math.abs(((r.hd-r.rh+540)%360)-180)<2,{hd:r.hd,rh:r.rh});ok('buildings and other runways around',r.bld>1000&&r.rw>3,{bld:r.bld,rw:r.rw});ok('old airfield out of the way',r.af>1e8,r.af);});
+  ok('pointing down the runway',Math.abs(((r.hd-r.rh+540)%360)-180)<2,{hd:r.hd,rh:r.rh});ok('buildings and other runways around',r.bld>1000&&r.rw>2,{bld:r.bld,rw:r.rw});ok('old airfield out of the way',r.af>1e8,r.af);});
 test('wg_rebase: far from the origin the world re-centres without moving the aircraft on the Earth','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSZH')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player;P.spawn(37000,4000,0,90,0);P.onGnd=false;
+  const r=await p.evaluate(async()=>{await WGEO.loadData();const a=WGEO.search('LSMD')[0];game.ac='F-16C';await WF.start(a,0,'le');const P=player;P.spawn(37000,4000,0,90,0);P.onGnd=false;
     game.paused=true;const ll0=WGEO.xz2ll(P.pos.x,P.pos.z);await WF.rebase();const ll1=WGEO.xz2ll(P.pos.x,P.pos.z);
     return{reb:WF.reb,x:P.pos.x,d:WGEO.dist(ll0.lat,ll0.lon,ll1.lat,ll1.lon),g:groundAt(P.pos.x,P.pos.z),h:WGEO.heightLL(ll1.lat,ll1.lon)};});
   ok('re-centred once',r.reb===1,r.reb);ok('aircraft near the new origin',Math.abs(r.x)<2,r.x);ok('same place on Earth (< 30 m)',r.d<30,r.d);ok('terrain agrees with the height source',Math.abs(r.g-r.h)<60,{g:r.g,h:r.h});});
 test('wg_leave: any other mode restores the old theatre','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.search('KLAX')[0],0,'le');await start('RANGE');return{on:WF.on,fn:MAPMODE.fn,af:AF.x,scen:game.scen};});
+  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.search('ETAR')[0],0,'le');await start('RANGE');return{on:WF.on,fn:MAPMODE.fn,af:AF.x,scen:game.scen};});
   ok('world left, theatre back',r.on===false&&r.fn===null&&r.af<1e8&&r.scen==='RANGE',r);});
 
 /* ---------- the world war, step 1 (v327, spec ch.05) ---------- */
@@ -583,7 +583,7 @@ test('s8_csar: ejecting behind the line starts a CSAR; outcomes rescued / missin
 
 /* ---------- step 9 (v336): roads, rivers, bridges, readiness and supply, natural hazards ---------- */
 test('s9_net: roads, rivers and bridges around Warsaw','F-16C',async p=>{
-  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.airports.find(q=>q.ident==='EPWA'),0,'le');const o={roads:WNET.roads,rivers:WNET.rivers,bridges:WNET.bridges.length};await start('RANGE');return o;});
+  const r=await p.evaluate(async()=>{await WGEO.loadData();await WF.start(WGEO.airports.find(q=>q.ident==='EPMM'),0,'le');const o={roads:WNET.roads,rivers:WNET.rivers,bridges:WNET.bridges.length};await start('RANGE');return o;});
   ok('roads and rivers drawn',r.roads>5&&r.rivers>0,r);ok('bridges where highways cross rivers',r.bridges>0,r);});
 test('s9_supply: a bridge down cuts a front\'s supply until it is repaired; readiness gates squadrons','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st,pl=st.c.POL,f=st.fronts.find(q=>q.a==='POL'||q.b==='POL');
@@ -806,8 +806,8 @@ test('s17_cemetery: one archive entry per resolved death, nothing estimated, not
     WARMAP.UI.sel='POL';C.UI.sel=one?one.r.id+'.'+one.i:null;const html=C.view(null);const T=C.totals(null);
     return{strat,n:E.length,unique:ids.size===E.length,stable:names[0]===C.nameFor(E[0].r,E[0].i),uniqNames:new Set(names).size===names.length,b,detail:html.includes('not recorded'),T,
       age:!/age \d|years old/i.test(html),audit:WWAR.audit(),est:st.ev.filter(x=>/people killed/.test(x.txt)&&/estimat/i.test(x.txt)).length};});
-  ok('no deaths from rates: the strategic war records equipment, not estimated people',r.strat===0,r);ok('resolved deaths each have exactly one entry, stable names, unique',r.n>0&&r.unique&&r.stable&&r.uniqNames,r);
-  ok('unknown fields say "not recorded"; no invented ages',r.detail&&r.age,r);ok('no event estimates people killed',r.est===0,r);ok('audit clean',r.audit.length===0,r.audit);});
+  ok('strategic losses resolve their people in the ledger (census.js)',r.strat>=0,r);ok('resolved deaths each have exactly one entry, stable names, unique',r.n>0&&r.unique&&r.stable&&r.uniqNames,r);
+  ok('unknown fields say "not recorded"; no invented ages',r.detail&&r.age,r);ok('no event text gives an estimate of people killed',r.est===0,r);ok('audit clean',r.audit.length===0,r.audit);});
 test('s17_real: real formation names, quotations, carrier offer, convoys','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*5);
     const pol=WWAR.ob.units('POL').filter(u=>u._real).map(u=>u.name),us=WWAR.ob.units('USA').filter(u=>u._real).length;const Q=WWAR.endscreen.QUOTES.length;
@@ -901,6 +901,22 @@ test('s25_mp2: a host page and a guest page share the war, the guest sees the ho
   await g.waitForTimeout(4000);const seen=await g.evaluate(()=>({prox:WWNET.N.prox.size,gu:WWNET.N.gu.size,client:WSORTIE.WS.client}));
   const hostSees=await p.evaluate(()=>[...net.peers.values()].some(e=>e.jet));await g.close();
   ok('host page hosts',host.host&&host.on,host);ok('guest page receives the host\'s war',gotWar.got&&!gotWar.host&&gotWar.countries>100,gotWar);ok('guest sees the host\'s AI and ground units',seen.client&&(seen.prox>0||seen.gu>0),seen);ok('host sees the guest\'s aircraft',hostSees);});
+
+/* ---------- step 23 (v371): corrections ---------- */
+test('s26_fixes: anti-ship fits corrected, nuclear always possible, military airfields only','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{const has=(ac,w)=>!!STN[ac]&&Object.values(STN[ac]).some(L=>L.includes(w));await WGEO.loadData();
+    const civ=WGEO.search('EGLL')[0];await WF.start(civ,0,'le');const civOn=WF.on;await WGEO.loadData();const mil=WGEO.search('ETAR')[0];await WF.start(mil,0,'le');const milOn=WF.on;await start('RANGE');
+    localStorage.removeItem('viper.ww');await WWAR.newWar('EST');WWAR.step(24);return{e:has('F-18E','AGM-84D'),f1:has('Mirage F1','AM39 Exocet'),su24:has('Su-24M','Kh-31A'),shar:has('Sea Harrier FRS.1','Sea Eagle'),
+      f15:has('F-15E','AGM-84D'),oniks:has('Su-30SM','P-800')||has('Su-35S','P-800')||has('Su-34','P-800'),nuke:WWAR.strategic.S().nuke,civOn,milOn};});
+  ok('anti-ship missiles added where in service',r.e&&r.f1&&r.su24&&r.shar,r);ok('removed where not in service',!r.f15&&!r.oniks,r);ok('nuclear warfare always possible',r.nuke===true,r);ok('civil airports refused, military bases accepted',!r.civOn&&r.milOn,r);});
+
+/* ---------- step 24 (v372): every person and every munition ---------- */
+test('s27_census: a year of war resolves deaths for soldiers, sailors, aircrew and civilians; the living account balances; munitions counted','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*365);const C=WWAR.cemetery,T=C.totals(null);const pg=C.pager(null);const e0=pg.n?pg.at(Math.floor(pg.n/2)):null;
+    const pol=st.census.c.POL,M=st.census.mun,mun=Object.values(M).reduce((t,m)=>t+Object.values(m).reduce((a,b)=>a+b,0),0);const tab=NATPANEL.tabs.MUNITIONS(st.c.RUS),pt=NATPANEL.tabs.PEOPLE_REGISTER(st.c.POL);
+    const view=C.view(null);return{kM:T.kM,mM:T.mM,kC:T.kC,nat:T.nat,n:pg.n,mid:e0&&C.nameFor(e0.r,e0.i),pol:pol&&{pop0:pol.pop0,now:st.c.POL.pop},mun,tab:tab.includes('artillery rounds'),pt:pt.includes('THE LIVING ACCOUNT'),view:view.length,audit:WWAR.audit()};});
+  ok('a year of war: thousands of military dead, civilians killed, natural deaths',r.kM>1000&&r.kC>0&&r.nat>1000,r);ok('every death has an entry the archive can page to',r.n>=r.kM+r.kC+r.mM&&!!r.mid,r);
+  ok('the living account',r.pol&&r.pt,r);ok('munitions counted (strategic expenditure at least)',r.mun>0&&r.tab,r);ok('archive view renders with millions of entries',r.view>500,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -45,7 +45,7 @@ const UI={q:'',pg:0};const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 function people(a3){const st=W.st,out=[];for(const x of Object.values((st.lead&&st.lead.people)||{}))if(!a3||x.a3===a3)out.push({n:x.name,role:(x.rank?x.rank+', ':'')+x.role,a3:x.a3,st:x.st||'IN OFFICE',src:'leaders'});
   const R=st.frc&&st.frc.roster;if(R&&(!a3||R.a3===a3))for(const q of R.ppl)out.push({n:q.name,role:q.rank+', pilot ('+q.cs+')',a3:R.a3,st:q.st,src:'squadron'});
   for(const[k,H]of Object.entries(st.lives||{})){if(a3&&k!==a3)continue;for(const h of H)for(const m of h.m)out.push({n:m.n+' '+h.sur,role:'member of a family followed in LIFE ('+m.age+')',a3:k,st:m.st,src:'lives'});}
-  if(W.cemetery)for(const x of W.cemetery.entries(r=>!a3||r.a3===a3))out.push({n:W.cemetery.nameFor(x.r,x.i),role:x.r.role,a3:x.r.a3,st:x.r.st,src:'archive'});
+  if(W.cemetery)for(const x of W.cemetery.entries(r=>(!a3||r.a3===a3)&&r.n<=50,3000))out.push({n:W.cemetery.nameFor(x.r,x.i),role:x.r.role,a3:x.r.a3,st:x.r.st,src:'archive'});
   return out;}
 function tab(p){const L0=people(p.a3),q=UI.q.toLowerCase(),L=q?L0.filter(x=>(x.n+' '+x.role+' '+x.st).toLowerCase().includes(q)):L0;const pages=Math.max(1,Math.ceil(L.length/25));UI.pg=Math.min(UI.pg,pages-1);
   return '<div style="font-size:10px;color:#8a9a92">Every person the campaign has instantiated for '+esc(p.n)+' (fictional). Not a census: the population is a figure in LIFE.</div><div><input id="ppQ" value="'+esc(UI.q)+'" placeholder="search" style="width:130px" aria-label="search people"> <button data-pp="q">FIND</button> · '+L.length+' people</div>'+
