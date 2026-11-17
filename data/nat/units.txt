@@ -35,3 +35,13 @@ AUS|SQN|No. 1 Squadron;No. 2 Squadron;No. 3 Squadron;No. 6 Squadron;No. 75 Squad
 AUS|BDE|1st Brigade;3rd Brigade;7th Brigade
 CAN|SQN|401 Tactical Fighter Squadron;409 Tactical Fighter Squadron;425 Tactical Fighter Squadron;433 Tactical Fighter Squadron
 CAN|BDE|1 Canadian Mechanized Brigade Group;2 Canadian Mechanized Brigade Group;5 Canadian Mechanized Brigade Group
+NLD|SQN|322 Squadron;312 Squadron;313 Squadron
+NLD|BDE|13 Lichte Brigade;43 Gemechaniseerde Brigade;11 Luchtmobiele Brigade
+NOR|SQN|332 Squadron;338 Squadron
+NOR|BDE|Brigade Nord
+SWE|SQN|F 7 Skaraborg Wing;F 17 Blekinge Wing;F 21 Norrbotten Wing
+SWE|BDE|1st Mechanised Brigade;2nd Mechanised Brigade;3rd Mechanised Brigade
+FIN|SQN|Fighter Squadron 11 (Lapland Air Command);Fighter Squadron 31 (Karelia Air Command)
+FIN|BDE|Armoured Brigade;Pori Brigade;Karelia Brigade;Jaeger Brigade;Kainuu Brigade
+GRC|SQN|335 Squadron "Tiger";336 Squadron "Olympus";332 Squadron "Hawk";331 Squadron "Theseus";114 Combat Wing
+GRC|BDE|20th Armoured Division;1st Infantry Division;XVI Infantry Division
