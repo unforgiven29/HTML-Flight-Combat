@@ -99,12 +99,12 @@ function command(p,m){const st=W.st;if(!bel(p)||st.over)return;
   if(!m.hq){const c=W.lead?W.lead.person(p.a3,'Theatre commander, '+p.n,W.lead.rank(p.a3,'army',3)):{name:'Commander',skill:1};m.hq={id:c.id,name:c.name,skill:c.skill||1,deputy:null};}
   if(m.succ>0)m.succ--;
   for(const f of st.fronts){if(f.a!==p.a3&&f.b!==p.a3)continue;const o=st.c[f.a===p.a3?f.b:f.a],ratio=p.gnd/Math.max(1,o.gnd)*(m.mun.ART>5?1:.7);
-    const want=ratio>1.25?'ATTACK':ratio<.8?'DEFEND':'HOLD';const cur=m.intent[f.id];
-    if(cur!==want&&!m.pend.some(q=>q.f===f.id&&q.i===want)){m.pend=m.pend.filter(q=>q.f!==f.id);m.pend.push({f:f.id,i:want,t:st.t+24*(R.friction[0]+rn()*(R.friction[1]-R.friction[0]))});}
+    const want=(m.cmd&&m.cmd[f.id])||(ratio>1.25?'ATTACK':ratio<.8?'DEFEND':'HOLD');   /* commander mode: your order for this front, else the headquarters decides */const cur=m.intent[f.id];
+    if(cur!==want&&!m.pend.some(q=>q.f===f.id&&q.i===want)){m.pend=m.pend.filter(q=>q.f!==f.id);m.pend.push({f:f.id,i:want,why:m.cmd&&m.cmd[f.id]?'your order':'force ratio '+ratio.toFixed(2)+(m.mun.ART<=5?', artillery short':'')+(ratio>1.25?' favours an attack':ratio<.8?' calls for defence':' calls for holding'),t:st.t+24*(R.friction[0]+rn()*(R.friction[1]-R.friction[0]))});}
     if(m.intent[f.id]==='DEFEND'&&!f.cf)m.fort[f.id]=Math.min(1,(m.fort[f.id]||0)+R.fortRate*m.eng);
     if(!f.cf&&rn()<R.hqHit&&!m.succ){m.succ=R.succDays;W.emit('COMMAND',{e:[p.a3],txt:p.n+'\'s forward headquarters on the front with '+o.n+' is hit; the deputy commander takes over (command disrupted for a few days).'});}}
   for(let i=m.pend.length-1;i>=0;i--){const q=m.pend[i];if(st.t<q.t)continue;m.pend.splice(i,1);const was=m.intent[q.f];m.intent[q.f]=q.i;const f=st.fronts.find(x=>x.id===q.f);
-    if(f&&was&&was!==q.i)W.emit('ORDERS',{e:[p.a3],txt:m.hq.name+' ('+p.n+') orders the forces on the front with '+st.c[f.a===p.a3?f.b:f.a].n+' to '+q.i.toLowerCase()+'.'});}}
+    if(f&&was&&was!==q.i)W.emit('ORDERS',{e:[p.a3],txt:m.hq.name+' ('+p.n+') orders the forces on the front with '+st.c[f.a===p.a3?f.b:f.a].n+' to '+q.i.toLowerCase()+(q.why?' (reason: '+q.why+')':'')+'.'});}}
 
 /* ------------------------------------------------------------------ munitions */
 const PRODUCERS=['USA','RUS','CHN','FRA','GBR','DEU','ITA','KOR','JPN','ISR','TUR','IND','SWE','IRN'];
@@ -170,7 +170,9 @@ function tab(p){const st=W.st,m=M(p.a3);if(!m)return'';const mine=isMine(p.a3)&&
   if(mine)h+='<div class="tc">'+['PARTIAL','GENERAL'].map(s=>'<button data-mil="'+s+'" data-a3="'+p.a3+'"'+(m.state===s||m.state==='GENERAL'?' disabled':'')+'>ORDER '+s+' MOBILIZATION</button>').join(' ')+'</div>';
   h+='<h4>PERSONNEL AND TRAINING</h4>'+row('Aircrews',lbl(Math.round(m.crews)+' for '+Math.round(p.air)+' aircraft'))+row('Experience',Math.round(m.exp*100)+' %')+row('Aircrew lost',lbl(Math.round(m.lostCrews)))+(m.less?row('Lessons learned',m.less+' revision'+(m.less>1?'s':'')):'');
   h+='<h4>COMMAND</h4>'+(m.hq?row('Theatre commander',esc(m.hq.name))+(m.succ?row('Headquarters','disrupted ('+m.succ+' days)'):''):'<div>No wartime headquarters.</div>')+
-    st.fronts.filter(f=>f.a===p.a3||f.b===p.a3).map(f=>row('Front with '+esc(st.c[f.a===p.a3?f.b:f.a].n),(m.intent[f.id]||'—')+(m.pend.some(q=>q.f===f.id)?' (new orders on the way)':'')+(m.fort[f.id]?' · dug in '+Math.round(m.fort[f.id]*100)+' %':''))).join('');
+    st.fronts.filter(f=>f.a===p.a3||f.b===p.a3).map(f=>row('Front with '+esc(st.c[f.a===p.a3?f.b:f.a].n),(m.intent[f.id]||'—')+(m.pend.some(q=>q.f===f.id)?' (new orders on the way)':'')+(m.fort[f.id]?' · dug in '+Math.round(m.fort[f.id]*100)+' %':''))+
+      (mine?'<div class="tc">COMMAND: '+['ATTACK','HOLD','DEFEND','AUTO'].map(i=>'<button data-cmd="'+i+'" data-f="'+f.id+'" data-a3="'+p.a3+'" aria-pressed="'+((m.cmd&&m.cmd[f.id]||'AUTO')===i)+'">'+(i==='AUTO'?'DELEGATE':i)+'</button>').join(' ')+'</div>':'')).join('')+
+    (mine?'<div style="font-size:10px;color:#8a9a92">Commander mode: your orders reach the front in 1-3 days (friction). DELEGATE hands the front back to the headquarters.</div>':'');
   h+='<h4>MUNITIONS (DAYS OF COMBAT SUPPLY)</h4>'+Object.keys(R.mun).map(k=>row(NAME[k],lbl(Math.round(m.mun[k]))+(m.mun[k]<8?' <span style="color:#e07a5f">LOW</span>':''))).join('')+
     (m.inb.length?'<div>Deliveries on the way: '+m.inb.map(d=>NAME[d.k]+' from '+esc(st.c[d.from].n)).join('; ')+'</div>':'');
   const bs=Object.values(m.bases);h+='<h4>AIRBASES</h4>'+row('Average condition',Math.round(baseCond(p,m)*100)+' %')+bs.filter(b=>b.c<.9).slice(0,6).map(b=>row(esc(b.n),Math.round(b.c*100)+' %'+(b.c<.5?' · dispersed':''))).join('')+
@@ -178,6 +180,8 @@ function tab(p){const st=W.st,m=M(p.a3);if(!m)return'';const mine=isMine(p.a3)&&
   const u=Object.values(m.uxo).reduce((t,v)=>t+v,0);if(u>0)h+='<h4>POST-BATTLE HAZARDS</h4>'+row('Contaminated former battle areas',Math.round(u*100)+' (index)')+row('Civilians hurt (estimate)',lbl(Math.round(m.harm)));
   return h;}
 if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.MILITARY=tab;
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsNat [data-cmd]');if(!b||!W.st)return;const m=M(b.dataset.a3);m.cmd=m.cmd||{};const i=b.dataset.cmd;if(i==='AUTO')delete m.cmd[b.dataset.f];else m.cmd[b.dataset.f]=i;
+  const f=W.st.fronts.find(q=>q.id===b.dataset.f);W.emit('ORDERS',{e:[b.dataset.a3],txt:'Your order to the '+W.st.c[b.dataset.a3].n+' forces on the front with '+(f?W.st.c[f.a===b.dataset.a3?f.b:f.a].n:'the enemy')+': '+(i==='AUTO'?'command delegated to the theatre headquarters':i.toLowerCase())+'.'});WARMAP.panel();});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsNat [data-mil]');if(!b||!W.st)return;const m=M(b.dataset.a3);if(order(b.dataset.a3,b.dataset.mil,'your decision')){m.manual=W.st.t;}WARMAP.panel();});
 W.mil={R,M,order,daily,tab,crewRatio,baseCond};
 })();
