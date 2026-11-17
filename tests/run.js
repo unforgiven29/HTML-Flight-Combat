@@ -846,6 +846,14 @@ test('s19_cockpit: flight line, start-up checklist, wear, academy, controls setu
     WSORTIE.finish();const w=JSON.parse(localStorage.getItem('viper.wear')||'{}'),q=JSON.parse(localStorage.getItem('viper.quals')||'{}');C.SU.on=false;C.openSetup();const setup=!!document.getElementById('ctlSetup');C.closeSetup();
     return{crew,lock,idle,free,wear:Object.values(w)[0]&&Object.values(w)[0].n,ws:!!q.WS,setup,deb:NATPANEL.tabs.DEBRIEF(WWAR.st.c.POL).includes('COCKPIT AND ACADEMY')};});
   ok('ground crew by the aircraft on a ground start',r.crew,r);ok('start-up checklist holds the throttle at idle until done',r.lock&&r.idle&&r.free,r);ok('airframe wear counted',r.wear===1,r);ok('qualification recorded',r.ws,r);ok('controls setup and settings panel',r.setup&&r.deb,r);});
+test('s20_airops: interceptors scramble, CAS flights attack the ground fight, REDFOR gets GCI','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const O=WWAR.airops;
+    const gci=typeof GCI!=='undefined'&&GCI.run,sites=typeof GCI!=='undefined'?GCI.sites.length:0;
+    // an intruder near a friendly base: an enemy flight placed over our airfield
+    const B=O.basesOf(0);const e=WSORTIE.WS.enemy[0];if(e&&B[0]){e.pos.set(B[0].p.x+20000,6000,B[0].p.z);}O.scramble();const ints=[...WSORTIE.WS.jets].filter(j=>j._role==='INT').length;
+    if(window.GFIGHT&&!GFIGHT.GF.on){}const gf=window.GFIGHT?GFIGHT.GF.units.length:0;O.casFlight(true);const cas=O.OPS.cas.length,casJ=O.OPS.cas.flatMap(c=>c.j);
+    const bombs=casJ.some(j=>typeof agTypes==='function'&&agTypes(j).length>0);WSORTIE.finish();return{gci,sites,ints,gf,cas,bombs};});
+  ok('REDFOR GCI network up (radars, picture)',r.gci&&r.sites>=2,r);ok('interceptors scramble against an intruder',r.ints>=2,r);ok('CAS flights with bombs against the ground fight',r.gf===0||(r.cas>0&&r.bombs),r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

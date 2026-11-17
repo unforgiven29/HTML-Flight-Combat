@@ -1,3 +1,9 @@
+## v364 (interceptors, close air support runs, REDFOR GCI in world sorties)
+- **Interceptors** (both sides, js/war/airops.js): an enemy flight within about 90 km of a side's airfield brings a two-ship scramble from the nearest field, flown straight at the intruders.
+- **Close air support** (both sides): attack aircraft with the game's strike loadouts run in on the other side's units in the ground fight, aim with the CCIP bomb sight and release when the solution is on the target, up to three passes; AWACS warns you when enemy CAS bombs near you.
+- **REDFOR GCI**: early-warning radars (P-37, 55Zh6) and an A-50 when REDFOR has airborne early warning; the game's GCI controller steers REDFOR's Russian-built fighters onto the radar picture (it never fires for them). Sites stay put across origin shifts.
+- Tests: `node tests/run.js s20_`.
+
 ## v362–v363 (step 18: strategic forces, missile defence, submarines; the cockpit and the flight line)
 - **STRATEGIC tab** (js/war/strategic.js): deterrent forces of the nuclear-armed countries (ICBM launchers, ballistic-missile submarines, nuclear-capable bombers and bombs; public rounded numbers); conventional long-range strike (ballistic, hypersonic, cruise) at airbases and depots; missile defence by country (GMD, SM-3, THAAD, Patriot, Arrow, David's Sling, S-400 / S-500, A-235 and others) intercepting salvos from limited stocks. Ballistic-missile submarines can be lost in contested seas. Enemy submarines can be found at sea near you in a sortie and attacked.
 - **Nuclear use is a scenario switch (WORLD tab), off by default.** Off: never used. On: a nuclear-armed country facing collapse or the loss of its capital, at the highest deterrence level and with an unyielding leader, may cross the threshold; the war then ends in a NUCLEAR CATASTROPHE ending, shown abstractly: no number of dead, no side wins, no targets or effects described.
