@@ -149,5 +149,5 @@ W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
 // background running: one campaign hour per real second x speed while the map is open, real time in world flight
 let last=performance.now();
 setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!W.st||!W.run)return;try{W.step(dt*W.speed);}catch(e){warn('step',e);}},1000);
-window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;
+window.WWAR=W;W.C=C;W.SCEN=SCEN;W.THEATRES=THEATRES;W.emit=(t,o)=>W.st?emit(t,o):null;W.linePt=(s)=>({lat:s.lat+s.ny*s.off/111.2,lon:s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D))});W.milBases=milBases;W.bell=bell;
 })();
