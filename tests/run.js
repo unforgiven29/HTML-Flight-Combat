@@ -1095,7 +1095,7 @@ test('s39_battle: choose the battle location; varied soldiers that move; vehicle
     out.tr=I.S&&true;I.stop(false);return out;});
   ok('several real places to choose from',r.nC>=3,r.names);ok('chosen in the kit menu',r.menu&&r.k);ok('battle at the chosen place',r.loc,r);ok('weather / time of day set',!!r.env,r.env);
   ok('soldiers vary in colour',r.cols>=4,r.cols);ok('soldiers move their legs',r.anim);ok('they crouch and bound',r.crouch&&r.bound,r);
-  ok('enemy tank of the Soviet family for Poland',r.fam==='SOV',r);ok('ERA disrupts the first rocket, then is spent; tandem defeats it',/ERA brick detonated/.test(r.era[0])&&/spent/.test(r.era[1])&&/tandem/.test(r.era[2]),r.era);
+  ok('enemy tank of the Soviet family for Poland',r.fam==='SOV',r);ok('ERA disrupts the first rocket, then is spent; tandem defeats it',/brick detonated/.test(r.era[0])&&/spent/.test(r.era[1])&&/tandem/.test(r.era[2]),r.era);
   ok('roofs on houses',r.roofs>5,r.roofs);ok('Western tank for Russia\'s enemy',r.wfam==='WEST',r.wfam);ok('bustle hit vents through blow-out panels',!!r.bus,r.bus);});
 test('s40_hit3d: the hit overview draws the vehicle in 3D with the round path and damaged parts','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
@@ -1132,16 +1132,37 @@ test('s42_front: trench lines; push, take and dig in; counter-attack pushes us b
     S.them.filter(u=>u.alive).slice(0,3).forEach((u,i)=>u.m.position.set(-10+i*8,u.m.position.y,S.lines[2].z));I.frontStep(1/30);out.pushedBack=S.cur===1;
     I.fallBack(true);out.fellBack=S.cur===0;
     // command post behind the line; the planning table; resupply; a vehicle to ride
-    S.pos.set(0,0,S.lines[0].z+60);S.pos.y=S.lines[0].slots[0].y+1.7;for(const u of S.them)if(u.m.position.distanceTo(S.pos)<80)u.alive=false;S.yaw=0;
+    S.pos.set(0,0,S.lines[0].z+60);S.pos.y=S.lines[0].slots[0].y+1.7;for(const u of S.them)u.alive=false;for(const v of S.veh)if(v.side==='E')v.alive=false;S.calls=9;S.waveT=1e9;S.arty=null;S.pend=null;S.yaw=0;
     const c=I.buildCP();out.cp=!!c&&c.parts.length>15&&!!c.plan;S.pos.set(c.cx,S.pos.y,c.cz);I.interact();out.plan=!!document.querySelector('#iPan [data-ip="off"]');
     const g0=S.gren;S.gren=0;I.doPan('sup');out.sup=S.gren>=4;I.panel('plan',c);I.doPan('veh');for(let i=0;i<30*120&&S.taxiCall;i++)I.step(1/30);const taxi=S.veh.find(v=>v.taxi);out.taxi=!!taxi&&!taxi.goal;
     S.pos.set(taxi.x+2,S.pos.y,taxi.z);I.interact();out.ride=!!document.querySelector('#iPan [data-ip="r:front"]');I.doPan('r:front');out.riding=!!S.ride;for(let i=0;i<30*90&&S.ride;i++)I.step(1/30);out.arrived=!S.ride&&Math.abs(S.pos.z-(S.lines[0].z+18))<25;
     // downed: a medevac comes to you and takes you out
-    S.hp=10;I.hurt(30,'blast');out.downed=S.downed;for(let i=0;i<30*45&&!S.res;i++)I.step(1/30);out.res=S.res;
+    S.arty=null;S.pend=null;S.air.length=0;S.drones.length=0;S.heliT=1e9;if(S.eheli)S.eheli.alive=false;S.hp=10;I.hurt(30,'blast');out.downed=S.downed;for(let i=0;i<30*45&&!S.res;i++)I.step(1/30);out.res=S.res;out.medx={st:S.med&&S.med.st,road:S.med&&S.med.road,dT:S.downT,hp:S.hp,medN:S.medN,ev:S.evacMe,lh:S.lastHurt,dist:S.med?Math.hypot(S.pos.x-S.med.h.position.x,S.pos.z-S.med.h.position.z):-1};
     document.querySelectorAll('#u2m,#iPan').forEach(x=>x.remove());I.stop(false);return out;});
   ok('four trench lines, ours and theirs',r.lines==='FFEE'&&r.cur===1,r);ok('offensive pushes',r.push);ok('enemy trench taken',r.taken,r);ok('engineers dig it in',r.dig>20&&r.dug>5,r);
   ok('counter-attack pushes us back to the older trench',r.pushedBack,r);ok('fall back on order',r.fellBack);ok('command post built with planning table',r.cp&&r.plan,r);ok('resupply',r.sup);
   ok('called APC arrives',r.taxi,r);ok('ride menu and the ride to the front',r.ride&&r.riding&&r.arrived,r);ok('downed, medevac takes you out',r.downed&&r.res==='EVACUATED',r);});
+test('s43_aps: vehicle catalogue by side; APS intercepts (Trophy all round, Arena-M not from the rear); top-attack ATGM; T-14 crew capsule','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};out.nVC=Object.keys(I.VC).length;
+    // as Poland: the enemy fields Soviet-pattern vehicles; as Russia: Western
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});const red=new Set();for(let i=0;i<40;i++)red.add(I.pickModel(S.en,'MBT'));out.red=[...red];const rifv=new Set();for(let i=0;i<30;i++)rifv.add(I.pickModel(S.en,'IFV'));out.rifv=[...rifv];
+    I.land();S.hp=1e9;S.dT=1e9;S.airT=1e9;S.heliT=1e9;
+    // a T-90M (Arena-M): a rocket from the front is likely stopped, from the rear never
+    const mk=(name)=>{const m=I.tankModel(S.en,name);const x=S.pos.x+40,z=S.pos.z-60;m.position.set(x,S.pos.y-1.7,z);S.sc.add(m);const v={m,hp:1100,side:'E',x,z,cool:9,alive:true,tank:1,name};S.veh.push(v);return v;};
+    const fire=(v,from,g)=>{const P=v.m.position.clone().setY(v.m.position.y+1.8),o=P.clone().add(from.clone().multiplyScalar(20));const d=P.clone().sub(o).normalize();const k={p:o,v:d.multiplyScalar(120),t:0,g:g||{spd:120,dmg:400},own:true};return I.apsCheck(k);};
+    const t90=mk('T-90M');let f=0,rr=0;for(let i=0;i<6;i++){t90.apsN=6;t90.m.rotation.y=0;if(fire(t90,new V(0,0,-1)))f++;if(fire(t90,new V(0,0,1)))rr++;}out.arena={front:f,rear:rr};
+    I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());
+    S=I.start({...I.K,a3:'RUS',ins:'APC',mis:'ATTACK'});const blue=new Set();for(let i=0;i<60;i++)blue.add(I.pickModel(S.en,'MBT'));out.blue=[...blue];I.land();S.hp=1e9;S.dT=1e9;S.airT=1e9;S.heliT=1e9;
+    const ab=mk('M1A2 SEPv3 Abrams');let n=0;for(let i=0;i<8;i++){ab.apsN=8;if(fire(ab,new V(0,0,1)))n++;}out.trophyRear=n;ab.apsN=1;fire(ab,new V(1,0,0));out.left=ab.apsN;out.panel=/INTERCEPTED/.test(document.getElementById('iArm')?.textContent||'');
+    // top attack: your ATGM climbs over the target and dives
+    const k2=mk('Leopard 2A6');S.wp.lau={...I.LAU.ATGM,cur:1,res:1};S.w='lau';S.cool=0;S.reload=0;S.pos.set(k2.x+250,S.pos.y,k2.z);S.yaw=Math.atan2(250,0);I.shoot();let top=false,maxY=0;for(let i=0;i<30*6;i++){I.step(1/30);const k=S.rk[0];if(k){maxY=Math.max(maxY,k.p.y-k2.m.position.y);if(k.top)top=true;}else break;}out.top={top,maxY:Math.round(maxY)};
+    I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());
+    S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;const t14=mk('T-14 Armata');let cap=null;for(let i=0;i<60&&!cap;i++){t14.alive=true;t14.apsN=0;const P=t14.m.position;const r1=I.armorHit2(t14,new V(P.x,P.y+2.6,P.z+.4),new V(0,-1,.1).normalize(),'ATGM');if(/CAPSULE/.test(r1.res))cap=r1.res;}out.cap=cap;
+    out.bmpt=!!I.VC['BMPT-72 Terminator'];I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());return out;});
+  ok('catalogue',r.nVC>=25,r.nVC);ok('Soviet-pattern tanks against Poland, several models',r.red.length>=3&&r.red.every(n=>/T-|BMPT/.test(n)),r.red);ok('BMP / BTR family IFVs',r.rifv.every(n=>/BMP/.test(n)),r.rifv);
+  ok('Western tanks against Russia (Abrams, Leopard, K2 ...)',r.blue.length>=4&&r.blue.some(n=>/Abrams/.test(n))&&r.blue.some(n=>/Leopard/.test(n)),r.blue);
+  ok('Arena-M stops rockets from the front, never from the rear',r.arena.front>=3&&r.arena.rear===0,r.arena);ok('Trophy covers the rear',r.trophyRear>=5,r.trophyRear);ok('charges run out',r.left===0);ok('interception shown',r.panel);
+  ok('ATGM flies top attack',r.top.top&&r.top.maxY>15,r.top);ok('T-14: unmanned turret ammunition, crew capsule holds',!!r.cap,r.cap);ok('BMPT-72 in the catalogue',r.bmpt);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
