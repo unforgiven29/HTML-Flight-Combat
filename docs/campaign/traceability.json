@@ -8623,10 +8623,12 @@
    "line": 18360,
    "owner": "js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records",
    "phase": 9,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 9: not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "World war step 2 (v328, js/war/warsortie.js): fly for any belligerent from its real military airfields; front, enemy flights and tasking generated from the world-war state; results feed back. Not yet: persistent-need missions, career",
+   "tests": [
+    "ws_sortie"
+   ]
   },
   {
    "id": "R13-003",
@@ -8807,12 +8809,11 @@
    "line": 18856,
    "owner": "js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records",
    "phase": 9,
-   "status": "existing",
+   "status": "implement",
    "progress": "partial",
-   "note": "Existing tasking (CAS / SEAD / STRIKE / CAP / INTERCEPT / ESCORT) and debrief grading; mission and sortie records now persist in the ledger",
+   "note": "World war step 2 (v328, js/war/warsortie.js): fly for any belligerent from its real military airfields; front, enemy flights and tasking generated from the world-war state; results feed back. Not yet: persistent-need missions, career",
    "tests": [
-    "cw_air",
-    "cw_player_loss"
+    "ws_sortie"
    ]
   },
   {
@@ -8843,10 +8844,12 @@
    "line": 18868,
    "owner": "js/core/game.js — CAMP / CMPUI, js/campaign/campmp.js, strategic.js, campplus.js; world.js sortie + mission records",
    "phase": 9,
-   "status": "defer",
-   "progress": "none",
-   "note": "Phase 9: not started",
-   "tests": []
+   "status": "implement",
+   "progress": "partial",
+   "note": "World war step 2 (v328, js/war/warsortie.js): fly for any belligerent from its real military airfields; front, enemy flights and tasking generated from the world-war state; results feed back. Not yet: persistent-need missions, career",
+   "tests": [
+    "ws_sortie"
+   ]
   },
   {
    "id": "R13-017",

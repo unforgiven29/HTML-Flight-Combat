@@ -1,3 +1,12 @@
+## v328 (world war, step 2: fly in it)
+On the WORLD MAP with a world war running, click a country at war: **FLY FOR <COUNTRY>** lists its real military airfields, nearest to the front first. Pick one and you take off there (world flight terrain, runways, towns) into the war around you.
+- The nearest front is on the ground where the war has moved it: armour and infantry carriers on both sides of the line, a SAM battery and two anti-aircraft gun systems behind the enemy line.
+- Enemy flights come in from that enemy's real military airfields (types by operator: Su-35S / Su-30SM / MiG-31 for Russia, J-10C / J-16 / J-11B for China, F-35A / F-16C / EF-2000 / Rafale and others for NATO countries, filtered to what the hangar has), more often where the enemy holds the air; a friendly CAP holds over the front; DARKSTAR calls them.
+- Tasking: CAS on the enemy armour, SEAD on the battery, or CAP, with bearing and range.
+- Results go back into the world war: each aircraft you shoot down comes off that country's air strength, each vehicle off its ground strength (and edges the line), losing your jet comes off yours; the war diary records the sortie. The world war runs in real time while you fly.
+- Tests: `node tests/run.js ws_`.
+- Not yet: carrier and naval war, AI flights tied to the strategic airframe counts one-for-one, CSAR when you eject, multiplayer in the world war.
+
 ## v327 (world war, step 1: the war on the world map; spec chapter 05)
 On the WORLD MAP, **START THE WORLD WAR**. A fictional scenario on the real world: real countries, borders, cities and airfields; an invented war, never a prediction.
 - **Every country is an actor** (237, Natural Earth): its own profile, alignment and history. Default scenario as the spec gives it: Russia and China lead REDFOR (Belarus, North Korea allied); the United States and NATO lead BLUEFOR (Japan, South Korea, Australia, the Philippines allied; New Zealand a non-fighting partner). Everyone else starts neutral and stays neutral unless something changes it (that comes in step 3).

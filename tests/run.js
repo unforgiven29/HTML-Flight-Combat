@@ -439,6 +439,17 @@ test('ww_run: 60 days of war keep the registry consistent, move gradually and re
 test('ww_save: the war survives save and load','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await WWAR.newWar();WWAR.step(72);const t=WWAR.st.t,o=WWAR.st.fronts[0].sec[0].off;WWAR.st=null;const ok=await WWAR.load();return{ok,t:WWAR.st.t===t,o:WWAR.st.fronts[0].sec[0].off===o,a:WWAR.audit()};});
   ok('loaded, same clock and lines',r.ok&&r.t&&r.o,r);ok('audit clean',r.a.length===0,r.a);});
+
+/* ---------- the world war, step 2: flying in it (v328) ---------- */
+test('wsortie: fly for a country from a real airbase; the front, enemy flights, tasking; results go back into the war','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const L=WSORTIE.basesFor('FIN');game.ac='F-16C';const rus=WWAR.st.c.RUS,a0=rus.air,g0=rus.gnd;
+    await WSORTIE.start('FIN',L[0].a);const WS=WSORTIE.WS,o={bases:L.length,on:WS.on,scen:game.scen,gr:WS.ground.length,enemySide:WS.ground.filter(u=>u.side===1).length,task:!!WS.task,wwReal:WWAR.run&&WWAR.speed<.001};
+    WS.spawnT=0;WS.capT=0;await new Promise(r=>setTimeout(r,2300));o.enemy=WS.enemy.length;o.friend=WS.friend.length;o.from=WS.enemy.map(j=>j._ws);o.red=WS.enemy.every(j=>WWAR.st.c[j._ws].side==='R');
+    if(WS.enemy[0])WS.enemy[0].kill('SHOT',player);const g=WS.ground.find(u=>u.side===1&&u.alive);if(g)g.kill(player);o.dAir=a0-rus.air;o.dGnd=g0-rus.gnd;
+    const n=WWAR.st.ev.length;await start('RANGE');await new Promise(r=>setTimeout(r,1500));o.off=!WS.on&&!WWAR.run;o.diary=WWAR.st.ev.slice(n).some(e=>e.ty==='SORTIE');o.audit=WWAR.audit();return o;});
+  ok('airbases offered',r.bases>0,r.bases);ok('sortie running in world flight',r.on&&r.scen==='WORLD',r);ok('front on the ground, enemy side included',r.gr>10&&r.enemySide>4,{gr:r.gr,e:r.enemySide});ok('tasking given',r.task);
+  ok('world war runs in real time',r.wwReal);ok('enemy flight from the enemy and a friendly CAP',r.enemy>=1&&r.friend>=1&&r.red,{e:r.enemy,f:r.friend,from:r.from});
+  ok('kills come off the enemy country',r.dAir>=1-1e-6&&r.dGnd>0,{dAir:r.dAir,dGnd:r.dGnd});ok('leaving closes the sortie and writes the diary',r.off&&r.diary,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

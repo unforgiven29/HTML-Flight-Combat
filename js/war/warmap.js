@@ -8,7 +8,7 @@
 'use strict';
 if(!window.WWAR||!window.WMAP)return;
 const W=WWAR,G=WGEO,D=Math.PI/180,esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const UI={sel:null,feed:'all'};
+const UI={sel:null,feed:'all'},AFTER=[];
 const AL={CORE:'principal power',ALLY:'ally',PARTNER:'partner (not fighting)',NEUTRAL:'neutral',UNDECIDED:'undecided'};
 const fill=p=>!p||!p.side?null:p.side==='B'?(p.al==='PARTNER'?'rgba(91,180,255,.10)':'rgba(70,150,255,.26)'):(p.al==='PARTNER'?'rgba(255,90,74,.10)':'rgba(255,80,64,.26)');
 
@@ -56,7 +56,7 @@ function panel(){const el=document.getElementById('wmWar');if(!el)return;const s
     (p.hist.length?'<div style="font-size:10px;color:#8a9a92">'+p.hist.map(x=>esc(W.date(x[0]))+' '+x[1].toLowerCase()+' · '+esc(x[3])).join('<br>')+'</div>':'')+'</div>';}
   h+='<div style="font-size:10.5px;color:#8a9a92">WAR DIARY</div><div class="feed">'+st.ev.slice(-40).reverse().map(e=>'<div><em>D'+(Math.floor(e.t/24)+1)+' '+String(Math.floor(e.t%24)).padStart(2,'0')+'h</em>'+esc(e.txt)+(e.cf!=='CONFIRMED'?'<span class="cf">'+e.cf+'</span>':'')+'</div>').join('')+'</div>'+
    '<div class="disc">Fictional scenario. Force figures are estimates from population, economy and airfield counts, not real orders of battle.</div><div class="tc"><button data-w="new">NEW WAR</button></div>';
-  el.innerHTML=h;}
+  el.innerHTML=h;for(const f of AFTER)try{f();}catch(e){console.warn('[warmap]',e);}}
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#wmWar [data-w]');if(!b)return;const k=b.dataset.w;
   if(k==='new'){if(W.st&&!confirm('Start a new world war? The current one is replaced.'))return;await W.newWar();W.run=false;}
   else if(k==='load'){if(!await W.load())alert('No saved world war.');}
@@ -67,5 +67,5 @@ const pick=(lat,lon)=>{const c=G.countryAt(lat,lon);UI.sel=c?c.a3:null;panel();W
 setInterval(()=>{const m=document.getElementById('wmap');if(m&&!m.hidden){panel();if(W.run)WMAP.draw();}},1500);
 {const _o=WMAP.open;WMAP.open=async function(){await _o.apply(this,arguments);if(!W.st)await W.load();panel();WMAP.draw();};
  const card=document.getElementById('sWORLD');if(card)card.onclick=()=>WMAP.open();}
-window.WARMAP={draw,panel,pick,UI};
+window.WARMAP={draw,panel,pick,UI,after:AFTER};
 })();
