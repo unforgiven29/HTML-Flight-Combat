@@ -1,3 +1,12 @@
+## v385–v386 (infantry kits, weapons, attachments, armour pieces; infantry sound)
+- **Weapon models**: 40 primaries by class (e.g. M4A1, HK416, AK-74M, AK-12, AKM, M16A4 with 3-round burst, SCAR-L / -H, G36, AUG, FAMAS, MSBS Grot, QBZ-191, L85A3, FAL, G3; MP5, MP7, P90, Vityaz, UMP45; Remington 870, M1014, Saiga-12; M249, PKP, RPK-16, MG4; SVD, M110, Mk 14, G28; M24, SV-98, AWM, T-5000, Barrett M82 anti-materiel). Your country's issued rifle is marked and chosen by default. Handling values are abstract game values.
+- **Sidearms**: M17, Glock 17, Beretta M9, SIG P226, CZ P-10 C, Makarov PM, Yarygin PYa, FN Five-seveN, Desert Eagle, Glock 18 (automatic).
+- **Attachments** by what each class takes: optics (red dot, holographic, 4× prism, 1–6× variable with **Z** to switch, 8×, 12×; reticles on screen), muzzle (suppressor: quieter, enemies find you less; compensator; flash hider), underbarrel (grip: steadier on the move; bipod: steadier crouched; grenade launcher on **4**), laser / light (visible laser with a beam: better hip fire but easier to spot; IR laser; weapon light; **L** toggles). The parts show on the gun in your hands. Sidearms take an optic, a muzzle device and a laser or light.
+- **Armour by piece**: helmet (head), body armour (torso) and limb protection, each protecting its own hit zone; the weight adds up and slows you. Roles still set a full kit.
+- **Saved kits**: three slots in this browser; save and load the whole loadout.
+- **Infantry sound** (its own; the flight sim's sound, jet engine included, is muted while you are on foot): your shots by gun class (muffled with a suppressor), distant enemy fire, rounds cracking past, hits on you, explosions with distance delay, footsteps (walk, run, crouch, indoors), reloads, the launcher; running sound for tank and IFV engines, FPV drones, one-way attack drones, armed drones, helicopters and the transport plane — placed left / right and fading with distance.
+- Tests: `node tests/run.js s37_` and `s38_`.
+
 ## v384 (campaign dialogs in the menu theme)
 - **Sortie setup, infantry kit and both debriefings** now look like the other menus (brass on matte, hairline plates, red for the one action that commits): `css/sortie.css`, used by `js/war/ui2.js` and `js/war/infantry.js`.
 - **Mission type** is a set of cards (group, name, what it is flown as); the target list says how many targets fit; escorts and start are segmented controls; FLY SORTIE and GO AS INFANTRY sit in a footer bar.
