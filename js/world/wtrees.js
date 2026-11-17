@@ -14,7 +14,7 @@
 (()=>{
 'use strict';
 if(!window.WF||!window.WGEO)return;
-const G=WGEO,D=Math.PI/180,CELL=.01,R=5000,N=12000;
+const G=WGEO,D=Math.PI/180,CELL=.01,R=5000,N=20000;
 const DES=[[15,32,-17,35],[15,32,35,60],[25,37,55,75],[-32,-18,115,145],[-28,-17,12,25],[-28,-17,-72,-68],[36,46,75,110],[28,37,-118,-103]];
 const T={grp:null,con:null,dec:null,cache:new Map(),last:null,near:[],hits:0};
 function init(){if(T.grp)return;T.grp=new THREE.Group();const cg=new THREE.ConeGeometry(3,13,7);cg.translate(0,6.5,0);const dg=new THREE.IcosahedronGeometry(4,0);dg.scale(1,1.2,1);dg.translate(0,8,0);
@@ -26,7 +26,7 @@ function cell(i,j){const k=i+','+j;let c=T.cache.get(k);if(c)return c;c=[];const
   if(DES.some(([a,b,o,p])=>lat0>=a&&lat0<=b&&lon0>=o&&lon0<=p)){T.cache.set(k,c);return c;}
   let s=((i*73856093)^(j*19349663))>>>0;const rn=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};
   const tl=treeLine(lat0);
-  for(let n=0;n<70;n++){const lat=lat0+rn()*CELL,lon=lon0+rn()*CELL,r1=rn(),r2=rn(),r3=rn();const p=G.ll2xz(lat,lon);
+  for(let n=0;n<115;n++){const lat=lat0+rn()*CELL,lon=lon0+rn()*CELL,r1=rn(),r2=rn(),r3=rn();const p=G.ll2xz(lat,lon);
     const f=vnoise(lat*90+11.3,lon*90+3.1)*.5+.5;if(r1>Math.max(0,Math.min(1,(f-.42)*3)))continue;
     const h=groundAt(p.x,p.z);if(h<3||h>tl)continue;if(Math.abs(groundAt(p.x+25,p.z)-h)>14||Math.abs(groundAt(p.x,p.z+25)-h)>14)continue;
     c.push([lat,lon,.8+r2*.7,(h>1100||Math.abs(lat)>55||vnoise(lat*30,lon*30)>.15)?1:0,r3]);}

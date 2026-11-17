@@ -1,3 +1,10 @@
+## v379 (battles in real places, the trenches, the air war overhead, more trees and towns)
+- **Infantry battles at real places**: in the world war, at the real town or city nearest your front (GeoNames / Natural Earth), sized by its population (high-rises in cities), on the real elevation; in the campaign, at the named campaign town nearest the hot sector, on the campaign's terrain.
+- **DEFEND THE TRENCHES** mission: a zig-zag trench line (earth parapet, sandbags, dugouts) before the town, held by your squad, more riflemen and two of your country's tanks; four waves of enemy infantry with their real tanks (T-90M, M1A2 and so on, from the equipment table) and IFVs advance and fire. Hold all four waves; the trench is lost if the enemy stands in it and none of yours do.
+- **The air war overhead** in every battle: fighters of both sides turn and fight above you, shootdowns fall burning, your attack aircraft hit enemy armour and theirs hit your trench.
+- **More trees and towns**: campaign forests about 60 % denser and 18 more named towns and villages; world-flight forests about 65 % denser.
+- Tests: `node tests/run.js s33_`.
+
 ## v378 (infantry in the campaign)
 - **GO AS INFANTRY** on the campaign HQ, next to FLY SORTIE: the same kit, roles, insertions, town and drones. You fight for your team (BLUEFOR as the United States, REDFOR as Russia) in the campaign's hottest sector; enemy numbers follow the units in that sector.
 - A win pushes that sector of the campaign front 1.5 km toward the enemy and wears down its units there; the result is written to the campaign log and saved.

@@ -974,6 +974,19 @@ test('s32_campinf: infantry from the campaign HQ, the battle is in the hot secto
     INFANTRY.land();S.hp=1e9;for(const u of S.them)u.alive=false;S.dT=1e9;S.pos.set(S.village.x,S.pos.y,S.village.z);for(let k=0;k<40*30&&!S.res;k++)INFANTRY.step(1/30);
     const res=S.res;document.querySelector('[data-iend]').click();return{menu,ok,res,moved:st.front[i]<f0,log:st.log[0]&&st.log[0].txt};});
   ok('kit menu from the HQ',r.menu);ok('battle in a campaign sector',r.ok,r);ok('won, front moved, logged',r.res==='WON'&&r.moved&&/Infantry, sector/.test(r.log),r);});
+test('s33_trenches: battles at real places, defend the trenches against waves with tanks, air war overhead, campaign town','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});out.loc=S.loc.name;out.real=S.loc.real;I.stop(false);
+    S=I.start({...I.K,a3:'POL',ins:'APC',mis:'DEFEND'});I.land();S.hp=1e9;S.dT=1e9;out.trench=S.trench.length>20;out.fr=S.us.length;out.ftank=S.veh.filter(v=>v.tank&&v.side==='F').length;
+    S.waveT=0;I.step(1/30,2);out.wave1=S.wave===1&&S.veh.some(v=>v.tank&&v.side==='E');out.tname=(S.veh.find(v=>v.tank&&v.side==='E')||{}).name;
+    I.step(1/30,30*20);out.adv=S.veh.filter(v=>v.side==='E'&&v.mv).every(v=>v.z>S.trZ-700);out.air=S.air.length>0;
+    // all four waves arrive and are destroyed
+    for(let w=0;w<4;w++){S.waveT=0;I.step(1/30,2);for(const u of S.them)u.alive=false;for(const v of S.veh)if(v.side==='E')v.alive=false;}I.step(1/30,5);out.res=S.res;
+    document.querySelector('[data-iend]').click();
+    localStorage.removeItem('viper.camp');CAMP.st=null;CAMP.newState(game.era,1);S=I.start({...I.K,camp:true,ins:'APC',mis:'DEFEND'});out.camp=S.loc.name;I.stop(false);
+    out.towns=CAMPPLUS.TOWNS.length;return out;});
+  ok('battle at a real place',r.real&&r.loc&&r.loc!=='the village',r.loc);ok('trench line, riflemen and our tanks',r.trench&&r.fr>=12&&r.ftank===2,r);ok('a wave with named enemy tanks',r.wave1&&!!r.tname,r.tname);
+  ok('enemy advances',r.adv,r);ok('air war overhead',r.air);ok('trenches held after four waves',r.res==='HELD',r.res);ok('campaign battle at a named town',/^[A-Z]/.test(r.camp)&&r.camp!=='the village',r.camp);ok('more campaign towns',r.towns>=20,r.towns);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
