@@ -12,7 +12,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 02 | Shared Entities, Identities, Relationships, Authoritative State, Events, Causality, Accounting, and History | 22 | extend 15, implement 7 | none 7, partial 15 |
 | 03 | Global Geography, Map, Terrain, Territory, Navigation, and Spatial Foundations | 16 | implement 8, defer 8 | partial 8, none 8 |
 | 04 | World Clock, Simulation Scheduling, Persistence, Streaming, Performance, and Recovery | 33 | defer 27, existing 1, implement 1, extend 4 | none 27, done 1, partial 5 |
-| 05 | Countries, Governments, Alliances, Diplomacy, Conflict, Law, Occupation, Security, and Peace | 52 | defer 43, implement 9 | none 43, partial 9 |
+| 05 | Countries, Governments, Alliances, Diplomacy, Conflict, Law, Occupation, Security, and Peace | 52 | defer 40, implement 12 | none 40, partial 12 |
 | 06 | Armed Forces, Command, Personnel, Units, Weapons, Readiness, Operations, and Sustainment | 237 | defer 227, extend 10 | none 227, partial 10 |
 | 07 | Sensors, Radar, Intelligence, Electronic Warfare, Communications, Cyber, Space, and Information Integrity | 17 | existing 4, defer 13 | partial 4, none 13 |
 | 08 | Population, Individuals, Families, Households, Demographics, Migration, Health, Education, and Personal Life | 58 | defer 58 | none 58 |
@@ -21,7 +21,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 11 | Cities, Housing, Infrastructure, Utilities, Water, Food, Transportation, Aviation, and Connectivity | 23 | implement 3, defer 20 | partial 3, none 20 |
 | 12 | Weather, Climate, Ecology, Hazards, Emergencies, Humanitarian Response, and Recovery | 21 | defer 21 | none 21 |
 | 13 | Player Campaign, Missions, Flight Experience, Career, Training, Commander Mode, and Player-Facing Operations | 22 | defer 14, implement 3, extend 2, existing 3 | none 14, partial 8 |
-| 14 | Anti-War Consequences, Accountability, Awards, Memorials, Epilogue, and Postwar Continuity | 48 | implement 5, defer 43 | partial 5, none 43 |
+| 14 | Anti-War Consequences, Accountability, Awards, Memorials, Epilogue, and Postwar Continuity | 48 | implement 6, defer 42 | partial 6, none 42 |
 | 15 | Autonomous AI, Institutional Decisions, Learning, and World Agency | 26 | defer 26 | none 26 |
 | 16 | Multiplayer Authority, Cooperative Campaigns, Security, Privacy, and Concurrency | 6 | extend 2, defer 4 | partial 2, none 4 |
 | 17 | User Interface, Map Presentation, Dashboards, Reports, Accessibility, and Explainability | 29 | defer 23, extend 6 | none 23, partial 6 |
@@ -29,7 +29,7 @@ One row per requirement block of the spec. **status** is the decision (existing 
 | 19 | Implementation Order and Claude Execution Workflow | 2 | existing 2 | partial 2 |
 | 20 | Acceptance Criteria, Regression, Data Integrity, Performance, and Release Gates | 6 | extend 6 | none 6 |
 
-Total: 719 blocks; 95 with code behind them (partial or done), 594 deferred with a phase and reason.
+Total: 719 blocks; 99 with code behind them (partial or done), 590 deferred with a phase and reason.
 
 ## Explicit scope exclusions (unchanged)
 
@@ -124,13 +124,13 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R04-033 | 2812 | ASSET, NETWORK, AND BROWSER RESILIENCE | js/core/game.js — CAMP.st.t clock, CAMP.tick, CAMP.save; world.js schema v1 + migration | 10 | defer | none | Phase 10: performance tiers, streaming, multi-decade evolution not started |  |
 | R05-001 | 2856 | National identity, governments, diplomacy, alliances, and political continuity | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-002 | 2857 | Country, government, and world-order foundations | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy | ww_registry ww_fronts |
-| R05-003 | 2901 | Unified national leadership, government decision-making, political continuity, and transitions | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
-| R05-004 | 3071 | Political crises, government continuity, and domestic pressure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-003 | 2901 | Unified national leadership, government decision-making, political continuity, and transitions | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Public support, stability, regime change with a new government seeking peace (aggregate). Not yet: elections, parties, leaders as people | wend_all |
+| R05-004 | 3071 | Political crises, government continuity, and domestic pressure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Public support, stability, regime change with a new government seeking peace (aggregate). Not yet: elections, parties, leaders as people | wend_all |
 | R05-005 | 3119 | Regional cooperation and shared cross-border systems | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-006 | 3134 | STRATEGIC ARMS CONTROL AND INTERNATIONAL SECURITY GOVERNANCE | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-007 | 3214 | Rules of engagement, diplomacy, and campaign consequences | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
 | R05-008 | 3228 | Global World War framework and coalition structure | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 1 (v327, js/war/worldwar.js): every country an actor with profile and alignment history; spec default scenario; REDFOR / BLUEFOR as labels only. Not yet: governments, coalition politics, alignment changes, diplomacy | ww_registry ww_fronts |
-| R05-009 | 3250 | Coalition command, interoperability, host-nation support, and national caveats | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
+| R05-009 | 3250 | Coalition command, interoperability, host-nation support, and national caveats | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Coalition cohesion per side (departures, unequal exhaustion, a principal power losing its public). Not yet: caveats, basing rights, interoperability | wend_home |
 | R05-010 | 3303 | Neutral countries, diplomatic pressure, and global legitimacy | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records | wdip_rules wdip_long |
 | R05-011 | 3317 | Negotiations and diplomacy that can actually end the war | none (front and escalation only: game.js CAMP, strategic.js) | 8 | implement | partial | Step 3 (v330, js/war/diplomacy.js): neutrals debate / support / join from documented partnerships or border incidents, allies leave by separate settlement, local and general ceasefires with violations, armistice / capitulation / frozen endings. Not yet: negotiated treaties with terms, observers as entities, prisoners as records | wdip_rules wdip_long |
 | R05-012 | 3331 | DIPLOMACY, ALLIANCE POLITICS, AND NATIONAL DECISION-MAKING | none (front and escalation only: game.js CAMP, strategic.js) | 8 | defer | none | Phase 8: countries, diplomacy, law and peace processes not started |  |
@@ -671,7 +671,7 @@ ILS, VOR, TACAN, NDB, DME, RNAV procedures and instrument approaches are not add
 | R14-045 | 20479 | Rescue and protection | js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab | 9 | defer | none | Phase 9: anti-war presentation, awards, epilogue; loss ledger started |  |
 | R14-046 | 20487 | Support and technical service | js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab | 9 | defer | none | Phase 9: anti-war presentation, awards, epilogue; loss ledger started |  |
 | R14-047 | 20495 | Personal and institutional recognition | js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab | 9 | defer | none | Phase 9: anti-war presentation, awards, epilogue; loss ledger started |  |
-| R14-048 | 20575 | War conclusion and postwar continuation | js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab | 9 | defer | none | Phase 9: anti-war presentation, awards, epilogue; loss ledger started |  |
+| R14-048 | 20575 | War conclusion and postwar continuation | js/campaign/world.js losses + js/campaign/warrecord.js LOSSES tab | 9 | implement | partial | v331 (js/war/nations.js): all ten endings the spec lists, each from its own conditions, report with civilian estimates, postwar continuation. Not yet: awards, memorials, epilogue chapters, accountability reviews | wend_all wend_home |
 | R15-001 | 20590 | Unified AI architecture, autonomous world agency, and operational behavior | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |
 | R15-002 | 20591 | AI decision-making and campaign integration | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |
 | R15-003 | 20602 | DYNAMIC AIR-DEFENSE AND SENSOR-NETWORK AI | js/core/game.js — CAMP.airOps, pickHot (scripted AI) | 8 | defer | none | Phase 8: institutional AI not started |  |

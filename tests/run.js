@@ -464,8 +464,29 @@ test('wdip_long: a war run to its end has diplomacy, an outcome, a report and a 
     const types=new Set(st.ev.map(e=>e.ty)),props=st.ev.filter(e=>/proposes a general ceasefire/.test(e.txt)).length,rp=st.report;
     st.post=true;const t=st.t;WWAR.step(48);
     return{over:st.over&&st.over.kind,days:d,dip:types.has('DIPLO'),cf:types.has('CEASEFIRE'),props,rep:!!rp&&rp.lines.length>0&&rp.air.B>=0,post:st.t>t,frozen:st.fronts.every(f=>f.cf),audit:WWAR.audit()};});
-  ok('the war ends one way or another',['ARMISTICE','CAPITULATION','FROZEN'].includes(r.over),{over:r.over,days:r.days});ok('diplomacy and ceasefires happened',r.dip&&r.cf,r);
+  ok('the war ends one way or another',['ARMISTICE','CAPITULATION','FROZEN','NEGOTIATED_PEACE','MUTUAL_EXHAUSTION','DECISIVE_VICTORY','WITHDRAWAL','COALITION_COLLAPSE','REGIME_CHANGE','STALEMATE'].includes(r.over),{over:r.over,days:r.days});ok('diplomacy and ceasefires happened',r.dip&&r.cf,r);
   ok('proposals are not repeated every few days',r.props<=20,r.props);ok('an outcome report',r.rep);ok('postwar: clock runs, lines frozen',r.post&&r.frozen,r);ok('audit clean',r.audit.length===0,r.audit);});
+
+/* ---------- the world war, step 4: home fronts and every ending (v331, spec ch.05 / ch.14) ---------- */
+test('wend_all: each ending the spec lists is reached from its own conditions, with a report','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{const out={};const fresh=async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');WWAR.step(24);return WWAR.st;};
+    const cores=s=>Object.values(WWAR.st.c).filter(q=>q.al==='CORE'&&q.side===s);
+    let st=await fresh();st.dip.cease={t:st.t};st.dip.quiet=13;for(const q of[...cores('B'),...cores('R')])q.sup=.3;WWAR.step(24);out.peace=st.over&&st.over.kind;out.terms=!!(st.nat&&st.nat.terms);
+    st=await fresh();st.dip.cease={t:st.t};st.dip.quiet=13;for(const q of[...cores('B'),...cores('R')]){q.lostAir=q.air0*.7;q.lostGnd=q.gnd0*.7;}WWAR.step(24);out.mutual=st.over&&st.over.kind;
+    st=await fresh();for(const q of cores('R'))q.stab=.05;WWAR.step(24);out.regime=st.over&&st.over.kind;out.fell=Object.values(st.c).filter(q=>q.fell).length;
+    st=await fresh();const mos=WGEO.places.find(q=>q.name==='Moscow');st.cities['Moscow|RUS']={h:'FIN',own:'RUS',lat:mos.lat,lon:mos.lon,pop:mos.pop};for(const q of Object.values(st.c))if(q.side==='R')q.air=q.air0*.05;
+    WWAR.nations.outcomes();out.victory=st.over&&st.over.kind;
+    st=await fresh();for(const f of st.fronts){const bA=st.c[f.a].side==='B';for(const sc of f.sec)sc.off=bA?40:-40;}for(const q of cores('B'))q.sup=.1;
+    for(let d=0;d<15&&!st.over;d++)WWAR.nations.outcomes();out.withdraw=st.over&&st.over.kind;
+    st=await fresh();st.t=24*731;WWAR.nations.outcomes();out.stale=st.over&&st.over.kind;
+    out.report=!!(st.report&&st.report.civ);out.audit=WWAR.audit();return out;});
+  ok('negotiated peace with terms',r.peace==='NEGOTIATED_PEACE'&&r.terms,r);ok('mutual exhaustion',r.mutual==='MUTUAL_EXHAUSTION',r.mutual);ok('regime change',r.regime==='REGIME_CHANGE'&&r.fell>0,r);
+  ok('decisive military victory',r.victory==='DECISIVE_VICTORY',r.victory);ok('withdrawal',r.withdraw==='WITHDRAWAL',r.withdraw);ok('unresolved stalemate',r.stale==='STALEMATE',r.stale);
+  ok('report has the home front and civilians',r.report);ok('audit clean',r.audit.length===0,r.audit);});
+test('wend_home: displacement, refugees, economy, support and cohesion move during a war','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const c=st.c;
+    return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:c.USA.sup<.65,coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
+  ok('people displaced when cities change hands (estimate)',r.disp>0&&r.civ,r);ok('civilian events are labelled estimates',r.est);ok('economies, support and cohesion move',r.econ&&r.sup&&r.coh,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

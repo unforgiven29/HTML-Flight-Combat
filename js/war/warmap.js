@@ -37,7 +37,7 @@ function draw(c,w2s,M,phase){const st=W.st;if(!st)return;
   if(UI.sel){const C=G.byA3.get(UI.sel);if(C){c.strokeStyle='#ffcf5a';c.lineWidth=1.5;c.beginPath();for(const r of C.r){let px=null;for(let i=0;i<r.length;i+=2){const[x,y]=w2s(r[i+1],r[i]);if(i===0||Math.abs(x-px)>M.W*.5)c.moveTo(x,y);else c.lineTo(x,y);px=x;}c.closePath();}c.stroke();}}}
 
 function panel(){const el=document.getElementById('wmWar');if(!el)return;const st=W.st;
-  if(!st){el.innerHTML='<h3>WORLD WAR</h3><div class="disc">Fictional scenario: real countries, borders and airfields; an invented war. Not a prediction of what any country would do.</div><div class="tc"><button data-w="new">START THE WORLD WAR</button><button data-w="load">LOAD SAVED WAR</button></div>';return;}
+  if(!st){el.innerHTML='<h3>WORLD WAR</h3><div class="disc">Fictional scenario: real countries, borders and airfields; an invented war. Not a prediction of what any country would do.</div><div class="tc"><button data-w="new">START · FORCES AS ESTIMATED</button><button data-w="new" data-v="EVEN">START · EVEN SIDES</button><button data-w="load">LOAD SAVED WAR</button></div>';return;}
   const P=Object.values(st.c),bel=s=>P.filter(p=>p.side===s&&(p.al==='CORE'||p.al==='ALLY')),sum=(L,k)=>Math.round(L.reduce((t,p)=>t+p[k],0));
   const B=bel('B'),R=bel('R');
   let h='<h3>WORLD WAR · DAY '+(Math.floor(st.t/24)+1)+'</h3><div class="row"><span>'+esc(W.date(st.t))+'</span><span>'+(W.run?'RUNNING ×'+W.speed:'PAUSED')+'</span></div>'+
@@ -58,7 +58,7 @@ function panel(){const el=document.getElementById('wmWar');if(!el)return;const s
    '<div class="disc">Fictional scenario. Force figures are estimates from population, economy and airfield counts, not real orders of battle.</div><div class="tc"><button data-w="new">NEW WAR</button></div>';
   el.innerHTML=h;for(const f of AFTER)try{f();}catch(e){console.warn('[warmap]',e);}}
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#wmWar [data-w]');if(!b)return;const k=b.dataset.w;
-  if(k==='new'){if(W.st&&!confirm('Start a new world war? The current one is replaced.'))return;await W.newWar();W.run=false;}
+  if(k==='new'){if(W.st&&!confirm('Start a new world war? The current one is replaced.'))return;await W.newWar(b.dataset.v||(W.st&&W.st.bal==='EVEN'?'EVEN':'EST'));W.run=false;}
   else if(k==='load'){if(!await W.load())alert('No saved world war.');}
   else if(k==='run')W.run=!W.run;else if(k==='spd')W.speed=+b.dataset.v;else if(k==='adv')W.step(+b.dataset.v);
   panel();WMAP.draw();});
