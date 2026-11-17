@@ -117,10 +117,10 @@ setInterval(()=>{if(!WS.on||!W.st||typeof game==='undefined'||!game.active||!WS.
     // threats: a neighbour lost, or an enemy aircraft low within 4 km
     const near=WS.ground.some(v=>v!==u&&!v.alive&&v._diedAt&&now-v._diedAt<20000&&v.pos.distanceTo(u.pos)<1500);
     const air=jets.find(j=>j.alive&&j.side!==u.side&&j.pos.y-groundAt(j.pos.x,j.pos.z)<1500&&Math.hypot(j.pos.x-u.pos.x,j.pos.z-u.pos.z)<4000);
-    if((near||air)&&!(u._cov>now)){u._cov=now+120000;const from=air?air.pos:WS.ground.find(v=>!v.alive&&v._diedAt).pos;const dx=u.pos.x-from.x,dz=u.pos.z-from.z,d=Math.hypot(dx,dz)||1;u._dir={x:dx/d,z:dz/d,v:9};}
-    else if(!(u._cov>now)){const ps=post[a3];const dir=(side?-1:1)*sg;const v=ps==='ADVANCE'?2.5:ps==='WITHDRAW'?-3:0;u._dir=v?{x:n.s.nx*dir*Math.sign(v),z:-n.s.ny*dir*Math.sign(v),v:Math.abs(v)}:null;}
-    if(!u._dir)continue;const nx=u.pos.x+u._dir.x*u._dir.v,nz=u.pos.z+u._dir.z*u._dir.v;if(groundAt(nx,nz)<2)continue;
-    u.pos.x=nx;u.pos.z=nz;u.pos.y=groundAt(nx,nz);u.hdg=(Math.atan2(u._dir.x,-u._dir.z)*180/Math.PI+360)%360;if(u.mesh){u.mesh.position.set(nx,u.pos.y,nz);u.mesh.rotation.y=-u.hdg*Math.PI/180;}}},1000);
+    if((near||air)&&!(u._cov>now)){u._cov=now+120000;const from=air?air.pos:WS.ground.find(v=>!v.alive&&v._diedAt).pos;const dx=u.pos.x-from.x,dz=u.pos.z-from.z,d=Math.hypot(dx,dz)||1;u._mv={x:dx/d,z:dz/d,v:9};}
+    else if(!(u._cov>now)){const ps=post[a3];const dir=(side?-1:1)*sg;const v=ps==='ADVANCE'?2.5:ps==='WITHDRAW'?-3:0;u._mv=v?{x:n.s.nx*dir*Math.sign(v),z:-n.s.ny*dir*Math.sign(v),v:Math.abs(v)}:null;}
+    if(!u._mv)continue;const nx=u.pos.x+u._mv.x*u._mv.v,nz=u.pos.z+u._mv.z*u._mv.v;if(groundAt(nx,nz)<2)continue;
+    u.pos.x=nx;u.pos.z=nz;u.pos.y=groundAt(nx,nz);u.hdg=(Math.atan2(u._mv.x,-u._mv.z)*180/Math.PI+360)%360;if(u.mesh){u.mesh.position.set(nx,u.pos.y,nz);u.mesh.rotation.y=-u.hdg*Math.PI/180;}}},1000);
 if(typeof GUnit!=='undefined'){const _k2=GUnit.prototype.kill;GUnit.prototype.kill=function(){const was=this.alive,r=_k2.apply(this,arguments);if(was&&!this.alive)this._diedAt=Date.now();return r;};}
 W.deep={MOV,SUP,supportUp,supportDown,PLN,targets,depots,network,lives};
 })();

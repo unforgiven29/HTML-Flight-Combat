@@ -738,6 +738,28 @@ test('s13_move: front vehicles disperse from a threat','F-16C',async p=>{
     const G=WSORTIE.WS.ground.filter(u=>WWAR.deep.MOV.has(u.kind)&&u.alive);if(G.length<2)return{n:G.length};const a=G[0],b=G.find(u=>u!==a&&u.pos.distanceTo(a.pos)<1500)||G[1];b.pos.copy(a.pos).add(new THREE.Vector3(300,0,0));
     const x0=b.pos.x,z0=b.pos.z;a.kill(player);await new Promise(r=>setTimeout(r,3500));const moved=Math.hypot(b.pos.x-x0,b.pos.z-z0);WSORTIE.finish();return{n:G.length,moved,cov:!!b._cov};});
   ok('vehicles near a destroyed one move to cover',r.moved>5&&r.cov,r);});
+
+/* ---------- step 14 (v351+): the land war by brigade, cities, air battles ---------- */
+test('s14_land: brigades hold sectors, concentrate, redeploy; terrain and artillery; map symbols','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*40);const Ld=WWAR.land;let best=null;for(const q of st.fronts)for(const a of[q.a,q.b]){const n=Ld.B(a,q.id).filter(u=>u.branch!=='ART').length;if(!best||n>best.n)best={n,f:q,a};}const f=best.f,pl=st.c[best.a];
+    const L=Ld.B(pl.a3,f.id),secs=L.map(u=>u.sec);const pw=f.sec.map((s,i)=>Ld.power(pl,f,i));const red=Object.values(st.ob.u).filter(u=>u.hist&&u.hist.some(h=>/redeployed/.test(h[1]))).length;
+    const ter=[...new Set(st.fronts.flatMap(q=>q.sec.map(Ld.terr)))];const c=document.createElement('canvas').getContext('2d');let n=0;const sr=c.strokeRect.bind(c);c.strokeRect=function(){n++;return sr.apply(this,arguments);};
+    WARMAP.draw(c,(la,lo)=>[lo*10,la*10],{W:3600,ppd:10},'over');const fort=Object.keys(st.land.fort).length;
+    return{n:L.length,all:secs.every(x=>x!=null),spread:Math.max(...pw)-Math.min(...pw),red,ter,sym:n,fort,tab:NATPANEL.tabs.LAND(pl).length,audit:WWAR.audit()};});
+  ok('every active brigade holds a sector',r.n>0&&r.all,r);ok('power varies with where the brigades are',r.spread>.05,r);ok('brigades redeploy',r.red>0,r);ok('terrain classes',r.ter.length>=2,r);
+  ok('symbols drawn, fortifications dug',r.sym>5&&r.fort>0,r);ok('LAND tab',r.tab>200);ok('audit clean',r.audit.length===0,r.audit);});
+test('s14_cities: cities allocate national figures, mayors act, occupation appoints administrators','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*150);const S=st.city;let bad=0,n=0,anyDisp=0;
+    for(const a in S){const p=st.c[a],L=S[a];n+=L.length;const d=L.reduce((t,c)=>t+c.disp,0);if(d>(p.disp||0)+1)bad++;anyDisp+=d;}
+    const ev=st.ev.filter(e=>e.ty==='CITY').length+((st.fold||{}).CITY||0);const a3=Object.keys(S)[0];
+    return{n,bad,anyDisp,ev,mayor:!!WWAR.lead.who(S[a3][0].mayor),tab:NATPANEL.tabs.CITIES(st.c[a3]).length,svc:Object.values(S).flat().some(c=>c.pow<1),audit:WWAR.audit()};});
+  ok('city records for countries at war',r.n>20,r);ok('cities never hold more displaced than the country (one authority)',r.bad===0&&r.anyDisp>0,r);ok('services fall near the war; events',r.svc&&r.ev>0,r);ok('mayors, CITIES tab',r.mayor&&r.tab>500,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s14_air: air battles form near you and their losses count; theatre statistics ease','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*5);const L=WSORTIE.basesFor('POL');await WSORTIE.start('POL',L[0].a);const A=WWAR.airbattle;
+    A.form();A.form();const B=A.AB.list,J=B.flatMap(b=>b.j);const th=A.theatre();const w=th?WWAR.airWx(th):1;
+    const e=J.find(j=>j.side===1),a3=e&&e._ws,air0=a3&&WWAR.st.c[a3].air;if(e)e.kill('test',player);const air1=a3&&WWAR.st.c[a3].air;WSORTIE.finish();const w2=th?WWAR.airWx(th):1;
+    return{battles:B.length,fr:J.filter(j=>j.side===0).length,en:J.filter(j=>j.side===1).length,w,w2,loss:air0-air1};});
+  ok('battles with both sides',r.battles>=1&&r.fr>0&&r.en>0,r);ok('a loss in the battle counts for its country',r.loss>=1,r);ok('theatre statistics ease while you fly, restored after',r.w<r.w2,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
