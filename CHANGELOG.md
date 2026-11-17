@@ -1,3 +1,7 @@
+## v367 (level of detail; more national data)
+- **3D level of detail** (js/world/wlod.js): in world flight the forest is not drawn above 2,500 m above the ground (back below 2,000 m), and ground units beyond 30 km are not drawn (they keep fighting and stay sensor targets; back inside 28 km). On top of the game's existing automatic render-resolution scaling.
+- **Equipment names for 126 countries** (29 more, mostly in Africa, Central Asia, Latin America and Southeast Asia); **real formation names for 18 countries** (adds Turkey, Israel, Italy, Spain, Australia, Canada; positions and fate fictional); **seven verified quotations** (adds Washington 1785, Hoover 1944).
+- Tests: `node tests/run.js s22_`.
 ## v365–v366 (guided munitions for CAS; battle sound; mission replay)
 - **Guided CAS** (js/war/airops.js): close-air-support flights carry guided weapons — BLUEFOR GBU-12 / GBU-38 laser and GPS bombs and AGM-65 Mavericks, REDFOR KAB-500L, Kh-29T and Kh-25ML (added as game weapons from the existing ones). Mavericks are launched at targets in range; guided bombs are released from their computed reach and steered onto the target; plain bombs still use CCIP. AWACS warns when enemy CAS releases guided weapons near you.
 - **Battle sound** (js/war/media.js): artillery rumble when the ground fight is near, thuds of impacts within 15 km, an air-raid siren over a city under alert, radio static under calls; synthesised through the game's audio (Shift+N toggles).

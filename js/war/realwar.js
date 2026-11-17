@@ -1,7 +1,8 @@
 /* =====================================================================================================================
    v357 — real formations, more quotations, the carrier in the world war, convoys on the roads.
-   * REAL FORMATION NAMES (data/nat/units.txt; public, well known): the order of battle of 12 countries (USA, UK,
-     France, Germany, Poland, Ukraine, Russia, China, South Korea, Japan, Taiwan, India) uses real squadron, wing,
+   * REAL FORMATION NAMES (data/nat/units.txt; public, well known): the order of battle of 18 countries (USA, UK,
+     France, Germany, Poland, Ukraine, Russia, China, South Korea, Japan, Taiwan, India, Turkey, Israel, Italy, Spain,
+     Australia, Canada) uses real squadron, wing,
      regiment, brigade and division names in order. Their positions, strengths, commanders and fate in this war are
      fictional. Other countries keep generic numbered names. Labelled in the FORCES tab.
    * QUOTATION ARCHIVE: four more verified anti-war quotations with author, occasion, date and source; the epilogue
@@ -32,7 +33,9 @@ if(W.endscreen&&W.endscreen.QUOTES){const Q=W.endscreen.QUOTES;Q.push(
   {q:'I hate war as only a soldier who has lived it can, only as one who has seen its brutality, its futility, its stupidity.',a:'Dwight D. Eisenhower',w:'Address in Ottawa, Canada',d:'10 January 1946',s:'Eisenhower Presidential Library, speeches collection'},
   {q:'Mankind must put an end to war — or war will put an end to mankind.',a:'John F. Kennedy',w:'Address before the General Assembly of the United Nations',d:'25 September 1961',s:'Public Papers of the Presidents: John F. Kennedy, 1961'},
   {q:'The world has achieved brilliance without wisdom, power without conscience. Ours is a world of nuclear giants and ethical infants.',a:'Omar N. Bradley',w:'Armistice Day address, Boston',d:'10 November 1948',s:'Collected Writings of General Omar N. Bradley'},
-  {q:'I have seen war. I have seen war on land and sea. … I hate war.',a:'Franklin D. Roosevelt',w:'Address at Chautauqua, New York',d:'14 August 1936',s:'Public Papers and Addresses of Franklin D. Roosevelt, 1936'});
+  {q:'I have seen war. I have seen war on land and sea. … I hate war.',a:'Franklin D. Roosevelt',w:'Address at Chautauqua, New York',d:'14 August 1936',s:'Public Papers and Addresses of Franklin D. Roosevelt, 1936'},
+  {q:'My first wish is to see this plague of mankind, war, banished from the earth.',a:'George Washington',w:'Letter to David Humphreys',d:'25 July 1785',s:'The Papers of George Washington, Confederation Series, vol. 3'},
+  {q:'Older men declare war. But it is the youth that must fight and die.',a:'Herbert Hoover',w:'Address to the Republican National Convention, Chicago',d:'27 June 1944',s:'Addresses upon the American Road, 1941-1945'});
   const ch=W.endscreen.CH.find(c=>c[0]==='A final quotation');if(ch)ch[1]=()=>{const st=W.st,q=Q[Math.abs((st.seq||0)+Math.floor((st.over&&st.over.t)||0))%Q.length];
     const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     return '<div class="q">“'+esc(q.q)+'”</div><div style="text-align:center">— '+esc(q.a)+', '+esc(q.w)+', '+esc(q.d)+'<br><span class="est">Source: '+esc(q.s)+'</span></div><p class="est" style="text-align:center">A reflection, not a verdict on you.</p>';};}

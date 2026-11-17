@@ -23,3 +23,15 @@ TWN|SQN|1st Tactical Fighter Wing;2nd Tactical Fighter Wing;3rd Tactical Fighter
 TWN|BDE|542nd Armor Brigade;564th Armor Brigade;584th Armor Brigade;269th Mechanized Infantry Brigade;333rd Mechanized Infantry Brigade;66th Marine Brigade
 IND|SQN|No. 17 Squadron "Golden Arrows";No. 101 Squadron "Falcons";No. 45 Squadron "Flying Daggers";No. 18 Squadron "Flying Bullets";No. 1 Squadron "Tigers";No. 7 Squadron "Battle Axes";No. 2 Squadron "Winged Arrows";No. 15 Squadron "Flying Lancers"
 IND|BDE|1st Armoured Division;31st Armoured Division;33rd Armoured Division;14th RAPID;24th RAPID;12th Infantry Division;50th Parachute Brigade
+TUR|SQN|111 Filo "Panter";112 Filo "Şeytan";113 Filo "Işık";132 Filo "Hançer";141 Filo "Kurt";142 Filo "Gazal";151 Filo "Tunç";152 Filo "Akıncı";161 Filo "Yarasa";162 Filo "Zıpkın";181 Filo "Pars";182 Filo "Atmaca";191 Filo "Kobra";192 Filo "Kaplan"
+TUR|BDE|1st Armoured Brigade;2nd Armoured Brigade;4th Armoured Brigade;5th Armoured Brigade;20th Armoured Brigade;28th Mechanised Infantry Brigade;39th Mechanised Infantry Brigade;66th Mechanised Infantry Brigade;1st Commando Brigade
+ISR|SQN|69 Squadron "Hammers";119 Squadron "Bat";140 Squadron "Golden Eagle";201 Squadron "The One";253 Squadron "Negev";107 Squadron "Knights of the Orange Tail";116 Squadron "Lions of the South";117 Squadron "First Jet"
+ISR|BDE|7th Armored Brigade;188th Armored Brigade;401st Armored Brigade;1st Golani Brigade;35th Paratroopers Brigade;84th Givati Brigade;933rd Nahal Brigade;Kfir Brigade
+ITA|SQN|4° Stormo;6° Stormo;32° Stormo;36° Stormo;37° Stormo;51° Stormo
+ITA|BDE|Brigata corazzata "Ariete";Brigata meccanizzata "Pinerolo";Brigata bersaglieri "Garibaldi";Brigata alpina "Julia";Brigata alpina "Taurinense";Brigata paracadutisti "Folgore";Brigata meccanizzata "Granatieri di Sardegna";Brigata "Aosta"
+ESP|SQN|Ala 11;Ala 12;Ala 14;Ala 15;Ala 46
+ESP|BDE|Brigada "Guadarrama" XII;Brigada "Extremadura" XI;Brigada "Guzmán el Bueno" X;Brigada "Aragón" I;Brigada "Rey Alfonso XIII" II de la Legión;Brigada "Almogávares" VI de Paracaidistas
+AUS|SQN|No. 1 Squadron;No. 2 Squadron;No. 3 Squadron;No. 6 Squadron;No. 75 Squadron;No. 77 Squadron
+AUS|BDE|1st Brigade;3rd Brigade;7th Brigade
+CAN|SQN|401 Tactical Fighter Squadron;409 Tactical Fighter Squadron;425 Tactical Fighter Squadron;433 Tactical Fighter Squadron
+CAN|BDE|1 Canadian Mechanized Brigade Group;2 Canadian Mechanized Brigade Group;5 Canadian Mechanized Brigade Group
