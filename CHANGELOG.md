@@ -1,3 +1,8 @@
+## v383 (grass: no stutter, not in towns)
+- **No more stutter from grass**: it used to be re-laid all at once every 8 m you moved, each tuft checked against every wall in the battle (up to about 2 s for one frame). It is now laid a slice per frame, checked through the wall grid, and re-laid every 14 m. Measured walking through a live-world battle: worst frame 1,969 → 6 ms, average step 34 → 0.2 ms.
+- **Grass and bushes only where they belong**: not in a town's built-up area (the battlefield's own town; in the live world, the real urban footprints), not within a few metres of walls, not on streets or in the trench.
+- Tests: `node tests/run.js s36_`.
+
 ## v382 (infantry: no aircraft on the way in, much faster)
 - **The move to the front is covered**: a loading screen while the sortie starts and the world moves to the battle site; your aircraft is hidden and held still the whole time (it used to show on the runway and then in the ground at the site before the terrain there had loaded).
 - **Riding in**: in the APC or IFV you ride in the open commander's hatch (the view used to be inside the hull), in the helicopter at the open door, in the transport at the open ramp.

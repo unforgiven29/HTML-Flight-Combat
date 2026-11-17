@@ -1032,6 +1032,14 @@ test('s35_fortify: building types with interiors, collapse, bunkers / dugouts / 
   ok('RPG on tank front does not go through',/RICOCHET|NO PENETRATION/.test(r.front),r.front);ok('bullet bounces off',/RICOCHET|NO PENETRATION/.test(r.bullet),r.bullet);ok('ATGM in the rear penetrates and damages',/PENETRATED/.test(r.rear)&&r.dmg.length>0,r);ok('overview diagram',r.panel);
   ok('house collapses',r.house);ok('bunker destroyed',r.bunker);ok('enemy radio silenced',r.silent);ok('your FPV strikes armour',r.fpv);ok('medevac',r.evac);
   ok('live world: real buildings replaced',r.real>0,r.real);ok('explore beyond the battle',r.far>250,r.far);});
+test('s36_green: grass and bushes grow outside town, not in it; laying grass never stalls a frame','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
+    const inTown=(x,z)=>Math.abs(x-S.village.x)<S.townR&&Math.abs(z-S.village.z)<S.townR,M=new THREE.Matrix4(),v=new THREE.Vector3();
+    const count=(im)=>{let n=0,bad=0;for(let i=0;i<im.count;i++){im.getMatrixAt(i,M);v.setFromMatrixPosition(M);n++;if(inTown(v.x,v.z))bad++;}return{n,bad};};
+    S.pos.set(300,S.pos.y,300);let mx=0;for(let i=0;i<60;i++){const t=Date.now();I.step(1/30);mx=Math.max(mx,Date.now()-t);}const out1=count(S.grass);
+    S.pos.set(S.village.x,S.pos.y,S.village.z);for(let i=0;i<60;i++){const t=Date.now();I.step(1/30);mx=Math.max(mx,Date.now()-t);}const in1=count(S.grass);
+    return{out:out1,inn:in1,bush:count(S.bush),worst:mx};});
+  ok('grass in the fields',r.out.n>1500,r.out);ok('no grass in town',r.inn.bad===0,r.inn);ok('no bushes in town',r.bush.bad===0&&r.bush.n>300,r.bush);ok('no stall laying grass',r.worst<200,r.worst);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
