@@ -35,9 +35,13 @@ function basesFor(a3){const p=W.st.c[a3],L=(W.milBases().get(a3)||[]).filter(a=>
 function panelExtra(){const el=document.getElementById('wmWar');if(!el||!W.st)return;const sel=WARMAP.UI.sel,p=sel&&W.st.c[sel];
   let box=el.querySelector('#wsFly');if(box)box.remove();if(!p||!W.bell(p))return;
   const L=basesFor(p.a3);const h='<div id="wsFly" class="prof"><b>FLY FOR '+esc(p.n.toUpperCase())+'</b><div style="font-size:10px;color:#8a9a92">Military airfields, nearest to the front first. Your aircraft is the one picked in the hangar.</div>'+
-    (L.length?L.map(x=>'<div class="tc" style="margin-top:3px"><button data-ws="'+esc(x.a.ident)+'">'+esc(x.a.name)+' · '+Math.round(x.n.d/1000)+' km from the front</button></div>').join(''):'<div style="font-size:10px">No military airfield with a long enough paved runway in the data.</div>')+'</div>';
+    (L.length?L.map(x=>'<div class="tc" style="margin-top:3px"><button data-ws="'+esc(x.a.ident)+'">'+esc(x.a.name)+' · '+Math.round(x.n.d/1000)+' km from the front</button></div>').join(''):'<div style="font-size:10px">No military airfield with a long enough paved runway in the data.</div>')+'</div>'+
+    '<div id="wsFight" class="prof"><b>FIGHT FOR '+esc(p.n.toUpperCase())+'</b><div style="font-size:10px;color:#8a9a92">On the ground at the front: in a tank crew, or with an infantry squad.</div>'+
+    '<div class="tc" style="margin-top:3px"><button data-wf="TANK">TANKER</button> <button data-wf="INF">INFANTRY</button></div></div>';
   el.insertAdjacentHTML('afterbegin',h);}
 WARMAP.after.push(panelExtra);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsFight [data-wf]');if(!b||!W.st||!WARMAP.UI.sel||!window.INFANTRY)return;e.stopImmediatePropagation();e.preventDefault();
+  const a3=WARMAP.UI.sel,L=basesFor(a3);INFANTRY.kitMenu(a3,L.length?L[0].a:null,false,b.dataset.wf);},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#wsFly [data-ws]');if(!b)return;const a=G.airports.find(q=>q.ident===b.dataset.ws);if(a)WSORTIE.start(WARMAP.UI.sel,a);});   /* through WSORTIE so leaders.js can refuse a grounded pilot */
 
 /* ------------------------------------------------------------------ the war around you */
