@@ -1409,6 +1409,12 @@ test('s72_ifv: playable IFV (autocannon, missile), AI IFVs fight with their guns
     S=I.start({...I.K,a3:'POL',ins:'IFV',mis:'FRONT',noRide:true});I.land();S.hp=1e9;const my=S.ifv,z0=my&&my.z;let fired=0;const tr0=I.tracer;
     for(let k=0;k<30*40;k++){I.step(1/30);}out.moved=my?Math.abs(my.z-z0)>20:false;out.eifv=S.veh.filter(v=>v.ifv&&v.side==='E').map(v=>v.bn||0);out.myb=my?my.bn||0:0;I.stop(true,'LEFT');return out;});
   ok('IFV crew seats in the menu',r.seat,r);ok('IFV gunner: autocannon damages a vehicle, a missile flies',r.ifv&&r.ap&&r.atgm,r);ok('our IFV moves up and its gun fires',r.moved&&(r.myb>0||r.eifv.some(n=>n>0)),r);});
+test('s73_centre: the world is recentred on the battle even when a terrain rebuild is already running (no battle off the map)','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(48);const I=INFANTRY;const L=WSORTIE.basesFor('POL');
+    const st0=WSORTIE.start;WSORTIE.start=async(...a)=>{const r=await st0(...a);WF.busy=true;setTimeout(()=>{WF.busy=false;},6000);return r;};
+    const C=I.locChoices({...I.K,a3:'POL'});await I.startWorld({...I.K,a3:'POL',ins:'IFV',mis:'FRONT',noRide:true,ap:L[L.length-1].a,loc0:C[C.length-1].id});WSORTIE.start=st0;const S=I.S;I.land();
+    const q=WGEO.ll2xz(S.loc.lat,S.loc.lon);const out={WM:!!S.WM,d:Math.round(Math.hypot(q.x,q.z)),inTrench:I.TR&&I.Hf(S.pos.x,S.pos.z)<groundAt(S.O.x+S.pos.x,S.O.z+S.pos.z)-.5};I.stop(true,'LEFT');return out;});
+  ok('battle built on the recentred map',r.WM&&r.d<15000,r);ok('FRONT spawn is in the trench',r.inTrench,r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
