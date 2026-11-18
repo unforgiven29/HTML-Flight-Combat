@@ -1221,6 +1221,18 @@ test('s46_aicore: institutions decide through one framework; records, reviews, l
   ok('institutions per country',/GOV,GS,AF/.test(r.inst)&&/LOG,INT,MFA,FIN,CD/.test(r.inst),r.inst);ok('decision records of several kinds',r.recs>50&&r.kinds.length>=6,r);ok('reviews and after-action records',r.reviewed>10&&r.aar>10,r);
   ok('decisions, lessons and situation reports in the diary',r.ev.length===3,r.ev);ok('institutions differ',r.diff);ok('outside its authority it goes to the government',r.referred);
   ok('safeguard: not on one review; learns within bounds',r.oneReview&&r.learned,r);ok('rare event with preconditions, at most one in five days',r.crisis===1,r.crisis);ok('city, institution and company histories',r.histC>0&&r.histI>5&&r.corp>3,r);ok('DECISIONS and HISTORY tabs',r.tabs);ok('audit clean',r.audit.length===0,r.audit);});
+test('s47_civic: media (outlets, editions, breaking, correspondents, footage), civil society, support institutions, culture, municipal services, police and courts, crime, diplomacy, international organisations','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*60);const C=st.civ,R=C.c.POL||C.c.RUS;
+    out.n=Object.keys(C.c).length;out.outlets=R.media.length;out.eds=R.media.filter(m=>m.ed.length).length;const q0=st.c.POL||st.c.RUS;out.leans=[...new Set(WWAR.civic.outlets(q0,R).map(m=>m.lean))].length;out.corr=R.corr.length;out.clips=R.clips.length;
+    out.cso=R.cso.length;out.proj=R.cso.reduce((t,o)=>t+o.proj.length,0);out.inst=Object.keys(R.inst).length;out.her=R.cult.her.length;out.sport=R.cult.sport.status;out.muni=Object.keys(R.muni).length;
+    out.cases=R.police.cases.length+R.police.done;out.stages=[...new Set(R.police.cases.map(c=>c.stg))].length;out.claims=R.courts.claims.prop+R.courts.claims.contract+R.courts.claims.reg;out.crime=R.crime.net>0&&R.crime.corr>0;
+    out.neo=R.dip.neo.length;out.io=C.io&&C.io.org.length;out.sanc=C.io&&C.io.sanc.length;const ev=new Set(st.ev.map(e=>e.ty));out.ev=['MEDIA','DIPLOMACY','IO','POLICE','CULTURE','MUNICIPAL','COURTS','HERITAGE'].filter(t=>ev.has(t));
+    const q=st.c.POL||st.c.RUS;out.tabs=/NEWSROOMS/.test(NATPANEL.tabs.NEWSROOM(q))&&/CIVIL SOCIETY/.test(NATPANEL.tabs.CIVIC(q));out.still=/^data:image\/png/.test(WWAR.civic.still({id:1,t:10,kind:'STRIKE',ver:false}));
+    out.size=JSON.stringify(C).length;out.audit=WWAR.audit();return out;});
+  ok('records for countries at war and the large ones',r.n>20,r.n);ok('outlets with different leans publish editions',r.outlets===5&&r.eds>=3&&r.leans>=4,r);ok('correspondents and footage',r.corr>0&&r.clips>=0,r);
+  ok('civil society with projects',r.cso>=5&&r.proj>0,r);ok('support institutions',r.inst>=14);ok('heritage sites and sport',r.her>0&&!!r.sport,r);ok('city councils and services',r.muni>0);
+  ok('police cases moving through stages; civil claims',r.cases>5&&r.stages>=2&&r.claims>0,r);ok('crime and corruption',r.crime);ok('evacuations, organisations, sanctions',r.neo>0&&r.io>=4&&r.sanc>0,r);
+  ok('civic events in the diary',r.ev.length>=4,r.ev);ok('NEWSROOM and CIVIC tabs; generated stills',r.tabs&&r.still);ok('state stays small',r.size<400000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
