@@ -1368,6 +1368,11 @@ test('s65_infmp: two pages in one room fight the same infantry battle: the invit
   await g.evaluate(()=>{const S=INFANTRY.S;const q=[...INFNET.N.peers.values()][0];if(!q||!q.m)return;const o=q.m.position.clone().add(new THREE.Vector3(0,1.2,6));S.pos.copy(o);const d=q.m.position.clone().setY(q.m.position.y+1.2).sub(o).normalize();INFNET.shot(o,d,30,'gun');});
   await p.waitForTimeout(600);const hp1=await p.evaluate(()=>INFANTRY.S.hp);await g.close();
   ok('the invitation reaches the other page',inv);ok('both in the same battle, each drawing the other',seen.n>0&&seen.m&&hk.n>0&&seen.same===hk.key,{seen,hk});ok('a hit between players is delivered',hp1<hp0,{hp0,hp1});});
+test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
+    W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
+    const ty=st.ev.slice(n0).map(e=>e.ty);const R=W.battlelink.rec(a3);const ok=ty.includes('MEDIA')&&ty.includes('FAMILY')&&ty.includes('PROTEST')&&R.b===1&&R.inq===1&&R.cit.length>=2&&typeof INFANTRY.civHit==='function';
+    return {ok,ty,R};});ok('battle feeds media, families, protest, service record with an inquiry',r.ok,r);});
 test('s66_link: the battle reads the campaign (brigades, supply, artillery, air, morale, wear) and writes back into the brigades','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*10);const I=INFANTRY,out={};const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',noRide:true});const L=S.link||{};
     out.my=!!L.my;out.en=!!L.en;out.sup=L.sup!=null;out.art=L.art!=null;out.mor=S.mFr>0;const res0=S.wp.pri.res;
