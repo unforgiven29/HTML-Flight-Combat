@@ -947,7 +947,7 @@ test('s30_infantry: kit menu, four insertions reach the ground, shooting kills, 
       for(let i=0;i<4000&&S.phase==='INSERT'&&!S.res;i++){if(ins==='AIR'&&S.jumped)S.keys.Space=false;I.step(1/30);}S.keys.Space=false;
       out[ins]={phase:S.phase,dz:Math.round(Math.hypot(S.pos.x,S.pos.z-200)),agl:+(S.pos.y-0).toFixed(1),ifv:!!S.ifv,res:S.res};I.stop(false);}
     const S=I.start({...I.K,a3,ins:'APC',pri:'RIFLE'});I.land();S.hp=1e6;const e=S.them[0];e.m.position.set(S.pos.x,S.pos.y-1.7+0.0,S.pos.z-15);
-    S.yaw=0;S.pitch=-Math.atan2(.4,15);let n=0;while(e.alive&&n<200){S.cool=0;S.reload=0;S.wp.pri.cur=30;I.shoot();n++;}out.kill=!e.alive&&S.kills>0;
+    S.yaw=0;S.pitch=-Math.atan2(.4,15);let n=0;while(e.alive&&n<200){S.cool=0;S.reload=0;S.wp.pri.cur=30;S.pitch=-Math.atan2(.4,15);S.rec=0;S.recH=0;I.shoot();n++;}out.kill=!e.alive&&S.kills>0;
     I.grenade();out.gren=S.gnades.length===1;for(const u of S.them){u.alive=false;}S.pos.set(S.village.x,S.pos.y,S.village.z);const f=S.fr,mid=f.sec[(f.sec.length/2)|0],o0=mid.off;
     for(let i=0;i<40*30&&!S.res;i++)I.step(1/30);out.res=S.res;out.moved=mid.off!==o0;document.querySelector('[data-iend]').click();out.gone=!I.S&&!document.getElementById('infCv');return out;});
   ok('kit menu',r.menu);for(const k of['APC','IFV','HELO','AIR'])ok(k+' insertion lands',r[k].phase==='FIGHT'&&!r[k].res,r[k]);ok('IFV stays',r.IFV.ifv);
@@ -1336,6 +1336,13 @@ test('s62_wear: few long fronts; fronts wear with fighting; a worn front is buil
     st.wear[f.id]=.9;const I=INFANTRY;let S=I.start({...I.K,a3:f.a,ins:'APC',mis:'FRONT'});out.cr=S.craterN;out.ruin=S.ruined||0;out.lines=I.TR.L.filter(l=>!l.k).length;I.stop(false);
     st.wear[f.id]=0;S=I.start({...I.K,a3:f.a,ins:'APC',mis:'FRONT'});out.cr0=S.craterN||0;out.lines0=I.TR.L.filter(l=>!l.k).length;I.stop(false);out.audit=WWAR.audit();return out;});
   ok('a few long fronts, the rest quiet',r.nf>=2&&r.nf<=6&&r.quiet>0,r);ok('wear grows with fighting',r.w>.3,r.w);ok('a worn front: craters, ruined houses, extra trench lines',r.cr>500&&r.ruin>0&&r.lines>4,r);ok('a fresh front stays clean',r.cr0===0&&r.lines0===4,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s63_squad: a squad that stays together (names, trust, morale, losses, replacements); the ride from the garage with their talk, skippable','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*5);const I=INFANTRY,out={};const R=WWAR.squad.roster('POL');out.n=R.m.length;
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});out.ride=!!S.trip;out.lines=S.trip?S.trip.lines.length:0;const ids=S.us.slice(0,6).map(u=>u.mid);out.sq=ids.filter(Boolean).length;
+    for(let i=0;i<30*8;i++)I.step(1/30,1);out.rode=!!(S.trip&&S.trip.t>5);out.talked=(S.vlines||0)>=0&&document.getElementById('iVoice')!=null;S.keys.Space=true;I.step(1/30,2);S.keys.Space=false;out.skipped=!S.trip;
+    I.land();S.hp=1e9;S.dT=1e9;const v=S.us.find(u=>u.mid);I.hitMan(v,1000,false);I.stop(true,'KIA');document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
+    out.lost=R.lost.length;out.repl=R.m.some(x=>x.green);out.tab=/YOUR SQUAD/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL))&&/REMEMBERED/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL));out.talk=WWAR.squad.talk('POL',{place:'X'}).length;out.audit=WWAR.audit();return out;});
+  ok('a squad of eight',r.n===8,r);ok('your men in battle are the squad',r.sq===6,r);ok('the ride from the garage with talk, skippable',r.ride&&r.lines>=3&&r.rode&&r.talked&&r.skipped,r);ok('a loss is remembered and replaced',r.lost===1&&r.repl,r);ok('SQUAD tab and fresh talk',r.tab&&r.talk>=3,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
