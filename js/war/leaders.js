@@ -71,7 +71,8 @@ const TRAD=a=>['USA'].includes(a)?'US':['GBR','CAN','AUS','NZL'].includes(a)?'UK
 const R_=(a3,kind,i)=>{const L=RANKS[TRAD(a3)][kind];return L[Math.max(0,Math.min(L.length-1,i))];};
 /* ------------------------------------------------------------------ people */
 const L=()=>W.st.lead||(W.st.lead={people:{},seq:1,career:null});
-function person(a3,role,rank){const s=L(),id='L'+(s.seq++);const p={id,a3,name:fname(a3),role,rank:rank||null,resolve:.3+rn()*.6,caution:.2+rn()*.6,prag:.2+rn()*.6,skill:.85+rn()*.3,st:'IN OFFICE',since:W.st.t,hist:[[W.st.t,'appointed '+role]],fict:1};s.people[id]=p;return p;}
+const R3=x=>Math.round(x*1000)/1000;
+function person(a3,role,rank){const s=L(),id='L'+(s.seq++);const p={id,a3,name:fname(a3),role,rank:rank||null,resolve:R3(.3+rn()*.6),caution:R3(.2+rn()*.6),prag:R3(.2+rn()*.6),skill:R3(.85+rn()*.3),st:'IN OFFICE',since:W.st.t,hist:[[W.st.t,'appointed '+role]],fict:1};s.people[id]=p;return p;}
 const CABINET=[['HEAD','Head of Government'],['DEF','Minister of Defence'],['CGS','Chief of the General Staff'],['AF','Air Force Commander']];
 function staff(c){if(c.ldr)return c.ldr;const o={};for(const[k,role]of CABINET)o[k]=person(c.a3,role+' of '+c.n,k==='CGS'?R_(c.a3,'army',4):k==='AF'?R_(c.a3,'army',3):null).id;c.ldr=o;return o;}
 const who=id=>L().people[id];

@@ -24,12 +24,22 @@
 'use strict';
 if(!window.WWAR||!WWAR.lead)return;
 const W=WWAR,G=WGEO,Ld=W.lead;
-const L=()=>W.st.dl||(W.st.dl={seq:1,ev:[],names:{}});
+const L=()=>{const l=W.st.dl||(W.st.dl={seq:1,ev:[],names:{}});if(l.ev.length&&Object.getPrototypeOf(l.ev[0])!==DEF)reproto();return l;};   /* a state from JSON (load, import, multiplayer) gets its defaults back */
 const TWO=new Set(['F-15E','F-14A','F-14B','Su-34','Su-30','Su-30SM','Tornado','F-4E','EA-18G','Su-24','J-16','F-18F','F/A-18F']);
 const NR='not recorded';
 /* ------------------------------------------------------------------ recording (one record per resolved event) */
-function record(o){const l=L(),id='D'+(l.seq++).toString(36).toUpperCase(),t=W.st.t;const r=Object.assign({id,t,n:1,st:'KILLED',kind:'MIL',a3:null,role:NR,unit:NR,place:NR,cause:NR,src:null,named:null},o);
+// v400: defaults live on a shared prototype, so a saved record carries only what differs (JSON skips inherited fields)
+const DEF={n:1,st:'KILLED',kind:'MIL',a3:null,role:NR,unit:NR,place:NR,cause:NR,src:null,named:null};
+function record(o){const l=L(),t=W.st.t;
+  // v400: deaths of the same kind, cause, unit and place in the same week join one record (the count grows; each
+  // person keeps a stable slot in it). Records that name people are never merged.
+  if(!o.named&&(o.n||1)>0){const key=[o.a3,o.kind,o.st,o.cause,o.unit,o.place,o.role].join('|');const M=l.wk||(l.wk={});const id0=M[key];if(id0){const x=l.ev.slice(-80).find(e=>e.id===id0);
+    if(x&&t-x.t<24*7){x.n+=(o.n||1);return x;}}M[key]=null;const r0=record0(l,o,t);if(r0){M[key]=r0.id;const K=Object.keys(M);if(K.length>400)for(const k of K.slice(0,200))delete M[k];}return r0;}
+  return record0(l,o,t);}
+function record0(l,o,t){const id='D'+(l.seq++).toString(36).toUpperCase();const r=Object.create(DEF);r.id=id;r.t=t;for(const k in o)if(o[k]!==DEF[k]&&o[k]!==undefined)r[k]=o[k];
   if(r.n<1)return null;l.ev.push(r);return r;}
+function reproto(){const l=W.st&&W.st.dl;if(!l)return;for(let i=0;i<l.ev.length;i++){const r=l.ev[i];if(Object.getPrototypeOf(r)!==DEF){for(const k in DEF)if(r[k]===DEF[k])delete r[k];Object.setPrototypeOf(r,DEF);}}}
+{const _l=W.load;W.load=async function(){const ok=await _l.apply(this,arguments);try{reproto();}catch(e){}return ok;};}
 // a stable, culturally appropriate name per person slot, collision-checked across the archive
 function rng(seed){let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619);}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%1e6)/1e6;};}
 function nameFor(r,i){if(r.named&&r.named[i])return r.named[i];const l=L(),k=r.id+'.'+i;if(r.n<=50&&l.names[k])return l.names[k];const P=Ld.POOL[Ld.REG(r.a3)]||Ld.POOL.EN,R=rng(k);

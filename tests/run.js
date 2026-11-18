@@ -1269,6 +1269,15 @@ test('s52_econ2: sectors, enterprises, central bank, banks, insurance, public fi
     out.n=Object.keys(X.c).length;out.ent=R.ent.length;out.dep=Object.values(X.c).some(c=>c.dep.length);out.px=X.oil.px;out.stat=R.fis.stat;const ev=new Set(st.ev.map(e=>e.ty));out.ev=['FINANCE','BUSINESS','ENERGY','AID','RESEARCH','ECONOMY'].filter(t=>ev.has(t));
     out.tab=/MONEY AND PUBLIC FINANCE/.test(NATPANEL.tabs.MARKETS(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
   ok('records with enterprises and deposits',r.n>5&&r.ent>=4&&r.dep,r);ok('oil market and statistics',r.px>0&&r.stat>0,r);ok('economic events',r.ev.length>=2,r.ev);ok('MARKETS tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s53_store: IndexedDB autosave and checkpoint, load from IndexedDB when localStorage is empty, migrations, hook telemetry','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const out={};WWAR.step(24*10);out.seed=WWAR.st.seed!=null;out.save=await WWAR.store.autosave('ckpt');const day=Math.floor(WWAR.st.t/24);
+    localStorage.removeItem('viper.ww');WWAR.st=null;out.load=await WWAR.load();out.back=WWAR.st&&Math.floor(WWAR.st.t/24)===day;const old={schema:1,c:{},fronts:[]};out.mig=WWAR.store.migrate(old).length;
+    const R=WWAR.store.report();out.slow=R.slow.length>0;out.idb=R.idb;out.gz=R.gz<R.size;out.ck=await WWAR.store.restore(WWAR.store.T.ckpt);out.audit=WWAR.audit();return out;});
+  ok('seed recorded',r.seed);ok('autosave to IndexedDB, compressed',r.save&&r.idb&&r.gz,r);ok('loads from IndexedDB',r.load&&r.back,r);ok('migrations run',r.mig===3,r.mig);ok('hook timings',r.slow);ok('checkpoint restore',r.ck);ok('audit clean',r.audit.length===0,r.audit);});
+test('s54_archive: verified quotation archive from data, signature quotation first, never-attribute list, restraint awards','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();await WWAR.archive.load();const A=WWAR.archive.A,E=WWAR.endscreen;const out={n:A.q.length,never:A.never.length,first:E.QUOTES[0].a,meta:A.q.every(x=>x.id&&x.src&&x.ver&&x.ctx),
+    safe:!WWAR.archive.safe('War does not determine who is right—only who is left'),end:!!WWAR.archive.forEnding('WIN'),aw:WWAR.lead.AWARDS.some(a=>a[0]==='RESTRAINT'),tab:/Hemingway/.test(NATPANEL.tabs.QUOTES(WWAR.st.c.USA))};return out;});
+  ok('eleven verified entries with metadata',r.n===11&&r.meta,r);ok('misattribution safeguards',r.never===2&&r.safe,r);ok('signature quotation first on the ending',r.first==='Ernest Hemingway',r.first);ok('quotations by ending theme',r.end);ok('awards for restraint and protection',r.aw);ok('QUOTES tab',r.tab);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

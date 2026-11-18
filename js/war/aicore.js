@@ -41,7 +41,7 @@
 (()=>{
 'use strict';
 const W=window.WWAR;if(!W)return;const rn=()=>Math.random();const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const A={recMax:500,lessonStep:.12,lessonMin:2,decay:.02,forget:.33,dirGap:5,dirCool:60,devRatio:.3,aarDays:{GOV:60,GS:14,AF:5,NAVY:14,LOG:7,INT:7,MFA:30,FIN:30,CD:5}};
+const A={recMax:160,lessonStep:.12,lessonMin:2,decay:.02,forget:.33,dirGap:5,dirCool:60,devRatio:.3,aarDays:{GOV:60,GS:14,AF:5,NAVY:14,LOG:7,INT:7,MFA:30,FIN:30,CD:5}};
 const OBJ=['ter','force','civ','econ','ally','det'];
 const PROF={GOV:{n:'Government',mand:'national survival and the war aims',pri:{ter:.25,force:.15,civ:.2,econ:.15,ally:.15,det:.1},risk:.4,hor:90,cyc:7,auth:['policy','mobilise','relocate','arbitrate','talks']},
   GS:{n:'General Staff',mand:'winning the land war',pri:{ter:.45,force:.35,civ:.05,econ:.05,ally:.05,det:.05},risk:.55,hor:14,cyc:3,auth:['intent','reserve','deviation']},
@@ -79,7 +79,7 @@ function refer(p,ik,kind,intent,opts,ctx){const G=insts(p).GOV;const X=AC();cons
   W.emit(agree?'DECISION':'DISAGREE',{e:[p.a3],txt:p.n+': the '+PROF[ik].n+' asks the government to '+wanted.label.toLowerCase()+(agree?' — approved.':' — the government decides instead to '+best.label.toLowerCase()+' (its priorities weigh '+(G.pri.civ>G.pri.ter?'civilian protection':'the economy')+' more).')});
   return decide(p,'GOV',kind,intent+' (referred by the '+PROF[ik].n+')',[best],ctx);}
 // HISTORIES
-function hist(kind,key,txt){const X=AC();const H=X.hist[kind];const L=H[key]||(H[key]=[]);L.push({t:W.st.t,txt});if(L.length>40)L.shift();}
+function hist(kind,key,txt){const X=AC();const H=X.hist[kind];const L=H[key]||(H[key]=[]);L.push({t:W.st.t,txt});if(L.length>14)L.shift();}
 {const _e=W.emit;W.emit=function(ty,o){const r=_e.apply(this,arguments);try{if(W.st&&W.st.city&&o&&o.txt&&ty!=='DECISION'){const X=AC();for(const a3 of(o.e||[]))for(const c of(W.st.city[a3]||[]))if(o.txt.includes(c.n))hist('city',a3+':'+c.n,ty+': '+o.txt.slice(0,160));}}catch(e){}return r;};}
 // INSTITUTION TURNS
 function turn(p){const I=insts(p),st=W.st,X=AC(),d=day();const fronts=st.fronts.filter(f=>!f.cf&&(f.a===p.a3||f.b===p.a3));

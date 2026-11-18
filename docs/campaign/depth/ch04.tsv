@@ -1,159 +1,159 @@
 line	cov	where	title	section
-1792	0		Authoritative world clock, tick scheduling, time controls, and adaptive simulation cadence	World clock, simulation scheduling, long-duration evolution, and performance
-1794	0		One authoritative simulation clock	World clock, simulation scheduling, long-duration evolution, and performance
-1798	0		Time domains and pause rules	World clock, simulation scheduling, long-duration evolution, and performance
-1802	0		Adaptive scheduler	World clock, simulation scheduling, long-duration evolution, and performance
-1806	0		No all-world per-frame simulation	World clock, simulation scheduling, long-duration evolution, and performance
-1816	0		Offline behavior	World clock, simulation scheduling, long-duration evolution, and performance
-1820	0		Save architecture	World clock, simulation scheduling, long-duration evolution, and performance
-1824	0		Streaming-safe entity lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
-1828	0		Scheduling and performance telemetry	World clock, simulation scheduling, long-duration evolution, and performance
-1841	0		Global clock domains, pause, and bounded catch-up.	World clock, simulation scheduling, long-duration evolution, and performance
-1845	0		Time domains	World clock, simulation scheduling, long-duration evolution, and performance
-1848	0		Time controls	World clock, simulation scheduling, long-duration evolution, and performance
-1851	0		Tick classes	World clock, simulation scheduling, long-duration evolution, and performance
-1856	0		Ordering and determinism	World clock, simulation scheduling, long-duration evolution, and performance
-1859	0		Save/load	World clock, simulation scheduling, long-duration evolution, and performance
-1865	0		Adaptive workload scheduling and fidelity tiers.	World clock, simulation scheduling, long-duration evolution, and performance
-1869	0		Work classes	World clock, simulation scheduling, long-duration evolution, and performance
-1872	0		Scheduling inputs	World clock, simulation scheduling, long-duration evolution, and performance
-1875	0		Fidelity tiers	World clock, simulation scheduling, long-duration evolution, and performance
-1878	0		Fairness and starvation prevention	World clock, simulation scheduling, long-duration evolution, and performance
-1881	0		Backpressure	World clock, simulation scheduling, long-duration evolution, and performance
-1884	0		Profiling	World clock, simulation scheduling, long-duration evolution, and performance
-1890	0		Time acceleration, background progression, and pause rules.	World clock, simulation scheduling, long-duration evolution, and performance
-1903	0		World time scales and scheduled life processes.	World clock, simulation scheduling, long-duration evolution, and performance
-1907	0		Multiple simulation update rates	World clock, simulation scheduling, long-duration evolution, and performance
-1916	0		Event-driven simulation	World clock, simulation scheduling, long-duration evolution, and performance
-1919	0		Daily and weekly routines	World clock, simulation scheduling, long-duration evolution, and performance
-1922	0		Operational schedules	World clock, simulation scheduling, long-duration evolution, and performance
-1925	0		Time compression and player safety	World clock, simulation scheduling, long-duration evolution, and performance
-1928	0		Background simulation and catch-up	World clock, simulation scheduling, long-duration evolution, and performance
-1931	0		Time zones, daylight, and calendars	World clock, simulation scheduling, long-duration evolution, and performance
-1934	0		Pause and multiplayer rules	World clock, simulation scheduling, long-duration evolution, and performance
-1937	0		Determinism, replay, and debugging	World clock, simulation scheduling, long-duration evolution, and performance
-1948	0		Browser-safe multi-scale campaign updates.	World clock, simulation scheduling, long-duration evolution, and performance
-1950	0		Separate simulation time from rendering time	World clock, simulation scheduling, long-duration evolution, and performance
-1954	0		Fixed-step or bounded simulation updates	World clock, simulation scheduling, long-duration evolution, and performance
-1961	0		Event scheduling	World clock, simulation scheduling, long-duration evolution, and performance
-1965	0		Simulation levels of detail	World clock, simulation scheduling, long-duration evolution, and performance
-1974	0		Fairness and deterministic randomization	World clock, simulation scheduling, long-duration evolution, and performance
-1978	0		Browser lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
-1985	0		Long-horizon world evolution, aging, peacetime development, and multi-decade stability	World clock, simulation scheduling, long-duration evolution, and performance
-1989	0		Long-horizon time model	World clock, simulation scheduling, long-duration evolution, and performance
-1992	0		Aging and lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
-1995	0		Population and demographic stability	World clock, simulation scheduling, long-duration evolution, and performance
-1998	0		Economic and infrastructure stability	World clock, simulation scheduling, long-duration evolution, and performance
-2001	0		Technology and institutional evolution	World clock, simulation scheduling, long-duration evolution, and performance
-2004	0		Numerical stability	World clock, simulation scheduling, long-duration evolution, and performance
-2007	0		Historical compaction	World clock, simulation scheduling, long-duration evolution, and performance
-2010	0		Long-duration testing	World clock, simulation scheduling, long-duration evolution, and performance
-2018	0		Peacetime development and multi-decade world evolution.	World clock, simulation scheduling, long-duration evolution, and performance
-2020	0		Campaign is not permanently at war	World clock, simulation scheduling, long-duration evolution, and performance
-2024	0		Long-horizon world processes	World clock, simulation scheduling, long-duration evolution, and performance
-2041	0		Policy lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
-2057	0		Peaceful competition and cooperation	World clock, simulation scheduling, long-duration evolution, and performance
-2073	0		Generational continuity	World clock, simulation scheduling, long-duration evolution, and performance
-2077	0		Time acceleration and catch-up	World clock, simulation scheduling, long-duration evolution, and performance
-2091	0		Multi-century evolution, long-horizon history, and institutional memory.	World clock, simulation scheduling, long-duration evolution, and performance
-2093	0		Time horizons	World clock, simulation scheduling, long-duration evolution, and performance
-2096	0		Time-step architecture	World clock, simulation scheduling, long-duration evolution, and performance
-2099	0		Historical continuity	World clock, simulation scheduling, long-duration evolution, and performance
-2102	0		Generational transition	World clock, simulation scheduling, long-duration evolution, and performance
-2105	0		Urban and regional evolution	World clock, simulation scheduling, long-duration evolution, and performance
-2110	0		Climate and ecological horizons	World clock, simulation scheduling, long-duration evolution, and performance
-2113	0		World memory	World clock, simulation scheduling, long-duration evolution, and performance
-2116	0		Historical reinterpretation	World clock, simulation scheduling, long-duration evolution, and performance
-2123	0		LONG-DURATION TESTING, DATA PROVENANCE AND MODULAR CONTENT PACKS	World clock, simulation scheduling, long-duration evolution, and performance
-2125	0		Multi-year and multi-decade testing	World clock, simulation scheduling, long-duration evolution, and performance
-2143	0		Data provenance	World clock, simulation scheduling, long-duration evolution, and performance
-2157	0		Data quality and uncertainty — LONG-DURATION TESTING, DATA PROVENANCE AND MODULAR CONTENT PACKS	World clock, simulation scheduling, long-duration evolution, and performance
-2170	0		Modular content packs	World clock, simulation scheduling, long-duration evolution, and performance
-2185	0		Compatibility and pack conflicts	World clock, simulation scheduling, long-duration evolution, and performance
-2199	0		Modding boundary	World clock, simulation scheduling, long-duration evolution, and performance
-2214	0		Unified browser performance, simulation fidelity, streaming, and resource budgets	World clock, simulation scheduling, long-duration evolution, and performance
-2232	0		Measurable performance budgets and technical constraints.	World clock, simulation scheduling, long-duration evolution, and performance
-2246	0		Simulation tiers, level of detail, and background workload.	World clock, simulation scheduling, long-duration evolution, and performance
-2250	0		Simulation tiers — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
-2258	0		Aggregation rules	World clock, simulation scheduling, long-duration evolution, and performance
-2262	0		Scheduling and determinism	World clock, simulation scheduling, long-duration evolution, and performance
-2266	0		Chunk and streaming integration	World clock, simulation scheduling, long-duration evolution, and performance
-2270	0		Debugging and observability	World clock, simulation scheduling, long-duration evolution, and performance
-2274	0		Streaming and scale requirements for integrated systems.	World clock, simulation scheduling, long-duration evolution, and performance
-2276	0		Chunk independence	World clock, simulation scheduling, long-duration evolution, and performance
-2279	0		Simulation detail budgets	World clock, simulation scheduling, long-duration evolution, and performance
-2282	0		Data-oriented updates	World clock, simulation scheduling, long-duration evolution, and performance
-2285	0		Load-time and save-size controls	World clock, simulation scheduling, long-duration evolution, and performance
-2288	0		Graceful degradation	World clock, simulation scheduling, long-duration evolution, and performance
-2291	0		Diagnostics — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
-2294	0		Three.js large-campaign performance architecture.	World clock, simulation scheduling, long-duration evolution, and performance
-2296	0		Performance budget first	World clock, simulation scheduling, long-duration evolution, and performance
-2300	0		Spatial indexing	World clock, simulation scheduling, long-duration evolution, and performance
-2304	0		Instanced rendering	World clock, simulation scheduling, long-duration evolution, and performance
-2310	0		Level of detail and visibility	World clock, simulation scheduling, long-duration evolution, and performance
-2320	0		Object pooling	World clock, simulation scheduling, long-duration evolution, and performance
-2324	0		Collision strategy	World clock, simulation scheduling, long-duration evolution, and performance
-2328	0		Update throttling	World clock, simulation scheduling, long-duration evolution, and performance
-2332	0		Resource disposal	World clock, simulation scheduling, long-duration evolution, and performance
-2336	0		Performance diagnostics — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
-2354	0		Whole-world performance and scalability.	World clock, simulation scheduling, long-duration evolution, and performance
-2358	0		Separate authoritative simulation from visual rendering	World clock, simulation scheduling, long-duration evolution, and performance
-2369	0		Adaptive simulation tiers	World clock, simulation scheduling, long-duration evolution, and performance
-2373	0		Tier A — Immediate/local simulation	World clock, simulation scheduling, long-duration evolution, and performance
-2380	0		Tier B — Regional operational simulation	World clock, simulation scheduling, long-duration evolution, and performance
-2387	0		Tier C — Distant strategic simulation	World clock, simulation scheduling, long-duration evolution, and performance
-2394	0		Tier D — Background statistical state	World clock, simulation scheduling, long-duration evolution, and performance
-2402	0		Geographic streaming and level of detail	World clock, simulation scheduling, long-duration evolution, and performance
-2413	0		AI scheduling and event-driven work	World clock, simulation scheduling, long-duration evolution, and performance
-2421	0		Rendering and browser resource budgets	World clock, simulation scheduling, long-duration evolution, and performance
-2435	0		Persistence, storage, and recovery	World clock, simulation scheduling, long-duration evolution, and performance
-2446	0		Network and multiplayer efficiency	World clock, simulation scheduling, long-duration evolution, and performance
-2450	0		Performance acceptance tests	World clock, simulation scheduling, long-duration evolution, and performance
-2467	0		Count integrity, data ownership, and performance checks.	World clock, simulation scheduling, long-duration evolution, and performance
-2486	0		Worker scheduling and background computation.	World clock, simulation scheduling, long-duration evolution, and performance
-2488	0		Appropriate worker tasks	World clock, simulation scheduling, long-duration evolution, and performance
-2499	0		Worker boundaries	World clock, simulation scheduling, long-duration evolution, and performance
-2503	0		Main-thread safety	World clock, simulation scheduling, long-duration evolution, and performance
-2507	0		Fallbacks	World clock, simulation scheduling, long-duration evolution, and performance
-2511	0		Cancellation and stale jobs	World clock, simulation scheduling, long-duration evolution, and performance
-2518	0		Asset streaming, lifecycle, and browser resource management	World clock, simulation scheduling, long-duration evolution, and performance
-2520	0		Asset registry and dependency manifests	World clock, simulation scheduling, long-duration evolution, and performance
-2535	0		Streaming lifecycle — Asset streaming, lifecycle, and browser resource management	World clock, simulation scheduling, long-duration evolution, and performance
-2548	0		Memory and GPU lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
-2559	0		WebGL/device recovery	World clock, simulation scheduling, long-duration evolution, and performance
-2577	0		Campaign persistence, save/load, autosave, retention, replay, migration, and recovery	Persistence, save/load, replay, and recovery
-2581	0		IndexedDB as the primary local browser store	Persistence, save/load, replay, and recovery
-2597	0		Autosave and checkpoints	Persistence, save/load, replay, and recovery
-2603	0		Crash recovery and interrupted-session handling	Persistence, save/load, replay, and recovery
-2607	0		Save slots and campaign identity	Persistence, save/load, replay, and recovery
-2611	0		Storage budget and cleanup	Persistence, save/load, replay, and recovery
-2615	0		Offline and private browsing limitations	Persistence, save/load, replay, and recovery
-2630	0		State compression, retention, and storage quotas.	Persistence, save/load, replay, and recovery
-2634	0		Data classes	Persistence, save/load, replay, and recovery
-2637	0		Retention policy	Persistence, save/load, replay, and recovery
-2640	0		Compression and summarization	Persistence, save/load, replay, and recovery
-2643	0		Storage tiers	Persistence, save/load, replay, and recovery
-2646	0		Integrity	Persistence, save/load, replay, and recovery
-2652	0		Save formats, replay links, history references, and migration.	Persistence, save/load, replay, and recovery
-2665	0		Crash safety, recovery, and long-campaign resilience.	Persistence, save/load, replay, and recovery
-2696	0		Storage policy	Persistence, save/load, replay, and recovery
-2705	0		Long-campaign lifecycle	Persistence, save/load, replay, and recovery
-2725	0		Deterministic event replay and recovery checkpoints.	Persistence, save/load, replay, and recovery
-2729	0		Replay architecture	Persistence, save/load, replay, and recovery
-2743	0		Replay modes	Persistence, save/load, replay, and recovery
-2754	0		Randomness and seeds	Persistence, save/load, replay, and recovery
-2758	0		Correction and rollback policy	Persistence, save/load, replay, and recovery
-2772	0		VERSIONED SAVE FORMAT, MIGRATION, AND DATA INTEGRITY	Persistence, save/load, replay, and recovery
-2774	0		Versioned schema	Persistence, save/load, replay, and recovery
-2778	0		Serialization rules	Persistence, save/load, replay, and recovery
-2789	0		Save integrity validation	Persistence, save/load, replay, and recovery
-2793	0		Export and import	Persistence, save/load, replay, and recovery
-2797	0		Backward compatibility	Persistence, save/load, replay, and recovery
-2801	0		Event log and compact snapshots	Persistence, save/load, replay, and recovery
-2805	0		Deterministic recovery	Persistence, save/load, replay, and recovery
-2812	0		ASSET, NETWORK, AND BROWSER RESILIENCE	Streaming, assets, and browser resilience
-2814	0		Asset loading	Streaming, assets, and browser resilience
-2823	0		Audio loading	Streaming, assets, and browser resilience
-2827	0		Network resilience	Streaming, assets, and browser resilience
-2836	0		Browser compatibility	Streaming, assets, and browser resilience
-2840	0		Security and public deployment	Streaming, assets, and browser resilience
+1792	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Authoritative world clock, tick scheduling, time controls, and adaptive simulation cadence	World clock, simulation scheduling, long-duration evolution, and performance
+1794	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	One authoritative simulation clock	World clock, simulation scheduling, long-duration evolution, and performance
+1798	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time domains and pause rules	World clock, simulation scheduling, long-duration evolution, and performance
+1802	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Adaptive scheduler	World clock, simulation scheduling, long-duration evolution, and performance
+1806	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	No all-world per-frame simulation	World clock, simulation scheduling, long-duration evolution, and performance
+1816	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Offline behavior	World clock, simulation scheduling, long-duration evolution, and performance
+1820	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Save architecture	World clock, simulation scheduling, long-duration evolution, and performance
+1824	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Streaming-safe entity lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
+1828	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Scheduling and performance telemetry	World clock, simulation scheduling, long-duration evolution, and performance
+1841	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Global clock domains, pause, and bounded catch-up.	World clock, simulation scheduling, long-duration evolution, and performance
+1845	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time domains	World clock, simulation scheduling, long-duration evolution, and performance
+1848	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time controls	World clock, simulation scheduling, long-duration evolution, and performance
+1851	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Tick classes	World clock, simulation scheduling, long-duration evolution, and performance
+1856	0.5	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Ordering and determinism	World clock, simulation scheduling, long-duration evolution, and performance
+1859	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Save/load	World clock, simulation scheduling, long-duration evolution, and performance
+1865	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Adaptive workload scheduling and fidelity tiers.	World clock, simulation scheduling, long-duration evolution, and performance
+1869	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Work classes	World clock, simulation scheduling, long-duration evolution, and performance
+1872	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Scheduling inputs	World clock, simulation scheduling, long-duration evolution, and performance
+1875	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Fidelity tiers	World clock, simulation scheduling, long-duration evolution, and performance
+1878	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Fairness and starvation prevention	World clock, simulation scheduling, long-duration evolution, and performance
+1881	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Backpressure	World clock, simulation scheduling, long-duration evolution, and performance
+1884	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Profiling	World clock, simulation scheduling, long-duration evolution, and performance
+1890	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time acceleration, background progression, and pause rules.	World clock, simulation scheduling, long-duration evolution, and performance
+1903	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	World time scales and scheduled life processes.	World clock, simulation scheduling, long-duration evolution, and performance
+1907	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Multiple simulation update rates	World clock, simulation scheduling, long-duration evolution, and performance
+1916	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Event-driven simulation	World clock, simulation scheduling, long-duration evolution, and performance
+1919	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Daily and weekly routines	World clock, simulation scheduling, long-duration evolution, and performance
+1922	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Operational schedules	World clock, simulation scheduling, long-duration evolution, and performance
+1925	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time compression and player safety	World clock, simulation scheduling, long-duration evolution, and performance
+1928	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Background simulation and catch-up	World clock, simulation scheduling, long-duration evolution, and performance
+1931	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Time zones, daylight, and calendars	World clock, simulation scheduling, long-duration evolution, and performance
+1934	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Pause and multiplayer rules	World clock, simulation scheduling, long-duration evolution, and performance
+1937	0.5	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Determinism, replay, and debugging	World clock, simulation scheduling, long-duration evolution, and performance
+1948	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Browser-safe multi-scale campaign updates.	World clock, simulation scheduling, long-duration evolution, and performance
+1950	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Separate simulation time from rendering time	World clock, simulation scheduling, long-duration evolution, and performance
+1954	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Fixed-step or bounded simulation updates	World clock, simulation scheduling, long-duration evolution, and performance
+1961	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Event scheduling	World clock, simulation scheduling, long-duration evolution, and performance
+1965	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Simulation levels of detail	World clock, simulation scheduling, long-duration evolution, and performance
+1974	0.5	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Fairness and deterministic randomization	World clock, simulation scheduling, long-duration evolution, and performance
+1978	1	worldwar.js (clock), tools.js (multi-rate, bounded catch-up, slots), perf.js (chunking, LOD), store.js (IndexedDB, telemetry)	Browser lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
+1985	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Long-horizon world evolution, aging, peacetime development, and multi-decade stability	World clock, simulation scheduling, long-duration evolution, and performance
+1989	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Long-horizon time model	World clock, simulation scheduling, long-duration evolution, and performance
+1992	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Aging and lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
+1995	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Population and demographic stability	World clock, simulation scheduling, long-duration evolution, and performance
+1998	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Economic and infrastructure stability	World clock, simulation scheduling, long-duration evolution, and performance
+2001	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Technology and institutional evolution	World clock, simulation scheduling, long-duration evolution, and performance
+2004	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Numerical stability	World clock, simulation scheduling, long-duration evolution, and performance
+2007	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Historical compaction	World clock, simulation scheduling, long-duration evolution, and performance
+2010	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Long-duration testing	World clock, simulation scheduling, long-duration evolution, and performance
+2018	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Peacetime development and multi-decade world evolution.	World clock, simulation scheduling, long-duration evolution, and performance
+2020	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Campaign is not permanently at war	World clock, simulation scheduling, long-duration evolution, and performance
+2024	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Long-horizon world processes	World clock, simulation scheduling, long-duration evolution, and performance
+2041	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Policy lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
+2057	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Peaceful competition and cooperation	World clock, simulation scheduling, long-duration evolution, and performance
+2073	0.5	postwar.js, people.js (aging), life.js, perf.js (compaction)	Generational continuity	World clock, simulation scheduling, long-duration evolution, and performance
+2077	1	postwar.js, people.js (aging), life.js, perf.js (compaction)	Time acceleration and catch-up	World clock, simulation scheduling, long-duration evolution, and performance
+2091	0.5	postwar.js, cemetery.js, aicore.js (history)	Multi-century evolution, long-horizon history, and institutional memory.	World clock, simulation scheduling, long-duration evolution, and performance
+2093	0.5	postwar.js, cemetery.js, aicore.js (history)	Time horizons	World clock, simulation scheduling, long-duration evolution, and performance
+2096	0.5	postwar.js, cemetery.js, aicore.js (history)	Time-step architecture	World clock, simulation scheduling, long-duration evolution, and performance
+2099	0.5	postwar.js, cemetery.js, aicore.js (history)	Historical continuity	World clock, simulation scheduling, long-duration evolution, and performance
+2102	0.5	postwar.js, cemetery.js, aicore.js (history)	Generational transition	World clock, simulation scheduling, long-duration evolution, and performance
+2105	0.5	postwar.js, cemetery.js, aicore.js (history)	Urban and regional evolution	World clock, simulation scheduling, long-duration evolution, and performance
+2110	0.5	postwar.js, cemetery.js, aicore.js (history)	Climate and ecological horizons	World clock, simulation scheduling, long-duration evolution, and performance
+2113	1	postwar.js, cemetery.js, aicore.js (history)	World memory	World clock, simulation scheduling, long-duration evolution, and performance
+2116	0	postwar.js, cemetery.js, aicore.js (history)	Historical reinterpretation	World clock, simulation scheduling, long-duration evolution, and performance
+2123	0.5	natdata.js (provenance), assets/world/SOURCES.md	LONG-DURATION TESTING, DATA PROVENANCE AND MODULAR CONTENT PACKS	World clock, simulation scheduling, long-duration evolution, and performance
+2125	0.5	natdata.js (provenance), assets/world/SOURCES.md	Multi-year and multi-decade testing	World clock, simulation scheduling, long-duration evolution, and performance
+2143	1	natdata.js (provenance), assets/world/SOURCES.md	Data provenance	World clock, simulation scheduling, long-duration evolution, and performance
+2157	1	natdata.js (provenance), assets/world/SOURCES.md	Data quality and uncertainty — LONG-DURATION TESTING, DATA PROVENANCE AND MODULAR CONTENT PACKS	World clock, simulation scheduling, long-duration evolution, and performance
+2170	0.5	natdata.js (provenance), assets/world/SOURCES.md	Modular content packs	World clock, simulation scheduling, long-duration evolution, and performance
+2185	0	natdata.js (provenance), assets/world/SOURCES.md	Compatibility and pack conflicts	World clock, simulation scheduling, long-duration evolution, and performance
+2199	0.5	natdata.js (provenance), assets/world/SOURCES.md	Modding boundary	World clock, simulation scheduling, long-duration evolution, and performance
+2214	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Unified browser performance, simulation fidelity, streaming, and resource budgets	World clock, simulation scheduling, long-duration evolution, and performance
+2232	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Measurable performance budgets and technical constraints.	World clock, simulation scheduling, long-duration evolution, and performance
+2246	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Simulation tiers, level of detail, and background workload.	World clock, simulation scheduling, long-duration evolution, and performance
+2250	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Simulation tiers — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
+2258	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Aggregation rules	World clock, simulation scheduling, long-duration evolution, and performance
+2262	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Scheduling and determinism	World clock, simulation scheduling, long-duration evolution, and performance
+2266	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Chunk and streaming integration	World clock, simulation scheduling, long-duration evolution, and performance
+2270	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Debugging and observability	World clock, simulation scheduling, long-duration evolution, and performance
+2274	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Streaming and scale requirements for integrated systems.	World clock, simulation scheduling, long-duration evolution, and performance
+2276	0.5	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Chunk independence	World clock, simulation scheduling, long-duration evolution, and performance
+2279	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Simulation detail budgets	World clock, simulation scheduling, long-duration evolution, and performance
+2282	0.5	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Data-oriented updates	World clock, simulation scheduling, long-duration evolution, and performance
+2285	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Load-time and save-size controls	World clock, simulation scheduling, long-duration evolution, and performance
+2288	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Graceful degradation	World clock, simulation scheduling, long-duration evolution, and performance
+2291	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Diagnostics — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
+2294	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Three.js large-campaign performance architecture.	World clock, simulation scheduling, long-duration evolution, and performance
+2296	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Performance budget first	World clock, simulation scheduling, long-duration evolution, and performance
+2300	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Spatial indexing	World clock, simulation scheduling, long-duration evolution, and performance
+2304	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Instanced rendering	World clock, simulation scheduling, long-duration evolution, and performance
+2310	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Level of detail and visibility	World clock, simulation scheduling, long-duration evolution, and performance
+2320	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Object pooling	World clock, simulation scheduling, long-duration evolution, and performance
+2324	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Collision strategy	World clock, simulation scheduling, long-duration evolution, and performance
+2328	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Update throttling	World clock, simulation scheduling, long-duration evolution, and performance
+2332	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Resource disposal	World clock, simulation scheduling, long-duration evolution, and performance
+2336	1	perf.js, infantry.js (merged meshes, instancing, pooling, grid collision), worldflight.js (tiles), tools.js (debug)	Performance diagnostics — browser performance, simulation fidelity, streaming, and resource budget	World clock, simulation scheduling, long-duration evolution, and performance
+2354	1	perf.js (tiers), warnet.js, integrity.js	Whole-world performance and scalability.	World clock, simulation scheduling, long-duration evolution, and performance
+2358	1	perf.js (tiers), warnet.js, integrity.js	Separate authoritative simulation from visual rendering	World clock, simulation scheduling, long-duration evolution, and performance
+2369	1	perf.js (tiers), warnet.js, integrity.js	Adaptive simulation tiers	World clock, simulation scheduling, long-duration evolution, and performance
+2373	1	perf.js (tiers), warnet.js, integrity.js	Tier A — Immediate/local simulation	World clock, simulation scheduling, long-duration evolution, and performance
+2380	1	perf.js (tiers), warnet.js, integrity.js	Tier B — Regional operational simulation	World clock, simulation scheduling, long-duration evolution, and performance
+2387	1	perf.js (tiers), warnet.js, integrity.js	Tier C — Distant strategic simulation	World clock, simulation scheduling, long-duration evolution, and performance
+2394	1	perf.js (tiers), warnet.js, integrity.js	Tier D — Background statistical state	World clock, simulation scheduling, long-duration evolution, and performance
+2402	1	perf.js (tiers), warnet.js, integrity.js	Geographic streaming and level of detail	World clock, simulation scheduling, long-duration evolution, and performance
+2413	1	perf.js (tiers), warnet.js, integrity.js	AI scheduling and event-driven work	World clock, simulation scheduling, long-duration evolution, and performance
+2421	1	perf.js (tiers), warnet.js, integrity.js	Rendering and browser resource budgets	World clock, simulation scheduling, long-duration evolution, and performance
+2435	1	perf.js (tiers), warnet.js, integrity.js	Persistence, storage, and recovery	World clock, simulation scheduling, long-duration evolution, and performance
+2446	0.5	perf.js (tiers), warnet.js, integrity.js	Network and multiplayer efficiency	World clock, simulation scheduling, long-duration evolution, and performance
+2450	1	perf.js (tiers), warnet.js, integrity.js	Performance acceptance tests	World clock, simulation scheduling, long-duration evolution, and performance
+2467	1	perf.js (tiers), warnet.js, integrity.js	Count integrity, data ownership, and performance checks.	World clock, simulation scheduling, long-duration evolution, and performance
+2486	0.5	store.js (async compression off the step), perf.js	Worker scheduling and background computation.	World clock, simulation scheduling, long-duration evolution, and performance
+2488	0.5	store.js (async compression off the step), perf.js	Appropriate worker tasks	World clock, simulation scheduling, long-duration evolution, and performance
+2499	0.5	store.js (async compression off the step), perf.js	Worker boundaries	World clock, simulation scheduling, long-duration evolution, and performance
+2503	1	store.js (async compression off the step), perf.js	Main-thread safety	World clock, simulation scheduling, long-duration evolution, and performance
+2507	1	store.js (async compression off the step), perf.js	Fallbacks	World clock, simulation scheduling, long-duration evolution, and performance
+2511	0.5	store.js (async compression off the step), perf.js	Cancellation and stale jobs	World clock, simulation scheduling, long-duration evolution, and performance
+2518	0.5	worldflight.js (tiles), store.js (WebGL loss)	Asset streaming, lifecycle, and browser resource management	World clock, simulation scheduling, long-duration evolution, and performance
+2520	0.5	worldflight.js (tiles), store.js (WebGL loss)	Asset registry and dependency manifests	World clock, simulation scheduling, long-duration evolution, and performance
+2535	1	worldflight.js (tiles), store.js (WebGL loss)	Streaming lifecycle — Asset streaming, lifecycle, and browser resource management	World clock, simulation scheduling, long-duration evolution, and performance
+2548	0.5	worldflight.js (tiles), store.js (WebGL loss)	Memory and GPU lifecycle	World clock, simulation scheduling, long-duration evolution, and performance
+2559	0.5	worldflight.js (tiles), store.js (WebGL loss)	WebGL/device recovery	World clock, simulation scheduling, long-duration evolution, and performance
+2577	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Campaign persistence, save/load, autosave, retention, replay, migration, and recovery	Persistence, save/load, replay, and recovery
+2581	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	IndexedDB as the primary local browser store	Persistence, save/load, replay, and recovery
+2597	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Autosave and checkpoints	Persistence, save/load, replay, and recovery
+2603	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Crash recovery and interrupted-session handling	Persistence, save/load, replay, and recovery
+2607	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Save slots and campaign identity	Persistence, save/load, replay, and recovery
+2611	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Storage budget and cleanup	Persistence, save/load, replay, and recovery
+2615	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Offline and private browsing limitations	Persistence, save/load, replay, and recovery
+2630	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	State compression, retention, and storage quotas.	Persistence, save/load, replay, and recovery
+2634	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Data classes	Persistence, save/load, replay, and recovery
+2637	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Retention policy	Persistence, save/load, replay, and recovery
+2640	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Compression and summarization	Persistence, save/load, replay, and recovery
+2643	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Storage tiers	Persistence, save/load, replay, and recovery
+2646	1	store.js (IndexedDB, autosave, checkpoints, crash flag, budget), tools.js (slots, export/import)	Integrity	Persistence, save/load, replay, and recovery
+2652	1	tools.js (export/import), store.js (checkpoints), media.js (replay)	Save formats, replay links, history references, and migration.	Persistence, save/load, replay, and recovery
+2665	1	tools.js (export/import), store.js (checkpoints), media.js (replay)	Crash safety, recovery, and long-campaign resilience.	Persistence, save/load, replay, and recovery
+2696	1	tools.js (export/import), store.js (checkpoints), media.js (replay)	Storage policy	Persistence, save/load, replay, and recovery
+2705	1	tools.js (export/import), store.js (checkpoints), media.js (replay)	Long-campaign lifecycle	Persistence, save/load, replay, and recovery
+2725	0.5	tools.js (export/import), store.js (checkpoints), media.js (replay)	Deterministic event replay and recovery checkpoints.	Persistence, save/load, replay, and recovery
+2729	0.5	tools.js (export/import), store.js (checkpoints), media.js (replay)	Replay architecture	Persistence, save/load, replay, and recovery
+2743	0.5	tools.js (export/import), store.js (checkpoints), media.js (replay)	Replay modes	Persistence, save/load, replay, and recovery
+2754	0.5	tools.js (export/import), store.js (checkpoints), media.js (replay)	Randomness and seeds	Persistence, save/load, replay, and recovery
+2758	0.5	tools.js (export/import), store.js (checkpoints), media.js (replay)	Correction and rollback policy	Persistence, save/load, replay, and recovery
+2772	1	store.js (schema, migrations), tools.js (validation)	VERSIONED SAVE FORMAT, MIGRATION, AND DATA INTEGRITY	Persistence, save/load, replay, and recovery
+2774	1	store.js (schema, migrations), tools.js (validation)	Versioned schema	Persistence, save/load, replay, and recovery
+2778	1	store.js (schema, migrations), tools.js (validation)	Serialization rules	Persistence, save/load, replay, and recovery
+2789	1	store.js (schema, migrations), tools.js (validation)	Save integrity validation	Persistence, save/load, replay, and recovery
+2793	1	store.js (schema, migrations), tools.js (validation)	Export and import	Persistence, save/load, replay, and recovery
+2797	1	store.js (schema, migrations), tools.js (validation)	Backward compatibility	Persistence, save/load, replay, and recovery
+2801	1	store.js (schema, migrations), tools.js (validation)	Event log and compact snapshots	Persistence, save/load, replay, and recovery
+2805	1	store.js (schema, migrations), tools.js (validation)	Deterministic recovery	Persistence, save/load, replay, and recovery
+2812	1	store.js (offline), worldflight.js	ASSET, NETWORK, AND BROWSER RESILIENCE	Streaming, assets, and browser resilience
+2814	1	store.js (offline), worldflight.js	Asset loading	Streaming, assets, and browser resilience
+2823	0.5	store.js (offline), worldflight.js	Audio loading	Streaming, assets, and browser resilience
+2827	1	store.js (offline), worldflight.js	Network resilience	Streaming, assets, and browser resilience
+2836	0.5	store.js (offline), worldflight.js	Browser compatibility	Streaming, assets, and browser resilience
+2840	0.5	store.js (offline), worldflight.js	Security and public deployment	Streaming, assets, and browser resilience
