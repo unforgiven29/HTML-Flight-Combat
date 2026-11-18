@@ -430,7 +430,7 @@ test('ww_registry: every country is an actor; the default scenario follows the s
 test('ww_fronts: fronts only on real borders between hostile belligerents','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await WWAR.newWar();const st=WWAR.st,bad=st.fronts.filter(f=>st.c[f.a].side===st.c[f.b].side||!['CORE','ALLY'].includes(st.c[f.a].al)||!['CORE','ALLY'].includes(st.c[f.b].al));
     return{n:st.fronts.length,bad:bad.length,ids:st.fronts.map(f=>f.a+f.b),nb:st.fronts.every(f=>WGEO.byA3.get(f.a).nb.includes(f.b))};});
-  ok('fronts exist',r.n>=6,r.ids);ok('none between allies or with neutrals',r.bad===0,r.bad);ok('each is a real land border',r.nb);ok('Finland-Russia and Korea are fronts',r.ids.includes('FINRUS')&&r.ids.includes('KORPRK'),r.ids);});
+  ok('a few long fronts',r.n>=2&&r.n<=6,r.ids);ok('none between allies or with neutrals',r.bad===0,r.bad);ok('each is a real land border',r.nb);ok('Finland-Russia and Korea are fronts',r.ids.includes('FINRUS')&&r.ids.includes('KORPRK'),r.ids);});
 test('ww_run: 60 days of war keep the registry consistent, move gradually and record events','F-16C',async p=>{
   const r=await p.evaluate(async()=>{await WWAR.newWar();const st=WWAR.st;let maxJump=0;const prev=()=>st.fronts.flatMap(f=>f.sec.map(s=>s.off));let a=prev();
     for(let d=0;d<60;d++){WWAR.step(24);const b=prev();for(let i=0;i<a.length;i++)maxJump=Math.max(maxJump,Math.abs(b[i]-a[i]));a=b;}
@@ -1331,6 +1331,11 @@ test('s61_names: soldiers in the battle have names and ranks; deaths go into the
     const e=S.them[0];I.hitMan?I.hitMan(e,1000,true):null;const rec=WWAR.st.dl.ev.find(x=>x.named&&x.named[0]===e.full);out.rec=!!rec;out.by=rec&&/by the player/.test(rec.cause);out.place=rec&&rec.place===S.loc.name;
     out.found=WWAR.cemetery.entries(r=>r.named&&r.named.includes(e.full),5).length===1;out.audit=WWAR.audit();return out;});
   ok('every soldier named and ranked, names unique',r.named&&r.uniq,r);ok('no name tags over heads',r.tags===0,r.tags);ok('a kill is a named record in the death ledger, marked as yours, at the battle',r.rec&&r.by&&r.place,r);ok('found in the cemetery',r.found);ok('audit clean',r.audit.length===0,r.audit);});
+test('s62_wear: few long fronts; fronts wear with fighting; a worn front is built with craters, ruined houses, wrecks, stumps, extra trench lines','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={nf:st.fronts.length,quiet:(st.quiet||[]).length};WWAR.step(24*60);const f=st.fronts.find(x=>!x.cf)||st.fronts[0];out.w=st.wear[f.id];
+    st.wear[f.id]=.9;const I=INFANTRY;let S=I.start({...I.K,a3:f.a,ins:'APC',mis:'FRONT'});out.cr=S.craterN;out.ruin=S.ruined||0;out.lines=I.TR.L.filter(l=>!l.k).length;I.stop(false);
+    st.wear[f.id]=0;S=I.start({...I.K,a3:f.a,ins:'APC',mis:'FRONT'});out.cr0=S.craterN||0;out.lines0=I.TR.L.filter(l=>!l.k).length;I.stop(false);out.audit=WWAR.audit();return out;});
+  ok('a few long fronts, the rest quiet',r.nf>=2&&r.nf<=6&&r.quiet>0,r);ok('wear grows with fighting',r.w>.3,r.w);ok('a worn front: craters, ruined houses, extra trench lines',r.cr>500&&r.ruin>0&&r.lines>4,r);ok('a fresh front stays clean',r.cr0===0&&r.lines0===4,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

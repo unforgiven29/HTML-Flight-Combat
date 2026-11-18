@@ -31,7 +31,7 @@ const NATO=['ALB','BEL','BGR','CAN','HRV','CZE','DNK','EST','FIN','FRA','DEU','G
 const SCEN={name:'GLOBAL CONFLICT (fictional scenario)',
   B:{CORE:['USA'],ALLY:NATO.filter(a=>a!=='USA').concat(['JPN','KOR','AUS','PHL']),PARTNER:['NZL']},
   R:{CORE:['RUS','CHN'],ALLY:['BLR','PRK'],PARTNER:[]}};
-const C={airTheatreK:.00015,airDef:1.3,gndDef:1.4,gndAdvKmh:.12,gndLossK:.00035,prodAir:.0007,prodGnd:.0005,secKm:50,cityPop:2e5,maxOff:450};
+const C={airTheatreK:.00015,airDef:1.3,gndDef:1.4,gndAdvKmh:.12,gndLossK:.00035,prodAir:.0007,prodGnd:.0005,secKm:50,cityPop:2e5,maxOff:450,maxFronts:3};
 const THEATRES=[
   {id:'NEU',name:'Northern Europe & Baltic',lat:[52,72],lon:[4,45]},
   {id:'CEU',name:'Central Europe & Black Sea',lat:[40,52],lon:[8,45]},
@@ -70,7 +70,14 @@ function buildFronts(){const st=W.st,F=[];
         let nx=-dy/d,ny=dx/d;const test=G.countryAt(my+ny*.12,mx+nx*.12/Math.cos(my*D));if(test&&test.a3===B.a){nx=-nx;ny=-ny;}
         fr.sec.push({lon:mx,lat:my,nx,ny,off:0});}}
     if(fr.sec.length)F.push(fr);}
-  st.fronts=F;}
+  // v412: the war is fought on a few long fronts — the principal powers' fronts first, then the longest; other
+  // borders between enemies stay quiet (guarded, not fought over). C.maxFronts sets how many (default 3).
+  const core=f=>(st.c[f.a].al==='CORE'?2:0)+(st.c[f.b].al==='CORE'?2:0)+(st.c[f.a].al==='ALLY'?1:0)+(st.c[f.b].al==='ALLY'?1:0);
+  F.sort((x,y)=>core(y)-core(x)||y.sec.length-x.sec.length);
+  // one front per principal enemy pairing first (the longest), so each theatre keeps its war; then fill up to the cap
+  const keep=[],pair=new Set();for(const f of F){const A=st.c[f.a],B=st.c[f.b];const cs=[A,B].filter(q=>q.al==='CORE').map(q=>q.a3);const k=(cs.length?cs:[A.a3,B.a3]).sort().join('|');if(!pair.has(k)){pair.add(k);keep.push(f);}}
+  for(const f of F){if(keep.length>=Math.max(C.maxFronts||3,pair.size))break;if(!keep.includes(f))keep.push(f);}
+  st.fronts=keep;st.quiet=F.filter(f=>!keep.includes(f)).map(f=>f.id);}
 const secPt=(s,km)=>({lat:s.lat+s.ny*km/111.2,lon:s.lon+s.nx*km/(111.2*Math.cos(s.lat*D))});
 
 /* ------------------------------------------------------------------ new war */

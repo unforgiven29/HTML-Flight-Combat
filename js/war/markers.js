@@ -24,7 +24,11 @@ function glyph(c,x,y,u,col,stale){c.save();c.globalAlpha=stale?.55:1;c.strokeSty
   if(u.kind==='SQN'){c.beginPath();c.moveTo(x-8,y+3);c.lineTo(x,y-5);c.lineTo(x+8,y+3);c.lineTo(x,y);c.closePath();c.fill();c.stroke();}
   else{c.fillRect(x-8,y-5,16,10);c.strokeRect(x-8,y-5,16,10);c.beginPath();if(u.branch==='ARM'){c.ellipse(x,y,5,2.6,0,0,7);}else if(u.branch==='ART'){c.arc(x,y,1.8,0,7);c.fillStyle=col;c.fill();}else{c.moveTo(x-8,y-5);c.lineTo(x+8,y+5);c.moveTo(x+8,y-5);c.lineTo(x-8,y+5);}c.stroke();}
   c.restore();}
-const _d=WARMAP.draw;WARMAP.draw=function(c,w2s,M,phase){const r=_d.apply(this,arguments);try{if(phase!=='over'||!W.st||!W.ob)return r;if(M.ppd<6)return r;const st=W.st,day=Math.floor(st.t/24),my=me();const used=new Set();
+const _d=WARMAP.draw;WARMAP.draw=function(c,w2s,M,phase){const r=_d.apply(this,arguments);try{if(phase!=='over'||!W.st||!W.ob)return r;
+  // v412: dug-in fronts: trench hatching along the line, denser as the front wears
+  {const st=W.st,Wr=st.wear||{};for(const f of st.fronts){const w=Wr[f.id]||0;if(w<.15||M.ppd<3)continue;c.strokeStyle='rgba(205,170,110,'+(.35+w*.5)+')';c.lineWidth=1.2;const step=w>.6?1:2;
+    for(let i=0;i<f.sec.length;i+=step){const s=f.sec[i];for(const side of[-1,1]){const o=s.off+side*4;const a={lat:s.lat+s.ny*o/111.2,lon:s.lon+s.nx*o/(111.2*Math.cos(s.lat*D))},b={lat:s.lat+s.ny*(o+side*6)/111.2,lon:s.lon+s.nx*(o+side*6)/(111.2*Math.cos(s.lat*D))};const[x0,y0]=w2s(a.lat,a.lon),[x1,y1]=w2s(b.lat,b.lon);c.beginPath();c.moveTo(x0,y0);c.lineTo(x1,y1);c.stroke();}}}}
+  if(M.ppd<6)return r;const st=W.st,day=Math.floor(st.t/24),my=me();const used=new Set();
   for(const p of Object.values(st.c)){if(!p.side)continue;const mine=p.side===my;for(const u of W.ob.units(p.a3)){if(!u||u.st==='RESERVE'||u.st==='DESTROYED'||!u.str)continue;const q=pos(u);if(!q)continue;
       const age=mine?0:seen(u,day);if(age<0)continue;const[x,y]=w2s(q.lat,q.lon);if(x<-10||y<-10||x>c.canvas.width+10||y>c.canvas.height+10)continue;const ck=(mine?'m':'e')+Math.round(x/22)+':'+Math.round(y/22);if(used.has(ck))continue;used.add(ck);
       glyph(c,x,y,u,mine?'#5be1ff':age>1?'#9aa4a8':'#ff5a4a',age>1);
