@@ -29,7 +29,7 @@ function pal(lat,lon){const a=Math.abs(lat),des=DES.some(([l0,l1,o0,o1])=>lat>=l
   return{p:{a:A,b:B,sand:des?[.70,.60,.42]:A,sn,win},snowA:sn,win,fld:des?[1.25,1.0,.75]:[1,1,1],des};}
 
 /* ------------------------------------------------------------------ height with runways pressed flat */
-function hfn(x,z){let h=G.height(x,z);if(!WF.rwys.length)return h;
+function hfn(x,z){let h=G.height(x,z);if(h<=0)h=Math.min(h,0)-14;   /* v424: the sea floor sits well under the water plane (no flicker at the shore) */if(!WF.rwys.length)return h;
   for(const r of WF.rwys){const dx=x-r.cx,dz=z-r.cz;if(Math.abs(dx)>r.hl+2000&&Math.abs(dz)>r.hl+2000)continue;
     const al=dx*r.ux+dz*r.uz,ac=-dx*r.uz+dz*r.ux,ox=Math.max(0,Math.abs(al)-r.hl-600),oz=Math.max(0,Math.abs(ac)-r.hw-600),o=Math.hypot(ox,oz);
     if(o<900){const w=1-sstep(0,900,o);h+=(r.e-h)*w;}}
