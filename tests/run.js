@@ -1325,6 +1325,12 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
   ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections',r.dug===2,r.dug);
   ok('Esc pauses with the battle map and the war map',r.paused);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
   ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('close-range voices',r.voice,r);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
+test('s61_names: soldiers in the battle have names and ranks; deaths go into the cemetery by name, kills by the player marked','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
+    const out={};out.named=[...S.us,...S.them].every(u=>u.name&&u.full);out.tags=S.us.filter(u=>u.tag).length;const names=new Set([...S.us,...S.them].map(u=>u.name));out.uniq=names.size===S.us.length+S.them.length;
+    const e=S.them[0];I.hitMan?I.hitMan(e,1000,true):null;const rec=WWAR.st.dl.ev.find(x=>x.named&&x.named[0]===e.full);out.rec=!!rec;out.by=rec&&/by the player/.test(rec.cause);out.place=rec&&rec.place===S.loc.name;
+    out.found=WWAR.cemetery.entries(r=>r.named&&r.named.includes(e.full),5).length===1;out.audit=WWAR.audit();return out;});
+  ok('every soldier named and ranked, names unique',r.named&&r.uniq,r);ok('your squad wears name tags',r.tags>=6,r.tags);ok('a kill is a named record in the death ledger, marked as yours, at the battle',r.rec&&r.by&&r.place,r);ok('found in the cemetery',r.found);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

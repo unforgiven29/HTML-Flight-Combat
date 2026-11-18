@@ -1190,3 +1190,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Towns: window glass and frames, chimneys, balconies, fences, parked cars, lamps, power lines, benches, yard trees; larger towns; more buildings on the main map.
 - War map: the front line is smoothed and fronts relax daily (no spikes or loops). Ocean and trench spoil no longer z-fight.
 - Fixes: radar in track no longer has a 9 km blind zone from the search pulse; pod slave break kept after the slew fix; Ka-50 MAWS-only; robust DIRCM and hover-landing tests.
+
+## v408
+- Every soldier in an infantry battle has a name and rank (fictional, unique in the campaign); your squad wears name tags. Each death or surrender goes into the death ledger as a named record (side, unit, role, place, cause, and "by the player" for your kills), found in the CEMETERY; the after-battle totals count only those not recorded by name.
