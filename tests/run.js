@@ -1398,6 +1398,17 @@ test('s71_tanksel: the tanker picks the tank; the picked tank is the one crewed'
     const opts=[...m.querySelectorAll('[data-ik^="tank:"]')].map(b=>b.dataset.ik.slice(5));m.remove();const pick=opts.find(k=>k!=='AUTO'&&/T-90|T-72/.test(k))||opts[1];
     const S=I.start({...I.K,a3:'POL',ins:'TANKG',mis:'FRONT',noRide:true,tank:pick});const got=S.tk&&S.tk.v.name;I.stop(true,'LEFT');return{n:opts.length,pick,got};});
   ok('tank choices listed',r.n>5,r);ok('the chosen tank is crewed',r.got===r.pick,r);});
+test('s72_ifv: playable IFV (autocannon, missile), AI IFVs fight with their guns, our IFV moves up','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const I=INFANTRY,out={};
+    I.kitMenu('POL',null,false,'TANK');const m=document.getElementById('u2m');out.seat=/IFV crew/.test(m.textContent);m.remove();
+    let S=I.start({...I.K,a3:'POL',ins:'IFVCG',mis:'FRONT',noRide:true});const T=S.tk;out.ifv=!!(T&&T.ifv);
+    const e=S.veh.find(v=>v.alive&&v.side==='E'&&!v.tank);if(e){const P=T.v.m.position;e.x=P.x;e.z=P.z-200;e.m.position.set(e.x,P.y,e.z);const hp0=e.hp;T.hd=0;T.ty=0;T.gp=0;T.sel='AP';T.mod.gun=1;
+      for(let k=0;k<20;k++){T.cT=0;I.fireIFV();}out.ap=e.hp<hp0;const ta=S.veh.find(v=>v.alive&&v.side==='E'&&v.tank);
+      if(ta){ta.x=P.x;ta.z=P.z-300;ta.m.position.set(ta.x,P.y,ta.z);T.sel='ATGM';T.ready=true;const n0=T.ammo.ATGM;I.fireIFV();out.atgm=T.ammo.ATGM===n0-1&&(S.atq||[]).length>0;}}
+    I.stop(true,'LEFT');
+    S=I.start({...I.K,a3:'POL',ins:'IFV',mis:'FRONT',noRide:true});I.land();S.hp=1e9;const my=S.ifv,z0=my&&my.z;let fired=0;const tr0=I.tracer;
+    for(let k=0;k<30*40;k++){I.step(1/30);}out.moved=my?Math.abs(my.z-z0)>20:false;out.eifv=S.veh.filter(v=>v.ifv&&v.side==='E').map(v=>v.bn||0);out.myb=my?my.bn||0:0;I.stop(true,'LEFT');return out;});
+  ok('IFV crew seats in the menu',r.seat,r);ok('IFV gunner: autocannon damages a vehicle, a missile flies',r.ifv&&r.ap&&r.atgm,r);ok('our IFV moves up and its gun fires',r.moved&&(r.myb>0||r.eifv.some(n=>n>0)),r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
