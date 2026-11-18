@@ -1251,6 +1251,14 @@ test('s49_infblocks: plain world blocks are solid with a facade, the routes are 
     if(far[0]){const b=far[0],P=new THREE.Vector3((b.x0+b.x1)/2,b.y0+1,(b.z0+b.z1)/2);P.x=b.x0-.1;const x0=P.x;P.x+=.5;I.collide?I.collide(P,b.y0+.1,b.y0+1.8,.35):null;out.pushed=I.collide?P.x<=b.x0-.3:true;}
     let vis=false;const iv=setInterval(()=>{if(player.mesh.visible&&I.S)vis=true;},30);I.stop(true,'LEFT');I.stop(true,'LEFT');await new Promise(r=>setTimeout(r,400));clearInterval(iv);out.vis=vis;out.plVisSoon=player.mesh.visible&&!game.paused;return out;});
   ok('in the live world',r.wm,r);ok('plain blocks have collision boxes',r.far>20,r.far);ok('facade texture while on foot',r.tex);ok('a block pushes you out',r.pushed!==false,r);ok('your aircraft is hidden on foot and as you leave',r.hid&&!r.vis&&!r.plVisSoon,r);});
+test('s50_service: installations, spare parts, personnel, HQ, engineering, EOD, procurement, civilian PMCs, squadron records, named rosters','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*120);const X=st.svc;const core=Object.values(st.c).find(q=>q.al==='CORE'&&X.c[q.a3]);const R=X.c[core.a3];
+    out.n=Object.keys(X.c).length;out.inst=R.inst.length;out.fac=R.inst[0]&&Object.keys(R.inst[0].f).length;out.comp=Object.keys(R.comp).length;out.q=Object.values(R.comp).some(c=>c.q.some(x=>x>0)||c.can>0);
+    out.hq=R.hq.length;out.sch=R.sch.length;out.eod=R.eod.clr+Object.values(R.eod.haz).reduce((a,b)=>a+b,0);out.prog=Object.values(X.c).reduce((t,c)=>t+c.prog.length,0);out.eng=Object.values(X.c).reduce((t,c)=>t+c.eng.done+c.eng.proj.length,0);
+    WWAR.service.afterSortie();const Q=X.sq;out.sq=Q.crew.length===6&&Q.cert.length===6&&Q.board.length>0;const ev=new Set(st.ev.map(e=>e.ty));out.ev=['AIRBASE','MAINTENANCE','ENGINEERING','PROCUREMENT','CEREMONY','PMC'].filter(t=>ev.has(t));
+    out.tab=/SPARE PARTS/.test(NATPANEL.tabs.SERVICE(core))&&/INFANTRY PACKAGE/.test(NATPANEL.tabs.SERVICE(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
+  ok('records with installations and facilities',r.n>3&&r.inst>0&&r.fac===9,r);ok('components with repair queues',r.comp===9&&r.q,r);ok('headquarters and schools',r.hq>=3&&r.sch>=4);ok('engineering, EOD, procurement',r.eod>0&&r.eng>0&&r.prog>0,r);
+  ok('your squadron: crew, certificates, notice board',r.sq);ok('service events',r.ev.length>=2,r.ev);ok('SERVICE tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -1165,3 +1165,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v397
 - Infantry in the live world: plain town blocks within 3 km are solid (you, the enemy and vehicles stop at them) and get a facade with windows, floor bands and doors; 140 nearest are full enterable buildings (was 60); the APC and helicopter routes are kept clear. Your aircraft never appears during infantry; leaving returns you to the menu. The visible laser is off while aiming through a sight.
+
+## v398
+- Chapter 06: js/war/service.js (airbase installations, spare parts and repair levels, personnel administration, headquarters and staff, schools, engineering projects, EOD, procurement programmes and ceremonies, civilian-founded PMCs, your squadron ground crew, certificates, airframe wear and repaint, notice board, civil aviation and infantry/SOF/uncrewed rosters). SERVICE tab. Depth 88.1%.
