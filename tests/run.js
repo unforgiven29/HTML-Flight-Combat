@@ -1045,15 +1045,15 @@ test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarre
     out.iss=I.issued('POL');out.nGuns=Object.keys(I.GUNS).length;out.nSides=Object.keys(I.SIDES).length;
     // menu: pick a class, a model, attachments, armour pieces, save and load
     I.kitMenu('POL',{name:'t'});const click=sel=>{const b=document.querySelector('[data-ik="'+sel+'"]');if(!b)throw new Error('no '+sel);b.click();};
-    click('pri:DMR');click('gun:SVD');click('att.optic:X4');click('att.muzzle:SUP');click('att.under:BIPOD');click('att.laser:VIS');click('side:DEAGLE');click('satt.optic:RDS');click('helm:VISOR');click('vest:P4');click('extra:FULL');
+    click('pri:DMR');click('gun:M110');click('att.optic:X4');click('att.muzzle:SUP');click('att.under:BIPOD');click('att.laser:VIS');click('side:G17');click('satt.optic:RDS');click('helm:VISOR');click('vest:P4');click('extra:FULL');
     out.k={pri:K.pri,gun:K.gun,att:K.att,side:K.side,satt:K.satt,helm:K.helm,vest:K.vest,extra:K.extra};click('kitsave:0');
-    click('pri:SNP');out.snpOptic=K.att.optic;out.snpUnder=document.querySelector('[data-ik="att.under:UGL"]')===null;click('kitload:0');out.loaded=K.gun==='SVD'&&K.att.optic==='X4';
-    out.card=/SVD/.test(document.querySelector('.ks').textContent)&&/Suppressor/.test(document.querySelector('.ks').textContent);document.getElementById('u2m').remove();
+    click('pri:SNP');out.snpOptic=K.att.optic;out.snpUnder=document.querySelector('[data-ik="att.under:UGL"]')===null;click('kitload:0');out.loaded=K.gun==='M110'&&K.att.optic==='X4';
+    out.card=/M110/.test(document.querySelector('.ks').textContent)&&/Suppressor/.test(document.querySelector('.ks').textContent);document.getElementById('u2m').remove();
     // handling
     const a=I.makeGun('RIFLE','AK74M',{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'}),b=I.makeGun('RIFLE','AK74M',{optic:'V16',muzzle:'SUP',under:'GRIP',laser:'VIS'});
     out.h={sup:b.dmg<a.dmg&&b.quiet,zoom:b.ads===6&&b.vari>1,grip:b.moveK<1,laser:b.hipK<1,am:I.makeGun('SNP','M82',{}).pen};
     // in battle: the gun you chose, the launcher, burst, armour by zone
-    const S=I.start({...K,a3:'POL',ins:'APC',gun:'M16A4',pri:'RIFLE',att:{optic:'RDS',muzzle:'COMP',under:'UGL',laser:'VIS'},side:'G18',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'LIGHT'},helm:'VISOR',vest:'HEAVY',extra:'NONE'});I.land();S.hp=1e9;S.dT=1e9;
+    const S=I.start({...K,a3:'USA',ins:'APC',gun:'M16A4',pri:'RIFLE',att:{optic:'RDS',muzzle:'COMP',under:'UGL',laser:'VIS'},side:'M17',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'LIGHT'},helm:'VISOR',vest:'HEAVY',extra:'NONE'});I.land();S.hp=1e9;S.dT=1e9;
     out.b={gun:S.wp.pri.n,side:S.wp.side.n,ugl:S.uglN,att:!!S.vms.rifle.userData.att};
     S.fire=true;let n=0;for(let i=0;i<20;i++){S.cool=0;S.reload=0;const n0=S.shots;I.shoot();if(S.shots>n0)n++;if(!S.fire)break;}out.burst=n;
     const g0=S.gnades.length;I.ugl();out.uglFired=S.gnades.length===g0+1&&S.uglN===3;
@@ -1061,10 +1061,10 @@ test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarre
     out.zones=z;out.per={head:dm.head/z.head,torso:dm.torso/z.torso,limb:dm.limb/z.limb};out.spd=S.arm.spd;
     I.step(1/30,3);out.laser=S.lzLine.visible;I.stop(false);return out;});
   ok('dozens of models and sidearms',r.nGuns>=35&&r.nSides>=10,r);ok('issued rifle found for Poland',r.iss==='GROT',r.iss);
-  ok('menu picks class, model, attachments, sidearm, armour pieces',r.k.gun==='SVD'&&r.k.att.optic==='X4'&&r.k.att.muzzle==='SUP'&&r.k.side==='DEAGLE'&&r.k.satt.optic==='RDS'&&r.k.helm==='VISOR'&&r.k.vest==='P4'&&r.k.extra==='FULL',r.k);
+  ok('menu picks class, model, attachments, sidearm, armour pieces',r.k.gun==='M110'&&r.k.att.optic==='X4'&&r.k.att.muzzle==='SUP'&&r.k.side==='G17'&&r.k.satt.optic==='RDS'&&r.k.helm==='VISOR'&&r.k.vest==='P4'&&r.k.extra==='FULL',r.k);
   ok('sniper gets a scope, no grenade launcher',r.snpOptic==='X8'&&r.snpUnder,r);ok('saved kit loads back',r.loaded);ok('loadout card shows it',r.card);
   ok('attachments change handling',r.h.sup&&r.h.zoom&&r.h.grip&&r.h.laser&&r.h.am==='AMR',r.h);
-  ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='Glock 18'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
+  ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='M17 (SIG P320)'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
   ok('hits by zone, each piece protects its own',r.zones.head>20&&r.zones.limb>60&&r.per.torso<20*.4&&r.per.limb>20*.6,r);ok('heavy armour slows you',r.spd<.85,r.spd);ok('laser beam shown',r.laser);});
 test('s38_sound: flight sound muted on foot; shots, footsteps, explosions; engine and drone loops; cleaned up','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};const cnt={};for(const k of Object.keys(I.SND)){const f=I.SND[k];I.SND[k]=function(){cnt[k]=(cnt[k]||0)+1;return f.apply(this,arguments);};}
@@ -1306,6 +1306,24 @@ test('s59_scenarios: cross-system chains — mobilization to labour and schools,
     WWAR.step(24*2);out.audit=WWAR.audit();return out;});
   ok('mobilization reaches labour and education',r.mob,r);ok('displacement reaches migration and resilience',r.mig,r);ok('airbase damage reaches its facilities',r.base,r);ok('a ceasefire is monitored',r.cf,r);
   ok('natural deaths in the ledger',r.ledger);ok('every subsystem record present',r.keys.length===10,r.keys);ok('save and reload keep every record',r.back,r);ok('audit clean after reload',r.audit.length===0,r.audit);});
+test('s60_inf407: trenches cut into the ground across the front, engineers dig both sides, Esc pause with maps, recoil and sway, attachments, side rifles and arms sales, mines, vehicles go round buildings, trench fighting, campaign air support, results to the war, menus close','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};WWAR.step(24*3);
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT',role:'ENGINEER'});I.land();S.hp=1e9;S.dT=1e9;const L=S.lines[1],t=L.slots[3];
+    out.lines=I.TR.L.filter(l=>!l.k).length;out.span=I.TR.L[0].x1-I.TR.L[0].x0;out.depth=I.cut(t.x,t.z);out.ditch=I.TR.L.some(l=>l.k===1);out.gs=I.TR.G.length;
+    const g0=I.TR.G.length;I.digTrench(new THREE.Vector3(0,0,-350),-1,true,0);I.digTrench(new THREE.Vector3(0,0,-900),1,false,0);out.dug=I.TR.G.length-g0;
+    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!!document.getElementById('infPause')&&!!document.getElementById('infPworld');I.pauseMenu(false);
+    S.w='pri';const p0=S.pitch;S.wp.pri.cur=30;S.cool=0;S.fire=true;for(let i=0;i<6;i++){S.cool=0;S.reload=0;I.step(1/30,1);}out.climb=S.pitch>p0;S.fire=false;S.ads=true;I.step(1/30,20);out.sway=Math.abs(S.swX||0)+Math.abs(S.swY||0)>0;
+    out.rus=I.canField('RUS','AK12')&&!I.canField('RUS','M4A1')&&I.canField('USA','M4A1')&&!I.canField('USA','AK12');
+    const v=S.veh.find(x=>x.alive);if(v){const hp=v.hp;I.mine(v.x,v.z,'AT','E');I.step(1/30,2);out.mine=!v.alive||v.hp<hp;}
+    const b=S.blds.find(x=>x.bid!=null&&x.y1-x.y0>2);if(b){out.block=I.vblocked((b.x0+b.x1)/2,(b.z0+b.z1)/2,2);}
+    const C=I.casSide('F');out.cas=!!C&&C.rate>0;S.casT=0;for(let i=0;i<20&&!(S.casRuns>0);i++){S.casT=0;I.casStep(.1);}out.runs=S.casRuns||0;
+    const E=S.lines.find(l=>l.own==='E');S.pos.set(0,0,E.z);S.pos.y=0;I.cqbStep(.1);out.cqb=!!S.cqb;
+    I.panel('plan',S.STR.find(c=>c.side==='F'&&c.plan)||S.STR.find(c=>c.side==='F'));const had=!!document.getElementById('iPan');I.step(1/30,5);S.lost=3;S.kills=5;S.pows=2;const gnd=WWAR.st.c.POL.gnd;I.stop(true,'KIA');out.pan=had&&!document.getElementById('iPan');out.gnd=WWAR.st.c.POL.gnd<gnd;
+    out.ev=WWAR.st.ev.slice(-6).some(e=>/After the battle/.test(e.txt||''));document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
+    for(let d=0;d<21;d++)WWAR.step(24);out.sales=Object.keys(WWAR.st.arms2||{}).length;out.audit=WWAR.audit();return out;});
+  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections',r.dug===2,r.dug);
+  ok('Esc pauses with the battle map and the war map',r.paused);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
+  ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

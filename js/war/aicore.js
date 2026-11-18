@@ -41,7 +41,7 @@
 (()=>{
 'use strict';
 const W=window.WWAR;if(!W)return;const rn=()=>Math.random();const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const A={recMax:160,lessonStep:.12,lessonMin:2,decay:.02,forget:.33,dirGap:5,dirCool:60,devRatio:.3,aarDays:{GOV:60,GS:14,AF:5,NAVY:14,LOG:7,INT:7,MFA:30,FIN:30,CD:5}};
+const A={recMax:400,lessonStep:.12,lessonMin:2,decay:.02,forget:.33,dirGap:5,dirCool:60,devRatio:.3,aarDays:{GOV:60,GS:14,AF:5,NAVY:14,LOG:7,INT:7,MFA:30,FIN:30,CD:5}};
 const OBJ=['ter','force','civ','econ','ally','det'];
 const PROF={GOV:{n:'Government',mand:'national survival and the war aims',pri:{ter:.25,force:.15,civ:.2,econ:.15,ally:.15,det:.1},risk:.4,hor:90,cyc:7,auth:['policy','mobilise','relocate','arbitrate','talks']},
   GS:{n:'General Staff',mand:'winning the land war',pri:{ter:.45,force:.35,civ:.05,econ:.05,ally:.05,det:.05},risk:.55,hor:14,cyc:3,auth:['intent','reserve','deviation']},
