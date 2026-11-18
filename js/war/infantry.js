@@ -581,6 +581,25 @@ function rideStep(dt){const R=S.trip;R.t+=dt;if(S.keys.Space||S.keys.Enter||S.ke
   R.lt-=dt;if(R.lt<=0&&R.li<R.lines.length){const[w,t]=R.lines[R.li++];vline(w,t);R.lt=4.2+t.length*.03;}
   for(const m of R.men)m.rotation.z=bump*2;return true;}
 function rideEnd(){const R=S.trip;if(!R)return;S.trip=null;try{R.v.remove(R.cab);}catch(e){}S.keys.Space=false;S.ins_t=0;S.yaw=0;}
+/* v416: THE BATTLE IS PART OF THE CAMPAIGN. You fight with a real brigade of your country's order of battle on that
+   front, against a real enemy brigade; their strength, the front's supply, the air situation over the theatre, your
+   artillery stocks, the squad's morale and the front's wear are read at the start and shown in the briefing, and they
+   act on the battle: ammunition you carry follows supply, artillery calls spend real stocks, the squad shoots as well
+   as its morale lets it. Afterwards the battle goes into both brigades' histories and moves their readiness. */
+function campLink(cfg,fr,enA3){const st=W.st;if(!st||cfg.camp||!fr)return;const a3=cfg.a3,L={};
+  const pickB=(c)=>W.ob&&W.ob.units?W.ob.units(c).filter(u=>u&&u.kind==='BDE'&&u.front===fr.id&&u.str>0).sort((x,y)=>y.str-x.str)[0]:null;
+  L.my=pickB(a3);L.en=enA3?pickB(enA3):null;L.sup=(st.ops&&st.ops.sup&&st.ops.sup[a3+':'+fr.id])??1;const m=st.mil&&st.mil[a3];L.art=m&&m.mun?m.mun.ART:8;
+  const th=(st.th||[]).reduce((b,t)=>Math.abs(t.sup||0)>Math.abs(b.sup||0)?t:b,{sup:0});L.air=(th.sup||0)*(st.c[a3].side==='B'?1:-1);
+  const R=W.squad&&W.squad.roster?W.squad.roster(a3):null;const F=R?R.m.filter(x=>x.st==='FIT'):[];L.mor=F.length?F.reduce((t,x)=>t+x.mor,0)/F.length:.6;L.wear=(st.wear&&st.wear[fr.id])||0;
+  S.link=L;S.mFr=.7+.6*L.mor;
+  const k=.5+.5*Math.min(1,L.sup);for(const w of['pri','side'])if(S.wp[w]&&S.wp[w].res)S.wp[w].res=Math.round(S.wp[w].res*k);if(L.sup<.5)S.gren=Math.max(0,(S.gren||0)-1);
+  const pc=x=>Math.round(x*100)+'%';const bn=u=>u?u.name+' ('+pc(u.str/(u.str0||u.str))+', ready '+pc(u.ready)+')':'no brigade on record';
+  const lines=[['HQ','You are with '+bn(L.my)+'.'],['HQ','Facing '+bn(L.en)+'.'],['HQ','Supply on this front '+pc(Math.min(1.2,L.sup))+(L.sup<.6?' — ammunition is short, make every round count.':'.')+' Artillery: '+(L.art>1?Math.round(L.art)+' days of shells.':'almost none.')],
+    ['HQ','Air over the theatre: '+(L.air>.15?'ours.':L.air<-.15?'theirs — watch for drones and strikes.':'contested.')+' Squad morale '+pc(L.mor)+'.'+(L.wear>.4?' This ground has been fought over for months.':'')]];
+  lines.forEach(([w,t],i)=>setTimeout(()=>{try{if(S)vline(w,t);}catch(e){}},400+i*2200));}
+function linkAfter(r){const L=S&&S.link;if(!L)return;const good=r==='WON'||r==='HELD'||r==='BREAK';const t=W.st.t;
+  if(L.my){L.my.ready=Math.max(.2,Math.min(1,(L.my.ready||.8)+(good?.03:-.05)));(L.my.hist||(L.my.hist=[])).push([t,(good?'won':'fought')+' the battle for '+S.loc.name]);if(L.my.hist.length>12)L.my.hist.shift();}
+  if(L.en){L.en.ready=Math.max(.2,Math.min(1,(L.en.ready||.8)+(good?-.05:.02)));(L.en.hist||(L.en.hist=[])).push([t,(good?'lost':'held')+' the battle for '+S.loc.name]);if(L.en.hist.length>12)L.en.hist.shift();}}
 function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.camp)return;if(cfg.camp){const c=campCtx();cfg.a3=c.a3;}const p=country(cfg);const me=p.side,en=me==='B'?'R':'B';
   let fr=st?(st.fronts.find(f=>!f.cf&&(f.a===cfg.a3||f.b===cfg.a3))||st.fronts.find(f=>!f.cf&&(st.c[f.a].side===me||st.c[f.b].side===me))):null;
   if(cfg.loc0&&st){const C=locChoices(cfg).find(c=>c.id===cfg.loc0);const f2=C&&st.fronts.find(f=>f.id===C.fr);if(f2)fr=f2;}
@@ -609,6 +628,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   else{for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
     {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
     {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:m.userData.name});}}
+  try{campLink(cfg,fr,enA3);}catch(e){console.warn('[infantry] link',e);}
   try{if(window.INFNET)setTimeout(()=>{try{if(S)INFNET.join(cfg,S);}catch(e){}},0);}catch(e){}
   try{warScars(fr?((W.st&&W.st.wear&&W.st.wear[fr.id])||0):(cfg.wear||0));}catch(e){console.warn('[infantry] scars',e);}
   gridBuild();layGreen();try{mineInit();if(S.mission==='FRONT')manSpots();}catch(e){console.warn(e);}for(const v of S.veh)if(v.side==='E'&&rn()<(S.decoyK||0)*.6+.05&&!v.decoy){v.decoy=true;v.nofire=true;v.immob=true;}S.atgm=atgmMode(S.N.ATGM,S.me);S.uglN=pri.ugl;equipVM();S.body={head:100,torso:100,armL:100,armR:100,legL:100,legR:100};S.wounds=[];S.kit2={tq:2,band:3,kit:cfg.role==='MEDIC'?3:1};if(S.us[2])S.us[2].medic=true;if(S.them[3])S.them[3].medic=true;iwInit();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
@@ -777,7 +797,7 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
       if(!los(o0,aim)){u.cool=.35+rn()*.3;u.blind=(u.blind||0)+1;if(!u.bound&&!u.spot&&u.blind>2){u.blind=0;const dd=aim.clone().sub(P).setY(0).normalize();const sd=new V3(-dd.z,0,dd.x).multiplyScalar((rn()<.5?-1:1)*(4+rn()*5));u.bound=P.clone().add(sd).addScaledVector(dd,rn()*4);u.boundT=3;}}
       else{u.blind=0;
     u.cool=(.5+rn()*1.2)*(u.role==='MG'?.18:u.role==='SNP'?3.5:1);const o=o0;if(rn()<.6)SND.far(o,false);if(u.m.userData.J)u.m.userData.J.rec=1;{const te=tp.clone().setY(tp.y+(u.tgt.player?-.2:1.2)).add(new V3((rn()-.5)*2,(rn()-.5)*1.5,(rn()-.5)*2));const dv=te.clone().sub(o),dl=dv.length();dv.divideScalar(dl||1);const hit=Math.min(dl,rayWorld(o,dv,dl));tracer(o,o.clone().addScaledVector(dv,hit),u.friend?S.me:S.en);}
-      const acc=(u.wounded?0:1)*((u.arm??100)<50?.5:1)*(u.role==='SNP'?Math.max(.3,.9-L/1500):Math.max(.04,.55-L/500)*(u.role==='MG'?.7:1))*(u.sup>0?.5:1)*(u.tgt.player?(S.crouch?.6:1)*(S.vel.length()>3?.6:1):1);
+      const acc=(u.wounded?0:1)*(u.friend?(S.mFr||1):1)*((u.arm??100)<50?.5:1)*(u.role==='SNP'?Math.max(.3,.9-L/1500):Math.max(.04,.55-L/500)*(u.role==='MG'?.7:1))*(u.sup>0?.5:1)*(u.tgt.player?(S.crouch?.6:1)*(S.vel.length()>3?.6:1):1);
       if(los(o,tp.clone().setY(tp.y+(u.tgt.player?0:1.3)))){if(rn()<acc){if(u.tgt.player)hurt(14+rn()*10,'bullet');else hitMan(u.tgt,(22+rn()*14)*(u.role==='SNP'?2.6:1),false);}
         else if(u.tgt.player&&L<120){S.near=.3;if(rn()<.5)SND.whiz(S.pos.clone().add(new V3((rn()-.5)*3,0,(rn()-.5)*3)));}}}}}
   const gy=H(P.x,P.z),top=collide(P,P.y,P.y+1.7,.35);P.y=Math.max(gy,top>-1e8?top:gy);spd=Math.hypot(P.x-p0x,P.z-p0z)/Math.max(dt,1e-3);animMan(u,dt,spd);
@@ -1554,7 +1574,8 @@ function panel(kind,obj){if(document.pointerLockElement)document.exitPointerLock
 function closePan(){const d=document.getElementById('iPan');if(d)d.remove();if(S){S.pan=null;S.panP=false;}}
 function doPan(a){if(!S){closePan();return;}const P=S.pan;closePan();if(!P||a==='x')return;
   if(a==='off')offensive();else if(a==='hold'){S.push=false;say('HOLD THIS LINE',2);}else if(a==='back')fallBack(true);
-  else if(a==='arty')radio('ARTILLERY',()=>{const tz=S.mission==='FRONT'?(S.lines[S.cur+1]||S.lines[S.cur]).z:S.village.z;arty(new V3(0,0,tz),10,'F');S.artyCd=60;say('ARTILLERY ON THE ENEMY LINE',2);});
+  else if(a==='arty'&&S.link&&S.link.art<=.5){say('NO ARTILLERY AMMUNITION ON THIS FRONT',2.5);}
+  else if(a==='arty')radio('ARTILLERY',()=>{try{const m=W.st&&W.st.mil&&W.st.mil[S.cfg.a3];if(m&&m.mun&&m.mun.ART!=null){m.mun.ART=Math.max(0,m.mun.ART-.15);if(S.link)S.link.art=m.mun.ART;}}catch(e){}const tz=S.mission==='FRONT'?(S.lines[S.cur+1]||S.lines[S.cur]).z:S.village.z;arty(new V3(0,0,tz),10,'F');S.artyCd=60;say('ARTILLERY ON THE ENEMY LINE',2);});
   else if(a==='veh'){const c=P.obj;const m=vehicle('APC',0x4e5a3c),x=c.cx+8,z=c.cz+420;m.position.set(x,H(x,z),z);S.sc.add(m);const v={m,hp:500,side:'F',x,z,cool:3,alive:true,goal:new V3(c.cx+8,0,c.cz+6),taxi:1};S.veh.push(v);S.taxiCall=v;say('AN APC IS ON ITS WAY TO THE COMMAND POST',2.5);}
   else if(a==='sup'){for(const w of['pri','side']){const g=S.wp[w];g.res=Math.max(g.res,g.mag*7);}if(S.wp.lau.mag)S.wp.lau.res=Math.max(S.wp.lau.res,2);S.gren=Math.max(S.gren,4);S.bags+=4;S.fpvKit+=1;S.uglN=Math.max(S.uglN,S.wp.pri.ugl||0);S.supCd=90;say('RESUPPLIED',2);}
   else if(a==='med')medevac(true);
@@ -1809,6 +1830,7 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
   if((r==='WON'||r==='HELD'||r==='BREAK')&&S.fr){const f=S.fr,mid=f.sec[(f.sec.length/2)|0],mine=st.c[f.a].side===S.me;mid.off+=mine?.6:-.6;}
   txt=(r==='EVACUATED'?'You are wounded and evacuated '+(S.med&&S.med.road?'by armoured ambulance':'by helicopter')+' to base.':r==='EXTRACTED'?'You ride back to base.':r==='BREAK'?'Your side breaks through the enemy trench lines before '+S.loc.name+'.':r==='WON'?'Your squad takes and holds '+S.loc.name+'.':r==='HELD'?'The trenches before '+S.loc.name+' hold against '+S.wave+' waves.':r==='LOST'?'The enemy takes the trenches before '+S.loc.name+'.':r==='KIA'?'You are killed in action.':'You withdraw from the fight.')+' Enemy killed by you: '+S.kills+(S.vk?' (vehicles '+S.vk+')':'')+'; your squad lost '+S.lost+' of 6.'+(S.ff?' Friendly fire: '+S.ff+'.':'')+(S.dk?' Drones you shot down: '+S.dk+'.':'')+(S.wia?' Wounded '+S.wia+', evacuated '+S.evac+'.':'')+(S.armLog.length?' Hits on armour: '+S.armLog.length+' ('+S.armLog.filter(a=>/PENETRATED/.test(a.res)).length+' penetrated).':'')+(S.collapsed?' Structures destroyed: '+S.collapsed+'.':'');
   if(st)W.emit('INFANTRY',{e:[S.cfg.a3],txt:(p?p.n+': ':'')+txt});
+  try{linkAfter(r);}catch(e){}
   try{if(st&&W.squad)W.squad.after(S.cfg.a3,{dead:S.sqDead||[],wounded:S.us.filter(u=>u.mid&&(u.down||u.wounded)&&!(S.sqDead||[]).includes(u.mid)).map(u=>u.mid),place:S.loc.name,won:r==='WON'||r==='HELD'||r==='BREAK',ff:(S.ff||0)>0});}catch(e){console.warn('[infantry] squad',e);}
   // v407: the battle's results enter the war: losses on both sides come off the brigades on that front and go into the
   // death ledger, prisoners into the prisoner totals, ammunition spent off the stocks, trenches dug into the front's

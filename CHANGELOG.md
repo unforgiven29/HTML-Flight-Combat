@@ -1220,3 +1220,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v415 — infantry multiplayer
 - infnet.js: starting a battle tells the room where; others get a JOIN button and start the same battle at the same place (co-op on your side, or against you from the other side). Players in the same battle see each other as soldiers or tanks with callsigns (blue / red), see each other's tracers, and hits between players (rifles, machine guns, tank guns) are delivered; friendly fire counts.
+
+## v416 — the battle in the campaign
+- Each battle is fought with a real brigade of your order of battle on that front against a real enemy brigade; the briefing (HQ lines) gives both, the front supply, artillery stocks, the air situation, squad morale and the front wear. Supply sets the ammunition you carry, artillery calls spend the real shell stocks (none left: no artillery), squad morale sets how well your men shoot; afterwards both brigades record the battle and their readiness moves.
