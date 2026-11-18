@@ -78,10 +78,28 @@ function countryEntries(){if(!window.WGEO||!WGEO.countries)return[];const W=wind
   for(const[k,l]of[['FTR4','Fighters'],['FTR5','5th-gen fighters'],['ATK','Attack aircraft'],['HEL','Attack helicopters'],['MBT','Tanks'],['IFV','IFVs'],['APC','APCs'],['SPG','Artillery'],['MLRS','Rocket artillery'],['LRSAM','Long-range SAM']])if(E[k])sp.push([l,E[k]]);
   if(p&&p.pop)sp.push(['Population',(p.pop/1e6).toFixed(1)+' million']);
   return{g:g,n:c.n,id:c.a3,sub:side,d,sp};});}
+/* ------------------------------------------------------------------ air defence */
+const PR=()=>typeof PROF!=='undefined'?PROF:{};
+function samSet(){const S=new Set(Object.values(PR()).map(p=>p.msl).filter(Boolean));if(typeof MSL!=='undefined')for(const k of Object.keys(MSL))if(/^FIM-|^9M3(2|6|42)\b|^9M342|^9M36|^9M32/.test(k))S.add(k);return S;}
+function adEntry(k,p){const rmax=p.rmax||0,cls=p.am===6||rmax<=12000?'Short range':rmax<=45000?'Medium range':'Long range';const ship=/^(DDGB|FFGB|CGR)$/.test(k);
+  const parts=typeof GTY!=='undefined'?Object.values(GTY).filter(g=>g.n&&g.n.includes('('+p.nm+')')).map(g=>g.n.replace(/ \(.*\)$/,'')):[];const m=typeof MSL!=='undefined'&&MSL[p.msl];
+  const d=p.nm+' is a'+(cls[0]==='S'?' ':' ')+cls.toLowerCase()+' surface-to-air missile system'+(ship?' carried by warships':p.self?' on a single vehicle that finds, tracks and fires on its own':' made of a radar, a command post and launchers')+'. '+
+    'Its radar picks up aircraft at about '+km(p.R0||0)+'; it engages from '+km(p.rmin||0)+' out to '+km(rmax)+', between '+km(p.amin||0)+' and '+km(p.amax||0)+' of altitude. '+
+    'It fires '+(p.salvo||1)+'-missile salvoes '+(p.gap?p.gap+' s apart ':'')+'and can guide against '+(p.maxAir||1)+' target'+((p.maxAir||1)>1?'s':'')+' at once; reloading takes about '+(p.reload||'?')+' s. '+(p.acq?'From first detection it needs about '+p.acq+' s to lock and launch — fly low and fast to shrink that window. ':'')+(p.floor?'Below '+p.floor+' m it cannot see you.':'');
+  const sp=[['Class',cls+(ship?' · naval':'')],['Missile',p.msl+(m&&m.mass?' ('+m.mass+' kg)':'')],['Search radar range',km(p.R0||0)],['Engagement range',km(p.rmin||0)+' – '+km(rmax)],['Altitude band',km(p.amin||0)+' – '+km(p.amax||0)],['Radar floor',(p.floor||0)+' m'],
+    ['Time to launch',(p.acq||'—')+' s'],['Salvo',(p.salvo||1)+' missiles'+(p.gap?', '+p.gap+' s apart':'')],['Targets at once',p.maxAir||1],['Reload',(p.reload||'—')+' s'],['Self-contained vehicle',p.self?'yes':'no']];if(parts.length)sp.push(['Site vehicles',parts.join('; ')]);
+  return{g:ship?'Naval':cls,n:p.nm,id:k,sub:cls+' · '+p.msl,d,sp};}
+function samEntry(k,m){const sys=Object.values(PR()).filter(p=>p.msl===k).map(p=>p.nm);const man=/^FIM-|^9M3(2|6|42)/.test(k)&&!sys.length;const R=m.aiR||m.irR||0;
+  const seek={IR:'infrared homing',ARH:'active radar homing',SARH:'semi-active radar homing',RF:'radar homing',CLOS:'command guidance'}[m.seek]||String(m.seek||'guided').toLowerCase();
+  const d=k+' is '+(man?'a shoulder-fired (MANPADS) missile':'the missile of '+(sys.join(' / ')||'a surface-to-air system'))+', with '+seek+'. It weighs '+(m.mass||'?')+' kg'+(m.burn?', its motor burns '+r1(m.burn)+' s':'')+', it pulls up to '+(m.maxG||'?')+' g and flies for about '+r0(m.life||0)+' s'+(R?'; its effective reach is about '+km(R):'')+'. '+(m.seek==='IR'?'Flares can decoy it.':'Chaff, jamming and hard turns at the right moment can defeat it.');
+  return{g:man?'Shoulder-fired (MANPADS)':(R>60000?'Long range':R>15000?'Medium range':'Short range'),n:k,id:k,sub:(man?'MANPADS':sys.join(' / '))+' · '+seek,d,
+    sp:[['Fired by',man?'infantry (shoulder-fired)':sys.join(', ')||'—'],['Guidance',seek],['Launch mass',(m.mass||'?')+' kg'],['Motor burn',r1(m.burn||0)+' s'],['Max load factor',(m.maxG||'?')+' g'],['Flight time',r0(m.life||0)+' s'],['Effective range',R?km(R):'—'],['Minimum range',km(m.rmin||0)],['Proximity fuse',(m.fuse||'?')+' m']]};}
 /* ------------------------------------------------------------------ categories */
 const CATS=[
  ['AIRCRAFT','Every flyable aircraft: role, performance, sensors, gun and what it carries.',()=>Object.entries(typeof AC!=='undefined'?AC:{}).filter(([t,a])=>a.model&&!a.gnd&&!a.sam).map(([t,a])=>acEntry(t,a))],
- ['AIR-TO-AIR MISSILES','Missiles for air combat, by range and seeker.',()=>typeof MSL!=='undefined'?Object.entries(MSL).map(([k,m])=>aamEntry(k,m)):[]],
+ ['AIR-TO-AIR MISSILES','Missiles for air combat, by range and seeker.',()=>{if(typeof MSL==='undefined')return[];const SS=samSet();return Object.entries(MSL).filter(([k])=>!SS.has(k)).map(([k,m])=>aamEntry(k,m));}],
+ ['AIR DEFENCE SYSTEMS','Surface-to-air missile systems on land and at sea: radars, envelopes, salvoes.',()=>Object.entries(PR()).map(([k,p])=>adEntry(k,p))],
+ ['SURFACE-TO-AIR MISSILES','The missiles those systems fire, and shoulder-fired missiles.',()=>{if(typeof MSL==='undefined')return[];const SS=samSet();return [...SS].filter(k=>MSL[k]).map(k=>samEntry(k,MSL[k]));}],
  ['AIR-TO-GROUND','Bombs, missiles, rockets and pods for ground and sea targets.',()=>typeof AGW!=='undefined'?Object.entries(AGW).map(([k,a])=>agwEntry(k,a)):[]],
  ['AIRCRAFT GUNS','Internal cannon of the aircraft.',()=>typeof GUNDB!=='undefined'?Object.entries(GUNDB).map(([k,g])=>gunEntry(k,g)):[]],
  ['INFANTRY WEAPONS','Rifles, carbines, machine guns and more, by class.',()=>Object.entries(I().GUNS||{}).map(([k,g])=>infEntry(k,g,false))],

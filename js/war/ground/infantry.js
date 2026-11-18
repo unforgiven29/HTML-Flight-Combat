@@ -375,7 +375,7 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?5:LOC.pop
   else{try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(1.25,devicePixelRatio||1));R.setSize(innerWidth,innerHeight,false);}catch(e){R=null;}
   const E=envFor(cfg);cfg.env=E;sc=new THREE.Scene();sc.background=new THREE.Color(E.sky);sc.fog=new THREE.Fog(E.sky,E.fog[0],E.fog[1]);sc.add(new THREE.HemisphereLight(0xdfeeff,0x4a5038,E.hem));const sun=new THREE.DirectionalLight(E.sunc,E.sun);sun.position.set(200,E.low?80:400,100);sc.add(sun);
   cam=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,3000);
-  const tg=new THREE.PlaneGeometry(2400,2400,200,200);tg.rotateX(-Math.PI/2);const pa=tg.attributes.position;for(let i=0;i<pa.count;i++)pa.setY(i,HF(pa.getX(i),pa.getZ(i)));tg.computeVertexNormals();
+  const tg=new THREE.PlaneGeometry(3600,3600,280,280);   /* v428: wide enough for the ride from the garage (z 1500), not only the battlefield */tg.rotateX(-Math.PI/2);const pa=tg.attributes.position;for(let i=0;i<pa.count;i++)pa.setY(i,HF(pa.getX(i),pa.getZ(i)));tg.computeVertexNormals();
   ter=new THREE.Mesh(tg,new THREE.MeshLambertMaterial({color:vary(E.g,.03)}));sc.add(ter);}
   const solid=ter?[ter]:[],bm=new THREE.MeshLambertMaterial({color:0xa49a86});
   const village=new V3(0,0,-260);const boxes=[];
