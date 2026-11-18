@@ -1155,7 +1155,7 @@ test('s43_aps: vehicle catalogue by side; APS intercepts (Trophy all round, Aren
     S=I.start({...I.K,a3:'RUS',ins:'APC',mis:'ATTACK'});const blue=new Set();for(let i=0;i<60;i++)blue.add(I.pickModel(S.en,'MBT'));out.blue=[...blue];I.land();S.hp=1e9;S.dT=1e9;S.airT=1e9;S.heliT=1e9;
     const ab=mk('M1A2 SEPv3 Abrams');let n=0;for(let i=0;i<8;i++){ab.apsN=8;if(fire(ab,new V(0,0,1)))n++;}out.trophyRear=n;ab.apsN=1;fire(ab,new V(1,0,0));out.left=ab.apsN;out.panel=/INTERCEPTED/.test(document.getElementById('iArm')?.textContent||'');
     // top attack: your ATGM climbs over the target and dives
-    const k2=mk('Leopard 2A6');S.wp.lau={...I.LAU.ATGM,cur:1,res:1};S.w='lau';S.cool=0;S.reload=0;S.pos.set(k2.x+250,S.pos.y,k2.z);S.yaw=Math.atan2(250,0);S.me='B';S.lockTgt=k2;S.lockT=9;I.shoot();let top=false,maxY=0;for(let i=0;i<30*6;i++){I.step(1/30);const k=S.rk[0];if(k){maxY=Math.max(maxY,k.p.y-k2.m.position.y);if(k.top)top=true;}else break;}out.top={top,maxY:Math.round(maxY)};
+    const k2=mk('Leopard 2A6');S.wp.lau={...I.LAU.ATGM,cur:1,res:1};S.w='lau';S.cool=0;S.reload=0;S.pos.set(k2.x+250,S.pos.y,k2.z);S.yaw=Math.atan2(250,0);S.atgm='FF';S.lockTgt=k2;S.lockT=9;I.shoot();let top=false,maxY=0;for(let i=0;i<30*6;i++){I.step(1/30);const k=S.rk[0];if(k){maxY=Math.max(maxY,k.p.y-k2.m.position.y);if(k.top)top=true;}else break;}out.top={top,maxY:Math.round(maxY)};
     I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());
     S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;const t14=mk('T-14 Armata');let cap=null;for(let i=0;i<60&&!cap;i++){t14.alive=true;t14.apsN=0;const P=t14.m.position;const r1=I.armorHit2(t14,new V(P.x,P.y+2.6,P.z+.4),new V(0,-1,.1).normalize(),'ATGM');if(/CAPSULE/.test(r1.res))cap=r1.res;}out.cap=cap;
     out.bmpt=!!I.VC['BMPT-72 Terminator'];I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());return out;});
@@ -1193,6 +1193,17 @@ test('s44_wounds_iw: launcher locks; wounds by part, bleeding, tourniquet / band
   ok('two bad legs: crawling',r.crawl);ok('medical kit gets you up',r.kit);ok('NPC leg wound: crawling; bleeding: wounded',r.npcCrawl&&r.npcWounded,r);ok('medic stabilises',r.medic&&r.stab,r);
   ok('jammed radio call goes through late',r.delayed&&r.through,r);ok('decoy deflates',r.decoy);ok('claims with truth status, corrections',r.claims>5&&r.truths.length>=2&&r.corr,r);ok('false missile alarm, then all clear',r.alarm,r);
   ok('events in the diary',r.types.length>=3,r.types);ok('INFOWAR tab',r.tab);});
+test('s45_atgm: guidance follows the missile — Javelin / Spike lock, Kornet / TOW / Metis command-guided, NLAW predicted, Carl Gustaf unguided','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};const M=I.atgmMode;
+    out.cls={jav:M('Javelin','B'),spike:M('Spike-LR','B'),kornet:M('Kornet','R'),tow:M('TOW','B'),metis:M('Metis-M','R'),stugna:M('Stugna-P','B'),nlaw:M('NLAW','B'),cg:M('Carl Gustaf','B'),at3:M('AT-3','R')};
+    // as Russia: the Kornet flies to the crosshair while you aim; no lock is needed or offered
+    const S=I.start({...I.K,a3:'RUS',ins:'APC',mis:'ATTACK',lau:'ATGM'});I.land();S.hp=1e9;S.dT=1e9;S.airT=1e9;S.heliT=1e9;S.calls=9;for(const u of S.them)u.alive=false;out.rus=S.atgm+' '+S.N.ATGM;
+    S.w='lau';S.ads=true;S.yaw=0;S.pitch=0;S.cool=0;S.reload=0;S.wp.lau.cur=1;I.shoot();const k=S.rk[0];out.sac=!!k&&k.sac&&!k.tgt;
+    // steer: aim 20 degrees to the right; the missile turns with the crosshair
+    S.yaw=-.35;for(let i=0;i<30*2&&S.rk[0];i++)I.step(1/30);const kk=S.rk[0];out.turned=!!kk&&kk.v.x>20;out.sight=/COMMAND GUIDANCE/.test(document.getElementById('iLau').textContent);
+    I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());return out;});
+  ok('missiles classified by guidance',r.cls.jav==='FF'&&r.cls.spike==='FF'&&r.cls.kornet==='SACLOS'&&r.cls.tow==='SACLOS'&&r.cls.metis==='SACLOS'&&r.cls.stugna==='SACLOS'&&r.cls.nlaw==='PLOS'&&r.cls.cg==='UNG'&&r.cls.at3==='MCLOS',r.cls);
+  ok('Russia carries the Kornet, command-guided',/SACLOS Kornet/.test(r.rus),r.rus);ok('fired with no lock, command guidance',r.sac);ok('it follows the crosshair',r.turned,r);ok('sight says command guidance',r.sight);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

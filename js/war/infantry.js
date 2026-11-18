@@ -109,7 +109,7 @@ function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=cam
   const o=(g,k,nm,sub)=>'<button class="opt" data-ik="'+g+':'+k+'" aria-pressed="'+(K[g]===k)+'"><b>'+esc(nm)+'</b>'+(sub?'<span>'+esc(sub)+'</span>':'')+'</button>';
   const sec=(t,body,em)=>'<section class="sec"><h3>'+t+(em?'<em>'+em+'</em>':'')+'</h3>'+body+'</section>';
   const priSub=(k)=>Object.values(GUNS).filter(g=>g.cls===k).length+' models'+(PRI[k].pel?' · shot':'')+(k==='SNP'?' · scoped':'');
-  const lauSub=(k)=>k==='NONE'?'':(N[k]?N[k]+' · ':'')+(LAU[k].air?'air defence':LAU[k].guided?'guided':'unguided')+' · '+(LAU[k].mag+LAU[k].res)+' rd';
+  const lauSub=(k)=>k==='NONE'?'':(N[k]?N[k]+' · ':'')+(LAU[k].air?'air defence, IR seeker':LAU[k].guided?MODEN[atgmMode(N.ATGM,country(K).side)]:'unguided')+' · '+(LAU[k].mag+LAU[k].res)+' rd';
   const armSub=(k)=>k==='NONE'?'No protection.':Math.round((1-ARM[k].k)*100)+'% protection · '+Math.round((1-ARM[k].spd)*100)+'% slower';
   const bar=(lab,v,txt)=>'<div class="st"><span>'+lab+'</span><u><i style="width:'+Math.round(Math.max(.04,Math.min(1,v))*100)+'%"></i></u><em>'+txt+'</em></div>';
   const R=ROLE[K.role],pr=G0,la=LAU[K.lau],ar=AR;const gp=(g,k)=>{const v=g.split('.');return v.length>1?K[v[0]][v[1]]===k:K[g]===k;};
@@ -430,7 +430,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   else{for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
     {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
     {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:m.userData.name});}}
-  gridBuild();layGreen();for(const v of S.veh)if(v.side==='E'&&rn()<(S.decoyK||0)*.6+.05&&!v.decoy){v.decoy=true;v.nofire=true;v.immob=true;}S.uglN=pri.ugl;equipVM();S.body={head:100,torso:100,armL:100,armR:100,legL:100,legR:100};S.wounds=[];S.kit2={tq:2,band:3,kit:cfg.role==='MEDIC'?3:1};if(S.us[2])S.us[2].medic=true;if(S.them[3])S.them[3].medic=true;iwInit();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
+  gridBuild();layGreen();for(const v of S.veh)if(v.side==='E'&&rn()<(S.decoyK||0)*.6+.05&&!v.decoy){v.decoy=true;v.nofire=true;v.immob=true;}S.atgm=atgmMode(S.N.ATGM,S.me);S.uglN=pri.ugl;equipVM();S.body={head:100,torso:100,armL:100,armR:100,legL:100,legR:100};S.wounds=[];S.kit2={tq:2,band:3,kit:cfg.role==='MEDIC'?3:1};if(S.us[2])S.us[2].medic=true;if(S.them[3])S.them[3].medic=true;iwInit();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
   if(S.WM)worldOn();
   {const eb=S.STR.filter(c=>c.side==='E'&&c.kind!=='COMMAND POST');const al=S.them.filter(u=>u.alive);eb.forEach((c,i)=>{const u=al[i];if(!u)return;u.m.position.set(c.cx,c.y0,c.cz);u.ox=c.cx-S.village.x;u.oz=c.cz-S.village.z;u.bunk=c;});}
   for(const u of S.us)u.m.visible=false;insertion();bind();loop.last=performance.now();if(!loop.on){loop.on=true;requestAnimationFrame(loop);}
@@ -514,8 +514,8 @@ function say(t,s){S.msg=t;S.msgT=s||3;}
 const ray=new THREE.Raycaster();
 function aimDir(spr){const d=new V3(0,0,-1).applyEuler(new THREE.Euler(S.pitch,S.yaw,0,'YXZ'));if(spr){d.x+=(rn()-.5)*spr;d.y+=(rn()-.5)*spr;d.z+=(rn()-.5)*spr;d.normalize();}return d;}
 function shoot(){const g=S.wp[S.w];if(S.reload>0||S.cool>0||S.downed||S.evacMe||S.treat)return;if(g.cur<=0){reload();return;}g.cur--;S.shots++;
-  if(S.w==='lau'){S.cool=1;const d=aimDir(.004);const L=lockState();const air=g.air?(L.locked?L.tgt:null):null;if(g.air&&!L.locked)say('NO LOCK · THE MISSILE FLIES BLIND',1.5);if(g.guided&&!g.air&&L.ff&&!L.locked)say('NO LOCK · FIRED DIRECT',1.5);
-  SND.launch();S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided&&L.ff?(L.locked?L.tgt:null):null),sac:g.guided&&!g.air&&!L.ff});S.lockT=0;if(g.cur<=0)reload();return;}
+  if(S.w==='lau'){S.cool=1;const d=aimDir(.004);const L=lockState();if(g.guided&&!g.air&&S.atgm==='UNG'){g.guided=0;}const air=g.air?(L.locked?L.tgt:null):null;if(g.air&&!L.locked)say('NO LOCK · THE MISSILE FLIES BLIND',1.5);if(g.guided&&!g.air&&L.ff&&!L.locked)say('NO LOCK · FIRED DIRECT',1.5);
+  SND.launch();S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided&&L.ff?(L.locked?L.tgt:null):null),sac:g.guided&&!g.air&&(S.atgm==='SACLOS'||S.atgm==='MCLOS'),mclos:S.atgm==='MCLOS',tgtP:g.guided&&!g.air&&S.atgm==='PLOS'&&S.lockTgt?plosPoint(S.lockTgt):undefined});S.lockT=0;if(g.cur<=0)reload();return;}
   S.cool=60/g.rpm;if(g.burst){S.bc++;if(S.bc>=g.burst){S.fire=false;S.bc=0;S.cool=.25;}}else if(!g.auto)S.fire=false;if(!g.quiet)S.loudT=4;SND.shot(g);if((S.shots&3)===0){const d0=aimDir(0);tracer(S.pos.clone().add(new V3(0,-.15,0)).addScaledVector(d0,1),S.pos.clone().addScaledVector(d0,Math.min(400,rayWorld(S.pos,d0,400))),S.me);}const lz=S.laserOn?(g.hipK||1):1;const mv=S.vel.length()>2?1.8*(g.moveK||1):1,spr=g.spr*(S.ads?.35:lz)*(S.crouch?.7*(g.crouchK||1):1)*mv;let r=null;for(let i=0;i<(g.pel||1);i++)r=hitscan(S.pos,aimDir(g.pel?g.spr:spr),g.dmg,true)||r;
   S.kick=(S.kick||0)+(g.dmg>60?.03:.008)*(g.kickK||1)*(S.crouch&&g.crouchK<1?.5:1);if(g.cur<=0)reload();return r;}
 function pickVeh(){let b=null,bd=1e9;for(const v of S.veh)if(v.alive&&v.side==='E'){const d=Math.hypot(v.x-S.pos.x,v.z-S.pos.z);if(d<bd){bd=d;b=v;}}return b;}
@@ -589,7 +589,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     if(h.cool<=0&&S.phase==='FIGHT'){h.cool=4;const fr=S.us.find(u=>u.alive);if(fr||!(S.downed||S.evacMe)){const tg=(rn()<.4&&!S.downed&&!S.evacMe)||!fr?S.pos.clone():fr.m.position.clone();blast(tg.add(new V3((rn()-.5)*12,0,(rn()-.5)*12)),6,110,false);}}}
   // projectiles
   for(let i=S.rk.length-1;i>=0;i--){const k=S.rk[i];k.t+=dt;if(apsCheck(k)){S.rk.splice(i,1);continue;}
-    if(k.sac&&S.w==='lau'&&S.ads){const ad=aimDir(0),t=Math.min(2000,rayWorld(S.pos,ad,2000));const aim=S.pos.clone().addScaledVector(ad,t);const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
+    if(k.tgtP&&k.plos)k.tgtP.copy(plosPoint(k.plos));if(k.sac&&S.w==='lau'&&S.ads){if(k.mclos&&rn()<.3)continue;const ad=aimDir(0),t=Math.min(2000,rayWorld(S.pos,ad,2000));const aim=S.pos.clone().addScaledVector(ad,t);const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
     // your ATGM flies a top-attack profile: up over its target, then down onto the roof
     if(k.own&&k.g.guided&&k.tgt&&k.tgt.alive){const tp=k.tgt.m.position,dh=Math.hypot(tp.x-k.p.x,tp.z-k.p.z);const aim=tp.clone().setY(tp.y+(dh>45?Math.min(70,dh*.45):1.2));const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*3));k.top=dh<45;}
     else if(k.tgtP&&!k.tgt){const d=k.tgtP.clone().sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
@@ -896,7 +896,19 @@ function armorHit2(v,pt,dir,wpn){if(v.decoy){const r0={v,ld:[dir.x,dir.y,dir.z],
 // then flies top attack; a command-guided one (Soviet-pattern) flies to where your crosshair is while you keep aiming.
 // An air-defence missile's seeker growls when an aircraft, helicopter or armed drone is in its field and gives a steady
 // lock tone when it has it; fired without a lock it flies blind. A rocket launcher has an optical sight with range marks.
-function lockState(){const g=S.wp.lau||{},ff=S.me==='B',air=!!g.air;const L={ff,air,locked:S.lockT>=(air?1.2:2.2)&&!!S.lockTgt&&S.lockTgt.alive!==false,tgt:S.lockTgt};return L;}
+// v393: guidance by the missile, not by the side: the country's own anti-tank missile (equipment table) decides it.
+// Fire-and-forget (lock, then top attack): Javelin, Spike, MMP, Type 01 LMAT, HJ-12, Hyungung, Nag, OMTAS.
+// Command guidance — wire or laser beam, the missile flies to your crosshair while you keep aiming: Kornet, Konkurs,
+// Metis, TOW, Toophan, Baktar-Shikan, Stugna-P, Skif, Ingwe, Milan, Bulsae; AT-3 by hand (MCLOS: slower to answer).
+// Predicted line of sight: NLAW — track the target briefly, it flies to where the target will be (no lock).
+// Unguided: Carl Gustaf (a recoilless rifle, fired like a rocket). Unknown names: by the side's tradition.
+function atgmMode(name,side){const n=String(name||'').toLowerCase();
+  if(/javelin|spike|mmp|lmat|hj-12|hyungung|nag|omtas|akeron|mars/.test(n))return'FF';if(/nlaw/.test(n))return'PLOS';if(/carl gustaf|gustav|at4\b/.test(n))return'UNG';
+  if(/at-3|malyutka|sagger/.test(n))return'MCLOS';if(/kornet|konkurs|metis|fagot|tow|toophan|baktar|stugna|skif|ingwe|milan|bulsae|hj-8|hj-73|dehlavieh|shturm|ataka|corsar|barrier/.test(n))return'SACLOS';
+  return side==='B'?'FF':'SACLOS';}
+const MODEN={FF:'fire-and-forget (lock, top attack)',SACLOS:'command guidance (keep the crosshair on it)',MCLOS:'manual command guidance',PLOS:'predicted line of sight (track, then fire)',UNG:'unguided'};
+function lockState(){const g=S.wp.lau||{},mode=g.air?'IR':(S.atgm||atgmMode(S.N.ATGM,S.me)),ff=mode==='FF',air=!!g.air;const L={ff,air,locked:S.lockT>=(air?1.2:2.2)&&!!S.lockTgt&&S.lockTgt.alive!==false,tgt:S.lockTgt};return L;}
+function plosPoint(t){const p=t.m.position.clone().setY(t.m.position.y+1.5);if(t.goal&&!t.immob){const d=new V3(t.goal.x-t.x,0,t.goal.z-t.z);if(d.length()>1)p.addScaledVector(d.normalize(),3.4*Math.min(4,p.distanceTo(S.pos)/90));}return p;}
 function lockStep(dt){const g=S.wp.lau||{};const on=S.phase==='FIGHT'&&S.w==='lau'&&S.ads&&(g.guided||g.air);let best=null,ba=1e9,bd=0;
   if(on){const ad=aimDir(0),cone=g.air?.07:.05;const C=g.air?[S.eheli&&S.eheli.alive?S.eheli:null,...S.drones.filter(d=>d.alive&&d.side==='E'&&d.k!=='FPV'),...(S.air||[]).filter(a=>a.alive&&a.side==='E')].filter(Boolean):S.veh.filter(v=>v.alive&&v.side==='E');
     for(const t of C){const tp=t.m.position.clone().setY(t.m.position.y+(g.air?0:1.5)),d=tp.sub(S.pos),L=d.length();if(L>(g.air?5000:2500)||L<30)continue;const a=Math.acos(Math.min(1,d.normalize().dot(ad)));if(a<cone&&a<ba){if(!g.air&&rayWorld(S.pos,d,L-3)<L-3)continue;ba=a;best=t;bd=L;}}}
@@ -908,7 +920,7 @@ function lockStep(dt){const g=S.wp.lau||{};const on=S.phase==='FIGHT'&&S.w==='la
     if(g.air)h='<svg width="100%" height="100%" style="position:absolute;inset:0"><circle cx="50%" cy="50%" r="11%" fill="none" stroke="#1d1" stroke-width="1.5"/><line x1="50%" y1="35%" x2="50%" y2="41%" stroke="#1d1"/><line x1="50%" y1="59%" x2="50%" y2="65%" stroke="#1d1"/></svg>'+
       '<div style="position:absolute;left:50%;top:70%;transform:translateX(-50%);color:'+(L.locked?'#ff5a3a':'#9fe0b8')+';letter-spacing:.15em">'+(L.locked?'LOCK · FIRE':best?'SEEKER · TONE · HOLD':'SEARCH')+'</div>';
     else if(g.guided)h='<div style="position:absolute;inset:6%;border:2px solid rgba(0,0,0,.6)"></div><div style="position:absolute;left:50%;top:50%;width:'+(L.ff?'12%':'1px')+';height:'+(L.ff?'9%':'1px')+';transform:translate(-50%,-50%);border:2px solid '+(L.locked?'#fff':'rgba(255,255,255,.5)')+'"></div>'+
-      '<div style="position:absolute;left:50%;top:22%;transform:translateX(-50%);color:#fff;letter-spacing:.15em;text-shadow:0 0 3px #000">'+(L.ff?(L.locked?'LOCKED · TOP ATTACK · FIRE':best?'TRACKING '+Math.round(pr*100)+' %':'SEEKER · PUT THE BOX ON A VEHICLE'):'COMMAND GUIDANCE · KEEP THE CROSSHAIR ON THE TARGET')+'</div>'+(best?'<div style="position:absolute;left:50%;top:76%;transform:translateX(-50%);color:#fff">'+Math.round(bd)+' m</div>':'');
+      '<div style="position:absolute;left:50%;top:22%;transform:translateX(-50%);color:#fff;letter-spacing:.15em;text-shadow:0 0 3px #000">'+esc((S.N.ATGM||'ATGM').toUpperCase())+' · '+(L.ff?(L.locked?'LOCKED · TOP ATTACK · FIRE':best?'TRACKING '+Math.round(pr*100)+' %':'SEEKER · PUT THE BOX ON A VEHICLE'):S.atgm==='PLOS'?(best?'TRACKING · FIRE · IT LEADS THE TARGET':'TRACK A VEHICLE, THEN FIRE'):S.atgm==='MCLOS'?'MANUAL GUIDANCE · STEER IT ONTO THE TARGET':'COMMAND GUIDANCE · KEEP THE CROSSHAIR ON THE TARGET')+'</div>'+(best?'<div style="position:absolute;left:50%;top:76%;transform:translateX(-50%);color:#fff">'+Math.round(bd)+' m</div>':'');
     else h='<svg width="100%" height="100%" style="position:absolute;inset:0">'+[100,200,300,400].map((r,i)=>'<line x1="47%" x2="53%" y1="'+(50+i*3)+'%" y2="'+(50+i*3)+'%" stroke="#111"/><text x="54%" y="'+(50.6+i*3)+'%" font-size="10" fill="#111">'+r+'</text>').join('')+'</svg>';
     el.innerHTML=h;}
   seekerTone(show&&g.air?(lockState().locked?2:best?1:0):show&&g.guided&&lockState().ff?(lockState().locked?3:best?4:0):0);}
@@ -1332,5 +1344,5 @@ function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cf
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+window.INFANTRY={atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();
