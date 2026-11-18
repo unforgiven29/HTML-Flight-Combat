@@ -1,0 +1,125 @@
+line	cov	where	title	section
+13545	0		Information, news, and public reaction	Media, journalism, public information, and organizations
+13555	0		Civil institutions, public services, law, culture, media, and global governance	Media, journalism, public information, and organizations
+13557	0		One institutional actor model	Media, journalism, public information, and organizations
+13561	0		Public administration and municipal services	Media, journalism, public information, and organizations
+13565	0		Law, courts, policing, and accountability	Media, journalism, public information, and organizations
+13569	0		Health and education institutions	Media, journalism, public information, and organizations
+13573	0		Media and public information	Media, journalism, public information, and organizations
+13577	0		Culture, religion, heritage, sport, and tourism	Media, journalism, public information, and organizations
+13581	0		Civil society and community participation	Media, journalism, public information, and organizations
+13585	0		International organizations and development	Media, journalism, public information, and organizations
+13589	0		Tourism and ordinary social life	Media, journalism, public information, and organizations
+13603	0		Media ecosystems, journalism, correspondents, newsrooms, public information, and public record	Media, journalism, public information, and organizations
+13618	0		World-war news, public information, and lived-in storytelling.	Media, journalism, public information, and organizations
+13632	0		Media ecosystem structure, journalism, and information integrity.	Media, journalism, public information, and organizations
+13634	0		Media actor registry	Media, journalism, public information, and organizations
+13637	0		Information items	Media, journalism, public information, and organizations
+13640	0		Information integrity	Media, journalism, public information, and organizations
+13643	0		Journalists and safety	Media, journalism, public information, and organizations
+13649	0		War correspondents, photography, and live campaign footage.	Media, journalism, public information, and organizations
+13653	0		Reporter and media organizations	Media, journalism, public information, and organizations
+13661	0		Reporter movement, assignments, and safety	Media, journalism, public information, and organizations
+13671	0		Footage capture and clip generation	Media, journalism, public information, and organizations
+13683	0		Newsroom verification and publication pipeline	Media, journalism, public information, and organizations
+13693	0		Dynamic footage in the campaign news interface	Media, journalism, public information, and organizations
+13703	0		How media coverage changes the world	Media, journalism, public information, and organizations
+13712	0		Continuous newsrooms, daily reports, and breaking-event coverage.	Media, journalism, public information, and organizations
+13720	0		Daily publication schedule	Media, journalism, public information, and organizations
+13731	0		Breaking news for major events	Media, journalism, public information, and organizations
+13749	0		One event, multiple reports, one underlying truth record	Media, journalism, public information, and organizations
+13771	0		Newsroom organizations and editorial identity	Media, journalism, public information, and organizations
+13783	0		Report structure and useful content	Media, journalism, public information, and organizations
+13798	0		Different audiences and geographic knowledge	Media, journalism, public information, and organizations
+13804	0		Uncertainty, corrections, and competing accounts	Media, journalism, public information, and organizations
+13815	0		Personalities and named characters in news	Media, journalism, public information, and organizations
+13821	0		Player news interface	Media, journalism, public information, and organizations
+13835	0		Simulation scale and performance	Media, journalism, public information, and organizations
+13868	0		Civil society, local communities, volunteer networks, and social continuity	Civil society, communities, and volunteer institutions
+13872	0		Community actors	Civil society, communities, and volunteer institutions
+13875	0		Community projects	Civil society, communities, and volunteer institutions
+13878	0		Participation and trust	Civil society, communities, and volunteer institutions
+13881	0		Crisis and recovery	Civil society, communities, and volunteer institutions
+13887	0		Volunteer networks, mutual aid, and crisis community resilience.	Civil society, communities, and volunteer institutions
+13889	0		Community organizations	Civil society, communities, and volunteer institutions
+13892	0		Capacity and trust	Civil society, communities, and volunteer institutions
+13895	0		Response and recovery	Civil society, communities, and volunteer institutions
+13915	0		ADDITIONAL SUPPORT PEOPLE, ORGANIZATIONS, AND CIVILIAN INSTITUTIONS	Civil society, communities, and volunteer institutions
+13919	0		Military working-dog teams	Civil society, communities, and volunteer institutions
+13923	0		Military police and base security	Civil society, communities, and volunteer institutions
+13927	0		Search-and-rescue stations and alert crews	Civil society, communities, and volunteer institutions
+13931	0		Weather research and observation stations	Civil society, communities, and volunteer institutions
+13935	0		National archives and records institutions	Civil society, communities, and volunteer institutions
+13939	0		Museums and memorial institutions	Civil society, communities, and volunteer institutions
+13943	0		Chaplaincy and spiritual-care services	Civil society, communities, and volunteer institutions
+13947	0		Scientific research institutions and universities	Civil society, communities, and volunteer institutions
+13951	0		Commercial technology companies	Civil society, communities, and volunteer institutions
+13955	0		International shipping and commercial transport companies	Civil society, communities, and volunteer institutions
+13959	0		Civilian construction and utility contractors	Civil society, communities, and volunteer institutions
+13963	0		Military training ranges and test centers	Civil society, communities, and volunteer institutions
+13967	0		Personnel records and career histories	Civil society, communities, and volunteer institutions
+13971	0		Awards, commendations, and professional recognition	Civil society, communities, and volunteer institutions
+13975	0		Veteran support and reintegration organizations	Civil society, communities, and volunteer institutions
+13979	0		International investigative and humanitarian commissions	Civil society, communities, and volunteer institutions
+13983	0		Other civic and military support entities	Civil society, communities, and volunteer institutions
+13987	0		Support institution acceptance tests	Civil society, communities, and volunteer institutions
+13994	0		Cultural, religious, heritage, sports, and community institutions	Culture, heritage, arts, sports, and tourism
+13999	0		Institution registry	Culture, heritage, arts, sports, and tourism
+14015	0		Community identity and individual choice	Culture, heritage, arts, sports, and tourism
+14021	0		Heritage and protected places	Culture, heritage, arts, sports, and tourism
+14037	0		Community services and resilience	Culture, heritage, arts, sports, and tourism
+14064	0		Purpose and relationship to existing events and heritage	Culture, heritage, arts, sports, and tourism
+14070	0		Sports organizations and competitions	Culture, heritage, arts, sports, and tourism
+14078	0		Fans and community identity	Culture, heritage, arts, sports, and tourism
+14084	0		Entertainment venues and organizations	Culture, heritage, arts, sports, and tourism
+14090	0		Artists, performers, creators, and cultural workers	Culture, heritage, arts, sports, and tourism
+14096	0		Media production and cultural archives	Culture, heritage, arts, sports, and tourism
+14102	0		Cultural heritage and historic institutions	Culture, heritage, arts, sports, and tourism
+14108	0		War, crisis, and cultural continuity	Culture, heritage, arts, sports, and tourism
+14114	0		Inclusion, access, and privacy	Culture, heritage, arts, sports, and tourism
+14135	0		DIPLOMATIC EMBASSIES, CONSULATES, AND EVACUATION OPERATIONS	International organizations, diplomacy, and global governance
+14137	0		Diplomatic presence	International organizations, diplomacy, and global governance
+14141	0		Diplomatic relations at local level	International organizations, diplomacy, and global governance
+14145	0		Consular services and citizens abroad	International organizations, diplomacy, and global governance
+14149	0		Noncombatant evacuation operations	International organizations, diplomacy, and global governance
+14155	0		Evacuation priorities and difficult decisions	International organizations, diplomacy, and global governance
+14159	0		Diplomatic negotiation and access	International organizations, diplomacy, and global governance
+14163	0		Embassy security and emergency continuity	International organizations, diplomacy, and global governance
+14167	0		Reporting and consequences	International organizations, diplomacy, and global governance
+14171	0		Diplomatic mission acceptance tests	International organizations, diplomacy, and global governance
+14178	0		International organizations, observers, and global governance	International organizations, diplomacy, and global governance
+14183	0		Organization registry	International organizations, diplomacy, and global governance
+14202	0		Membership and governance	International organizations, diplomacy, and global governance
+14216	0		Programs and missions	International organizations, diplomacy, and global governance
+14233	0		Funding and accountability	International organizations, diplomacy, and global governance
+14237	0		Sanctions and restrictions	International organizations, diplomacy, and global governance
+14262	0		BORDERS, CUSTOMS AND REFUGEE MANAGEMENT	Local administration, civil justice, policing, and public safety
+14271	0		MUNICIPAL GOVERNMENT, MAYORS, LOCAL COUNCILS, AND CITY ADMINISTRATION	Local administration, civil justice, policing, and public safety
+14278	0		Municipal institutions	Local administration, civil justice, policing, and public safety
+14284	0		Local decisions and resources	Local administration, civil justice, policing, and public safety
+14290	0		Elections, succession, and legitimacy	Local administration, civil justice, policing, and public safety
+14296	0		Wartime municipal responsibilities	Local administration, civil justice, policing, and public safety
+14314	0		CIVILIAN POLICING, CRIMINAL JUSTICE, AND COMMUNITY SAFETY	Local administration, civil justice, policing, and public safety
+14319	0		Law enforcement institutions	Local administration, civil justice, policing, and public safety
+14323	0		Incident and case lifecycle	Local administration, civil justice, policing, and public safety
+14329	0		Rights, due process, and accountability	Local administration, civil justice, policing, and public safety
+14335	0		Wartime and postwar conditions	Local administration, civil justice, policing, and public safety
+14339	0		Community safety and non-criminal assistance	Local administration, civil justice, policing, and public safety
+14357	0		CIVIL LAW, COURTS, PROPERTY RIGHTS AND REGULATORY ENFORCEMENT	Local administration, civil justice, policing, and public safety
+14362	0		Legal institutions	Local administration, civil justice, policing, and public safety
+14379	0		Case categories and lifecycle	Local administration, civil justice, policing, and public safety
+14396	0		Contracts and property records	Local administration, civil justice, policing, and public safety
+14411	0		Regulatory enforcement	Local administration, civil justice, policing, and public safety
+14415	0		Rule of law and institutional trust	Local administration, civil justice, policing, and public safety
+14431	0		ORGANIZED CRIME, CORRUPTION AND ILLICIT ECONOMIES	Local administration, civil justice, policing, and public safety
+14433	0		Purpose and boundaries — ORGANIZED CRIME, CORRUPTION AND ILLICIT ECONOMIES	Local administration, civil justice, policing, and public safety
+14437	0		Abstract network model	Local administration, civil justice, policing, and public safety
+14453	0		Illicit-market effects	Local administration, civil justice, policing, and public safety
+14468	0		Corruption and institutional integrity	Local administration, civil justice, policing, and public safety
+14472	0		Law enforcement and prevention	Local administration, civil justice, policing, and public safety
+14476	0		Economic and political consequences	Local administration, civil justice, policing, and public safety
+14491	0		MUNICIPAL SERVICES, SANITATION AND LOCAL ADMINISTRATION	Local administration, civil justice, policing, and public safety
+14496	0		Municipal authorities and service areas	Local administration, civil justice, policing, and public safety
+14511	0		Municipal service categories	Local administration, civil justice, policing, and public safety
+14529	0		Waste and sanitation flows	Local administration, civil justice, policing, and public safety
+14535	0		Municipal finance	Local administration, civil justice, policing, and public safety

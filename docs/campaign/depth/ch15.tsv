@@ -1,0 +1,72 @@
+line	cov	where	title	section
+20591	1	aicore.js decision framework over strategy.js / learn.js / ops.js	AI decision-making and campaign integration	Unified AI architecture, autonomous world agency, and operational behavior
+20602	1	airops.js GCI, ops.js AD network, aicore.js AF emission control	DYNAMIC AIR-DEFENSE AND SENSOR-NETWORK AI	Unified AI architecture, autonomous world agency, and operational behavior
+20614	0.5	leaders.js personalities; radio calls in sorties; no full radio life	DYNAMIC COMMANDERS, PERSONALITIES, AND RADIO LIFE	Unified AI architecture, autonomous world agency, and operational behavior
+20627	1	aicore.js institutions with temperament from leaders.js, risk appetite, learning rate	COMMAND STAFF PERSONALITIES AND DECISION-MAKING	Unified AI architecture, autonomous world agency, and operational behavior
+20636	1	strategy.js attack needs fuel; player.js bingo; ops.js fuel routes; LOG priority	FUEL-AWARE AI AND CAMPAIGN DECISIONS	Unified AI architecture, autonomous world agency, and operational behavior
+20649	1	aicore.js	Unified autonomous AI, institutional decision-making, command intent, and policy evaluation	Unified AI architecture, autonomous world agency, and operational behavior
+20651	1	aicore.js decide()	Shared decision framework	Unified AI architecture, autonomous world agency, and operational behavior
+20655	1	aicore.js st.aic.rec: intent, options+scores, choice, factor, confidence, expectation, review	Decision record	Unified AI architecture, autonomous world agency, and operational behavior
+20659	1	aicore.js authority lists; refer() to the government	Bounded autonomy	Unified AI architecture, autonomous world agency, and operational behavior
+20663	1	aicore.js PROF priorities, horizons, risk	Different institutions behave differently	Unified AI architecture, autonomous world agency, and operational behavior
+20667	1	aicore.js horizon / cycle per institution; review at the horizon	Planning horizons	Unified AI architecture, autonomous world agency, and operational behavior
+20671	1	aicore.js memory + learn.js doctrine	Learning and memory	Unified AI architecture, autonomous world agency, and operational behavior
+20675	1	warnet.js host-authoritative war; AI runs only on the host	Multiplayer fairness	Unified AI architecture, autonomous world agency, and operational behavior
+20688	0.5	perf.js LOD, records capped; AI LOG / DECISIONS views; no profiler per AI	AI performance, scaling, and debugging requirements.	Unified AI architecture, autonomous world agency, and operational behavior
+20718	1	aicore.js GS intent per front; commander deviation past a threshold, reported	Autonomy and command-intent contract.	Unified AI architecture, autonomous world agency, and operational behavior
+20729	1	aicore.js emergency reserve on breakthrough, government relocation, dispersal, emission control	Required high-pressure AI behaviors and examples.	Unified AI architecture, autonomous world agency, and operational behavior
+20752	1	aicore.js intent -> decision -> effect -> after-action review	Intent, planning, action, review, and decision architecture.	Unified AI architecture, autonomous world agency, and operational behavior
+20767	0.5	authority lists and capacity checks in places; not every system routes through it	Cross-system authority, capacity, and decision requirements.	Unified AI architecture, autonomous world agency, and operational behavior
+20787	1	aicore.js GOV policy trade-offs with review	National and institutional decision-making and policy evaluation.	Unified AI architecture, autonomous world agency, and operational behavior
+20791	1	aicore.js institution profiles	AI actor profiles	Unified AI architecture, autonomous world agency, and operational behavior
+20819	1	aicore.js GOV guns / butter / cities; FIN bonds / print / tax	Policy trade-offs	Unified AI architecture, autonomous world agency, and operational behavior
+20833	1	aicore.js deciding factor and option scores; DECISIONS tab	Decision explainability	Unified AI architecture, autonomous world agency, and operational behavior
+20848	1	aicore.js authority lists; refer() to the government	Bounded autonomy and multiplayer	Unified AI architecture, autonomous world agency, and operational behavior
+20863	1	event ledger, aicore.js director, hazards.js, histories	Autonomous world history, dynamic campaign events, and emergent crisis synthesis	Unified AI architecture, autonomous world agency, and operational behavior
+20867	1	worldwar.js event ledger with causes (integrity.js)	Historical event architecture	Unified AI architecture, autonomous world agency, and operational behavior
+20870	1	life.js / economy.js every country	Independent national development	Unified AI architecture, autonomous world agency, and operational behavior
+20873	1	aicore.js city histories from events	City and regional histories	Unified AI architecture, autonomous world agency, and operational behavior
+20876	1	aicore.js institution and company histories	Institutional and corporate histories	Unified AI architecture, autonomous world agency, and operational behavior
+20879	0.5	deep.js families in LIFE; register of people	Personal and family histories	Unified AI architecture, autonomous world agency, and operational behavior
+20882	1	events run without the player; director never targets the player	Player-independent event eligibility	Unified AI architecture, autonomous world agency, and operational behavior
+20885	1	event cf levels (CONFIRMED / REPORTED / CLAIMED); media claims	Historical knowledge and uncertainty	Unified AI architecture, autonomous world agency, and operational behavior
+20888	1	tools.js calendar / timeline; HISTORY tab	Time and history presentation	Unified AI architecture, autonomous world agency, and operational behavior
+20891	1	postwar.js, memorials, epilogue	Long-term continuity	Unified AI architecture, autonomous world agency, and operational behavior
+20900	1	aicore.js PROF	Institutional profile	Unified AI architecture, autonomous world agency, and operational behavior
+20903	1	aicore.js decision cycle per institution	Bounded decision cycle	Unified AI architecture, autonomous world agency, and operational behavior
+20908	1	aicore.js	Distinct institutional behavior	Unified AI architecture, autonomous world agency, and operational behavior
+20911	1	aicore.js disagreements arbitrated by the government	Coordination and conflict	Unified AI architecture, autonomous world agency, and operational behavior
+20914	1	aicore.js learn(), learn.js	Learning and adaptation	Unified AI architecture, autonomous world agency, and operational behavior
+20917	1	host-authoritative	Multiplayer authority — Autonomous world history, dynamic campaign events, and emergent crisis s	Unified AI architecture, autonomous world agency, and operational behavior
+20937	1	aicore.js director, ops.js crises, hazards.js	Dynamic world and campaign AI events.	Unified AI architecture, autonomous world agency, and operational behavior
+20952	1	aicore.js director with preconditions	Emergent crisis generation and world-event synthesis.	Unified AI architecture, autonomous world agency, and operational behavior
+20956	1	aicore.js RARE classes, hazards, incidents	Event classes	Unified AI architecture, autonomous world agency, and operational behavior
+20971	1	aicore.js preconditions with stated cause; integrity.js causes	Preconditions and causal chain	Unified AI architecture, autonomous world agency, and operational behavior
+20985	1	aicore.js cooldowns, frequency cap, never aimed at the player	Surprise without unfairness	Unified AI architecture, autonomous world agency, and operational behavior
+20988	1	aicore.js director()	Rare event director	Unified AI architecture, autonomous world agency, and operational behavior
+20995	1	strategy.js estimates; aicore.js SITREPs with confidence	AI information quality, communication, reporting, and coordination	Unified AI architecture, autonomous world agency, and operational behavior
+21006	1	aicore.js SITREP, referrals, deviation reports	AI communications, reporting, and coordination.	Unified AI architecture, autonomous world agency, and operational behavior
+21019	1	airops.js, airbattle.js, ops.js tasking	DYNAMIC AIR-OPERATION AI	Unified AI architecture, autonomous world agency, and operational behavior
+21024	1	airops.js scrambles and CAS, player.js bingo, gfight.js	Autonomous flight, mission, and unit behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21039	1	infantry.js FPV / one-way / armed drones; forces.js recon drones	Drone behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21050	1	deep.js AEW orbits; AWACS calls; visible.js	AWACS and command-aircraft behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21059	0.5	deep.js tanker racetrack; cargo abstract	Cargo and tanker behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21069	1	warsortie.js SAM battery, ops.js AD network, aicore.js emission control	SAM and air-defense behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21081	1	ops.js supply network, land.js engineers, infantry.js engineers	Ground logistics and engineering behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21090	1	aicore.js NAVY replenishment, minesweeping, hospital ship	Naval auxiliary behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21098	1	game AI, airops.js CAS passes with CCIP	Air-to-air and air-to-ground decision behavior	Unified AI architecture, autonomous world agency, and operational behavior
+21108	1	player.js bingo and recovery	Fuel, diversion, and recovery	Unified AI architecture, autonomous world agency, and operational behavior
+21118	0.5	aicore.js AF emission control at campaign level; not in sorties	Radar, sensors, and emissions control — including “GO COLD”	Unified AI architecture, autonomous world agency, and operational behavior
+21133	1	leaders.js personality, learn.js commander style, aicore.js temperament	AI DIFFERENCES BETWEEN COUNTRIES AND COMMANDERS	Unified AI architecture, autonomous world agency, and operational behavior
+21144	1	learn.js, aicore.js doctrine revisions	AI personality, doctrine, learning, and military adaptation	Unified AI architecture, autonomous world agency, and operational behavior
+21155	1	aicore.js LESSON events	Learning, lessons identified, and adaptation over time.	Unified AI architecture, autonomous world agency, and operational behavior
+21157	1	aicore.js reviews use own observations and estimates	Learning from observed events only	Unified AI architecture, autonomous world agency, and operational behavior
+21161	1	aicore.js review()	After-action review	Unified AI architecture, autonomous world agency, and operational behavior
+21165	1	aicore.js memory with decay and loss on leadership change	Organizational memory	Unified AI architecture, autonomous world agency, and operational behavior
+21169	1	aicore.js intelligence-filtered	Adaptation without omniscience	Unified AI architecture, autonomous world agency, and operational behavior
+21173	1	aicore.js DISAGREE	Institutional disagreement	Unified AI architecture, autonomous world agency, and operational behavior
+21177	1	aicore.js counter-adaptation to the other side's lessons	Counter-adaptation	Unified AI architecture, autonomous world agency, and operational behavior
+21181	1	aicore.js monthly DOCTRINE revisions (attack doctrine, training)	Training and doctrine revisions	Unified AI architecture, autonomous world agency, and operational behavior
+21185	1	aicore.js learning rate from pragmatism	AI personality and learning rate	Unified AI architecture, autonomous world agency, and operational behavior
+21189	1	aicore.js minimum reviews, bounded steps, reverting	AI learning safeguards	Unified AI architecture, autonomous world agency, and operational behavior
+21193	1	tests s46_aicore	Learning acceptance tests	Unified AI architecture, autonomous world agency, and operational behavior

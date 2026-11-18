@@ -1204,6 +1204,23 @@ test('s45_atgm: guidance follows the missile — Javelin / Spike lock, Kornet / 
     I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());return out;});
   ok('missiles classified by guidance',r.cls.jav==='FF'&&r.cls.spike==='FF'&&r.cls.kornet==='SACLOS'&&r.cls.tow==='SACLOS'&&r.cls.metis==='SACLOS'&&r.cls.stugna==='SACLOS'&&r.cls.nlaw==='PLOS'&&r.cls.cg==='UNG'&&r.cls.at3==='MCLOS',r.cls);
   ok('Russia carries the Kornet, command-guided',/SACLOS Kornet/.test(r.rus),r.rus);ok('fired with no lock, command guidance',r.sac);ok('it follows the crosshair',r.turned,r);ok('sight says command guidance',r.sight);});
+test('s46_aicore: institutions decide through one framework; records, reviews, lessons with safeguards, doctrine, disagreements, the event director, histories','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const A=WWAR.aicore,st=WWAR.st,out={};WWAR.step(24*90);const X=st.aic;
+    out.inst=Object.keys(A.insts(st.c.RUS)).join(',');out.recs=X.rec.length;out.kinds=[...new Set(X.rec.map(r=>r.kind))];out.reviewed=X.rec.filter(r=>r.out).length;out.aar=X.aar.length;
+    const ev=new Set(st.ev.map(e=>e.ty));out.ev=['DECISION','LESSON','SITREP'].filter(t=>ev.has(t));
+    // institutions differ: the same options, different priorities
+    const g=A.insts(st.c.RUS);out.diff=g.GS.pri.ter>g.CD.pri.ter&&g.CD.pri.civ>g.GS.pri.civ&&g.GOV.hor>g.AF.hor;
+    // bounded autonomy: the air force cannot set national policy alone
+    const n0=X.dis.length;A.decide(st.c.RUS,'AF','policy','test',[{id:'X',label:'Do something national',g:{ter:.5}},{id:'Y',label:'Something else',g:{civ:.5}}]);out.referred=X.dis.length===n0+1;
+    // safeguard: one review does not change behaviour; reverting when worse
+    const p0=st.c.RUS;const r0={kind:'test',ch:'A',label:'test choice',ik:'GS',out:{txt:'t'}};A.learn(p0,r0,1);out.oneReview=(X.mem.RUS['test:A']||{adj:0}).adj===0;A.learn(p0,r0,1);A.learn(p0,r0,1);out.learned=X.mem.RUS['test:A'].adj>0&&X.mem.RUS['test:A'].adj<=.4;
+    // the director: preconditions met -> a rare event with its cause; never twice in five days
+    const q=st.c.UKR||Object.values(st.c).find(c=>c.side&&c.al==='CORE');q.stab=.2;q.exh=.8;q.sup=.3;X.dir.last=-99;const c0=st.ev.filter(e=>e.ty==='CRISIS').length;for(let i=0;i<40;i++)A.director();const c1=st.ev.filter(e=>e.ty==='CRISIS').length;out.crisis=c1-c0;
+    out.histC=Object.keys(X.hist.city).length;out.histI=Object.keys(X.hist.inst).length;out.corp=Object.keys(X.corp).length;
+    out.tabs=/INSTITUTIONS/.test(NATPANEL.tabs.DECISIONS(st.c.RUS))&&/DEFENCE INDUSTRY/.test(NATPANEL.tabs.HISTORY(st.c.RUS));out.audit=WWAR.audit();return out;});
+  ok('institutions per country',/GOV,GS,AF/.test(r.inst)&&/LOG,INT,MFA,FIN,CD/.test(r.inst),r.inst);ok('decision records of several kinds',r.recs>50&&r.kinds.length>=6,r);ok('reviews and after-action records',r.reviewed>10&&r.aar>10,r);
+  ok('decisions, lessons and situation reports in the diary',r.ev.length===3,r.ev);ok('institutions differ',r.diff);ok('outside its authority it goes to the government',r.referred);
+  ok('safeguard: not on one review; learns within bounds',r.oneReview&&r.learned,r);ok('rare event with preconditions, at most one in five days',r.crisis===1,r.crisis);ok('city, institution and company histories',r.histC>0&&r.histI>5&&r.corp>3,r);ok('DECISIONS and HISTORY tabs',r.tabs);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
