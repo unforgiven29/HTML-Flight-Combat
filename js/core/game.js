@@ -6090,7 +6090,7 @@ const net={on:false,lobby:null,r:null,me:'',code:'',cs:'',score:{k:0,d:0},peers:
   async connect(code,cs){const st=$('#mpStatus');
     st.textContent='Connecting…';
     // Primary: PeerJS (free public broker, direct WebRTC between players, no account and no claude.ai needed). Fallback: the claude.ai artifact room.
-    const tries=[];if(window.LOCAL_ROOM)tries.push(['local',()=>LOCAL_ROOM]);if(window.Peer)tries.push(['peer',()=>peerRoom()]);   /* LOCAL_ROOM: same-browser rooms (js/war/localroom.js) */tries.push(['claude',async()=>claude.use('room')]);
+    const tries=[];if(window.LOCAL_ROOM)tries.push(['local',()=>LOCAL_ROOM]);if(window.Peer)tries.push(['peer',()=>peerRoom()]);   /* LOCAL_ROOM: same-browser rooms (js/war/ui/localroom.js) */tries.push(['claude',async()=>claude.use('room')]);
     let room=null,err='';
     for(const [kind,mk] of tries){let r=null;try{r=await mk();}catch(e){}if(!r)continue;
       try{this.r=await r.join('vs-'+code);room=r;break;}catch(e){err=(e&&e.code)||'error';}}

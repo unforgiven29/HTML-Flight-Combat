@@ -148,13 +148,18 @@ W.step=(hours)=>{const st=W.st;if(!st||(st.over&&!st.post))return;let left=hours
     if(Math.floor(st.t/24)!==d0){cityScan(false);daily();}}   /* cities checked every war day, not only at the end of a long step */
   for(const f of st.fronts){const m=f.sec.filter(s=>s.mv);if(m.length){for(const s of m)s.mv=0;const avg=f.sec.reduce((t,s)=>t+s.off,0)/f.sec.length;
       emit('FRONT',{e:[f.a,f.b],cf:'REPORTED',txt:'Front '+st.c[f.a].n+' / '+st.c[f.b].n+': '+(Math.abs(avg)<5?'holding near the border':(avg>0?st.c[f.a].n:st.c[f.b].n)+' forces '+Math.round(Math.abs(avg))+' km beyond the border on average')+'.'});}}
-  cityScan(false);const n=performance.now();if(!W._sv||n-W._sv>10000||hours>=1){W._sv=n;save();}};
+  cityScan(false);const n=performance.now();if(!W._sv||n-W._sv>60000||hours>=24){W._sv=n;save();}};
 function daily(){const st=W.st;for(const f of W.daily)try{f();}catch(e){warn('daily',e);}for(const th of st.th){if((th.lB||0)+(th.lR||0)<.5)continue;
   emit('AIR',{cf:'ESTIMATED',txt:th.name+', day '+Math.floor(st.t/24)+': about '+Math.round(th.lB||0)+' BLUEFOR and '+Math.round(th.lR||0)+' REDFOR aircraft lost · air '+(Math.abs(th.sup)<.1?'contested':(th.sup>0?'BLUEFOR':'REDFOR')+' advantage')+'.'});th.lB=th.lR=0;}}
 W.date=t=>{const d=new Date(Date.parse(W.st.start)+t*3600e3);return d.toISOString().slice(0,16).replace('T',' ')+'Z';};
 
 /* ------------------------------------------------------------------ save */
-function save(){try{let s=JSON.stringify(W.st);if(W.compact&&s.length>4.5e6){W.compact();s=JSON.stringify(W.st);}localStorage.setItem(KEY,s);}catch(e){try{localStorage.removeItem(KEY);}catch(x){}if(W.store)W.store.autosave();else warn('save',e);}}   /* too large for localStorage: IndexedDB (store.js) carries it */   /* W.compact: perf.js */
+/* v425: one serialisation per save; a war too large for localStorage (over 2 MB) goes straight to IndexedDB with that
+   same string; saving waits for an idle moment so it never lands in the middle of a frame */
+function save0(){let s;try{s=JSON.stringify(W.st);if(W.compact&&s.length>4.5e6){W.compact();s=JSON.stringify(W.st);}}catch(e){warn('save',e);return;}
+  if(s.length<2e6){try{localStorage.setItem(KEY,s);return;}catch(e){}}try{localStorage.removeItem(KEY);}catch(x){}if(W.store)W.store.autosave(null,s);}
+function save(){if(typeof requestIdleCallback==='function'){if(W._svq)return;W._svq=1;requestIdleCallback(()=>{W._svq=0;save0();},{timeout:4000});}else save0();}
+W.saveNow=save0;   /* too large for localStorage: IndexedDB (store.js) carries it */   /* W.compact: perf.js */
 W.load=async()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===V&&o.c){await G.loadData();W.st=o;return true;}}catch(e){warn('load',e);}return false;};
 W.audit=()=>{const st=W.st,out=[];if(!st)return['no war'];
   for(const a3 in st.c){const p=st.c[a3];if(!G.byA3.has(a3))out.push('unknown country '+a3);if(p.air<-1e-6||p.gnd<-1e-6)out.push('negative force '+a3);if(p.side&&!['B','R'].includes(p.side))out.push('bad side '+a3);}
