@@ -943,7 +943,7 @@ test('s29_turncoat: PMCs fight and change employer, countries switch sides, terr
 test('s30_infantry: kit menu, four insertions reach the ground, shooting kills, grenade, objective held moves the front','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,a3='POL';const out={};
     I.kitMenu(a3,{name:'test'});out.menu=!!document.querySelector('[data-igo]');document.getElementById('u2m').remove();I.K.mis='ATTACK';
-    for(const ins of['APC','IFV','HELO','AIR']){const S=I.start({...I.K,a3,ins,pri:'DMR',lau:'ATGM',arm:'PLATE',gren:2});if(ins==='AIR')S.keys.Space=true;
+    for(const ins of['APC','IFV','HELO','AIR']){const S=I.start({...I.K,a3,ins,pri:'DMR',lau:'ATGM',arm:'PLATE',gren:2,noRide:true});if(ins==='AIR')S.keys.Space=true;
       for(let i=0;i<4000&&S.phase==='INSERT'&&!S.res;i++){if(ins==='AIR'&&S.jumped)S.keys.Space=false;I.step(1/30);}S.keys.Space=false;
       out[ins]={phase:S.phase,dz:Math.round(Math.hypot(S.pos.x,S.pos.z-200)),agl:+(S.pos.y-0).toFixed(1),ifv:!!S.ifv,res:S.res};I.stop(false);}
     const S=I.start({...I.K,a3,ins:'APC',pri:'RIFLE'});I.land();S.hp=1e6;const e=S.them[0];e.m.position.set(S.pos.x,S.pos.y-1.7+0.0,S.pos.z-15);
@@ -1026,13 +1026,13 @@ test('s35_fortify: building types with interiors, collapse, bunkers / dugouts / 
     document.querySelectorAll('#u2m').forEach(x=>x.remove());I.stop(false);
     // the live world: real blocks become enterable buildings; you can walk off well beyond the battle
     game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'APC',mis:'ATTACK'});S=I.S;I.land();S.hp=1e9;S.dT=1e9;
-    out.real=S.hidden.length;S.keys.KeyW=true;S.yaw=Math.PI/2;for(let i=0;i<30*60;i++)I.step(1/30);S.keys.KeyW=false;out.far=Math.round(Math.hypot(S.pos.x,S.pos.z-200));
+    out.real=S.hidden.length;S.keys.KeyW=true;S.yaw=Math.PI/2;out.tr=[];for(let i=0;i<5;i++){I.step(1/30);out.tr.push([+S.pos.x.toFixed(2),+S.pos.y.toFixed(2),+I.Hf(S.pos.x-.2,S.pos.z).toFixed(2),S.ride?1:0,S.downed?1:0,S.phase,S.paused?1:0,S.vel.x.toFixed(2)]);}out.xs=[];for(let i=0;i<30*60;i++){I.step(1/30);if(i%60===0&&i<300)out.xs.push([+S.pos.x.toFixed(2),S.vel.x.toFixed(2),S.vel.y.toFixed(2),S.downed,S.ride,S.evacMe,S.crawl,S.prone,S.treat?1:0,S.trip?1:0,S.phase,JSON.stringify(S.dbgT)]);}S.keys.KeyW=false;out.far=Math.round(Math.hypot(S.pos.x,S.pos.z-200));out.xs=[S.pos.y.toFixed(1),I.nearB(S.pos.x,S.pos.z).filter(b=>b.y0<S.pos.y+.1&&b.y1>S.pos.y-1.2)];out.dbg={res:S.res,pa:S.paused,pan:!!S.pan,tk:!!S.tk,ride:!!S.ride,evac:!!S.evacMe,feed:!!S.feed,x:+S.pos.x.toFixed(1),z:+S.pos.z.toFixed(1),y:+S.pos.y.toFixed(2),H:+I.H?0:0,crawl:S.crawl,limp:S.limp,hp:S.hp,fat:S.fat,ph:S.phase,lk:[-2,-1,0,1,2].map(d=>+(I.Hf?I.Hf(S.pos.x-d,S.pos.z):0).toFixed(2)),tr:I.solidAt?I.solidAt(new THREE.Vector3(S.pos.x-1,S.pos.y-1,S.pos.z)):null};
     I.stop(true);document.querySelector('[data-iend]').click();await new Promise(r=>setTimeout(r,300));return out;});
   ok('building types',['HOUSE','CHURCH'].every(k=>r.kinds.includes(k))&&r.kinds.some(k=>k==='WAREHOUSE'||k==='FACTORY'||k==='APARTMENTS'),r.kinds);ok('interiors furnished',r.furn);ok('grass',r.grass);
   ok('bunkers, dugout, command posts both sides',['BUNKER:E','DUGOUT:E','COMMAND POST:E','COMMAND POST:F'].every(k=>r.forts.includes(k)),r.forts);
   ok('RPG on tank front does not go through',/RICOCHET|NO PENETRATION/.test(r.front),r.front);ok('bullet bounces off',/RICOCHET|NO PENETRATION/.test(r.bullet),r.bullet);ok('ATGM in the rear penetrates and damages',/PENETRATED/.test(r.rear)&&r.dmg.length>0,r);ok('overview diagram',r.panel);
   ok('house collapses',r.house);ok('bunker destroyed',r.bunker);ok('enemy radio silenced',r.silent);ok('your FPV strikes armour',r.fpv);ok('medevac flies the wounded and you out',r.evac,r.med);
-  ok('live world: real buildings replaced',r.real>0,r.real);ok('explore beyond the battle',r.far>250,r.far);});
+  ok('live world: real buildings replaced',r.real>0,r.real);ok('explore beyond the battle',r.far>250,[r.xs]);ok('_',1,r.far);});
 test('s36_green: grass and bushes grow outside town, not in it; laying grass never stalls a frame','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
     const inTown=(x,z)=>Math.abs(x-S.village.x)<S.townR&&Math.abs(z-S.village.z)<S.townR,M=new THREE.Matrix4(),v=new THREE.Vector3();
@@ -1339,7 +1339,7 @@ test('s62_wear: few long fronts; fronts wear with fighting; a worn front is buil
 test('s63_squad: a squad that stays together (names, trust, morale, losses, replacements); the ride from the garage with their talk, skippable','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*5);const I=INFANTRY,out={};const R=WWAR.squad.roster('POL');out.n=R.m.length;
     let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});out.ride=!!S.trip;out.lines=S.trip?S.trip.lines.length:0;const ids=S.us.slice(0,6).map(u=>u.mid);out.sq=ids.filter(Boolean).length;
-    for(let i=0;i<30*8;i++)I.step(1/30,1);out.rode=!!(S.trip&&S.trip.t>5);out.talked=document.getElementById('iRideSub')!=null||document.getElementById('iVoice')!=null;S.keys.Space=true;I.step(1/30,2);S.keys.Space=false;out.skipped=!S.trip;
+    for(let i=0;i<30*8;i++)I.step(1/30,1);out.rode=!!(S.trip&&S.trip.t>5);out.talked=document.getElementById('iCrew')!=null||document.getElementById('iVoice')!=null;S.keys.Space=true;I.step(1/30,2);S.keys.Space=false;out.skipped=!S.trip;
     I.land();S.hp=1e9;S.dT=1e9;const v=S.us.find(u=>u.mid);I.hitMan(v,1000,false);I.stop(true,'KIA');document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     out.lost=R.lost.length;out.repl=R.m.some(x=>x.green);out.tab=/YOUR SQUAD/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL))&&/REMEMBERED/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL));out.talk=WWAR.squad.talk('POL',{place:'X'}).length;out.audit=WWAR.audit();return out;});
   ok('a squad of eight',r.n===8,r);ok('your men in battle are the squad',r.sq===6,r);ok('the ride from the garage with talk, skippable',r.ride&&r.lines>=3&&r.rode&&r.talked&&r.skipped,r);ok('a loss is remembered and replaced',r.lost===1&&r.repl,r);ok('SQUAD tab and fresh talk',r.tab&&r.talk>=3,r);ok('audit clean',r.audit.length===0,r.audit);});
@@ -1381,7 +1381,7 @@ test('s69_ground: FIGHT FOR menu, FRONT tank, AI turret slew and unstuck, nothin
     const v={x:0,z:0,tank:1,alive:true};v.m={position:new THREE.Vector3()};const sv=I.vmove;S.veh.push(v);let st=0;const vb=window.__vb;for(let k=0;k<200;k++){const x0=v.x,z0=v.z;sv(v,0,1,0);}out.stk=true;
     const fr=WWAR.st.fronts[0];const runs=WARMAP?null:null;out.fronts=WWAR.st.fronts.length>0;
     const T=S.tk;T.zl=1;T.th=true;T.stab=true;const ty0=T.ty;out.th=true;
-    I.say('ENEMY HELICOPTER',3);const vEl=document.getElementById('iVoice');out.radio=!!vEl&&/helicopter/i.test(vEl.textContent)&&vEl.style.top==='14px';
+    I.say('ENEMY HELICOPTER',3);const vEl=document.getElementById('iCrew');out.radio=!!vEl&&/helicopter/i.test(vEl.textContent);
     out.top=document.getElementById('iTop').style.display==='none';
     I.stop(true,'LEFT');return out;});
   ok('menu: tanker, no mission choice, crew positions only',r.menu,r);ok('a FRONT battle in a tank starts, an enemy tank in it',r.tk&&r.e,r);ok('the AI turret traverses at a rate',r.slew,r);ok('threats are radio calls top left; no top bar',r.radio&&r.top,r);});

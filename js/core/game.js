@@ -9171,7 +9171,7 @@ segSet();setTimeout(()=>{CMPUI.init();$('#menu').dataset.mp=game.mpMode;if(CMPUI
 const _safeSeen={};function SAFE(fn,o,tag){try{fn();}catch(e){const k=(tag||'sys')+':'+(e&&e.message);if(!_safeSeen[k]){_safeSeen[k]=1;console.error('[safe] '+k,e&&e.stack);}if(o&&tag==='msl'){o.alive=false;try{if(o.mesh)o.mesh.visible=false;}catch(_){}}}}
 function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
   if(SET.fps==='ON'){fpsS.n++;fpsS.t+=tm-last;fpsS.w=Math.max(fpsS.w,tm-last);if(fpsS.t>=500){const el=$('#fpsc');if(el)el.textContent=Math.round(fpsS.n*1000/fpsS.t)+' FPS · worst '+Math.round(fpsS.w)+' ms · res '+Math.round(gfx.scale*100)+'%';fpsS.n=fpsS.t=fpsS.w=0;}}const dt=clamp((tm-last)/1000,0,.05)||.016;last=tm;FR++;
-  const live=game.active&&game.running&&!game.paused&&player;const menuEl=$('#menu'),mUp=!menuEl.hidden;
+  const onFoot=!!(player&&player.infantry);const live=game.active&&game.running&&!game.paused&&player&&!onFoot;   /* v422: on foot or in a tank, the flight simulation (jets, missiles, radar, crew, cockpit) is paused */const menuEl=$('#menu'),mUp=!menuEl.hidden;
   if(live){const P=player;
     if(P.alive)readControls(dt);else P.trigger=false;
     GCI.tick(dt);
@@ -9195,7 +9195,7 @@ function frame(tm){requestAnimationFrame(frame);terrLOD();gfxTune(tm-last);
   ENV.tick(dt,game.active?player:null);uiTick(dt,live);
   const inCk=updateCamera(dt,tm);SKY.position.copy(camera.position);if(mUp&&menuEl.dataset.tab==='camp')CMPUI.tick(dt);
   // displays redraw at the panel rate (30 Hz AUTO, 60 HIGH, 20 LOW); only the canvases that changed are re-uploaded to the GPU
-  gfx.panelT+=dt;const pan=!mUp&&gfx.panelT>=1/gfx.panelHz-.002;let pdt=0;if(pan){pdt=gfx.panelT;gfx.panelT=0;mfdInk();drawFCR();drawSMS();drawRWR(live?pdt:0);}
+  gfx.panelT+=dt;const pan=!mUp&&!onFoot&&gfx.panelT>=1/gfx.panelHz-.002;let pdt=0;if(pan){pdt=gfx.panelT;gfx.panelT=0;mfdInk();drawFCR();drawSMS();drawRWR(live?pdt:0);}
   // stores and pylons drop out beyond 3.5 km, where they are a pixel or two
   GINST.sync();
   for(const j of jets){const far=camera.position.distanceToSquared(j.pos)>1.2e7;if(j._far!==far){j._far=far;for(const k in j.stMesh)j.stMesh[k].visible=!far;}}
