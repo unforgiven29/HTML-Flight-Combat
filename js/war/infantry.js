@@ -435,20 +435,22 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?5:LOC.pop
     c.hp=1600;c.side=side;c.cx=cx;c.cz=cz;c.y0=y0;c.mast=mast;STR.push(c);done();return c;}
   // v381: in the live world the town's real buildings near the battle (the flight world's blocks) are replaced by ones you
   // can enter, of the same footprint and height: houses, apartment blocks and towers, warehouses and factories
+  const TZS=cfg.mis==='FRONT'?[-300,-470,-760,-1040,-430,-800]:cfg.mis==='DEFEND'?[-470,-505]:[];const nearTr=(z,d)=>TZS.some(t=>Math.abs(z-t)<d/2+9);   // v408: no house stands where a trench line runs
   let REAL=0;const hidden=[];
   if(WM&&window.WF&&WF.bldg&&WF.townMesh){const M0=new THREE.Matrix4(),Z=new THREE.Matrix4().makeScale(0,0,0),near0=WF.bldg.filter(b=>b[7]&&Math.hypot(b[0]-cfg.O.x,b[1]-(cfg.O.z-260))<700).sort((a,b)=>Math.hypot(a[0]-cfg.O.x,a[1]-cfg.O.z+260)-Math.hypot(b[0]-cfg.O.x,b[1]-cfg.O.z+260));
     // v397: the insertion routes (APC road from the south, helicopter approach from the south-west) are kept clear of buildings
     const segD=(x,z,ax,az,bx,bz)=>{const vx=bx-ax,vz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*vx+(z-az)*vz)/(vx*vx+vz*vz)));return Math.hypot(x-ax-vx*t,z-az-vz*t);};
     const onRoute=b=>{const x=b[0]-cfg.O.x,z=b[1]-cfg.O.z,r=Math.max(b[3],b[4])*.75+8;return segD(x,z,0,720,0,150)<r||segD(x,z,-520,720,0,150)<r;};
     for(const b of near0)if(onRoute(b)){WF.townMesh.getMatrixAt(b[6],M0);hidden.push([b,M0.clone()]);WF.townMesh.setMatrixAt(b[6],Z);}
-    const near=near0.filter(b=>!onRoute(b)).slice(0,140);
+    for(const b of near0)if(!onRoute(b)&&nearTr(b[1]-cfg.O.z,Math.max(b[3],b[4]))){WF.townMesh.getMatrixAt(b[6],M0);hidden.push([b,M0.clone()]);WF.townMesh.setMatrixAt(b[6],Z);b._tr=1;}
+    const near=near0.filter(b=>!onRoute(b)&&!b._tr).slice(0,140);
     // every other plain block within 3 km is solid: you, the enemy and vehicles cannot walk or drive through it
     {const NS=new Set(near);for(const b of WF.bldg){if(!b[7]||NS.has(b))continue;const x=b[0]-cfg.O.x,z=b[1]-cfg.O.z;if(Math.abs(x)>3000||Math.abs(z)>3000)continue;if(Math.hypot(b[0]-cfg.O.x,b[1]-(cfg.O.z-260))<700&&onRoute(b))continue;
       const e=Math.max(b[3],b[4])*.55;boxes.push({x0:x-e,y0:b[2]-1,z0:z-e,x1:x+e,y1:b[2]-1+b[5],z1:z+e,m:null,wb:b});}}
     for(const b of near){WF.townMesh.getMatrixAt(b[6],M0);hidden.push([b,M0.clone()]);WF.townMesh.setMatrixAt(b[6],Z);const x=b[0]-cfg.O.x,z=b[1]-cfg.O.z,w=Math.max(7,Math.min(40,b[3])),d=Math.max(7,Math.min(40,b[4])),h=b[5];
       if(w*d>350&&h<12)hall(x,z,w,d,Math.max(6,h),rn()<.5?'WAREHOUSE':'FACTORY',wallM[3]);else house(x,z,Math.round(w),Math.round(d),Math.max(1,Math.min(8,Math.round(h/3))),wallM[(rn()*wallM.length)|0],h>15?'APARTMENTS':'HOUSE');REAL++;}
     WF.townMesh.instanceMatrix.needsUpdate=true;if(REAL<8)REAL=0;}
-  const lots=[];for(let gx=-GR;gx<=GR;gx++)for(let gz=-GR;gz<=GR;gz++){if(rn()<.18&&!(gx===GR&&gz===-GR))continue;const cx=village.x+gx*30+(rn()-.5)*4,cz=village.z+gz*30+(rn()-.5)*4;if(Math.abs(gx)<1&&Math.abs(gz)<1)continue;
+  const lots=[];for(let gx=-GR;gx<=GR;gx++)for(let gz=-GR;gz<=GR;gz++){if(nearTr(village.z+gz*30,22))continue;if(rn()<.18&&!(gx===GR&&gz===-GR))continue;const cx=village.x+gx*30+(rn()-.5)*4,cz=village.z+gz*30+(rn()-.5)*4;if(Math.abs(gx)<1&&Math.abs(gz)<1)continue;
     const cen=1-Math.max(Math.abs(gx),Math.abs(gz))/(GR+1),w=8+rn()*6+(FLMAX>4?cen*6:0),d=8+rn()*6+(FLMAX>4?cen*6:0),fl=1+((rn()*Math.max(1,FLMAX*cen+1))|0);if(gx===GR&&gz===-GR&&!REAL)hall(cx,cz,16,24,7,'CHURCH',wallM[2]);else if(Math.abs(gx)===GR&&rn()<.35&&!REAL)hall(cx,cz,18,22,8,rn()<.5?'WAREHOUSE':'FACTORY',wallM[3]);else if(!REAL)lots.push(house(cx,cz,Math.round(w),Math.max(8,Math.round(d)),fl,wallM[(rn()*wallM.length)|0]));}
   // streets
   const stM=new THREE.MeshLambertMaterial({color:0x55524c});for(let k=-GR;k<=GR;k++){for(const ax of['x','z']){const g=new THREE.Mesh(new THREE.PlaneGeometry(ax==='x'?GR*60+30:5,ax==='x'?5:GR*60+30),stM);g.rotation.x=-Math.PI/2;g.position.set(village.x+(ax==='z'?k*30+15:0),H(village.x,village.z)+.05,village.z+(ax==='x'?k*30+15:0));}}
@@ -589,7 +591,7 @@ function man(friend,x,z){const m=soldier(friend);m.position.set(x,H(x,z),z);S.sc
    which side, where, how, and whether it was by your hand — so it is found in the CEMETERY like any other. */
 function nameMan(u){try{const a3=u.friend?S.cfg.a3:S.enA3;u.a3=a3;const rk=W.lead&&W.lead.rank?W.lead.rank(a3||'USA','army',rn()<.7?1:rn()<.7?2:3):'';
   u.name=W.people&&W.people.name?W.people.name(a3||'USA',Math.random):(W.lead&&W.lead.POOL?'Soldier':'Soldier');u.rank=rk||'';u.full=(u.rank?u.rank+' ':'')+u.name;
-  if(u.friend&&!S.cfg.camp)tagMan(u);}catch(e){u.full=u.name||'a soldier';}}
+}catch(e){u.full=u.name||'a soldier';}}
 function tagMan(u){const c=document.createElement('canvas');c.width=256;c.height=48;const g=c.getContext('2d');g.font='600 22px "B612 Mono",monospace';g.textAlign='center';g.fillStyle='rgba(10,20,30,.55)';g.fillRect(0,6,256,36);g.fillStyle='#9fd0ff';g.fillText(u.full.slice(0,22),128,32);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));sp.scale.set(1.6,.3,1);sp.position.y=2.25;sp.visible=false;u.m.add(sp);u.tag=sp;}
 function tagStep(){for(const u of S.us){if(!u.tag)continue;const d=u.m.position.distanceTo(S.pos);u.tag.visible=u.alive&&d<25&&d>1.5;}}
@@ -926,7 +928,9 @@ function worldOff(){showFlight();if(S.hidden&&window.WF&&WF.townMesh){for(const[
   // v397: your aircraft stays hidden until the sortie has closed — it never appears at the battle site
   const pl=typeof player!=='undefined'?player:null;if(pl){pl.infantry=false;if(pl.mesh)pl.mesh.visible=false;setTimeout(()=>{try{if(typeof openMenu==='function')openMenu();}catch(e){}if(pl.mesh&&!pl.infantry)pl.mesh.visible=true;},120);}   // you return to the menu, not to the cockpitcamera.near=S.near0||camera.near;camera.fov=S.fov0||camera.fov;camera.updateProjectionMatrix();
   document.body.classList.remove('infWorld');scene.remove(S.sc);scene.remove(S.vmRoot);if(window.WF&&WF.on&&WF.leave)setTimeout(()=>{try{WF.leave();}catch(e){}},50);}
-async function startWorld(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.WF||!G||!W.st){return start(cfg);}
+async function startWorld(cfg){const mi=setInterval(()=>{try{if(typeof sfx!=='undefined'&&sfx.ctx)sfx.mute(true);}catch(e){}},50);   // v408: the aircraft is silent while you travel to the front
+  try{return await startWorld0(cfg);}finally{clearInterval(mi);try{if(typeof sfx!=='undefined'&&sfx.ctx)sfx.mute(true);}catch(e){}}}
+async function startWorld0(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.WF||!G||!W.st){return start(cfg);}
   const st=W.st,p=st.c[cfg.a3],me=p.side;const fr=st.fronts.find(f=>!f.cf&&(f.a===cfg.a3||f.b===cfg.a3))||st.fronts.find(f=>!f.cf&&(st.c[f.a].side===me||st.c[f.b].side===me));
   let fr2=fr;if(cfg.loc0){const C=locChoices(cfg).find(c=>c.id===cfg.loc0);const f2=C&&st.fronts.find(f=>f.id===C.fr);if(f2)fr2=f2;}const loc=resolveLoc(cfg,fr2,null);if(!loc.real){return start(cfg);}
   // a loading screen covers the move: you do not see your aircraft on the runway, at the site, or under unloaded ground
@@ -975,36 +979,29 @@ function dig(mine,at,dir){if(mine){if(S.bags<=0||S.phase!=='FIGHT'){say('NO SAND
   const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h+.4,z1-z0),earth);m.position.set((x0+x1)/2,g+h/2-.2,(z0+z1)/2);S.sc.add(m);S.solid.push(m);{const bb={x0,y0:g-.4,z0,x1,y1:g+h,z1,m};S.blds.push(bb);gridAdd(bb);}S.dug++;
   if(mine)say('SANDBAG WALL BUILT · '+S.bags+' LEFT',1.5);return m;}
 // v407: dig an 8 m trench section where you stand, across your facing (or along x for AI engineers); both sides dig
-function digTrench(P,face,friend,ang){const a=ang??0,cx=P.x,cz=P.z,dx=Math.cos(a)*4,dz=-Math.sin(a)*4;const g={x0:cx-dx,z0:cz-dz,x1:cx+dx,z1:cz+dz,w:TRW,d:TRD};g.dyn=1;if(TR.G.length>=96){const k=TR.G.findIndex(q=>q.dyn);if(k>=0)TR.G.splice(k,1);else return null;}TR.G.push(g);
+function digTrench(P,face,friend,ang){const a=ang??0,cx=P.x,cz=P.z,dx=Math.cos(a)*4,dz=-Math.sin(a)*4;for(let t=0;t<=1.001;t+=.125){if(collideTest(new V3(cx-dx+2*dx*t,0,cz-dz+2*dz*t))){if(friend&&!ang&&ang!==0)return null;if(ang!=null&&friend)say('CANNOT DIG HERE · A BUILDING IS IN THE WAY',1.5);return null;}}const g={x0:cx-dx,z0:cz-dz,x1:cx+dx,z1:cz+dz,w:TRW,d:TRD};g.dyn=1;if(TR.G.length>=96){const k=TR.G.findIndex(q=>q.dyn);if(k>=0)TR.G.splice(k,1);else return null;}TR.G.push(g);
   const pts=[];for(let t=0;t<=1.0001;t+=.125)pts.push({x:g.x0+(g.x1-g.x0)*t,z:g.z0+(g.z1-g.z0)*t});trBuild(S.sc,pts,face,TRW,TRD);trSync();S.dug++;if(friend!==false&&S.phase==='FIGHT'&&rn()<.3)say((friend?'OUR':'ENEMY')+' ENGINEERS DIG A NEW TRENCH SECTION',1.5);return g;}
 function digMine(){if(S.phase!=='FIGHT')return;if(!(S.cfg&&S.cfg.role==='ENGINEER')){say('ONLY ENGINEERS DIG TRENCHES (B: SANDBAGS)',1.5);return;}if((S.trN=(S.trN||0)+1)>12){say('NO MORE TRENCH STORES',1.5);return;}
   const f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw));const P=S.pos.clone().addScaledVector(f,3);const ang=S.yaw+Math.PI/2;digTrench(P,f.z<0?-1:1,true,S.yaw);say('TRENCH SECTION DUG ('+(12-S.trN)+' LEFT)',1.5);}
 /* v407: Esc pauses the battle: everything stops where it is; a map shows where you are (the battle area, and the place
    on Earth and in the war); RESUME, MAIN MENU (the battle waits, paused, behind it) or LEAVE THE BATTLE. */
-function pauseMenu(on){if(!S)return;closePan();S.paused=on;let el=document.getElementById('infPause');if(!on){if(el)el.remove();const rb=document.getElementById('infBack');if(rb)rb.remove();S.cv.style.display='';S.hud.style.display='';return;}
-  if(document.pointerLockElement)document.exitPointerLock();if(!el){el=document.createElement('div');el.id='infPause';document.body.appendChild(el);}
-  el.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(8,12,10,.82);color:#cfe3d6;font:13px "B612 Mono",monospace;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px';
-  const st=W.st,cf=S.cfg,p=st&&cf.a3&&st.c[cf.a3],L=S.loc||{};const fr=st&&st.fronts.find(f=>!f.cf&&(f.a===cf.a3||f.b===cf.a3));
-  el.innerHTML='<div style="font-size:18px;letter-spacing:.2em">PAUSED</div><div>'+esc((L.name||'the battle').toUpperCase())+(p?' · '+esc(p.n):'')+(fr?' · FRONT '+esc(st.c[fr.a].n)+' / '+esc(st.c[fr.b].n):'')+(L.lat!=null?' · '+L.lat.toFixed(3)+'°, '+L.lon.toFixed(3)+'°':'')+(st?' · WAR DAY '+Math.floor(st.t/24):'')+'</div>'+
-    '<div style="display:flex;gap:12px"><canvas id="infPmap" width="420" height="420" style="border:1px solid #6a7"></canvas><canvas id="infPworld" width="300" height="420" style="border:1px solid #6a7"></canvas></div>'+
-    '<div style="display:flex;gap:10px"><button data-ip="res">RESUME (Esc)</button><button data-ip="menu">MAIN MENU</button><button data-ip="leave">LEAVE THE BATTLE</button></div>';
-  drawPause();el.onclick=e=>{const b=e.target.closest('[data-ip]');if(!b)return;const k=b.dataset.ip;if(k==='res')pauseMenu(false);else if(k==='leave'){pauseMenu(false);end('LEFT');}
-    else if(k==='menu'){el.remove();S.cv.style.display='none';S.hud.style.display='none';try{if(typeof openMenu==='function')openMenu();const m=document.getElementById('menu');if(m)m.style.display='';}catch(x){}
-      const rb=document.createElement('button');rb.id='infBack';rb.textContent='▶ RETURN TO THE BATTLE ('+(L.name||'')+')';rb.style.cssText='position:fixed;top:10px;right:10px;z-index:10000;padding:8px 12px;font:13px "B612 Mono",monospace';rb.onclick=()=>{try{const m=document.getElementById('menu');if(m)m.style.display='none';}catch(x){}pauseMenu(false);};document.body.appendChild(rb);}};}
-function drawPause(){const c=document.getElementById('infPmap');if(!c)return;const g=c.getContext('2d'),R=600,X=x=>210+(x-S.pos.x)/R*210,Z=z=>210+(z-S.pos.z)/R*210;g.fillStyle='#2e3a28';g.fillRect(0,0,420,420);
-  g.strokeStyle='rgba(255,255,255,.06)';for(let i=0;i<420;i+=35){g.beginPath();g.moveTo(i,0);g.lineTo(i,420);g.moveTo(0,i);g.lineTo(420,i);g.stroke();}
-  g.fillStyle='#8a8478';for(const b of S.BLD||[])if(b&&!b.down&&b.x!=null)g.fillRect(X(b.x-(b.w||8)/2),Z(b.z-(b.d||8)/2),Math.max(2,(b.w||8)/R*210),Math.max(2,(b.d||8)/R*210));
-  for(const L of TR.L){g.strokeStyle=L.k?'#6a6a6a':L.own==='E'?'#c04a3a':'#4a8ad0';g.lineWidth=L.k?3:2;g.beginPath();for(let x=Math.max(L.x0,S.pos.x-R);x<=Math.min(L.x1,S.pos.x+R);x+=4){const z=L.z+(L.k?0:zig(L.x0,x));if(x===Math.max(L.x0,S.pos.x-R))g.moveTo(X(x),Z(z));else g.lineTo(X(x),Z(z));}g.stroke();}
-  g.strokeStyle='#9a8a6a';g.lineWidth=1.5;for(const q of TR.G){g.beginPath();g.moveTo(X(q.x0),Z(q.z0));g.lineTo(X(q.x1),Z(q.z1));g.stroke();}
-  for(const v of S.veh||[])if(v.alive){g.fillStyle=v.side==='E'?'#ff6a4a':'#6ab0ff';g.fillRect(X(v.m.position.x)-3,Z(v.m.position.z)-3,6,6);}
-  for(const u of S.them)if(u.alive){g.fillStyle='#e04a3a';g.fillRect(X(u.m.position.x)-1.5,Z(u.m.position.z)-1.5,3,3);}for(const u of S.us)if(u.alive){g.fillStyle='#5aa0ff';g.fillRect(X(u.m.position.x)-1.5,Z(u.m.position.z)-1.5,3,3);}
-  g.save();g.translate(210,210);g.rotate(-S.yaw);g.fillStyle='#fff';g.beginPath();g.moveTo(0,-9);g.lineTo(6,7);g.lineTo(-6,7);g.closePath();g.fill();g.restore();g.fillStyle='#cfe3d6';g.fillText('YOU · north up · 1.2 km across',8,412);
-  // the place in the war: the fronts near you, your position on the war's own map
-  const w=document.getElementById('infPworld');if(!w)return;const h=w.getContext('2d');h.fillStyle='#14202a';h.fillRect(0,0,300,420);const Lc=S.loc||{};const st=W.st;if(Lc.lat==null||!st){h.fillStyle='#cfe3d6';h.fillText('no war map for this battle',10,20);return;}
-  const sc=20,PX=lon=>150+(lon-Lc.lon)*sc*Math.cos(Lc.lat*Math.PI/180),PY=lat=>210-(lat-Lc.lat)*sc;
-  if(window.WGEO&&WGEO.places)for(const pl of WGEO.places){if(Math.abs(pl.lat-Lc.lat)>10||Math.abs(pl.lon-Lc.lon)>8||pl.pop<2e5)continue;h.fillStyle='#6a7a86';h.fillRect(PX(pl.lon)-1,PY(pl.lat)-1,2,2);if(pl.pop>1e6){h.fillStyle='#8a9aa6';h.fillText(pl.name,PX(pl.lon)+3,PY(pl.lat));}}
-  for(const f of st.fronts){h.strokeStyle=f.cf?'#888':'#e0b040';h.lineWidth=2;h.beginPath();f.sec.forEach((q,i)=>{const P=W.linePt?W.linePt(q):q;if(i)h.lineTo(PX(P.lon),PY(P.lat));else h.moveTo(PX(P.lon),PY(P.lat));});h.stroke();}
-  h.fillStyle='#fff';h.beginPath();h.arc(150,210,5,0,7);h.fill();h.fillStyle='#cfe3d6';h.fillText('YOU ARE HERE · '+(Lc.name||''),10,412);h.fillText('war map, about 1,000 km across',10,16);}
+function pauseMenu(on){if(!S)return;closePan();S.paused=on;let el=document.getElementById('infPause');
+  if(!on){if(el)el.remove();const rb=document.getElementById('infBack');if(rb)rb.remove();try{if(window.WMAP)WMAP.close();}catch(e){}S.cv.style.display='';S.hud.style.display='';try{S.cv.requestPointerLock&&S.cv.requestPointerLock();}catch(e){}return;}
+  if(document.pointerLockElement)document.exitPointerLock();
+  // the campaign's own world map, centred on the battle, with your position marked
+  const L=S.loc||{};try{if(window.WMAP){WMAP.open();if(L.lat!=null){WMAP.M.lat=L.lat;WMAP.M.lon=L.lon;WMAP.M.ppd=24;}setTimeout(()=>{try{WMAP.draw&&WMAP.draw();}catch(e){}},50);}}catch(e){}
+  if(!el){el=document.createElement('div');el.id='infPause';document.body.appendChild(el);}
+  el.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9998;background:rgba(8,12,10,.9);color:#cfe3d6;font:13px "B612 Mono",monospace;padding:8px 14px;border:1px solid #6a7;display:flex;gap:10px;align-items:center';
+  const st=W.st,cf=S.cfg,p=st&&cf.a3&&st.c[cf.a3];
+  el.innerHTML='<b>PAUSED</b><span>'+esc((L.name||'the battle').toUpperCase())+(p?' · '+esc(p.n):'')+(st?' · WAR DAY '+Math.floor(st.t/24):'')+' · you are at the white marker</span><button data-ip="res">RESUME (Esc)</button><button data-ip="menu">MAIN MENU</button><button data-ip="leave">LEAVE THE BATTLE</button>';
+  el.onclick=e=>{const b=e.target.closest('[data-ip]');if(!b)return;const k=b.dataset.ip;if(k==='res')pauseMenu(false);else if(k==='leave'){pauseMenu(false);end('LEFT');}
+    else if(k==='menu'){el.remove();try{WMAP.close();}catch(x){}S.cv.style.display='none';S.hud.style.display='none';try{if(typeof openMenu==='function')openMenu();const m=document.getElementById('menu');if(m){m.hidden=false;m.style.display='';}}catch(x){}
+      const rb=document.createElement('button');rb.id='infBack';rb.textContent='▶ RETURN TO THE BATTLE ('+(L.name||'')+')';rb.style.cssText='position:fixed;top:10px;right:10px;z-index:10000;padding:8px 12px;font:13px "B612 Mono",monospace';rb.onclick=()=>{try{const m=document.getElementById('menu');if(m)m.hidden=true;}catch(x){}pauseMenu(false);};document.body.appendChild(rb);}};}
+// your position on the campaign map while paused
+if(window.WARMAP){const _d=WARMAP.draw;WARMAP.draw=function(c,w2s,M,phase){const r=_d.apply(this,arguments);try{if(phase==='over'&&S&&S.paused&&S.loc&&S.loc.lat!=null){const[x,y]=w2s(S.loc.lat,S.loc.lon);c.fillStyle='#fff';c.strokeStyle='#000';c.lineWidth=2;c.beginPath();c.arc(x,y,7,0,7);c.fill();c.stroke();c.fillStyle='#fff';c.font='700 12px "B612 Mono",monospace';c.fillText('YOU · '+(S.loc.name||''),x+11,y+4);}}catch(e){}return r;};}
+// the browser's own Esc releases the mouse first: losing the mouse in a fight opens the pause menu (so one Esc pauses, the next resumes)
+document.addEventListener('pointerlockchange',()=>{if(!S||S.res||S.paused||S.pan||S.phase!=='FIGHT')return;if(!document.pointerLockElement&&S.locked)pauseMenu(true);S.locked=!!document.pointerLockElement;});
+setInterval(()=>{if(S&&document.pointerLockElement)S.locked=true;},500);
 function offensive(){if(S.phase!=='FIGHT')return;if(S.fCP){say('OUR COMMAND POST IS GONE · NO OFFENSIVES',2);return;}if(S.offN>=(S.mission==='FRONT'?5:2)){say('NO MORE OFFENSIVES THIS BATTLE',2);return;}S.offN++;
   if(S.mission==='FRONT'){if(S.cur>=S.lines.length-1)return;S.push=true;S.pushT=0;say('OFFENSIVE · ON THE NEXT TRENCH',2);}
   const nx=S.mission==='FRONT'?S.lines[S.cur+1]:null;const tgt=nx?new V3(0,0,nx.z):S.mission==='DEFEND'?new V3(0,0,S.trZ-300):S.village.clone();arty(tgt,10,'F');

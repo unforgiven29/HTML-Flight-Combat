@@ -1193,3 +1193,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v408
 - Every soldier in an infantry battle has a name and rank (fictional, unique in the campaign); your squad wears name tags. Each death or surrender goes into the death ledger as a named record (side, unit, role, place, cause, and "by the player" for your kills), found in the CEMETERY; the after-battle totals count only those not recorded by name.
+
+## v409
+- No name tags over soldiers (names still recorded). Esc pauses and opens the campaign world map centred on the battle with your position marked; Esc again resumes (also when the browser releases the mouse first). Houses are not built on trench lines and nobody digs a trench inside a building. The aircraft is silent during the move to the front.

@@ -1311,8 +1311,8 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};WWAR.step(24*3);
     let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT',role:'ENGINEER'});I.land();S.hp=1e9;S.dT=1e9;const L=S.lines[1],t=L.slots[3];
     out.lines=I.TR.L.filter(l=>!l.k).length;out.span=I.TR.L[0].x1-I.TR.L[0].x0;out.depth=I.cut(t.x,t.z);out.ditch=I.TR.L.some(l=>l.k===1);out.gs=I.TR.G.length;
-    const g0=I.TR.G.length;I.digTrench(new THREE.Vector3(0,0,-350),-1,true,0);I.digTrench(new THREE.Vector3(0,0,-900),1,false,0);out.dug=I.TR.G.length-g0;
-    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!!document.getElementById('infPause')&&!!document.getElementById('infPworld');I.pauseMenu(false);
+    const g0=I.TR.G.length;I.digTrench(new THREE.Vector3(180,0,-350),-1,true,0);I.digTrench(new THREE.Vector3(180,0,-900),1,false,0);out.dug=I.TR.G.length-g0;const hb=S.blds.find(x=>x.bid!=null&&x.y1-x.y0>2);out.noHouse=!hb||I.digTrench(new THREE.Vector3((hb.x0+hb.x1)/2,0,(hb.z0+hb.z1)/2),-1,true,0)===null;
+    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!!document.getElementById('infPause')&&!!document.getElementById('wmap')&&!document.getElementById('wmap').hidden;I.pauseMenu(false);out.unp=document.getElementById('wmap').hidden&&!S.paused;
     S.w='pri';const p0=S.pitch;S.wp.pri.cur=30;S.cool=0;S.fire=true;for(let i=0;i<6;i++){S.cool=0;S.reload=0;I.step(1/30,1);}out.climb=S.pitch>p0;S.fire=false;S.ads=true;I.step(1/30,20);out.sway=Math.abs(S.swX||0)+Math.abs(S.swY||0)>0;
     out.rus=I.canField('RUS','AK12')&&!I.canField('RUS','M4A1')&&I.canField('USA','M4A1')&&!I.canField('USA','AK12');
     const v=S.veh.find(x=>x.alive);if(v){const hp=v.hp;I.mine(v.x,v.z,'AT','E');I.step(1/30,2);out.mine=!v.alive||v.hp<hp;}
@@ -1322,15 +1322,15 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
     I.panel('plan',S.STR.find(c=>c.side==='F'&&c.plan)||S.STR.find(c=>c.side==='F'));const had=!!document.getElementById('iPan');I.step(1/30,5);S.lost=3;S.kills=5;S.pows=2;const gnd=WWAR.st.c.POL.gnd;I.stop(true,'KIA');out.pan=had&&!document.getElementById('iPan');out.gnd=WWAR.st.c.POL.gnd<gnd;
     out.ev=WWAR.st.ev.slice(-6).some(e=>/After the battle/.test(e.txt||''));document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     for(let d=0;d<21;d++)WWAR.step(24);out.sales=Object.keys(WWAR.st.arms2||{}).length;out.audit=WWAR.audit();return out;});
-  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections',r.dug===2,r.dug);
-  ok('Esc pauses with the battle map and the war map',r.paused);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
+  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections, never inside a house',r.dug===2&&r.noHouse,r);
+  ok('Esc pauses on the campaign map and resumes',r.paused&&r.unp,r);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
   ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('close-range voices',r.voice,r);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
 test('s61_names: soldiers in the battle have names and ranks; deaths go into the cemetery by name, kills by the player marked','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;S.dT=1e9;
     const out={};out.named=[...S.us,...S.them].every(u=>u.name&&u.full);out.tags=S.us.filter(u=>u.tag).length;const names=new Set([...S.us,...S.them].map(u=>u.name));out.uniq=names.size===S.us.length+S.them.length;
     const e=S.them[0];I.hitMan?I.hitMan(e,1000,true):null;const rec=WWAR.st.dl.ev.find(x=>x.named&&x.named[0]===e.full);out.rec=!!rec;out.by=rec&&/by the player/.test(rec.cause);out.place=rec&&rec.place===S.loc.name;
     out.found=WWAR.cemetery.entries(r=>r.named&&r.named.includes(e.full),5).length===1;out.audit=WWAR.audit();return out;});
-  ok('every soldier named and ranked, names unique',r.named&&r.uniq,r);ok('your squad wears name tags',r.tags>=6,r.tags);ok('a kill is a named record in the death ledger, marked as yours, at the battle',r.rec&&r.by&&r.place,r);ok('found in the cemetery',r.found);ok('audit clean',r.audit.length===0,r.audit);});
+  ok('every soldier named and ranked, names unique',r.named&&r.uniq,r);ok('no name tags over heads',r.tags===0,r.tags);ok('a kill is a named record in the death ledger, marked as yours, at the battle',r.rec&&r.by&&r.place,r);ok('found in the cemetery',r.found);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
