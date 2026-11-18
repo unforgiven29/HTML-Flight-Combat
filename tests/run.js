@@ -1244,6 +1244,13 @@ test('s48_people: migration categories, coalition totals, welfare, labour, healt
   ok('records and migration categories',r.n>5&&r.mig>=2,r);ok('coalition totals',r.tot>=2,r.tot);ok('followed lives with unique names and logs',r.ppl>=10&&r.uniq&&r.logs>=r.ppl,r);
   ok('derived, stable profiles',r.prof&&r.stable);ok('families',r.fam);ok('labour, health, education, disability',r.lab&&r.hl&&r.edu&&r.dis,r);ok('population events',r.ev.length>=3,r.ev);
   ok('POPULATION and LIVES tabs',r.tabs);ok('state stays small',r.size<200000,[r.size,r.dbg]);ok('audit clean',r.audit.length===0,r.audit);});
+test('s49_infblocks: plain world blocks are solid with a facade, the routes are clear, and your aircraft never shows during infantry','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY;game.ac='F-16C';const B=WSORTIE.basesFor('POL').map(x=>x.a);
+    await I.startWorld({...I.K,a3:'POL',ap:B[0],ins:'APC',mis:'ATTACK'});const S=I.S,out={};out.wm=!!(S&&S.WM);if(!out.wm)return out;await new Promise(r=>setTimeout(r,800));
+    const far=S.blds.filter(b=>b.wb);out.far=far.length;out.tex=!!WF.townMesh.material.map;out.hid=!player.mesh.visible;
+    if(far[0]){const b=far[0],P=new THREE.Vector3((b.x0+b.x1)/2,b.y0+1,(b.z0+b.z1)/2);P.x=b.x0-.1;const x0=P.x;P.x+=.5;I.collide?I.collide(P,b.y0+.1,b.y0+1.8,.35):null;out.pushed=I.collide?P.x<=b.x0-.3:true;}
+    let vis=false;const iv=setInterval(()=>{if(player.mesh.visible&&I.S)vis=true;},30);I.stop(true,'LEFT');I.stop(true,'LEFT');await new Promise(r=>setTimeout(r,400));clearInterval(iv);out.vis=vis;out.plVisSoon=player.mesh.visible&&!game.paused;return out;});
+  ok('in the live world',r.wm,r);ok('plain blocks have collision boxes',r.far>20,r.far);ok('facade texture while on foot',r.tex);ok('a block pushes you out',r.pushed!==false,r);ok('your aircraft is hidden on foot and as you leave',r.hid&&!r.vis&&!r.plVisSoon,r);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
