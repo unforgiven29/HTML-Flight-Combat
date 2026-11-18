@@ -654,7 +654,9 @@ function locChoices(cfg){const out=[];if(cfg.camp){if(typeof CAMP==='undefined'|
   for(const f of st.fronts){if(f.cf)continue;if(st.c[f.a].side!==p.side&&st.c[f.b].side!==p.side)continue;const mine=f.a===cfg.a3||f.b===cfg.a3;
     for(let k=0;k<f.sec.length;k+=Math.max(1,(f.sec.length/6)|0)){const ll=W.linePt(f.sec[k]);let best=null,bd=1e18;for(const pl of G.places){const d=(pl.lat-ll.lat)**2+((pl.lon-ll.lon)*Math.cos(ll.lat*Math.PI/180))**2;if(d<bd){bd=d;best=pl;}}
       if(best&&bd<.35&&!seen.has(best.name)){seen.add(best.name);out.push({id:best.name,place:best,fr:f.id,mine,name:best.name,a3:best.a3,pop:best.pop||0,front:st.c[f.a].n+' – '+st.c[f.b].n});}}}
-  return out.sort((a,b)=>(b.mine-a.mine)||(b.pop-a.pop)).slice(0,12);}
+  // v417: every front on your side is a place to go (Korea included), a few towns each; your own fronts first
+  const by={};for(const c of out)(by[c.fr]||(by[c.fr]=[])).push(c);const fr=Object.values(by).sort((a,b)=>(b[0].mine-a[0].mine));
+  return fr.flatMap(L=>L.sort((a,b)=>b.pop-a.pop).slice(0,4));}
 function resolveLoc(cfg,fr,cs){if(cfg.loc0){const C=locChoices(cfg).find(c=>c.id===cfg.loc0);if(C){if(cfg.camp)cs=null,cfg._town=C.i;else return placeLoc(C.place);}}
   if(cfg.camp&&typeof CAMP!=='undefined'&&CAMP.st&&window.CAMPPLUS&&typeof cmpRaw==='function'){const st=CAMP.st,i=cs??(st.front.length>>1),fx=typeof CFX!=='undefined'?CFX[i]:0,fz=st.front[i];
     let bi=0,bd=1e18;CAMPPLUS.TOWNS.forEach((t,k)=>{const d=(t.x-fx)**2+(t.z-fz)**2;if(d<bd){bd=d;bi=k;}});if(cfg._town!=null)bi=cfg._town;const T=CAMPPLUS.TOWNS[bi];

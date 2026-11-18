@@ -1223,3 +1223,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v416 — the battle in the campaign
 - Each battle is fought with a real brigade of your order of battle on that front against a real enemy brigade; the briefing (HQ lines) gives both, the front supply, artillery stocks, the air situation, squad morale and the front wear. Supply sets the ammunition you carry, artillery calls spend the real shell stocks (none left: no artillery), squad morale sets how well your men shoot; afterwards both brigades record the battle and their readiness moves.
+
+## v417
+- The Korean front is its own place to go: BATTLE LOCATION lists every front on your side (a few towns each), your own country's fronts first.
