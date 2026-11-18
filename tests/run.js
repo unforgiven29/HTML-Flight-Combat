@@ -1368,6 +1368,12 @@ test('s65_infmp: two pages in one room fight the same infantry battle: the invit
   await g.evaluate(()=>{const S=INFANTRY.S;const q=[...INFNET.N.peers.values()][0];if(!q||!q.m)return;const o=q.m.position.clone().add(new THREE.Vector3(0,1.2,6));S.pos.copy(o);const d=q.m.position.clone().setY(q.m.position.y+1.2).sub(o).normalize();INFNET.shot(o,d,30,'gun');});
   await p.waitForTimeout(600);const hp1=await p.evaluate(()=>INFANTRY.S.hp);await g.close();
   ok('the invitation reaches the other page',inv);ok('both in the same battle, each drawing the other',seen.n>0&&seen.m&&hk.n>0&&seen.same===hk.key,{seen,hk});ok('a hit between players is delivered',hp1<hp0,{hp0,hp1});});
+test('s66_link: the battle reads the campaign (brigades, supply, artillery, air, morale, wear) and writes back into the brigades','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*10);const I=INFANTRY,out={};const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',noRide:true});const L=S.link||{};
+    out.my=!!L.my;out.en=!!L.en;out.sup=L.sup!=null;out.art=L.art!=null;out.mor=S.mFr>0;const res0=S.wp.pri.res;
+    I.land();S.hp=1e9;S.dT=1e9;const r0=L.my&&L.my.ready,h0=L.my&&(L.my.hist||[]).length;I.stop(true,'KIA');document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
+    out.wrote=L.my&&(L.my.hist||[]).length>h0&&L.my.ready!==r0;out.audit=WWAR.audit();return out;});
+  ok('your brigade and theirs from the order of battle',r.my&&r.en,r);ok('supply, artillery, air and morale read',r.sup&&r.art&&r.mor,r);ok('the battle is written into the brigades',r.wrote,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
