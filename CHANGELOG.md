@@ -1199,3 +1199,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v410
 - Fix: resuming with Esc no longer raises a crash report (the browser refuses the mouse right after it was released; the refusal is now handled and the next click takes the mouse).
+
+## v411
+- Esc in a battle pauses it and opens the main menu on the CAMPAIGN tab (world-war map centred on the battle, your position marked); RESUME THE BATTLE (or Esc) returns. Infantry voice lines appear low on the left like the RIO calls. Campaign map: military airports only by default (AIRPORTS toggle shows all); unit markers for both sides with fog of war (enemy units only when detected, with the age of the report). Menu tabs no longer cover the title. A logo for the page (favicon, menu) and the repository README.

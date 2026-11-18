@@ -8,7 +8,7 @@
 'use strict';
 if(!window.WGEO||!window.WF)return;
 const G=WGEO,esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const M={el:null,cv:null,cx:null,img:null,lon:10,lat:12,ppd:3,sel:null,rw:0,end:'le',drag:null,hover:null,dpr:1};
+const M={apAll:(()=>{try{return localStorage.getItem('viper.apAll')==='1';}catch(e){return false;}})(),el:null,cv:null,cx:null,img:null,lon:10,lat:12,ppd:3,sel:null,rw:0,end:'le',drag:null,hover:null,dpr:1};
 try{const o=JSON.parse(localStorage.getItem('viper.wm')||'null');if(o&&isFinite(o.lat)){M.lat=o.lat;M.lon=o.lon;M.ppd=o.ppd||3;M.last=o.ap||null;}}catch(e){}
 const keep=()=>{try{localStorage.setItem('viper.wm',JSON.stringify({lat:M.lat,lon:M.lon,ppd:M.ppd,ap:M.sel&&M.sel.ident}));}catch(e){}};
 
@@ -45,7 +45,9 @@ function mount(){if(M.el)return;const d=document.createElement('div');d.id='wmap
   d.querySelector('#wmX').onclick=close;addEventListener('resize',()=>{if(!d.hidden)resize();});
   addEventListener('keydown',e=>{if(!d.hidden&&e.key==='Escape'){e.stopPropagation();close();}},true);}
 const status=t=>{const s=document.getElementById('wmStatus');if(s)s.textContent=t;};
-async function open(){mount();M.el.hidden=false;resize();status('LOADING WORLD DATA …');
+function apToggle(){let b=document.getElementById('wmAp');if(!b&&M.el){b=document.createElement('button');b.id='wmAp';b.style.cssText='position:absolute;left:10px;top:10px;z-index:7;padding:4px 10px;font:700 11px "B612 Mono",monospace;background:rgba(6,14,18,.85);color:#e8f0ec;border:1px solid rgba(255,255,255,.25)';
+  b.onclick=()=>{M.apAll=!M.apAll;try{localStorage.setItem('viper.apAll',M.apAll?'1':'0');}catch(e){}b.textContent=M.apAll?'AIRPORTS: ALL':'AIRPORTS: MILITARY';draw();};(M.el.firstElementChild||M.el).appendChild(b);}if(b)b.textContent=M.apAll?'AIRPORTS: ALL':'AIRPORTS: MILITARY';}
+async function open(){mount();apToggle();M.el.hidden=false;resize();status('LOADING WORLD DATA …');
   try{await G.loadData();status('');if(!M.img)M.img=shade((await G.loadHi())||G.grid);if(M.last&&!M.sel){const a=G.airports.find(q=>q.ident===M.last);if(a)select(a,false);}draw();}
   catch(e){status('WORLD DATA FAILED TO LOAD · '+(e&&e.message||e));}}
 function close(){if(M.el)M.el.hidden=true;}
@@ -78,7 +80,7 @@ function draw(){const c=M.cx;if(!c||M.el.hidden)return;const W=M.W,H=M.H;c.setTr
     c.fillStyle=p.cap===2?'#ffcf5a':'#f2efe6';c.beginPath();c.arc(x,y,r,0,7);c.fill();if(M.ppd>=10&&p.pop>=minPop*3||p.cap===2&&M.ppd>=5){c.fillStyle='rgba(242,239,230,.85)';c.fillText(p.name,x+r+3,y+4);}}
   // airports
   const show=M.ppd<6?'L':M.ppd<20?'LM':'LMS';
-  for(const a of G.airports){if(!show.includes(a.size))continue;const[x,y]=w2s(a.lat,a.lon);if(x<-8||y<-8||x>W+8||y>H+8)continue;
+  for(const a of G.airports){if(!show.includes(a.size)||(!M.apAll&&!a.mil))continue;const[x,y]=w2s(a.lat,a.lon);if(x<-8||y<-8||x>W+8||y>H+8)continue;
     c.fillStyle=a.mil?'#ff7a5a':a.size==='L'?'#5be1ff':a.size==='M'?'#7dffa0':'#b9c6c0';const s=a.size==='L'?3.2:2.4;c.fillRect(x-s,y-s,s*2,s*2);}
   if(M.sel){const a=M.sel,[x,y]=w2s(a.lat,a.lon);c.strokeStyle='#ffcf5a';c.lineWidth=2;c.beginPath();c.arc(x,y,9,0,7);c.stroke();
     if(M.ppd>=60){const rw=a.runways[M.rw];if(rw&&rw.le_lat!=null){const[p,q]=[w2s(rw.le_lat,rw.le_lon),w2s(rw.he_lat,rw.he_lon)];c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.lineWidth=4;c.stroke();}}
@@ -87,7 +89,7 @@ function draw(){const c=M.cx;if(!c||M.el.hidden)return;const W=M.W,H=M.H;c.setTr
   c.fillStyle='rgba(232,240,236,.8)';c.fillText(M.lat.toFixed(2)+'°  '+M.lon.toFixed(2)+'°',8,16);}
 function click(e){if(!G.ready)return;const r=M.cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=144;
   const show=M.ppd<6?'L':M.ppd<20?'LM':'LMS';
-  for(const a of G.airports){if(!show.includes(a.size))continue;const[sx,sy]=w2s(a.lat,a.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=a;}}
+  for(const a of G.airports){if(!show.includes(a.size)||(!M.apAll&&!a.mil))continue;const[sx,sy]=w2s(a.lat,a.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=a;}}
   if(best)select(best,false);else if(window.WARMAP){const w=s2w(x,y);WARMAP.pick(w.lat,w.lon);}}
 function select(a,fly){if(!a)return;M.sel=a;M.rw=0;M.end='le';
   // the longest paved runway first
