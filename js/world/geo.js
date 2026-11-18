@@ -72,7 +72,7 @@ G.tilesAround=(lat,lon,r)=>{const dlat=r/(R*D),dlon=r/(R*Math.max(.05,Math.cos(l
   for(let ty=Math.floor(a.y/TS);ty<=Math.floor(b.y/TS);ty++)for(let tx=Math.floor(a.x/TS);tx<=Math.floor(b.x/TS);tx++)out.push([((tx%N)+N)%N,Math.max(0,Math.min(N-1,ty))]);return out;};
 // fetch them, at most 6 at a time; resolves when all are in (or failed), with a time limit
 G.prefetch=async(lat,lon,r,onProg,limitMs=25000)=>{const T=G.tilesAround(lat,lon,r);G.online=true;G.fails=0;   // every new region tries the network again
-  let done=0;const q=T.slice(),t0=performance.now();
+  let done=0;const c0=merc(lat,lon),cx=c0.x/TS-.5,cy=c0.y/TS-.5;const q=T.slice().sort((a,b)=>Math.hypot(a[0]-cx,a[1]-cy)-Math.hypot(b[0]-cx,b[1]-cy)),t0=performance.now();   // v422: nearest tiles first
   const worker=async()=>{while(q.length){if(performance.now()-t0>limitMs)return;const[x,y]=q.shift();await loadTile(x,y);done++;onProg&&onProg(done,T.length);}};
   await Promise.race([Promise.all(Array.from({length:6},worker)),new Promise(r=>setTimeout(r,limitMs+500))]);
   for(const[x,y]of T){const v=G.tiles.get(key(x,y));if(v)v.t=++tick;}

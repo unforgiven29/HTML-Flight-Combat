@@ -577,14 +577,14 @@ function rideSetup(v){const sc=S.sc,R={t:0,dur:42,lines:[],li:0,lt:2},Z0=1500,Z1
   const lamp=new THREE.PointLight(0xff4a3a,1.1,5);lamp.position.set(0,2.2,0);cab.add(lamp);for(const[w2,h,x,y]of[[2.4,.9,0,1.25],[2.4,.5,0,2.15],[.9,.4,-.75,1.9],[.9,.4,.75,1.9]]){const o=new THREE.Mesh(new THREE.BoxGeometry(w2,h,.08),dk);o.position.set(x,y,2);cab.add(o);}   /* the rear hatch with a vision slot */
   R.men=[];for(let i=0;i<3;i++){try{const m=soldier(true);sitPose(m);m.scale.setScalar(.95);m.position.set(.85,1.25-.92*.95,-1.1+i*1.1);m.rotation.y=Math.PI/2;cab.add(m);R.men.push(m);}catch(e){}}
   cab.position.y=0;v.add(cab);R.cab=cab;R.v=v;R.Z0=Z0;R.Z1=Z1;
-  try{R.lines=W.squad?W.squad.talk(S.cfg.a3,{enemy:S.EN&&S.enA3&&W.st.c[S.enA3]?W.st.c[S.enA3].n:'the enemy',place:S.loc&&S.loc.name}):[];}catch(e){R.lines=[];}
+  try{R.lines=W.squad?W.squad.talk(S.cfg.a3,{enemy:S.EN&&S.enA3&&W.st.c[S.enA3]?W.st.c[S.enA3].n:'the enemy',place:S.loc&&S.loc.name}):[];}catch(e){R.lines=[];}R.dur=Math.max(42,R.lines.reduce((t,l)=>t+3.5+l[1].length*.065,0)+8);   // v422: the ride lasts as long as the talk (Space skips)
   S.yaw=-Math.PI/2;S.pitch=-.12;say('THE ROAD TO THE FRONT · SPACE TO SKIP',4);}
 function rideStep(dt){const R=S.trip;R.t+=dt;if(S.keys.Space||S.keys.Enter||S.keys.NumpadEnter||R.t>=R.dur){rideEnd();return false;}
   const u=R.t/R.dur,e=u<.15?u*u/.15*.5/.15*.15:u;void e;const z=R.Z0-(R.Z0-R.Z1)*Math.min(1,u*1.02),x=Math.sin(u*9)*2*Math.min(1,u*4);R.v.position.set(x,H(x,z),z);R.v.rotation.y=Math.cos(u*9)*.08;
   const bump=Math.sin(R.t*11)*.03+Math.sin(R.t*5.3)*.02;S.pos.set(x-.85,H(x,z)+1.75+bump,z);
-  const now=Date.now();if((!R.nx||now>=R.nx)&&R.li<R.lines.length){const[w,t]=R.lines[R.li++];rideSub(w,t);R.nx=now+(3500+t.length*65);}
+  const now=Date.now();if((!R.nx||now>=R.nx)&&R.li<R.lines.length){const[w,t]=R.lines[R.li++];const ms=3500+t.length*65;rideSub(w,t,ms+600);R.nx=now+ms;}
   for(const m of R.men)m.rotation.z=bump*2;return true;}
-function rideEnd(){const R=S.trip;if(!R)return;S.trip=null;try{for(const[w,t]of R.lines.slice(R.li).filter(x=>x[0]==='HQ'||x[0]==='SQUAD').slice(-3))vline(w,t);}catch(e){}{const el=document.getElementById('iRideSub');if(el)el.remove();}try{R.v.remove(R.cab);}catch(e){}S.keys.Space=false;S.ins_t=0;S.yaw=0;}
+function rideEnd(){const R=S.trip;if(!R)return;S.trip=null;try{for(const[w,t]of R.lines.slice(R.li).filter(x=>x[0]==='HQ'||x[0]==='SQUAD').slice(-3))vline(w,t);}catch(e){}try{R.v.remove(R.cab);}catch(e){}S.keys.Space=false;S.ins_t=0;S.yaw=0;}
 /* v416: THE BATTLE IS PART OF THE CAMPAIGN. You fight with a real brigade of your country's order of battle on that
    front, against a real enemy brigade; their strength, the front's supply, the air situation over the theatre, your
    artillery stocks, the squad's morale and the front's wear are read at the start and shown in the briefing, and they
@@ -736,7 +736,7 @@ function land(){if(S.res)return;if(S.trip)rideEnd();S.phase='FIGHT';const C=S.ca
   else if(S.mission==='FRONT'){const L=S.lines[S.cur],t=L.slots[(L.slots.length/2)|0];S.pos.set(t.x+2,H(t.x+2,t.z)+1.7,t.z);S.yaw=0;S.us.forEach(u=>{const q=slotOf(u);u.m.position.set(q.x,H(q.x,q.z),q.z);u.m.visible=true;});}
   else S.us.forEach((u,i)=>{const x=S.pos.x+((i%3)-1)*3,z=S.pos.z+3+Math.floor(i/3)*3;u.m.position.set(x,H(x,z),z);u.m.visible=true;});
   if(S.ins==='IFV'){S.ifv={m:C.m,hp:800,side:'F',x:C.m.position.x,z:C.m.position.z,cool:2,alive:true};S.veh.push(S.ifv);}
-  else if(S.ins!=='IFV')S.leave=C;say(S.mission==='FRONT'?'HOLD THE LINE · PUSH WITH O OR THE COMMAND POST (E)':S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
+  else if(S.ins!=='IFV')S.leave=C;{const q=clearSpot(S.pos.x,S.pos.z);if(q.x!==S.pos.x||q.z!==S.pos.z){S.pos.x=q.x;S.pos.z=q.z;S.pos.y=H(q.x,q.z)+1.7;}}say(S.mission==='FRONT'?'HOLD THE LINE · PUSH WITH O OR THE COMMAND POST (E)':S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
 
 /* ------------------------------------------------------------------ input */
 // v409: the browser refuses the mouse right after you released it (Esc) and reports it as a rejected promise; that is
@@ -834,6 +834,9 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
   if(mv&&spd<.4){u.stk=(u.stk||0)+dt;if(u.stk>.8&&!u.bound){u.stk=0;const fw=new V3(-Math.sin(u.m.rotation.y),0,-Math.cos(u.m.rotation.y));const sd=new V3(-fw.z,0,fw.x);const side=(u.sideP=u.sideP||(rn()<.5?1:-1));
       const t1=P.clone().addScaledVector(sd,side*4),t2=P.clone().addScaledVector(sd,-side*4);const ok1=!collideTest(t1),pick=ok1?t1:t2;u.bound=pick.addScaledVector(fw,2);u.boundT=2;}}else u.stk=0;
   if(u.sup>.5&&!u.spot&&!u.bound&&!u.cov&&cut(P.x,P.z)<1&&rn()<dt*.6){const c=coverNear(P,u.tgt?u.tgt.m.position:null);if(c){u.bound=c;u.boundT=4;u.cov=6;}}if(u.cov)u.cov=Math.max(0,u.cov-dt);}
+/* v422: never spawn inside a building: the nearest open ground outside every footprint */
+function inBld(x,z){for(const b of S.BLD||[]){if(!b||b.down||b.w==null)continue;if(Math.abs(x-b.x)<b.w/2+1&&Math.abs(z-b.z)<b.d/2+1)return true;}return false;}
+function clearSpot(x,z){const free=(x,z)=>!inBld(x,z)&&!collideTest(new V3(x,0,z));if(free(x,z))return{x,z};for(let r=2;r<=80;r+=2)for(let a=0;a<12;a++){const t=a/12*Math.PI*2,nx=x+Math.cos(t)*r,nz=z+Math.sin(t)*r;if(free(nx,nz))return{x:nx,z:nz};}return{x,z};}
 function collideTest(p){for(const b of near(p.x-1,p.z-1,p.x+1,p.z+1,_nb)){if(b.gone||b.y1-b.y0<1.2)continue;if(p.x>b.x0-.4&&p.x<b.x1+.4&&p.z>b.z0-.4&&p.z<b.z1+.4)return true;}return false;}
 function coverNear(P,threat){let best=null,bd=18;for(const b of near(P.x-18,P.z-18,P.x+18,P.z+18,_nb)){if(b.gone||b.y1-b.y0<1.2)continue;const cx=(b.x0+b.x1)/2,cz=(b.z0+b.z1)/2;const d=Math.hypot(cx-P.x,cz-P.z);if(d>=bd)continue;
     let tx=cx,tz=cz;if(threat){const dx=cx-threat.x,dz=cz-threat.z,l=Math.hypot(dx,dz)||1;tx=cx+dx/l*(Math.max(b.x1-b.x0,b.z1-b.z0)/2+.8);tz=cz+dz/l*(Math.max(b.x1-b.x0,b.z1-b.z0)/2+.8);}bd=d;best=new V3(tx,0,tz);}
@@ -846,12 +849,18 @@ const VL={F:{contact:['Contact front!','Enemy, close!','Eyes left — movement!'
   EN:{shout:['Contact! He\'s right there!','Frag out!','Push him!'],beg:['Don\'t shoot! I give up!','Please — I\'m hit, I\'m done!','Okay, okay! Hands up!']}};
 // voice lines are shown like the RIO's intercom calls: small lines low on the left, a coloured tag, fading out
 // v420: talk in the back of the vehicle as subtitles: each line stays until the next one, timed by its length
-function rideSub(who,txt){let el=document.getElementById('iRideSub');if(!el){el=document.createElement('div');el.id='iRideSub';el.style.cssText='position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:9991;max-width:64vw;text-align:center;pointer-events:none;font:600 16px "B612",sans-serif;color:#eef2ec;background:rgba(11,15,13,.62);padding:6px 14px';document.body.appendChild(el);}
-  el.innerHTML='<b style="color:#ffc46a;margin-right:10px">'+esc(who)+'</b>'+esc(txt);}
+// v422: who speaks where. Your men and your crew talk on the intercom: low on the left, like the RIO in the jet.
+// HQ and everything heard over the radio: the radio box top left.
+const RADIO=w=>/^(HQ|ENEMY|RADIO|BRIGADE|ARTILLERY|AIR|OPERATOR)/.test(String(w));
+function crewLine(who,txt,hold){let el=document.getElementById('iCrew');if(!el){el=document.createElement('div');el.id='iCrew';el.style.cssText='position:fixed;left:14px;bottom:92px;z-index:9991;display:flex;flex-direction:column;gap:4px;pointer-events:none;font:600 15px "B612",sans-serif;max-width:52vw';document.body.appendChild(el);}
+  const d=document.createElement('div');d.style.cssText='background:rgba(11,15,13,.5);padding:3px 10px;color:#eef2ec;transition:opacity 2.5s;opacity:1';d.innerHTML='<b style="color:#ffc46a;margin-right:10px">'+esc(who)+'</b>'+esc(txt);el.append(d);
+  while(el.children.length>3)el.firstChild.remove();const h=hold||Math.max(5500,2500+String(txt).length*75);setTimeout(()=>{d.style.opacity='0';},h);setTimeout(()=>d.remove(),h+2700);}
+function rideSub(who,txt,hold){if(RADIO(who))radioLine(who,txt,hold);else crewLine(who,txt,hold);}
 function vline(who,txt){if(S&&S.trip&&S.trip.lines){S.trip.lines.splice(S.trip.li,0,[who,txt]);return;}   // v421: during the ride every call joins the subtitle queue
-let el=document.getElementById('iVoice');if(!el){el=document.createElement('div');el.id='iVoice';el.style.cssText='position:fixed;left:14px;top:14px;z-index:9991;display:flex;flex-direction:column;gap:4px;pointer-events:none;font:600 14px "B612",sans-serif';document.body.appendChild(el);}
+  if(!RADIO(who)){crewLine(who,txt);return;}radioLine(who,txt);}
+function radioLine(who,txt,hold0){let el=document.getElementById('iVoice');if(!el){el=document.createElement('div');el.id='iVoice';el.style.cssText='position:fixed;left:14px;top:14px;z-index:9991;display:flex;flex-direction:column;gap:4px;pointer-events:none;font:600 14px "B612",sans-serif';document.body.appendChild(el);}
   const d=document.createElement('div');d.style.cssText='background:rgba(11,15,13,.5);padding:3px 10px;color:#eef2ec;transition:opacity 2.5s;opacity:1;max-width:46vw';d.innerHTML='<b style="color:'+(who==='ENEMY'?'#ff8a6a':'#ffc46a')+';margin-right:10px">'+esc(who)+'</b>'+esc(txt);el.append(d);
-  while(el.children.length>4)el.firstChild.remove();const hold=Math.max(5000,2500+String(txt).length*70);setTimeout(()=>{d.style.opacity='0';},hold);setTimeout(()=>d.remove(),hold+2700);}
+  while(el.children.length>4)el.firstChild.remove();const hold=hold0||Math.max(5500,2500+String(txt).length*75);setTimeout(()=>{d.style.opacity='0';},hold);setTimeout(()=>d.remove(),hold+2700);}
 function voiceStep(dt){if(S.phase!=='FIGHT')return;S.vT=(S.vT||0)-dt;if(S.vT>0)return;const P=S.pos;const say2=(t,c)=>{const i=t.indexOf(': ');vline(t.slice(0,i),t.slice(i+2));S.vT=3+rn()*3;S.vlines=(S.vlines||0)+1;};
   const en=S.them.filter(u=>u.alive&&!u.pow&&u.m.position.distanceTo(P)<12).sort((a,b)=>a.m.position.distanceTo(P)-b.m.position.distanceTo(P))[0];
   const lang=S.en==='R'?VL.RU:VL.EN;
@@ -1094,7 +1103,7 @@ function tankStep(dt){const T=S.tk,v=T.v,m=v.m,P=m.position;if(!v.alive){if(!S.r
   // ---- fire on board
   if(T.mod.fire>0){T.mod.fire+=dt*.02;if(S.keys.KeyX&&!T.ext){T.ext=true;T.mod.fire=0;tsay('C','Fire! Extinguishers — fire\'s out.');}if(T.mod.fire>1){tsay('C','We\'re burning — bail out, bail out!');tankLost('BAILED');}}
   // ---- view: driver's periscope low in the hull, or the gunner's sight on the gun; V for the outside view
-  const hy=P.y+(T.seat==='D'?1.35:2.35);if(T.ext){S.pos.set(P.x-Math.sin(T.hd+T.ty)*-12,P.y+6,P.z-Math.cos(T.hd+T.ty)*-12);}else if(T.seat==='D'){S.pos.set(P.x+ux*2.2,hy,P.z+uz*2.2);}else{S.pos.set(P.x,hy,P.z);S.yaw=T.hd+T.ty;S.pitch=T.gp;}
+  const hy=P.y+(T.seat==='D'?1.35:2.35);if(T.ext){S.pos.set(P.x-Math.sin(T.hd+T.ty)*-12,P.y+6,P.z-Math.cos(T.hd+T.ty)*-12);}else if(T.seat==='D'){S.pos.set(P.x+ux*2.2,hy,P.z+uz*2.2);}else{S.pos.set(P.x,hy,P.z);S.yaw=T.hd+T.ty;S.pitch=T.gp;}{const sight=!T.ext&&T.seat==='G';const tu2=m.userData.tu,g2=m.userData.tgun||m.userData.gun;if(tu2)tu2.visible=!sight;if(g2)g2.visible=!sight;}   /* v422: in the gunner's sight your own turret and barrel are not in front of the glass */
   if(T.seat==='D'&&!T.ext){S.yaw=T.hd+(S.lookY||0);}
   tankHud();}
 function gunDir(){const T=S.tk;return new V3(0,0,-1).applyEuler(new THREE.Euler(T.gp,T.hd+T.ty,0,'YXZ'));}
@@ -1183,7 +1192,7 @@ async function startWorld0(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.
   // wait for the ground at the site to be loaded (its height settles)
   /* v421: the whole battlefield's detailed terrain is in before anything is built on it, and kept (pinned) until the
      battle ends, so trenches and houses are not left standing on heights the terrain later replaces */
-  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';await G.prefetch(loc.lat,loc.lon,2600,null,20000);G.pin(loc.lat,loc.lon,2600,true);window._infPin=[loc.lat,loc.lon];}}catch(e){}
+  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';await G.prefetch(loc.lat,loc.lon,2600,null,20000);G.pin(loc.lat,loc.lon,2600,true);window._infPin=[loc.lat,loc.lon];if(WF.build){WF.build();}   /* v422: the terrain mesh is rebuilt from the detailed heights: the battle is built on that mesh, never on a sea-level gap */}}catch(e){}
   {const q1=G.ll2xz(loc.lat,loc.lon);let h0=groundAt(q1.x,q1.z);for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,100));const h=groundAt(q1.x,q1.z);if(Math.abs(h-h0)<.05&&i>3)break;h0=h;}}
   try{const c=conditions({...cfg,loc});ENV.tod=c.tod;ENV.rate=0;const map={CLEAR:'CLEAR',CLOUD:'SCATTERED',RAIN:'OVERCAST',SNOW:'OVERCAST',STORM:'STORM'};if(map[c.wx])ENV.wx=map[c.wx];ENV.setup&&ENV.setup();ENV.step&&ENV.step(0,true);cfg.cond=c;}catch(e){}
   const q2=G.ll2xz(loc.lat,loc.lon);cfg.world=true;cfg.loc=loc;cfg.O=new V3(q2.x,0,q2.z+260);const r=start(cfg);unc();return r;}
@@ -1931,5 +1940,5 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;closePan();try{if(window._infPin&&window.WGEO&&WGEO.pin){WGEO.pin(window._infPin[0],window._infPin[1],2600,false);window._infPin=null;}}catch(e){}{const el=document.getElementById('iRideSub');if(el)el.remove();}try{if(window.INFNET&&!(early&&!S.res))INFNET.leave();}catch(e){}{const t=document.getElementById('iTank');if(t)t.remove();}{const v=document.getElementById('iVoice');if(v)v.remove();}{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={aiTank,vmove,sitPose,civSpawn,civHit,soldier,tankModel,hurt,say,tracer,rayWorld,los,tankStart,tankStep,fireMain,tankHit,tankMG,clock,rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+window.INFANTRY={Hf:(x,z)=>H(x,z),solidAt,nearB:(x,z)=>near(x-2,z-2,x+2,z+2,[]).map(b=>({x0:+b.x0.toFixed(1),x1:+b.x1.toFixed(1),z0:+b.z0.toFixed(1),z1:+b.z1.toFixed(1),y0:+b.y0.toFixed(1),y1:+b.y1.toFixed(1),bid:b.bid,wb:!!b.wb,str:!!b.str,kind:b.bid!=null&&S.BLD[b.bid]?S.BLD[b.bid].kind:null})),aiTank,vmove,sitPose,civSpawn,civHit,soldier,tankModel,hurt,say,tracer,rayWorld,los,tankStart,tankStep,fireMain,tankHit,tankMG,clock,rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();

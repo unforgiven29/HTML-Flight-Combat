@@ -59,7 +59,29 @@ function talk(a3,ctx){const R=roster(a3);if(!R)return[];const F=fit(R);if(F.leng
     ()=>say(B,'When this is over I\'m going back to '+B.home+' and sleeping a week.'),
     ()=>{const med=F.find(x=>x.role==='medic');if(med)say(med,'Tourniquets high and tight. Check each other before we get out.');},
     ()=>say(A,'Morale\'s '+(A.mor>.65?'fine. We\'ve been through worse.':A.mor>.45?'thin. Everybody\'s tired.':'gone, honestly. I just want to get through today.'))];
-  const n=5+Math.floor(rn()*3),used=new Set();for(let i=0;i<20&&L.length<n;i++){const k=Math.floor(rn()*pool.length);if(used.has(k))continue;used.add(k);try{pool[k]();}catch(e){}}return L;}
+  // v422: longer talk: back-and-forth exchanges between two or three of them, not just single remarks
+  const fn=x=>x.n.split(' ')[0],C=pk(F.filter(x=>x!==A&&x!==B))||A,ld=F.find(x=>x.role==='squad leader')||A,mg=F.find(x=>x.role==='machine gunner'),med=F.find(x=>x.role==='medic'),g=F.find(x=>x.green);
+  const lost=R.lost[R.lost.length-1],ev2=(st.ev||[]).slice(-60).reverse().filter(e=>e.txt&&/CITY|FRONT|OFFENSIVE|AIR|STRIKE|CEASEFIRE|PROTEST|MEDIA|MOBILIZATION/.test(e.ty||''));
+  const conv=[
+    ()=>{say(A,'You hear from home, '+fn(B)+'?');say(B,'Letter last week. '+B.home+' is quiet, they say. Queues for bread, but quiet.');say(A,'Quiet is good.');say(B,'Quiet is good.')},
+    ()=>{say(B,'What are we walking into?');say(ld,'Trench line in front of '+(ctx.place||'the town')+'. We take over from a company that has been there nine days.');say(B,'Nine days.');say(ld,'They will be glad to see us. Check your water.')},
+    ()=>{say(C,'Anyone got a light?');say(A,'Not in here. Wait till the ramp drops and you are behind something.');say(C,'Yes, mum.')},
+    ()=>{if(!mg)return;say(mg,'If they come across the open ground I want a clear arc. Nobody stands in front of the gun.');say(B,'Nobody wants to stand in front of the gun, '+fn(mg)+'.');say(mg,'Then we understand each other.')},
+    ()=>{if(!med)return;say(med,'Show me your tourniquets. Right now. Top pocket, left side, everyone.');say(C,'It is there, doc.');say(med,'I did not ask if it was there. I asked to see it.')},
+    ()=>{if(!lost)return;say(A,fn(lost)+' used to sit right there.');say(B,'I know.');say(A,'He owed me money. Isn\'t that stupid? That is what I keep thinking about.');say(B,'It is not stupid.')},
+    ()=>{if(!g)return;say(A,'First time up, '+fn(g)+'?');say(g,'Yes.');say(A,'Stay low, stay with your team leader, drink water. The noise is the worst part, you get used to it.');say(g,'Does anyone get used to it?');say(A,'No. But you stop noticing.')},
+    ()=>{const e=ev2[0];if(!e)return;say(B,'Radio said: '+e.txt.split('.')[0]+'.');say(C,'Radio says a lot of things.');say(B,'Still. Somebody is having a worse day than us.')},
+    ()=>{const e=ev2[1];if(!e)return;say(C,'Did you see this? '+e.txt.split('.')[0]+'.');say(A,'Do not believe anything until you see it with your own eyes.')},
+    ()=>{say(A,'When this is done I am opening a little place in '+A.home+'. Coffee, pastries.');say(B,'You cannot cook.');say(A,'I will hire someone who can. I will sit in the window.');say(C,'I will come. I will pay, even.')},
+    ()=>{say(B,'Drones were bad last night. You could hear them all night, that whine.');say(C,'Jammer on the command post works, mostly.');say(B,'Mostly.')},
+    ()=>{say(C,(C.trait==='devout'?'I pray every time the ramp goes down.':C.trait==='joker'?'I have a plan. I am going to be very, very small.':C.trait==='fatalist'?'Whatever is coming is already on its way.':'Just do the job and go home.'));say(A,'Works as well as anything.')},
+    ()=>{say(ld,'Listen in. We dismount, we go left to the communication trench, single file, five metres apart.');say(ld,'If the drones come, freeze under cover, do not run. Running is what they see.');say(B,'Copy.');say(C,'Copy.')},
+    ()=>{say(A,'My kid drew me a tank. It has six guns and a cat on top.');say(B,'Why a cat?');say(A,'I asked. She said tanks are lonely.')},
+    ()=>{say(B,A.habit.replace(/^(\w+)s\b/,'$1').replace(/^/,fn(A)+', do you always ')+'?');say(A,'Every time. It keeps my hands busy.')},
+    ()=>{say(C,'How long is this ride?');say(A,'Long enough to sleep.');say(C,'Nobody sleeps in here.');say(A,(A.trait==='quiet'?'I do.':'Watch me.'))},
+    ()=>{say(B,'They say '+en+' brought in fresh units. Young guys.');say(A,'Young guys like us.');say(B,'Yes. That is what I mean.')}];
+  const n=16+Math.floor(rn()*7),used=new Set();
+  for(let i=0;i<80&&L.length<n;i++){const two=rn()<.6;const P2=two?conv:pool;const k=Math.floor(rn()*P2.length),key=(two?'c':'p')+k;if(used.has(key))continue;used.add(key);try{P2[k]();}catch(e){}}return L;}
 /* ------------------------------------------------------------------ SQUAD tab */
 function tab(p){if(!W.st)return'<div>No war running.</div>';const R=roster(p.a3);const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));const pct=x=>Math.round(x*100)+'%';
   let h='<div style="color:#8a9a92;font-size:10px">Fictional people. Trust and morale move with what happens to them together.</div><h4>YOUR SQUAD · '+R.battles+' battles</h4>';
