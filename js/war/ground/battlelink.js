@@ -36,10 +36,10 @@ function onBattle(e){const b=e&&e.battle;if(!b||!W.st)return;const st=W.st,p=st.
   if(b.civ){R.civ+=b.civ;R.inq++;}else if(won&&b.kills>0&&R.b%3===0)cite('fire discipline — no civilian harm in three actions');
   const want=Math.min(RK.length-1,Math.floor((R.won*2+R.cit.length)/5)-(R.inq?1:0));if(want>R.rk){R.rk=want;W.emit('AWARD',{e:[b.a3],txt:'You are promoted to '+RK[R.rk]+'.'});}}
 function tab(p){if(!W.st)return'<div>No war running.</div>';const R=rec(p.a3),B=X();
-  let h='<div style="color:#8a9a92;font-size:10px">Your infantry service. Civilian harm is always an inquiry.</div><h4>SERVICE RECORD · '+RK[R.rk]+'</h4>';
+  let h='<div style="color:#8a9a92;font-size:10px">Your ground war: battles, citations, promotions. Civilian harm is always an inquiry.</div><h4>SERVICE RECORD · '+RK[R.rk]+'</h4>';
   h+='<div>battles '+R.b+' · won or held '+R.won+' · wounded '+R.wnd+' · inquiries '+R.inq+'</div>';
   h+='<h4>CITATIONS</h4>'+(R.cit.slice(-8).map(c=>'<div style="font-size:10px">day '+Math.floor(c[0]/24)+' · '+esc(c[1])+' · '+esc(c[2])+'</div>').join('')||'<div>—</div>');
   h+='<h4>BATTLES</h4>'+(B.log.filter(x=>x.a3===p.a3).slice(0,8).map(x=>'<div style="font-size:10px">day '+Math.floor(x.t/24)+' · '+esc(x.place)+' · '+esc(x.res.toLowerCase())+' · lost '+x.lost+(x.civ?' · civilian harm':'')+'</div>').join('')||'<div>—</div>');return h;}
-if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.SERVICE=tab;
+if(window.NATPANEL&&NATPANEL.tabs)NATPANEL.tabs.BATTLES=tab;
 W.battlelink={onBattle,rec,tab};
 })();

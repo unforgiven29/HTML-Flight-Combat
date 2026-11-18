@@ -122,7 +122,7 @@ async function rebase(){if(WF.busy||!WF.on||!player)return;WF.busy=true;const ge
     if(!WF.on||!player||gen!==WF.gen)return;const dx=Math.round(player.pos.x),dz=Math.round(player.pos.z),nl=G.xz2ll(dx,dz);
     shift(dx,dz);G.setOrigin(nl.lat,nl.lon);build();WF.reb++;}
   catch(e){console.warn('[world] rebase',e);}finally{WF.busy=false;}}
-function loop(){requestAnimationFrame(loop);if(!WF.on||!game.active||!player)return;
+function loop(){requestAnimationFrame(loop);if(!WF.on||!game.active||!player||player.infantry)return;   /* v427: never rebuild the terrain under a ground battle */
   const d=Math.max(Math.abs(player.pos.x),Math.abs(player.pos.z));if(d>REB&&!WF.busy)WF.rebase();   /* through WF so other modules see region rebuilds */
   if(d>SZ/2-8000&&WF.busy&&!WF.warned){WF.warned=1;flash('TERRAIN LOADING · SLOW DOWN OR WAIT',2500);}if(d<REB)WF.warned=0;}
 requestAnimationFrame(loop);

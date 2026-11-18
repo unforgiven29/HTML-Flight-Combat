@@ -1393,6 +1393,11 @@ test('s70_cuts: every trench cut near you is open (no invisible trench walls)','
       const W=T.U.uTG.value.slice(0,drawn);for(const g of T.G){const d=Math.hypot((g.x0+g.x1)/2-x,(g.z0+g.z1)/2-z);if(d<40&&!W.some(v=>Math.abs(v.x-T.O.x-g.x0)<.01&&Math.abs(v.y-T.O.z-g.z0)<.01))bad++;}}
     out.bad=bad;I.stop(true,'LEFT');return out;});
   ok('cuts near the player are drawn',r.bad===0,r);});
+test('s71_tanksel: the tanker picks the tank; the picked tank is the one crewed','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const I=INFANTRY;I.kitMenu('POL',null,false,'TANK');const m=document.getElementById('u2m');
+    const opts=[...m.querySelectorAll('[data-ik^="tank:"]')].map(b=>b.dataset.ik.slice(5));m.remove();const pick=opts.find(k=>k!=='AUTO'&&/T-90|T-72/.test(k))||opts[1];
+    const S=I.start({...I.K,a3:'POL',ins:'TANKG',mis:'FRONT',noRide:true,tank:pick});const got=S.tk&&S.tk.v.name;I.stop(true,'LEFT');return{n:opts.length,pick,got};});
+  ok('tank choices listed',r.n>5,r);ok('the chosen tank is crewed',r.got===r.pick,r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
