@@ -1155,7 +1155,7 @@ test('s43_aps: vehicle catalogue by side; APS intercepts (Trophy all round, Aren
     S=I.start({...I.K,a3:'RUS',ins:'APC',mis:'ATTACK'});const blue=new Set();for(let i=0;i<60;i++)blue.add(I.pickModel(S.en,'MBT'));out.blue=[...blue];I.land();S.hp=1e9;S.dT=1e9;S.airT=1e9;S.heliT=1e9;
     const ab=mk('M1A2 SEPv3 Abrams');let n=0;for(let i=0;i<8;i++){ab.apsN=8;if(fire(ab,new V(0,0,1)))n++;}out.trophyRear=n;ab.apsN=1;fire(ab,new V(1,0,0));out.left=ab.apsN;out.panel=/INTERCEPTED/.test(document.getElementById('iArm')?.textContent||'');
     // top attack: your ATGM climbs over the target and dives
-    const k2=mk('Leopard 2A6');S.wp.lau={...I.LAU.ATGM,cur:1,res:1};S.w='lau';S.cool=0;S.reload=0;S.pos.set(k2.x+250,S.pos.y,k2.z);S.yaw=Math.atan2(250,0);I.shoot();let top=false,maxY=0;for(let i=0;i<30*6;i++){I.step(1/30);const k=S.rk[0];if(k){maxY=Math.max(maxY,k.p.y-k2.m.position.y);if(k.top)top=true;}else break;}out.top={top,maxY:Math.round(maxY)};
+    const k2=mk('Leopard 2A6');S.wp.lau={...I.LAU.ATGM,cur:1,res:1};S.w='lau';S.cool=0;S.reload=0;S.pos.set(k2.x+250,S.pos.y,k2.z);S.yaw=Math.atan2(250,0);S.me='B';S.lockTgt=k2;S.lockT=9;I.shoot();let top=false,maxY=0;for(let i=0;i<30*6;i++){I.step(1/30);const k=S.rk[0];if(k){maxY=Math.max(maxY,k.p.y-k2.m.position.y);if(k.top)top=true;}else break;}out.top={top,maxY:Math.round(maxY)};
     I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());
     S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});I.land();S.hp=1e9;const t14=mk('T-14 Armata');let cap=null;for(let i=0;i<60&&!cap;i++){t14.alive=true;t14.apsN=0;const P=t14.m.position;const r1=I.armorHit2(t14,new V(P.x,P.y+2.6,P.z+.4),new V(0,-1,.1).normalize(),'ATGM');if(/CAPSULE/.test(r1.res))cap=r1.res;}out.cap=cap;
     out.bmpt=!!I.VC['BMPT-72 Terminator'];I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());return out;});
@@ -1163,6 +1163,36 @@ test('s43_aps: vehicle catalogue by side; APS intercepts (Trophy all round, Aren
   ok('Western tanks against Russia (Abrams, Leopard, K2 ...)',r.blue.length>=4&&r.blue.some(n=>/Abrams/.test(n))&&r.blue.some(n=>/Leopard/.test(n)),r.blue);
   ok('Arena-M stops rockets from the front, never from the rear',r.arena.front>=3&&r.arena.rear===0,r.arena);ok('Trophy covers the rear',r.trophyRear>=5,r.trophyRear);ok('charges run out',r.left===0);ok('interception shown',r.panel);
   ok('ATGM flies top attack',r.top.top&&r.top.maxY>15,r.top);ok('T-14: unmanned turret ammunition, crew capsule holds',!!r.cap,r.cap);ok('BMPT-72 in the catalogue',r.bmpt);});
+test('s44_wounds_iw: launcher locks; wounds by part, bleeding, tourniquet / bandage / kit, crawling; NPC wounds and medics; the information war','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,V=THREE.Vector3,out={};
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',lau:'ATGM'});I.land();S.dT=1e9;S.airT=1e9;S.heliT=1e9;S.waveT=1e9;S.calls=9;for(const u of S.them)u.alive=false;
+    // ATGM (Poland: fire-and-forget): hold the box on a tank until it locks
+    const tm=I.tankModel(S.en,'T-90M');const tx=400,tz=150;tm.position.set(tx,0,tz);S.sc.add(tm);const tk={m:tm,hp:1100,side:'E',x:tx,z:tz,cool:9,alive:true,tank:1,nofire:true,immob:true,name:'T-90M'};S.veh.push(tk);S.pos.set(tx,0,tz+220);I.step(1/30,2);tm.position.y=S.pos.y-1.7;tk.m.updateMatrixWorld();S.w='lau';S.ads=true;const aim=()=>{const d=tk.m.position.clone().setY(tk.m.position.y+1.5).sub(S.pos);S.yaw=Math.atan2(-d.x,-d.z);S.pitch=Math.atan2(d.y,Math.hypot(d.x,d.z));};
+    S.jam=0;aim();I.lockStep(1/30);const l0=I.lockState().locked;for(let i=0;i<30*5;i++){aim();I.lockStep(1/30);}out.atgm={before:l0,after:I.lockState().locked,ff:I.lockState().ff,overlay:document.getElementById('iLau').style.display==='block'};
+    // MANPADS on the enemy helicopter
+    S.wp.lau={...I.LAU.MANPADS,cur:1,res:0};const h={m:new THREE.Group(),alive:true,hp:500};h.m.position.copy(S.pos).add(new V(0,300,-900));S.eheli=h;const aimH=()=>{const d=h.m.position.clone().sub(S.pos);S.yaw=Math.atan2(-d.x,-d.z);S.pitch=Math.atan2(d.y,Math.hypot(d.x,d.z));};
+    for(let i=0;i<30*2;i++){aimH();I.lockStep(1/30);}out.manpads=I.lockState().locked&&I.lockState().tgt===h;S.eheli=null;S.ads=false;S.w='pri';
+    // wounds
+    S.hp=100;I.hurt(20,'bullet');I.wound('legR',40,'bullet');out.wounds=S.wounds.map(w=>w.part+':'+w.sev);out.leg=Math.min(S.body.legL,S.body.legR);
+    const hp0=S.hp;I.step(1/30,30*3);out.bleeding=S.hp<hp0;I.treat('tq');I.step(1/30,30*4);out.tq=S.wounds.filter(w=>/arm|leg/.test(w.part)).every(w=>w.bleed===0)&&S.kit2.tq===1;
+    for(const w of S.wounds)w.bleed=0;const tw={part:'torso',sev:'HEAVY',bleed:.55,tq:false};S.wounds.push(tw);I.treat('band');I.step(1/30,30*5);out.band=tw.bleed===0;
+    S.body.legL=5;S.body.legR=5;I.step(1/30,2);out.crawl=S.crawl;I.treat('kit');I.step(1/30,30*9);out.kit=S.body.legL>30&&!S.crawl;
+    // NPC: a leg hit slows him; bleeding puts him down crawling back; the medic stabilises him
+    const u=S.us[0];u.alive=true;u.hp=100;const med=S.us.find(x=>x.medic);out.medic=!!med;I.npcWound(u,'legs',70);out.npcCrawl=!!u.crawl;u.hp=29;u.bleed=.3;I.npcStep(1/30);out.npcWounded=!!u.wounded;
+    med.m.position.copy(u.m.position).add(new V(1,0,0));for(let i=0;i<30*7;i++)I.npcStep(1/30);out.stab=!!u.stab;
+    // information war: radio jamming delays a call; decoys deflate
+    S.jam=1;let called=0;const rz=Math.random;Math.random=()=>0;I.radio('TEST',()=>called++);Math.random=rz;out.delayed=called===0&&S.radioQ.length===1;for(let i=0;i<30*15;i++)I.iwStep(1/30);out.through=called===1;
+    const dv=S.veh.find(v=>v.side==='E'&&v.alive);dv.decoy=true;const rr=I.armorHit2(dv,dv.m.position.clone(),new V(1,0,0),'RPG');out.decoy=/DECOY/.test(rr.res)&&!dv.alive;
+    I.stop(false);document.querySelectorAll('#u2m').forEach(x=>x.remove());
+    // the campaign side
+    for(let d=0;d<40;d++){WWAR.infowar.daily();WWAR.st.t+=24;}const X=WWAR.st.iw;out.claims=X.claims.length;out.truths=[...new Set(X.claims.map(k=>k.truth))];out.corr=X.claims.some(k=>k.corr);
+    WWAR.infowar.falseAlarm();const A=WWAR.lastAlarm;WWAR.st.t+=6;WWAR.infowar.daily();out.alarm=!!A&&A.done;const ty=new Set(WWAR.st.ev.map(e=>e.ty));out.types=['PROPAGANDA','DISINFO','CORRECTION','ALERT'].filter(t=>ty.has(t));
+    out.tab=/RADIO AND SIGNALS/.test(NATPANEL.tabs.INFOWAR(WWAR.st.c.POL));return out;});
+  ok('ATGM locks after holding the box',!r.atgm.before&&r.atgm.after&&r.atgm.ff&&r.atgm.overlay,r.atgm);ok('MANPADS locks the helicopter',r.manpads);
+  ok('a wound by part (a leg), the leg hurt',r.wounds.some(w=>/leg/.test(w))&&r.leg<100,r);ok('bleeding drains health',r.bleeding);ok('tourniquet stops the limb bleed',r.tq,r);ok('bandage stops a torso bleed',r.band);
+  ok('two bad legs: crawling',r.crawl);ok('medical kit gets you up',r.kit);ok('NPC leg wound: crawling; bleeding: wounded',r.npcCrawl&&r.npcWounded,r);ok('medic stabilises',r.medic&&r.stab,r);
+  ok('jammed radio call goes through late',r.delayed&&r.through,r);ok('decoy deflates',r.decoy);ok('claims with truth status, corrections',r.claims>5&&r.truths.length>=2&&r.corr,r);ok('false missile alarm, then all clear',r.alarm,r);
+  ok('events in the diary',r.types.length>=3,r.types);ok('INFOWAR tab',r.tab);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
