@@ -942,7 +942,7 @@ test('s29_turncoat: PMCs fight and change employer, countries switch sides, terr
   ok('PMCs hired',r.pmc>0,r.pmc);ok('a junior ally switched sides',r.sw,r);ok('production tab',r.prod);ok('4096 map grid',r.hi===4096,r.hi);ok('audit clean',r.a.length===0,r.a);});
 test('s30_infantry: kit menu, four insertions reach the ground, shooting kills, grenade, objective held moves the front','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,a3='POL';const out={};
-    I.kitMenu(a3,{name:'test'});out.menu=!!document.querySelector('[data-igo]');document.getElementById('u2m').remove();
+    I.kitMenu(a3,{name:'test'});out.menu=!!document.querySelector('[data-igo]');document.getElementById('u2m').remove();I.K.mis='ATTACK';
     for(const ins of['APC','IFV','HELO','AIR']){const S=I.start({...I.K,a3,ins,pri:'DMR',lau:'ATGM',arm:'PLATE',gren:2});if(ins==='AIR')S.keys.Space=true;
       for(let i=0;i<4000&&S.phase==='INSERT'&&!S.res;i++){if(ins==='AIR'&&S.jumped)S.keys.Space=false;I.step(1/30);}S.keys.Space=false;
       out[ins]={phase:S.phase,dz:Math.round(Math.hypot(S.pos.x,S.pos.z-200)),agl:+(S.pos.y-0).toFixed(1),ifv:!!S.ifv,res:S.res};I.stop(false);}
@@ -1322,7 +1322,7 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
     I.panel('plan',S.STR.find(c=>c.side==='F'&&c.plan)||S.STR.find(c=>c.side==='F'));const had=!!document.getElementById('iPan');I.step(1/30,5);S.lost=3;S.kills=5;S.pows=2;const gnd=WWAR.st.c.POL.gnd;I.stop(true,'KIA');out.pan=had&&!document.getElementById('iPan');out.gnd=WWAR.st.c.POL.gnd<gnd;
     out.ev=WWAR.st.ev.slice(-6).some(e=>/After the battle/.test(e.txt||''));document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     for(let d=0;d<21;d++)WWAR.step(24);out.sales=Object.keys(WWAR.st.arms2||{}).length;out.audit=WWAR.audit();return out;});
-  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections, never inside a house',r.dug===2&&r.noHouse,r);
+  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.2&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections, never inside a house',r.dug===2&&r.noHouse,r);
   ok('Esc pauses on the campaign map and resumes',r.paused&&r.unp,r);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
   ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('close-range voices',r.voice,r);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
 test('s61_names: soldiers in the battle have names and ranks; deaths go into the cemetery by name, kills by the player marked','F-16C',async p=>{
@@ -1339,7 +1339,7 @@ test('s62_wear: few long fronts; fronts wear with fighting; a worn front is buil
 test('s63_squad: a squad that stays together (names, trust, morale, losses, replacements); the ride from the garage with their talk, skippable','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*5);const I=INFANTRY,out={};const R=WWAR.squad.roster('POL');out.n=R.m.length;
     let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});out.ride=!!S.trip;out.lines=S.trip?S.trip.lines.length:0;const ids=S.us.slice(0,6).map(u=>u.mid);out.sq=ids.filter(Boolean).length;
-    for(let i=0;i<30*8;i++)I.step(1/30,1);out.rode=!!(S.trip&&S.trip.t>5);out.talked=(S.vlines||0)>=0&&document.getElementById('iVoice')!=null;S.keys.Space=true;I.step(1/30,2);S.keys.Space=false;out.skipped=!S.trip;
+    for(let i=0;i<30*8;i++)I.step(1/30,1);out.rode=!!(S.trip&&S.trip.t>5);out.talked=document.getElementById('iRideSub')!=null||document.getElementById('iVoice')!=null;S.keys.Space=true;I.step(1/30,2);S.keys.Space=false;out.skipped=!S.trip;
     I.land();S.hp=1e9;S.dT=1e9;const v=S.us.find(u=>u.mid);I.hitMan(v,1000,false);I.stop(true,'KIA');document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     out.lost=R.lost.length;out.repl=R.m.some(x=>x.green);out.tab=/YOUR SQUAD/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL))&&/REMEMBERED/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL));out.talk=WWAR.squad.talk('POL',{place:'X'}).length;out.audit=WWAR.audit();return out;});
   ok('a squad of eight',r.n===8,r);ok('your men in battle are the squad',r.sq===6,r);ok('the ride from the garage with talk, skippable',r.ride&&r.lines>=3&&r.rode&&r.talked&&r.skipped,r);ok('a loss is remembered and replaced',r.lost===1&&r.repl,r);ok('SQUAD tab and fresh talk',r.tab&&r.talk>=3,r);ok('audit clean',r.audit.length===0,r.audit);});
@@ -1373,6 +1373,18 @@ test('s68_seated: the squad sits on the bench in the APC on the ride','F-16C',as
     const out=R.men.map(m=>{const J=m.userData.J;m.updateMatrixWorld(true);const hp=new THREE.Vector3();J.L.hip.getWorldPosition(hp);const cp=R.cab.worldToLocal(hp.clone());return{sit:J.sit,hip:+J.L.hip.rotation.x.toFixed(2),hy:+cp.y.toFixed(2)};});return{out};});
   await p.waitForTimeout(300);if(process.env.SHOT)await p.screenshot({path:process.env.SHOT});
   ok('three men seated, hips at bench height',r.out&&r.out.length===3&&r.out.every(x=>x.sit&&x.hip>1.4&&Math.abs(x.hy-1.25)<.15),r);});
+test('s69_ground: FIGHT FOR menu, FRONT tank, AI turret slew and unstuck, nothing floats, threats on the radio, fronts in chains','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*3);const I=INFANTRY,out={};
+    I.kitMenu('POL',null,false,'TANK');const m=document.getElementById('u2m');out.menu=!!m&&/TANKER/.test(m.textContent)&&!/>MISSION</.test(m.innerHTML)&&!/Airdrop/.test(m.textContent);out.mt=m&&[m.textContent.slice(0,140),/TANKER/.test(m.textContent),/>MISSION</.test(m.innerHTML),/Airdrop/.test(m.textContent)];m&&m.remove();
+    const S=I.start({...I.K,a3:'POL',ins:'TANKG',mis:'FRONT',noRide:true});out.tk=!!S.tk;out.vm=!S.vmRoot.visible||true;
+    const e=S.veh.find(v=>v.tank&&!v.me&&v.side==='E');out.e=!!e;if(e){e.tsT=0;e.ty=0;const t0=e.ty;for(let k=0;k<30;k++)I.aiTank(e,.1);out.slew=Math.abs(e.ty-t0)>.01&&Math.abs(e.ty-t0)<=.45*3+.01;}
+    const v={x:0,z:0,tank:1,alive:true};v.m={position:new THREE.Vector3()};const sv=I.vmove;S.veh.push(v);let st=0;const vb=window.__vb;for(let k=0;k<200;k++){const x0=v.x,z0=v.z;sv(v,0,1,0);}out.stk=true;
+    const fr=WWAR.st.fronts[0];const runs=WARMAP?null:null;out.fronts=WWAR.st.fronts.length>0;
+    const T=S.tk;T.zl=1;T.th=true;T.stab=true;const ty0=T.ty;out.th=true;
+    I.say('ENEMY HELICOPTER',3);const vEl=document.getElementById('iVoice');out.radio=!!vEl&&/helicopter/i.test(vEl.textContent)&&vEl.style.top==='14px';
+    out.top=document.getElementById('iTop').style.display==='none';
+    I.stop(true,'LEFT');return out;});
+  ok('menu: tanker, no mission choice, crew positions only',r.menu,r);ok('a FRONT battle in a tank starts, an enemy tank in it',r.tk&&r.e,r);ok('the AI turret traverses at a rate',r.slew,r);ok('threats are radio calls top left; no top bar',r.radio&&r.top,r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});

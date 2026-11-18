@@ -49,7 +49,7 @@ function setup(a3,ap){if(!W||!W.st)return;SU.a3=a3;SU.ap=ap;SU.ac=SU.ac&&AC[SU.a
    '<div'+(cv?' class="two"':'')+'><section class="sec"><h3>ESCORTS</h3>'+seg('u2e',SU.esc,[[0,'NONE'],[1,'1 FLIGHT'],[2,'2 FLIGHTS']])+'</section>'+
    (cv?'<section class="sec"><h3>START</h3>'+seg('u2c',SU.cv?1:0,[[0,'RUNWAY'],[1,'CARRIER']])+'</section>':'')+'</div>'+
    '</div>'+
-   '<footer class="mf"><button class="ghost" data-u2x="1">CANCEL</button><div class="r"><button class="alt" data-inf="1">GO AS INFANTRY</button><button class="go" data-u2go="1">FLY SORTIE ▸</button></div></footer>';
+   '<footer class="mf"><button class="ghost" data-u2x="1">CANCEL</button><div class="r"><button class="go" data-u2go="1">FLY SORTIE ▸</button></div></footer>';
   modal(h,'setup');}
 async function go(){const s=document.getElementById('u2ac');if(s)SU.ac=s.value;game.ac=SU.ac;const T=W.deep?W.deep.targets(SU.a3):[];const t=document.getElementById('u2tg');
   if(W.deep){const k=W.deep.PLN();k.k=SU.mis==='AUTO'?'AUTO':SU.mis==='INTERCEPT'?'CAP':SU.mis==='ANTI-SHIP'?'STRIKE':SU.mis;k.tgt=SU.mis==='AUTO'||!t?null:(T[+t.value]||null);k.esc=SU.esc;}
