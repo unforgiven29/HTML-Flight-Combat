@@ -118,11 +118,11 @@ function makeSide(id,att){const g=SIDES[id]||SIDES.M17;const w={...SIDE,...g,cls
 function armOf(k){const h=HELM[k.helm]||HELM.BALL,v=VEST[k.vest]||VEST.P3,x=EXTRA[k.extra]||EXTRA.NONE,kg=h.kg+v.kg+x.kg;
   return{n:[h.k<1?h.n:null,v.k<1?v.n:null,x.k<1?x.n:null].filter(Boolean).join(' · ')||'No armour',k:v.k,head:h.k,limb:x.k,kg,spd:Math.max(.7,1-kg*.011)};}
 // saved kits (three slots, in this browser)
-const KITKEYS=['loc0','role','pri','gun','att','side','satt','lau','helm','vest','extra','gren','ins','mis'];
+const KITKEYS=['tank','loc0','role','pri','gun','att','side','satt','lau','helm','vest','extra','gren','ins','mis'];
 function kitsLoad(){try{return JSON.parse(localStorage.getItem('viper.kits')||'[]')||[];}catch(e){return[];}}
 function kitSave(i){const L=kitsLoad();const o={};for(const k of KITKEYS)o[k]=JSON.parse(JSON.stringify(K[k]));L[i]=o;try{localStorage.setItem('viper.kits',JSON.stringify(L));}catch(e){}}
 function kitApply(i){const o=kitsLoad()[i];if(!o)return false;for(const k of KITKEYS)if(o[k]!==undefined)K[k]=JSON.parse(JSON.stringify(o[k]));return true;}
-const K={mode:'INF',mis:'FRONT',role:'ASSAULT',pri:'RIFLE',gun:null,att:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'},side:'M17',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'},lau:'RPG',arm:'PLATE',helm:'BALL',vest:'P3',extra:'NONE',ins:'IFV',gren:2,a3:null,ap:null};
+const K={tank:'AUTO',mode:'INF',mis:'FRONT',role:'ASSAULT',pri:'RIFLE',gun:null,att:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'},side:'M17',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'},lau:'RPG',arm:'PLATE',helm:'BALL',vest:'P3',extra:'NONE',ins:'IFV',gren:2,a3:null,ap:null};
 function names(a3){const E=EQ(a3);return{MBT:first(E.MBT),FTR:first(E.FTR4),ATK:first(E.ATK),RIFLE:first(E.RIFLE),RPG:null,ATGM:first(E.ATGM),MANPADS:first(E.MANPADS),APC:first(E.APC),IFV:first(E.IFV),HELO:first(E.UH)||first(E.HEL),AIR:first(E.TRN)};}
 // v378: the classic campaign (CAMP) has no country registry: BLUEFOR fights as the USA, REDFOR as Russia; the battle is
 // in the campaign's hottest sector and its result moves that sector of the campaign front.
@@ -164,6 +164,9 @@ function kitMenu(a3,ap,camp,mode){if(!camp&&!W.st)return;if(mode)K.mode=mode;K.m
      '<div class="note" style="margin:8px 0 3px">LIMBS</div><div class="opts">'+Object.entries(EXTRA).map(([k,a])=>o2('extra',k,a.n,(a.k<1?Math.round((1-a.k)*100)+'% · ':'')+a.kg+' kg')).join('')+'</div>'+
      '<div class="note">'+ar.kg.toFixed(1)+' kg in all · you move at '+Math.round(ar.spd*100)+'% speed. Each piece protects its own hit zone.</div>','pick each piece')+
    sec('GRENADES','<div class="seg">'+[0,2,4].map(n=>'<button data-ik="gren:'+n+'" aria-pressed="'+(K.gren===n)+'">'+n+'</button>').join('')+'</div><div class="note">A sidearm is always carried.</div>'))+
+   (K.mode==='TANK'?sec('TANK','<div class="opts">'+(()=>{const mine=String(EQ(K.a3)['MBT']||'').split(/,\s*/).map(n=>Object.keys(VC).find(k=>{const x=k.toLowerCase().replace(/[^a-z0-9]/g,''),y=n.toLowerCase().replace(/[^a-z0-9]/g,'');return y&&(x.includes(y)||y.includes(x));})).filter(Boolean);
+      const all=Object.keys(VC).filter(k=>VC[k].cls==='MBT').sort((a,b)=>(mine.includes(b)-mine.includes(a))||a.localeCompare(b));const A=ARMT.MBT;
+      return o2('tank','AUTO','Your army\'s tank','what '+(p?p.n:'your country')+' sends to this front')+all.map(k=>{const v=VC[k];return o2('tank',k,k+(mine.includes(k)?' · in service':''),(v.fam==='SOV'?'Soviet school':'Western school')+' · crew '+(v.crew||4)+' · '+(v.lay==='carousel'?'autoloader':v.lay==='bustle'?'loader, bustle rack':v.lay||'loader')+(v.era?' · ERA '+v.era:'')+' · armour ×'+(v.arm||1));}).join('');})()+'</div>','the tank you crew'):'')+
    sec(K.mode==='TANK'?'CREW POSITION':'INSERTION','<div class="opts">'+Object.keys(INS).filter(k=>(K.mode==='TANK')===/^TANK/.test(k)).map(k=>o('ins',k,INS[k],(N[k]?N[k]+' · ':'')+INSB[k])).join('')+'</div>')+
    '</div>'+card+'</div>'+
    sec('CONTROLS','<div class="keys">'+keys.map(([k,t])=>'<span><kbd>'+k+'</kbd>'+t+'</span>').join('')+'</div><div class="note">In the world war you fight in the live world while the war goes on.</div>')+
@@ -1096,7 +1099,7 @@ function tankMG(v,dt){v.mgc=(v.mgc||0)-dt;if(v.mgc>0||v.nofire)return;const foes
    engine, tracks, turret drive, gun, optics, ammunition and fuel, and each crewman; damage changes what the crew can
    do (no loader: slower loading; no driver: immobile; gunner hit: the commander takes the gun). */
 const TKA={APFSDS:'sabot',HEAT:'HEAT',HE:'HE'};
-function tankStart(){const seat=S.ins==='TANKD'?'D':'G';const m=tankModel(S.me);const x=0,z=260;m.position.set(x,H(x,z),z);S.sc.add(m);
+function tankStart(){const seat=S.ins==='TANKD'?'D':'G';const m=tankModel(S.me,S.cfg.tank&&S.cfg.tank!=='AUTO'?S.cfg.tank:null);const x=0,z=260;m.position.set(x,H(x,z),z);S.sc.add(m);
   const vc=VC[m.userData.name]||{};const fam=famOf(m.userData.name||'')||'NATO',auto=fam==='SOV';
   const v={m,hp:1400,side:'F',tank:true,me:true,x,z,cool:0,alive:true,name:m.userData.name||'tank',fam};S.veh.push(v);
   const crew={C:{n:'Commander',hp:100},G:{n:'Gunner',hp:100},L:{n:auto?'Autoloader':'Loader',hp:auto?999:100},D:{n:'Driver',hp:100}};
@@ -1232,7 +1235,9 @@ async function startWorld0(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.
   // wait for the ground at the site to be loaded (its height settles)
   /* v421: the whole battlefield's detailed terrain is in before anything is built on it, and kept (pinned) until the
      battle ends, so trenches and houses are not left standing on heights the terrain later replaces */
-  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';for(let k=0;k<5;k++){const r=await G.prefetch(loc.lat,loc.lon,2600,(d,n)=>{cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+d+' / '+n;},15000);if(r.have>=r.need)break;cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+r.have+' / '+r.need+' · RETRYING';await new Promise(q=>setTimeout(q,1500));}   /* v424: wait until every tile of the battlefield is in */G.pin(loc.lat,loc.lon,2600,true);window._infPin=[loc.lat,loc.lon];if(WF.build){WF.build();}   /* v422: the terrain mesh is rebuilt from the detailed heights: the battle is built on that mesh, never on a sea-level gap */}}catch(e){}
+  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';let tr=null;for(let k=0;k<5;k++){const r=tr=await G.prefetch(loc.lat,loc.lon,2600,(d,n)=>{cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+d+' / '+n;},15000);if(r.have>=r.need)break;cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+r.have+' / '+r.need+' · RETRYING';await new Promise(q=>setTimeout(q,1500));}   /* v424: wait until every tile of the battlefield is in */if(tr&&tr.have<tr.need){/* v427: the real terrain did not load: fight on generated ground rather than on a broken (sea-level) one */unc();try{if(typeof player!=='undefined'&&player)player.infantry=false;}catch(e){}
+      const r2=start(cfg);setTimeout(()=>{try{vline('HQ','The map of '+loc.name+' did not load ('+tr.have+' of '+tr.need+' terrain tiles): this battle is fought on generated terrain.');}catch(e){}},2500);return r2;}
+    G.pin(loc.lat,loc.lon,2600,true);window._infPin=[loc.lat,loc.lon];if(WF.build){WF.build();}   /* v422: the terrain mesh is rebuilt from the detailed heights: the battle is built on that mesh, never on a sea-level gap */}}catch(e){}
   {const q1=G.ll2xz(loc.lat,loc.lon);let h0=groundAt(q1.x,q1.z);for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,100));const h=groundAt(q1.x,q1.z);if(Math.abs(h-h0)<.05&&i>3)break;h0=h;}}
   try{const c=conditions({...cfg,loc});ENV.tod=c.tod;ENV.rate=0;const map={CLEAR:'CLEAR',CLOUD:'SCATTERED',RAIN:'OVERCAST',SNOW:'OVERCAST',STORM:'STORM'};if(map[c.wx])ENV.wx=map[c.wx];ENV.setup&&ENV.setup();ENV.step&&ENV.step(0,true);cfg.cond=c;}catch(e){}
   const q2=G.ll2xz(loc.lat,loc.lon);cfg.world=true;cfg.loc=loc;cfg.O=new V3(q2.x,0,q2.z+260);const r=start(cfg);unc();return r;}
