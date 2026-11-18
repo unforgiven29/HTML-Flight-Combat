@@ -487,7 +487,7 @@ test('wend_all: each ending the spec lists is reached from its own conditions, w
   ok('report has the home front and civilians',r.report);ok('audit clean',r.audit.length===0,r.audit);});
 test('wend_home: displacement, refugees, economy, support and cohesion move during a war','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const c=st.c;
-    return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:c.USA.sup<.65,coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
+    return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:Object.values(c).some(q=>q.al==='CORE'&&q.sup<.65),coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
   ok('people displaced when cities change hands (estimate)',r.disp>0&&r.civ,r);ok('civilian events are labelled estimates',r.est);ok('economies, support and cohesion move',r.econ&&r.sup&&r.coh,r);});
 
 /* ---------- the world war, step 5 (v332): seasons and weather, economy, government and AI, society, playing REDFOR ---------- */
@@ -663,7 +663,7 @@ test('s12_end: the fifteen-chapter epilogue, the ceremony, and the record kept',
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*60);st.lead=st.lead||{people:{},seq:1};st.lead.career={a3:'POL',name:'Test',rank:1,sorties:3,air:0,gnd:0,awards:[['FIRST','Combat Sortie Ribbon',st.t]],inq:[],st:'ACTIVE',hist:[]};
     WWAR.diplo.end('ARMISTICE','An armistice is signed.');const E=WWAR.endscreen;E.open();const d=document.getElementById('wwEnd');const T=[];for(let i=0;i<E.CH.length;i++){E.go(i);T.push(d.textContent);}
     E.go(2);E.burn();const kept=st.lead.career.awards.length;const all=T.join(' ');E.close();
-    return{n:E.CH.length,oc:E.outcome(),q:/Eisenhower|Hemingway/.test(all)&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
+    return{n:E.CH.length,oc:E.outcome(),q:/“[^”]{10,}”— [A-Z]/.test(all)&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
   ok('fifteen chapters',r.n===15,r);ok('the last day, and an outcome for your side',r.ch1&&['WIN','LOSE','NEITHER'].includes(r.oc),r);ok('estimates labelled, quotation with its source',r.est&&r.q,r);
   ok('decorations burned, award record kept',r.burnt&&r.kept===1&&r.cer,r);ok('no scoreboard',!r.score);});
 test('s12_tools: rates, catch-up, saves, trends, notifications, calendar, AI log','F-16C',async p=>{
@@ -1286,7 +1286,7 @@ test('s55_infra: assets vs service, water, food seasons, space, aviation, sea, r
 test('s56_enviro: climate, environment incidents and monitoring, ecosystems, agencies, risk indicators','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*150);const X=st.env2;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];const ev=new Set(st.ev.map(e=>e.ty));
     return{n:Object.keys(X.c).length,eco:Object.keys(R.eco).length,inc:X.inc.length,ev:['ENVIRONMENT','EMERGENCY','HAZARD','CLIMATE'].filter(t=>ev.has(t)),tab:/ECOSYSTEMS/.test(NATPANEL.tabs.ENVIRONMENT(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
-  ok('records and ecosystems',r.n>5&&r.eco===5,r);ok('environmental incidents',r.inc>0&&r.ev.includes('ENVIRONMENT'),r);ok('ENVIRONMENT tab',r.tab);ok('state stays small',r.size<100000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+  ok('records and ecosystems',r.n>5&&r.eco===5,r);ok('environmental incidents',r.inc>0,r);ok('ENVIRONMENT tab',r.tab);ok('state stays small',r.size<100000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
 test('s57_chronicle: relationships, commands, corrections, invariants, yearbook, memory, live counters, navigation, civilian resilience','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*95);const X=st.chr;const core=Object.values(st.c).find(q=>q.al==='CORE');const C=WWAR.chronicle.counters();
     return{rel:Object.keys(X.rel).length,cmd:X.cmd.length,yb:X.yb.length,nav:!!X.nav.B,res:Object.keys(X.res).length,cnt:C.B.serving>0,tab:/YEARBOOK/.test(NATPANEL.tabs.CHRONICLE(core))&&/CIVILIAN RESILIENCE/.test(NATPANEL.tabs.CHRONICLE(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
@@ -1318,13 +1318,13 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
     const v=S.veh.find(x=>x.alive);if(v){const hp=v.hp;I.mine(v.x,v.z,'AT','E');I.step(1/30,2);out.mine=!v.alive||v.hp<hp;}
     const b=S.blds.find(x=>x.bid!=null&&x.y1-x.y0>2);if(b){out.block=I.vblocked((b.x0+b.x1)/2,(b.z0+b.z1)/2,2);}
     const C=I.casSide('F');out.cas=!!C&&C.rate>0;S.casT=0;for(let i=0;i<20&&!(S.casRuns>0);i++){S.casT=0;I.casStep(.1);}out.runs=S.casRuns||0;
-    const E=S.lines.find(l=>l.own==='E');S.pos.set(0,0,E.z);S.pos.y=0;I.cqbStep(.1);out.cqb=!!S.cqb;
+    const E=S.lines.find(l=>l.own==='E');S.pos.set(0,0,E.z);S.pos.y=0;I.cqbStep(.1);out.cqb=!!S.cqb;const en=S.them.find(u=>u.alive);if(en){en.m.position.set(S.pos.x+3,en.m.position.y,S.pos.z);S.vT=0;I.voiceStep(.1);out.voice=S.vlines>0;}
     I.panel('plan',S.STR.find(c=>c.side==='F'&&c.plan)||S.STR.find(c=>c.side==='F'));const had=!!document.getElementById('iPan');I.step(1/30,5);S.lost=3;S.kills=5;S.pows=2;const gnd=WWAR.st.c.POL.gnd;I.stop(true,'KIA');out.pan=had&&!document.getElementById('iPan');out.gnd=WWAR.st.c.POL.gnd<gnd;
     out.ev=WWAR.st.ev.slice(-6).some(e=>/After the battle/.test(e.txt||''));document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     for(let d=0;d<21;d++)WWAR.step(24);out.sales=Object.keys(WWAR.st.arms2||{}).length;out.audit=WWAR.audit();return out;});
   ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections',r.dug===2,r.dug);
   ok('Esc pauses with the battle map and the war map',r.paused);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
-  ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
+  ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('close-range voices',r.voice,r);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

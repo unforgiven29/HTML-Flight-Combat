@@ -33,7 +33,12 @@ function draw(c,w2s,M,phase){const st=W.st;if(!st)return;
   // smooth curve through the sector positions, red / blue either side, its width following the zoom; breaks where the
   // border itself breaks (islands, gaps between sectors)
   const lw=Math.max(1.2,Math.min(4.5,M.ppd*.22)),gap=Math.max(30,M.ppd*1.3),col=s=>s==='B'?'91,225,255':'255,90,74';
-  for(const f of st.fronts){const A=st.c[f.a],B=st.c[f.b];const P=f.sec.map(s=>{const lat=s.lat+s.ny*s.off/111.2,lon=s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D));return{l:w2s(lat,lon),b:w2s(s.lat,s.lon),off:s.off};});
+  for(const f of st.fronts){const A=st.c[f.a],B=st.c[f.b];
+    // v407: draw a smoothed line: offsets and normals averaged over neighbouring sectors (weights 1-2-3-2-1), so a long war
+    // does not draw spikes, loops and crossings; a point that would run backwards along the front is dropped
+    const S0=f.sec,n=S0.length,W5=[1,2,3,2,1];const sm=S0.map((s,i)=>{let o=0,nx=0,ny=0,w=0;for(let k=-2;k<=2;k++){const q=S0[i+k];if(!q)continue;const ww=W5[k+2];o+=q.off*ww;nx+=q.nx*ww;ny+=q.ny*ww;w+=ww;}const l=Math.hypot(nx,ny)||1;return{lat:s.lat,lon:s.lon,off:o/w,nx:nx/l,ny:ny/l};});
+    let P=sm.map(s=>{const lat=s.lat+s.ny*s.off/111.2,lon=s.lon+s.nx*s.off/(111.2*Math.cos(s.lat*D));return{l:w2s(lat,lon),b:w2s(s.lat,s.lon),off:s.off};});
+    P=P.filter((p,i)=>{if(!i||i===P.length-1)return true;const a=P[i-1],b=P[i+1];const bx=b.b[0]-a.b[0],by=b.b[1]-a.b[1],dx=p.l[0]-a.l[0],dy=p.l[1]-a.l[1];return bx*dx+by*dy>=0;});
     for(let i=0;i<P.length-1;i++){const p=P[i],q=P[i+1];if(Math.hypot(p.b[0]-q.b[0],p.b[1]-q.b[1])>gap)continue;const o=(p.off+q.off)/2;if(Math.abs(o)<.5)continue;
       c.fillStyle='rgba('+col(o>0?A.side:B.side)+','+Math.min(.42,.12+Math.abs(o)/150)+')';c.beginPath();c.moveTo(p.b[0],p.b[1]);c.lineTo(q.b[0],q.b[1]);c.lineTo(q.l[0],q.l[1]);c.lineTo(p.l[0],p.l[1]);c.closePath();c.fill();}
     const runs=[];let cur=[];for(let i=0;i<P.length;i++){if(i&&Math.hypot(P[i].l[0]-P[i-1].l[0],P[i].l[1]-P[i-1].l[1])>gap){runs.push(cur);cur=[];}cur.push(P[i].l);}runs.push(cur);
@@ -43,6 +48,10 @@ function draw(c,w2s,M,phase){const st=W.st;if(!st)return;
   c.font='700 10px "B612 Mono",monospace';for(const[k,v]of Object.entries(st.cities)){if(v.h===v.own)continue;const[x,y]=w2s(v.lat,v.lon);c.strokeStyle='#ffcf5a';c.lineWidth=2;c.beginPath();c.moveTo(x-5,y-5);c.lineTo(x+5,y+5);c.moveTo(x+5,y-5);c.lineTo(x-5,y+5);c.stroke();if(M.ppd>=8){c.fillStyle='#ffcf5a';c.fillText(k.split('|')[0],x+7,y-6);}}
   if(UI.sel){const C=G.byA3.get(UI.sel);if(C){c.strokeStyle='#ffcf5a';c.lineWidth=1.5;c.beginPath();for(const r of C.r){let px=null;for(let i=0;i<r.length;i+=2){const[x,y]=w2s(r[i+1],r[i]);if(i===0||Math.abs(x-px)>M.W*.5)c.moveTo(x,y);else c.lineTo(x,y);px=x;}c.closePath();}c.stroke();}}}
 
+// v407: fronts relax: a sector far ahead of or behind both neighbours moves a little toward them each day (a front line
+// is continuous; isolated salients are cut off or straightened), the total ground held is kept the same
+if(W.daily)W.daily.push(()=>{const st=W.st;if(!st)return;for(const f of st.fronts){const S0=f.sec;if(S0.length<3)continue;const d=S0.map((s,i)=>{const a=S0[i-1],b=S0[i+1];if(!a||!b)return 0;const m=(a.off+b.off)/2;return Math.abs(s.off-m)>8?(m-s.off)*.05:0;});
+  const mean=d.reduce((t,x)=>t+x,0)/S0.length;S0.forEach((s,i)=>{s.off+=d[i]-mean;});}});
 function panel(){const el=document.getElementById('wmWar');if(!el)return;const st=W.st;
   if(!st){el.innerHTML='<h3>WORLD WAR</h3><div class="disc">Fictional scenario: real countries, borders and airfields; an invented war. Not a prediction of what any country would do.</div><div class="tc"><button data-w="new">START · FORCES AS ESTIMATED</button><button data-w="new" data-v="EVEN">START · EVEN SIDES</button><button data-w="load">LOAD SAVED WAR</button></div>';return;}
   const P=Object.values(st.c),bel=s=>P.filter(p=>p.side===s&&(p.al==='CORE'||p.al==='ALLY')),sum=(L,k)=>Math.round(L.reduce((t,p)=>t+p[k],0));

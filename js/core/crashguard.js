@@ -7,7 +7,7 @@ const S={shown:false,n:0,log:[],crashed:false,lastFrame:performance.now(),hidden
 const hash=t=>{let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16).toUpperCase().padStart(8,'0');};
 const ver=()=>{const s=document.querySelector('script[src*="game.js"]');const m=s&&/v=(\d+)/.exec(s.src);return m?m[1]:'0';};
 const top=st=>String(st||'').split('\n').slice(0,6).map(x=>x.trim().replace(/https?:\/\/[^/]+\//,'')).join('\n');
-function ctx(){try{const P=PL(),g=G();return'aircraft '+(P&&P.type||'-')+' · scenario '+(g&&g.scen||'-')+' · '+(P&&P.pos?'pos '+[P.pos.x,P.pos.y,P.pos.z].map(v=>Math.round(v)).join(','):'no player')+' · frame '+S.n;}catch(e){return'context unavailable';}}
+function ctx(){try{const P=PL(),g=G();const I=window.INFANTRY&&window.INFANTRY.S;if(I)return'infantry · '+(I.mission||'-')+' at '+((I.loc&&I.loc.name)||'-')+' · '+((I.cfg&&I.cfg.a3)||'-')+(I.WM?' · live world':'')+' · weapon '+((I.wp&&I.wp[I.w]&&I.wp[I.w].n)||'-');return'aircraft '+(P&&P.type||'-')+' · scenario '+(g&&g.scen||'-')+' · '+(P&&P.pos?'pos '+[P.pos.x,P.pos.y,P.pos.z].map(v=>Math.round(v)).join(','):'no player')+' · frame '+S.n;}catch(e){return'context unavailable';}}
 function ui(){
   if(S.el)return S.el;const d=document.createElement('div');d.id='crashGuard';
   d.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(6,8,10,.88);color:#e8f0ea;font:14px/1.45 "B612 Mono",ui-monospace,monospace;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';

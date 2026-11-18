@@ -72,7 +72,7 @@ function tintUrban(g,U){const p=g.attributes.position,c=g.attributes.color.array
     c[i*3]+=(.47-c[i*3])*k;c[i*3+1]+=(.46-c[i*3+1])*k;c[i*3+2]+=(.44-c[i*3+2])*k;}g.attributes.color.needsUpdate=true;}
 // buildings: urban footprints filled (density shared out by area), a cluster at every town (size from population),
 // high-rise cores at cities over 500,000. Footprints and heights are generated, positions and extents are real.
-function towns(R){const{T,U}=R,CAP=30000;let seed=Math.floor(Math.abs(G.o.lat*1e3+G.o.lon*7e3))%2147483646+1;const rn=()=>(seed=(seed*16807)%2147483647)/2147483647;
+function towns(R){const{T,U}=R,CAP=42000;let seed=Math.floor(Math.abs(G.o.lat*1e3+G.o.lon*7e3))%2147483646+1;const rn=()=>(seed=(seed*16807)%2147483647)/2147483647;
   const geo=new THREE.BoxGeometry(1,1,1);geo.translate(0,.5,0);const im=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:0xffffff}),CAP);
   const M=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),v=new THREE.Vector3(),col=new THREE.Color(),Y=new THREE.Vector3(0,1,0);let i=0;
   const B=[];WF.bldg=B;

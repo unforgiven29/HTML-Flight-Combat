@@ -126,7 +126,7 @@ function terrGeo(SZ,fn,pal,wfn){const SEG=440;const g=new THREE.PlaneGeometry(SZ
     c*=mix(1.,.82+.36*vn(vW.xz/23.),f1)*mix(1.,.86+.28*vn(vW.xz/170.),f2);
     diffuseColor.rgb=c;}`);};
  window.TERRAIN=new THREE.Mesh(g,tm);scene.add(TERRAIN);
- const wm=new THREE.MeshPhongMaterial({color:0x1d4a68,shininess:80,specular:0x5a7890});
+ const wm=new THREE.MeshPhongMaterial({color:0x1d4a68,shininess:80,specular:0x5a7890,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});   /* v407: no z-fighting with the shore */
  wm.onBeforeCompile=s=>{s.vertexShader='varying vec3 vW;\n'+s.vertexShader.replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.)).xyz;');
   s.fragmentShader='varying vec3 vW;\n'+GLSL_NOISE+'\n'+s.fragmentShader.replace('#include <color_fragment>',
    '#include <color_fragment>\ndiffuseColor.rgb*=.9+.2*vn(vW.xz/90.+vec2(0.,vn(vW.xz/700.)*3.));');};
