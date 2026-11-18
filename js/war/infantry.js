@@ -633,7 +633,10 @@ function land(){if(S.res)return;S.phase='FIGHT';const C=S.carrier;S.pos.y=H(S.po
   else if(S.ins!=='IFV')S.leave=C;say(S.mission==='FRONT'?'HOLD THE LINE · PUSH WITH O OR THE COMMAND POST (E)':S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
 
 /* ------------------------------------------------------------------ input */
-function bind(){const c=S.cv;c.addEventListener('click',()=>{if(AU.C&&AU.C.state==='suspended')AU.C.resume();if(document.pointerLockElement!==c&&c.requestPointerLock)c.requestPointerLock();});
+// v409: the browser refuses the mouse right after you released it (Esc) and reports it as a rejected promise; that is
+// not an error: the next click on the view takes the mouse
+function lockPtr(c){try{const p=c&&c.requestPointerLock&&c.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+function bind(){const c=S.cv;c.addEventListener('click',()=>{if(AU.C&&AU.C.state==='suspended')AU.C.resume();if(document.pointerLockElement!==c&&c.requestPointerLock)lockPtr(c);});
   S.onK=e=>{if(!S)return;S.keys[e.code]=e.type==='keydown';if(e.type!=='keydown')return;e.stopPropagation();
     if(e.code==='Escape'){if(S.pan){closePan();return;}if(S.res){stop(true,'LEFT');}else pauseMenu(!S.paused);return;}if(S.paused)return;if(e.code==='KeyR')reload();if(e.code==='KeyJ')digMine();if(e.code==='KeyN')mineKey();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='Digit5')treat('tq');if(e.code==='Digit6')treat('band');if(e.code==='Digit7')treat('kit');if(e.code==='KeyX')S.prone=!S.prone;if(e.code==='KeyO')radio('OFFENSIVE',()=>{offensive();if(S.readBy&&rn()<.6&&S.mission!=='ATTACK'){say('THEY HEARD THE ORDER · ENEMY BARRAGE ON OUR LINE',3);const L=S.mission==='FRONT'?S.lines[S.cur]:{z:S.trZ||S.pos.z};arty(new V3(0,0,L.z),6,'E');}});if(e.code==='KeyE')interact();if(e.code==='KeyK')buildCP();if(e.code==='KeyT')fallBack(true);if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
   S.onM=e=>{if(!S||document.pointerLockElement!==S.cv)return;const k=S.ads?1/(S.wp[S.w].ads||1):1;S.yaw-=e.movementX*.0022*k;S.pitch=Math.max(-1.45,Math.min(1.45,S.pitch-e.movementY*.0022*k));};
@@ -986,7 +989,7 @@ function digMine(){if(S.phase!=='FIGHT')return;if(!(S.cfg&&S.cfg.role==='ENGINEE
 /* v407: Esc pauses the battle: everything stops where it is; a map shows where you are (the battle area, and the place
    on Earth and in the war); RESUME, MAIN MENU (the battle waits, paused, behind it) or LEAVE THE BATTLE. */
 function pauseMenu(on){if(!S)return;closePan();S.paused=on;let el=document.getElementById('infPause');
-  if(!on){if(el)el.remove();const rb=document.getElementById('infBack');if(rb)rb.remove();try{if(window.WMAP)WMAP.close();}catch(e){}S.cv.style.display='';S.hud.style.display='';try{S.cv.requestPointerLock&&S.cv.requestPointerLock();}catch(e){}return;}
+  if(!on){if(el)el.remove();const rb=document.getElementById('infBack');if(rb)rb.remove();try{if(window.WMAP)WMAP.close();}catch(e){}S.cv.style.display='';S.hud.style.display='';lockPtr(S.cv);return;}
   if(document.pointerLockElement)document.exitPointerLock();
   // the campaign's own world map, centred on the battle, with your position marked
   const L=S.loc||{};try{if(window.WMAP){WMAP.open();if(L.lat!=null){WMAP.M.lat=L.lat;WMAP.M.lon=L.lon;WMAP.M.ppd=24;}setTimeout(()=>{try{WMAP.draw&&WMAP.draw();}catch(e){}},50);}}catch(e){}
