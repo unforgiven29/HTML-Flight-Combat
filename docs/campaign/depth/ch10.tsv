@@ -1,0 +1,194 @@
+line	cov	where	title	section
+14563	1	people.js (household finances), life.js	Consumer economy, cost of living, and household resilience	Global economy, finance, shocks, resilience, and public accountability
+14565	1	people.js (household finances), life.js	Household budget	Global economy, finance, shocks, resilience, and public accountability
+14568	1	people.js (household finances), life.js	Affordability	Global economy, finance, shocks, resilience, and public accountability
+14571	1	people.js (household finances), life.js	Coping and hardship	Global economy, finance, shocks, resilience, and public accountability
+14578	1	econ2.js (shock chains, buffers), economy.js	Economic shocks, systemic risk, campaign stability, and balancing	Global economy, finance, shocks, resilience, and public accountability
+14583	1	econ2.js (shock chains, buffers), economy.js	Shock categories	Global economy, finance, shocks, resilience, and public accountability
+14586	1	econ2.js (shock chains, buffers), economy.js	Eligibility and causality	Global economy, finance, shocks, resilience, and public accountability
+14589	1	econ2.js (shock chains, buffers), economy.js	Propagation	Global economy, finance, shocks, resilience, and public accountability
+14592	1	econ2.js (shock chains, buffers), economy.js	Stabilization	Global economy, finance, shocks, resilience, and public accountability
+14595	1	econ2.js (shock chains, buffers), economy.js	Communication and confidence	Global economy, finance, shocks, resilience, and public accountability
+14619	1	econ2.js (shock chains, buffers), economy.js	Stability constraints	Global economy, finance, shocks, resilience, and public accountability
+14636	0.5	econ2.js (shock chains, buffers), economy.js	Calibration parameters	Global economy, finance, shocks, resilience, and public accountability
+14654	1	econ2.js (shock chains, buffers), economy.js	Resilience without invulnerability	Global economy, finance, shocks, resilience, and public accountability
+14658	0.5	econ2.js (shock chains, buffers), economy.js	Scenario calibration and historical data	Global economy, finance, shocks, resilience, and public accountability
+14673	1	econ2.js (shock chains, buffers), economy.js	Network propagation	Global economy, finance, shocks, resilience, and public accountability
+14676	1	econ2.js (shock chains, buffers), economy.js	Propagation controls	Global economy, finance, shocks, resilience, and public accountability
+14679	1	econ2.js (shock chains, buffers), economy.js	Resilience and buffers	Global economy, finance, shocks, resilience, and public accountability
+14682	0.5	econ2.js (shock chains, buffers), economy.js	Contagion boundaries	Global economy, finance, shocks, resilience, and public accountability
+14690	1	economy.js (fuel and energy)	Integrated fuel and energy system, processing, reserves, assets, users, and civilian economy	Global economy, finance, shocks, resilience, and public accountability
+14717	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Unified global economy, enterprises, resources, production, trade, finance, and household consumption	Global economy, finance, shocks, resilience, and public accountability
+14719	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Non-negotiable objective	Global economy, finance, shocks, resilience, and public accountability
+14729	0.5	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Economic geography and accounting units	Global economy, finance, shocks, resilience, and public accountability
+14745	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Economic actor registry	Global economy, finance, shocks, resilience, and public accountability
+14765	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Sector classification and production	Global economy, finance, shocks, resilience, and public accountability
+14791	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Production model	Global economy, finance, shocks, resilience, and public accountability
+14811	0.5	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Supply chains and supplier dependencies	Global economy, finance, shocks, resilience, and public accountability
+14828	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Inventories and conservation	Global economy, finance, shocks, resilience, and public accountability
+14846	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Trade, customs and cross-border flows	Global economy, finance, shocks, resilience, and public accountability
+14864	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Prices, inflation and affordability	Global economy, finance, shocks, resilience, and public accountability
+14882	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Employment, wages and household income	Global economy, finance, shocks, resilience, and public accountability
+14899	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Business finance and solvency	Global economy, finance, shocks, resilience, and public accountability
+14917	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Banking, credit and payments	Global economy, finance, shocks, resilience, and public accountability
+14935	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Insurance and risk transfer	Global economy, finance, shocks, resilience, and public accountability
+14949	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Government budgets, taxation and fiscal policy	Global economy, finance, shocks, resilience, and public accountability
+14969	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Currency, exchange rates and external balances	Global economy, finance, shocks, resilience, and public accountability
+14984	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Infrastructure as economic capacity	Global economy, finance, shocks, resilience, and public accountability
+14990	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Household and community economic conditions	Global economy, finance, shocks, resilience, and public accountability
+15006	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Financial contagion and systemic risk	Global economy, finance, shocks, resilience, and public accountability
+15020	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Reconstruction and recovery economy	Global economy, finance, shocks, resilience, and public accountability
+15036	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Economic shocks and causal chains	Global economy, finance, shocks, resilience, and public accountability
+15055	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Illustrative end-to-end economic chains	Global economy, finance, shocks, resilience, and public accountability
+15059	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Port disruption chain	Global economy, finance, shocks, resilience, and public accountability
+15072	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Energy shortage chain	Global economy, finance, shocks, resilience, and public accountability
+15082	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Healthcare supply chain	Global economy, finance, shocks, resilience, and public accountability
+15090	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Workforce shortage chain	Global economy, finance, shocks, resilience, and public accountability
+15098	0.5	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Environmental recovery chain	Global economy, finance, shocks, resilience, and public accountability
+15107	1	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Macroeconomic indicators	Global economy, finance, shocks, resilience, and public accountability
+15128	0.5	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Economic dashboard and history	Global economy, finance, shocks, resilience, and public accountability
+15146	0.5	economy.js, life.js, econ2.js (sectors, banks, finance), world3.js (trade), people.js	Economic fairness, uncertainty and anti-exploit safeguards	Global economy, finance, shocks, resilience, and public accountability
+15177	1	econ2.js, economy.js, life.js, world3.js	Core connected economic model, material and financial flows, enterprise lifecycle, and accounting.	Global economy, finance, shocks, resilience, and public accountability
+15179	1	econ2.js, economy.js, life.js, world3.js	One economic model	Global economy, finance, shocks, resilience, and public accountability
+15183	0.5	econ2.js, economy.js, life.js, world3.js	Physical flows and financial flows are distinct	Global economy, finance, shocks, resilience, and public accountability
+15187	0.5	econ2.js, economy.js, life.js, world3.js	Natural resource to finished product chain	Global economy, finance, shocks, resilience, and public accountability
+15191	1	econ2.js, economy.js, life.js, world3.js	Enterprises and institutions	Global economy, finance, shocks, resilience, and public accountability
+15195	1	econ2.js, economy.js, life.js, world3.js	Labor and household economy	Global economy, finance, shocks, resilience, and public accountability
+15199	1	econ2.js, economy.js, life.js, world3.js	Markets, prices, and trade	Global economy, finance, shocks, resilience, and public accountability
+15203	1	econ2.js, economy.js, life.js, world3.js	Banking, central banks, currencies, and financial stability	Global economy, finance, shocks, resilience, and public accountability
+15207	1	econ2.js, economy.js, life.js, world3.js	Government finance	Global economy, finance, shocks, resilience, and public accountability
+15211	1	econ2.js, economy.js, life.js, world3.js	Defense and civilian economies share constraints	Global economy, finance, shocks, resilience, and public accountability
+15215	1	econ2.js, economy.js, life.js, world3.js	Reconstruction and long-run change	Global economy, finance, shocks, resilience, and public accountability
+15219	0.5	econ2.js, economy.js, life.js, world3.js	Accounting safeguards	Global economy, finance, shocks, resilience, and public accountability
+15232	1	econ2.js, economy.js, life.js, world3.js	Energy, manufacturing, and strategic-resource interdependence.	Global economy, finance, shocks, resilience, and public accountability
+15252	1	econ2.js, economy.js, life.js, world3.js	National economies, trade, sanctions, and global interdependence.	Global economy, finance, shocks, resilience, and public accountability
+15265	1	econ2.js (enterprise lifecycle)	Enterprise lifecycle, corporate governance, and competition.	Global economy, finance, shocks, resilience, and public accountability
+15267	1	econ2.js (enterprise lifecycle)	Enterprise registry	Global economy, finance, shocks, resilience, and public accountability
+15270	1	econ2.js (enterprise lifecycle)	Lifecycle	Global economy, finance, shocks, resilience, and public accountability
+15273	0.5	econ2.js (enterprise lifecycle)	Competition and market structure	Global economy, finance, shocks, resilience, and public accountability
+15280	1	econ2.js (tourism)	TOURISM, HOSPITALITY AND VISITOR ECONOMY	Global economy, finance, shocks, resilience, and public accountability
+15285	0.5	econ2.js (tourism)	Actors and facilities	Global economy, finance, shocks, resilience, and public accountability
+15300	0.5	econ2.js (tourism)	Visitor demand and seasonality	Global economy, finance, shocks, resilience, and public accountability
+15316	0.5	econ2.js (tourism)	Tourism dependencies	Global economy, finance, shocks, resilience, and public accountability
+15329	1	econ2.js (tourism)	Disruption and recovery	Global economy, finance, shocks, resilience, and public accountability
+15344	1	econ2.js (central bank, fiscal)	Central banking, monetary policy, finance, and macroeconomic stability	Global economy, finance, shocks, resilience, and public accountability
+15346	1	econ2.js (central bank, fiscal)	Institutional registry	Global economy, finance, shocks, resilience, and public accountability
+15349	1	econ2.js (central bank, fiscal)	Monetary state	Global economy, finance, shocks, resilience, and public accountability
+15352	1	econ2.js (central bank, fiscal)	Policy decisions	Global economy, finance, shocks, resilience, and public accountability
+15355	1	econ2.js (central bank, fiscal)	Fiscal and monetary interaction	Global economy, finance, shocks, resilience, and public accountability
+15358	1	econ2.js (central bank, fiscal)	Financial crises	Global economy, finance, shocks, resilience, and public accountability
+15375	1	econ2.js (aid programmes)	International development, foreign aid, and development finance	Global economy, finance, shocks, resilience, and public accountability
+15377	1	econ2.js (aid programmes)	Actors and programs	Global economy, finance, shocks, resilience, and public accountability
+15380	1	econ2.js (aid programmes)	Aid lifecycle	Global economy, finance, shocks, resilience, and public accountability
+15383	1	econ2.js (aid programmes)	Development outcomes	Global economy, finance, shocks, resilience, and public accountability
+15386	1	econ2.js (aid programmes)	Accountability	Global economy, finance, shocks, resilience, and public accountability
+15393	1	econ2.js (rural gap)	Rural economies and regional development inequality	Global economy, finance, shocks, resilience, and public accountability
+15395	0.5	econ2.js (rural gap)	Settlement coverage	Global economy, finance, shocks, resilience, and public accountability
+15398	0.5	econ2.js (rural gap)	Access and opportunity	Global economy, finance, shocks, resilience, and public accountability
+15401	0.5	econ2.js (rural gap)	Population and investment	Global economy, finance, shocks, resilience, and public accountability
+15409	0.5	econ2.js (rural gap)	Storage and distribution assets	Global economy, finance, shocks, resilience, and public accountability
+15438	1	econ2.js (insurance)	Insurance, reinsurance, and risk transfer	Global economy, finance, shocks, resilience, and public accountability
+15440	1	econ2.js (insurance)	Insurance actors	Global economy, finance, shocks, resilience, and public accountability
+15443	1	econ2.js (insurance)	Policy and claims	Global economy, finance, shocks, resilience, and public accountability
+15446	1	econ2.js (insurance)	Systemic risk	Global economy, finance, shocks, resilience, and public accountability
+15453	1	econ2.js (public finance, statistics), service.js (procurement)	Taxation, public accounting, procurement, and statistical governance	Global economy, finance, shocks, resilience, and public accountability
+15455	1	econ2.js (public finance, statistics), service.js (procurement)	Public finance consistency	Global economy, finance, shocks, resilience, and public accountability
+15458	1	econ2.js (public finance, statistics), service.js (procurement)	Procurement lifecycle	Global economy, finance, shocks, resilience, and public accountability
+15461	1	econ2.js (public finance, statistics), service.js (procurement)	Public statistics	Global economy, finance, shocks, resilience, and public accountability
+15468	1	econ2.js (recycling)	Circular economy, recycling, and material recovery	Industry, manufacturing, research, technology, and standards
+15470	0.5	econ2.js (recycling)	Material flows	Industry, manufacturing, research, technology, and standards
+15473	1	econ2.js (recycling)	Recovery capacity	Industry, manufacturing, research, technology, and standards
+15476	1	econ2.js (recycling)	Campaign recovery	Industry, manufacturing, research, technology, and standards
+15483	1	econ2.js (construction), service.js (engineering)	CONSTRUCTION, CONTRACTING, AND CIVIL ENGINEERING INDUSTRY	Industry, manufacturing, research, technology, and standards
+15488	0.5	econ2.js (construction), service.js (engineering)	Actors and capabilities	Industry, manufacturing, research, technology, and standards
+15491	0.5	econ2.js (construction), service.js (engineering)	Project lifecycle	Industry, manufacturing, research, technology, and standards
+15494	0.5	econ2.js (construction), service.js (engineering)	Project resources	Industry, manufacturing, research, technology, and standards
+15497	0.5	econ2.js (construction), service.js (engineering)	Quality and lifecycle	Industry, manufacturing, research, technology, and standards
+15500	0.5	econ2.js (construction), service.js (engineering)	Geographic integration	Industry, manufacturing, research, technology, and standards
+15507	1	forces.js, economy.js, census.js	Industrial production, manufacturing, repair, and force regeneration	Industry, manufacturing, research, technology, and standards
+15523	1	forces.js, economy.js, census.js	Industrial registry	Industry, manufacturing, research, technology, and standards
+15526	1	forces.js, economy.js, census.js	Production chains	Industry, manufacturing, research, technology, and standards
+15529	1	forces.js, economy.js, census.js	Capacity and disruption	Industry, manufacturing, research, technology, and standards
+15532	0.5	forces.js, economy.js, census.js	Civilian and defense industry boundaries	Industry, manufacturing, research, technology, and standards
+15539	1	econ2.js (research programmes), service.js, learn.js	Research, development, innovation, intellectual property, and technology lifecycle	Industry, manufacturing, research, technology, and standards
+15541	1	econ2.js (research programmes), service.js, learn.js	National research portfolio	Industry, manufacturing, research, technology, and standards
+15544	1	econ2.js (research programmes), service.js, learn.js	Development stages	Industry, manufacturing, research, technology, and standards
+15547	1	econ2.js (research programmes), service.js, learn.js	Operational learning	Industry, manufacturing, research, technology, and standards
+15550	0.5	econ2.js (research programmes), service.js, learn.js	Upgrades and retrofit schedules	Industry, manufacturing, research, technology, and standards
+15553	1	econ2.js (research programmes), service.js, learn.js	Research institutions and universities	Industry, manufacturing, research, technology, and standards
+15556	0.5	econ2.js (research programmes), service.js, learn.js	Export controls and technology transfer	Industry, manufacturing, research, technology, and standards
+15559	1	econ2.js (research programmes), service.js, learn.js	Research uncertainty and failure	Industry, manufacturing, research, technology, and standards
+15562	0.5	econ2.js (research programmes), service.js, learn.js	AI modernization decisions	Industry, manufacturing, research, technology, and standards
+15572	1	econ2.js (research programmes), service.js, learn.js	Defense-industry research, development, procurement, and technology lifecycle.	Industry, manufacturing, research, technology, and standards
+15574	1	econ2.js (research programmes), service.js, learn.js	Purpose and scope — Research, development, defense industry, modernization, and technology l	Industry, manufacturing, research, technology, and standards
+15580	1	econ2.js (research programmes), service.js, learn.js	Research and industrial actors	Industry, manufacturing, research, technology, and standards
+15595	1	econ2.js (research programmes), service.js, learn.js	Research program lifecycle	Industry, manufacturing, research, technology, and standards
+15616	1	econ2.js (research programmes), service.js, learn.js	Research portfolio categories	Industry, manufacturing, research, technology, and standards
+15633	1	econ2.js (research programmes), service.js, learn.js	Procurement and product lifecycle	Industry, manufacturing, research, technology, and standards
+15648	0.5	econ2.js (research programmes), service.js, learn.js	Technology transfer and export governance	Industry, manufacturing, research, technology, and standards
+15662	0.5	econ2.js (research programmes), service.js, learn.js	Industrial bottlenecks and obsolescence	Industry, manufacturing, research, technology, and standards
+15677	1	econ2.js (research programmes), service.js, learn.js	Civilian spillovers	Industry, manufacturing, research, technology, and standards
+15694	1	econ2.js (research programmes), service.js, learn.js	Institutions and programs	Industry, manufacturing, research, technology, and standards
+15697	1	econ2.js (research programmes), service.js, learn.js	Research lifecycle	Industry, manufacturing, research, technology, and standards
+15700	0.5	econ2.js (research programmes), service.js, learn.js	Knowledge diffusion	Industry, manufacturing, research, technology, and standards
+15709	1	econ2.js (standards)	Standards, certification, metrology, and product compliance	Industry, manufacturing, research, technology, and standards
+15711	0.5	econ2.js (standards)	Standards institutions	Industry, manufacturing, research, technology, and standards
+15714	1	econ2.js (standards)	Product and service conformity	Industry, manufacturing, research, technology, and standards
+15717	0.5	econ2.js (standards)	Trade and reconstruction	Industry, manufacturing, research, technology, and standards
+15724	1	econ2.js (small businesses, informal), civic.js (black market)	INDEPENDENT CIVILIAN BUSINESSES, ENTREPRENEURS, AND LOCAL COMMERCE	Trade, commerce, supply chains, and enterprise
+15731	0.5	econ2.js (small businesses, informal), civic.js (black market)	Business types and scale	Trade, commerce, supply chains, and enterprise
+15747	0.5	econ2.js (small businesses, informal), civic.js (black market)	Founders, ownership, and company lifecycle	Trade, commerce, supply chains, and enterprise
+15753	0.5	econ2.js (small businesses, informal), civic.js (black market)	Finance and accounting abstraction	Trade, commerce, supply chains, and enterprise
+15759	0	econ2.js (small businesses, informal), civic.js (black market)	Customers, products, services, and competition	Trade, commerce, supply chains, and enterprise
+15765	0.5	econ2.js (small businesses, informal), civic.js (black market)	Employment and working conditions	Trade, commerce, supply chains, and enterprise
+15771	0.5	econ2.js (small businesses, informal), civic.js (black market)	Supply chain, utilities, and local economic networks	Trade, commerce, supply chains, and enterprise
+15777	0.5	econ2.js (small businesses, informal), civic.js (black market)	Licensing, regulation, and trust	Trade, commerce, supply chains, and enterprise
+15783	1	econ2.js (small businesses, informal), civic.js (black market)	Business conditions during war and crisis	Trade, commerce, supply chains, and enterprise
+15789	1	econ2.js (small businesses, informal), civic.js (black market)	Informal markets and black-market activity	Trade, commerce, supply chains, and enterprise
+15793	1	econ2.js (small businesses, informal), civic.js (black market)	Interface and player-facing visibility	Trade, commerce, supply chains, and enterprise
+15814	1	world3.js (trade), life.js	Global commerce, supply chains, and product markets	Trade, commerce, supply chains, and enterprise
+15816	1	world3.js (trade), life.js	Trade network	Trade, commerce, supply chains, and enterprise
+15819	0.5	world3.js (trade), life.js	Product categories and inventories	Trade, commerce, supply chains, and enterprise
+15822	0.5	world3.js (trade), life.js	Contracts and orders	Trade, commerce, supply chains, and enterprise
+15825	0.5	world3.js (trade), life.js	Market formation	Trade, commerce, supply chains, and enterprise
+15832	1	economy.js, ops.js, service.js	Integrated fuel and energy system, processing, reserves, assets, users, and civilian economy	Natural resources, fuel, energy, electricity, and transition
+15884	1	economy.js, ops.js, service.js	Refining and processing asset capacity, condition, and dependencies.	Natural resources, fuel, energy, electricity, and transition
+15942	0.5	economy.js, ops.js, service.js	AIRBASE FUEL AND AVIATION SUPPORT	Natural resources, fuel, energy, electricity, and transition
+15959	1	econ2.js (deposits, depletion)	Natural resource discovery, extraction, accounting, inventories, and distribution	Natural resources, fuel, energy, electricity, and transition
+15964	1	econ2.js (deposits, depletion)	Resource and deposit registry	Natural resources, fuel, energy, electricity, and transition
+15978	0.5	econ2.js (deposits, depletion)	Mining actors and operations	Natural resources, fuel, energy, electricity, and transition
+15981	1	econ2.js (deposits, depletion)	Production and depletion	Natural resources, fuel, energy, electricity, and transition
+15984	0.5	econ2.js (deposits, depletion)	Processing and downstream dependencies	Natural resources, fuel, energy, electricity, and transition
+15987	0.5	econ2.js (deposits, depletion)	Environmental and community effects	Natural resources, fuel, energy, electricity, and transition
+15990	0.5	econ2.js (deposits, depletion)	Trade, strategic importance, and substitution	Natural resources, fuel, energy, electricity, and transition
+15993	1	econ2.js (deposits, depletion)	UI and reporting	Natural resources, fuel, energy, electricity, and transition
+16009	0.5	econ2.js (deposits, depletion)	Material taxonomy	Natural resources, fuel, energy, electricity, and transition
+16012	0	econ2.js (deposits, depletion)	Transformation recipes	Natural resources, fuel, energy, electricity, and transition
+16015	0.5	econ2.js (deposits, depletion)	Inventory and flow accounting	Natural resources, fuel, energy, electricity, and transition
+16018	0.5	econ2.js (deposits, depletion)	Shortages and substitution	Natural resources, fuel, energy, electricity, and transition
+16021	1	econ2.js (deposits, depletion)	Price formation	Natural resources, fuel, energy, electricity, and transition
+16057	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	ENERGY SYSTEMS, NATURAL RESOURCES AND ENERGY TRANSITION	Natural resources, fuel, energy, electricity, and transition
+16062	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Resource and reserve registry	Natural resources, fuel, energy, electricity, and transition
+16077	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Energy industry actors	Natural resources, fuel, energy, electricity, and transition
+16083	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Energy generation portfolio	Natural resources, fuel, energy, electricity, and transition
+16097	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Grid and energy market	Natural resources, fuel, energy, electricity, and transition
+16115	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Fuel and resource logistics	Natural resources, fuel, energy, electricity, and transition
+16119	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Energy transition and investment	Natural resources, fuel, energy, electricity, and transition
+16136	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Energy and environment	Natural resources, fuel, energy, electricity, and transition
+16153	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Oil fields, wells, upstream extraction, and offshore production assets	Natural resources, fuel, energy, electricity, and transition
+16173	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Upstream and offshore asset lifecycle, capacity, and dependencies.	Natural resources, fuel, energy, electricity, and transition
+16192	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	PIPELINES, RAIL, ROAD, AND MARITIME FUEL TRANSPORT	Natural resources, fuel, energy, electricity, and transition
+16213	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	National energy grids, power assets, industrial dependencies, and utility operations	Natural resources, fuel, energy, electricity, and transition
+16225	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	Power and utility asset registry and operating state.	Natural resources, fuel, energy, electricity, and transition
+16244	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	INTERNATIONAL OIL TRADE, IMPORTS, EXPORTS, AND SANCTIONS	Natural resources, fuel, energy, electricity, and transition
+16255	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	ENERGY SECURITY, RATIONING, AND NATIONAL POLICY	Natural resources, fuel, energy, electricity, and transition
+16272	0.5	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	OFFSHORE ENERGY AND MARITIME SUPPORT	Natural resources, fuel, energy, electricity, and transition
+16281	1	econ2.js (power mix, grid, oil trade, rationing), economy.js, ops.js	FUEL DEPOTS, FORWARD SUPPLY, AND MOBILE DISTRIBUTION	Natural resources, fuel, energy, electricity, and transition
+16297	1	people.js (unions, strikes)	LABOR UNIONS, COLLECTIVE BARGAINING, WORKER REPRESENTATION, AND STRIKES	Labor, employment, unions, and household livelihoods
+16304	1	people.js (unions, strikes)	Organization types and membership	Labor, employment, unions, and household livelihoods
+16310	1	people.js (unions, strikes)	Workplace representation and collective agreements	Labor, employment, unions, and household livelihoods
+16316	1	people.js (unions, strikes)	Causes of labor disputes	Labor, employment, unions, and household livelihoods
+16322	1	people.js (unions, strikes)	Negotiation lifecycle	Labor, employment, unions, and household livelihoods
+16328	1	people.js (unions, strikes)	Effects on employers, services, and national readiness	Labor, employment, unions, and household livelihoods
+16336	0.5	people.js (unions, strikes)	Worker voice and nonviolent civic action	Labor, employment, unions, and household livelihoods
+16342	0.5	people.js (unions, strikes)	War, occupation, and reconstruction	Labor, employment, unions, and household livelihoods

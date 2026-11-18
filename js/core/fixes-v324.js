@@ -177,7 +177,7 @@ blk('front views',()=>{if(typeof FV==='undefined')return;
 // found no ground, so the point simply stayed put and the view could not be raised above mountains and hills. A ray that finds no ground now moves the point out along the ray (sky / horizon), and
 // the next slew continues from that line of sight instead of snapping back.
 blk('TGP slew over terrain',()=>{if(typeof SNS==='undefined')return;
-  SNS.slew=function(cs,cr,dt){const P=player;this.ensure(P);if(this.mode==='POINT'||this.mav){if(cs||cr){this.mode='AREA';this.unit=null;this.mav=null;}}
+  SNS.slew=function(cs,cr,dt){const P=player;if((cs||cr)&&this.slaved)this.slvBrk=this.slaved;   /* v407: keep the slave break (sensorsuite.js) */this.ensure(P);if(this.mode==='POINT'||this.mav){if(cs||cr){this.mode='AREA';this.unit=null;this.mav=null;}}
     const e=this.eye(P),l=this.spi.clone().sub(e).normalize(),r=this.fov()*D2R*.45*dt;
     const az=Math.atan2(l.x,-l.z)+cs*r,el=Math.asin(clamp(l.y,-1,1))+cr*r,nl=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el));
     const f=P.fwd(new V3()),an=Math.acos(clamp(nl.dot(f),-1,1)),ac=Math.acos(clamp(l.dot(f),-1,1));

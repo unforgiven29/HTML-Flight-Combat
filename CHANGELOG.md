@@ -1168,3 +1168,25 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v398
 - Chapter 06: js/war/service.js (airbase installations, spare parts and repair levels, personnel administration, headquarters and staff, schools, engineering projects, EOD, procurement programmes and ceremonies, civilian-founded PMCs, your squadron ground crew, certificates, airframe wear and repaint, notice board, civil aviation and infantry/SOF/uncrewed rosters). SERVICE tab. Depth 88.1%.
+
+## v399–v406
+- Chapter 05: js/war/polity.js — cabinet friction, legislative votes, continuity of government, protests, coalition caveats / intel tiers / host nations / cost sharing / exit risk, regional institutions, arms control (abstract), pre-war QRA, occupation in five dimensions, ceasefire monitoring, ROE reviews and compensation. STATE tab.
+- Chapter 10: js/war/econ2.js — sectors, enterprise lifecycle, small businesses and informal economy, central bank, banks, insurance, public finance, aid, deposits, refining, power mix, grid, oil market, construction, recycling, research programmes, standards, tourism, shock chains. MARKETS tab.
+- Chapter 04: js/war/store.js — gzip saves in IndexedDB (autosave, three checkpoints), load fallback, crash flag, schema migrations, storage estimate, daily-hook timings, offline and WebGL-loss notices, campaign seed. Saves are smaller: death records keep only fields that differ from defaults and merge same-week records; AI records and leader floats trimmed.
+- Chapter 14: js/war/archive.js + data/quotes.json — the spec's verified quotation archive with metadata and never-attribute list; Hemingway as the ending's signature quotation; awards for restraint, protection, support and recovery. QUOTES tab.
+- Chapter 11: js/war/infra.js — asset vs service networks, water, food seasons, space, aviation, sea, rail, public transport, districts, nexus trade-offs. NETWORKS tab.
+- Chapter 12: js/war/enviro.js — climate indicators and adaptation, environmental incidents and monitoring, ecosystems, emergency agencies, risk indicators. ENVIRONMENT tab.
+- Chapters 02/03/07: js/war/chronicle.js — relationships, commands vs events, corrections, invariants, yearbook, public memory, live counters, navigation state, civilian resilience, counterintelligence. CHRONICLE tab.
+- Chapters 13/16/17: js/war/desk.js — tasking board, onboarding hints, encyclopedia, crew seats, shared briefing room, readiness board, journal, bookmarks, CSV export, inspector. DESK tab.
+- Chapters 18/20: scripts/deps.js → docs/campaign/DEPENDENCIES.md; cross-system scenario test s59. Depth audit: every audited chapter 78.6 %–95.8 %.
+
+## v407 — infantry and the front, rebuilt
+- Trenches are cut into the ground (the terrain is opened over every cut; H drops into it): narrow zig-zag fire trenches 1.8 m deep along the whole front, timber revetment, duckboards, spoil parapet and sandbags on the enemy side, covered dugouts, anti-drone nets, communication trenches to the rear, an anti-tank ditch with dragon's teeth. Walls stop you; Space climbs out. Engineers on both sides dig new sections (J for an engineer player). Machine-gun nests and sniper hides manned by gunners and snipers.
+- Landmines: anti-tank fields before the ditches, anti-personnel mines between the lines, warning signs; engineers see, clear and lay them (N).
+- Vehicles steer round buildings. Soldiers step round walls, take cover when suppressed, only fire with a line of sight; tracers stop at walls. Voices at close range (squad callouts; enemies shout, beg or surrender).
+- Aim: recoil with permanent and recovering climb; sway by stance, bipod, rest, movement, fatigue, injury; Shift holds breath. New attachments (magnifier, PSO, thermal, muzzle brake, angled grip, handstop, laser/light, stocks, magazines). Detailed weapon models by family. REDFOR (Russian / Chinese) and BLUEFOR rifle families; friendly countries sell guns and ammunition to each other in the campaign.
+- Trench clearing at close quarters with surrenders; campaign close air support (rate from air superiority, aircraft and munitions; losses to MANPADS); battle results go back into the war (brigades, death ledger, prisoners, munitions, fortification, mine clearance).
+- Esc pauses the battle with a battle map and a war map; main menu keeps the battle paused. Menus close when you die or leave (fixes a crash). No aircraft sounds or cockpit radio on foot; error reports say "infantry".
+- Towns: window glass and frames, chimneys, balconies, fences, parked cars, lamps, power lines, benches, yard trees; larger towns; more buildings on the main map.
+- War map: the front line is smoothed and fronts relax daily (no spikes or loops). Ocean and trench spoil no longer z-fight.
+- Fixes: radar in track no longer has a 9 km blind zone from the search pulse; pod slave break kept after the slew fix; Ka-50 MAWS-only; robust DIRCM and hover-landing tests.

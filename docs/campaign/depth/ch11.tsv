@@ -1,0 +1,119 @@
+line	cov	where	title	section
+16374	1	infra.js (asset vs service model), economy.js, life.js	Built environment, utilities, energy, water, food, transport, and connectivity	Cities, housing, property, and built environment
+16376	1	infra.js (asset vs service model), economy.js, life.js	One infrastructure asset and service model	Cities, housing, property, and built environment
+16380	1	infra.js (asset vs service model), economy.js, life.js	Asset, network, and service are distinct	Cities, housing, property, and built environment
+16384	1	infra.js (asset vs service model), economy.js, life.js	Capacity, condition, and maintenance	Cities, housing, property, and built environment
+16388	1	infra.js (asset vs service model), economy.js, life.js	Energy and water	Cities, housing, property, and built environment
+16392	1	infra.js (asset vs service model), economy.js, life.js	Agriculture and food systems	Cities, housing, property, and built environment
+16396	1	infra.js (asset vs service model), economy.js, life.js	Transport and mobility	Cities, housing, property, and built environment
+16400	1	infra.js (asset vs service model), economy.js, life.js	Civilian and military aviation	Cities, housing, property, and built environment
+16404	1	infra.js (asset vs service model), economy.js, life.js	Maritime and subsea systems	Cities, housing, property, and built environment
+16408	1	infra.js (asset vs service model), economy.js, life.js	Digital and space connectivity	Cities, housing, property, and built environment
+16412	1	infra.js (asset vs service model), economy.js, life.js	Construction and project delivery	Cities, housing, property, and built environment
+16426	1	cities.js, life.js (housing), infra.js (districts)	Cities, urban development, buildings, housing, and property	Cities, housing, property, and built environment
+16441	1	cities.js, life.js (housing), infra.js (districts)	City and settlement registry	Cities, housing, property, and built environment
+16457	1	cities.js, life.js (housing), infra.js (districts)	Urban districts and land use	Cities, housing, property, and built environment
+16476	1	cities.js, life.js (housing), infra.js (districts)	Housing stock and household access	Cities, housing, property, and built environment
+16489	0.5	cities.js, life.js (housing), infra.js (districts)	Property and construction economy	Cities, housing, property, and built environment
+16506	0.5	cities.js, life.js (housing), infra.js (districts)	Urban growth and decline	Cities, housing, property, and built environment
+16512	1	cities.js, life.js (housing), infra.js (districts)	Urban infrastructure and resilience	Cities, housing, property, and built environment
+16540	1	infra.js (nexus trade-offs)	Food-water-energy-land nexus	Water, food, agriculture, and essential utilities
+16542	1	infra.js (nexus trade-offs)	Integrated resource dependencies	Water, food, agriculture, and essential utilities
+16545	1	infra.js (nexus trade-offs)	Trade-offs	Water, food, agriculture, and essential utilities
+16548	0.5	infra.js (nexus trade-offs)	Policy evaluation	Water, food, agriculture, and essential utilities
+16556	1	infra.js (water), world2.js (shared rivers)	Freshwater resources, watersheds, water utilities, security, and transboundary governance	Water, food, agriculture, and essential utilities
+16560	1	infra.js (water), world2.js (shared rivers)	Water asset registry	Water, food, agriculture, and essential utilities
+16563	1	infra.js (water), world2.js (shared rivers)	Water balance	Water, food, agriculture, and essential utilities
+16566	1	infra.js (water), world2.js (shared rivers)	Utility operations	Water, food, agriculture, and essential utilities
+16569	1	infra.js (water), world2.js (shared rivers)	Allocation and governance	Water, food, agriculture, and essential utilities
+16572	1	infra.js (water), world2.js (shared rivers)	Quality and contamination	Water, food, agriculture, and essential utilities
+16575	1	infra.js (water), world2.js (shared rivers)	Household and ecosystem access	Water, food, agriculture, and essential utilities
+16581	1	infra.js (water), world2.js (shared rivers)	Water geography, resource balance, rights, transboundary governance, and basin-level allocation.	Water, food, agriculture, and essential utilities
+16585	1	infra.js (water), world2.js (shared rivers)	Water geography and resource model	Water, food, agriculture, and essential utilities
+16594	1	infra.js (water), world2.js (shared rivers)	Water service providers and infrastructure	Water, food, agriculture, and essential utilities
+16597	1	infra.js (water), world2.js (shared rivers)	Allocation, demand, and shortage	Water, food, agriculture, and essential utilities
+16600	1	infra.js (water), world2.js (shared rivers)	Water quality and wastewater	Water, food, agriculture, and essential utilities
+16603	1	infra.js (water), world2.js (shared rivers)	Transboundary governance	Water, food, agriculture, and essential utilities
+16613	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	AGRICULTURE, FOOD SYSTEMS, FISHERIES AND FOOD SECURITY	Water, food, agriculture, and essential utilities
+16619	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Producers and assets	Water, food, agriculture, and essential utilities
+16634	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Agricultural production cycle	Water, food, agriculture, and essential utilities
+16650	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Livestock, fisheries and aquaculture	Water, food, agriculture, and essential utilities
+16654	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Food processing and cold chain	Water, food, agriculture, and essential utilities
+16669	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Food distribution and retail	Water, food, agriculture, and essential utilities
+16688	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Food security and household access	Water, food, agriculture, and essential utilities
+16702	0.5	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Food safety and public health	Water, food, agriculture, and essential utilities
+16706	0.5	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Agriculture, trade and environmental interaction	Water, food, agriculture, and essential utilities
+16721	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Agriculture and food production	Water, food, agriculture, and essential utilities
+16725	1	infra.js (food seasons, livestock, fisheries, cold chain, retail), world2.js	Food distribution and household access	Water, food, agriculture, and essential utilities
+16730	1	infra.js (lifecycle, maintenance debt)	Critical infrastructure networks, lifecycle, maintenance, and reliability	Critical infrastructure, networks, and orbital services
+16745	1	infra.js (lifecycle, maintenance debt)	Asset lifecycle	Critical infrastructure, networks, and orbital services
+16748	1	infra.js (lifecycle, maintenance debt)	Maintenance debt	Critical infrastructure, networks, and orbital services
+16751	1	infra.js (lifecycle, maintenance debt)	Reliability	Critical infrastructure, networks, and orbital services
+16754	0.5	infra.js (lifecycle, maintenance debt)	Capital planning	Critical infrastructure, networks, and orbital services
+16762	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	SPACE INFRASTRUCTURE AND ORBITAL SERVICE OPERATIONS	Critical infrastructure, networks, and orbital services
+16764	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Purpose and relationship to existing satellite coverage	Critical infrastructure, networks, and orbital services
+16768	0.5	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Space actor registry	Critical infrastructure, networks, and orbital services
+16786	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Satellite registry and lifecycle	Critical infrastructure, networks, and orbital services
+16804	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Space services	Critical infrastructure, networks, and orbital services
+16819	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Ground segment and terrestrial dependencies	Critical infrastructure, networks, and orbital services
+16833	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Launch and replacement economy	Critical infrastructure, networks, and orbital services
+16848	1	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	Degradation, outage, and orbital environment	Critical infrastructure, networks, and orbital services
+16863	0.5	infra.js (satellites, ground stations, launches), world2.js (orbital services), intel.js	International coordination and resilience	Critical infrastructure, networks, and orbital services
+16888	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Civil aviation, airports, airspace management, air traffic control, and flight safety	Civil aviation, airports, and airspace services
+16900	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	ATC service entities	Civil aviation, airports, and airspace services
+16913	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Flight-plan and clearance lifecycle	Civil aviation, airports, and airspace services
+16931	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	AI aircraft and airspace deconfliction	Civil aviation, airports, and airspace services
+16940	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Civilian and neutral traffic	Civil aviation, airports, and airspace services
+16948	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Carrier and austere-field integration	Civil aviation, airports, and airspace services
+16952	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Radio and audio presentation	Civil aviation, airports, and airspace services
+16956	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Failure and degraded operation	Civil aviation, airports, and airspace services
+16986	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Civil aviation entities	Civil aviation, airports, and airspace services
+16990	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Airports and flight schedules	Civil aviation, airports, and airspace services
+16996	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Air traffic control and airspace	Civil aviation, airports, and airspace services
+17000	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Identification and emergency handling	Civil aviation, airports, and airspace services
+17004	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	War impact and neutrality	Civil aviation, airports, and airspace services
+17008	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Gameplay and mission generation	Civil aviation, airports, and airspace services
+17012	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Airline, airport economics, airspace management, and humanitarian aviation.	Civil aviation, airports, and airspace services
+17016	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Aviation actors	Civil aviation, airports, and airspace services
+17034	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Airspace structure and services	Civil aviation, airports, and airspace services
+17049	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Airlines, routes and schedules	Civil aviation, airports, and airspace services
+17064	0.5	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Airports and airport economics	Civil aviation, airports, and airspace services
+17079	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Disruption and resilience	Civil aviation, airports, and airspace services
+17093	1	infra.js (airports, ACCs, flight plans, closures), turncoat.js (airliners), world2.js (ATC)	Humanitarian and emergency aviation	Civil aviation, airports, and airspace services
+17116	1	world2.js (aviation safety investigations)	DEDICATED AVIATION SAFETY INVESTIGATIONS AND ACCIDENT REPORTS	Civil aviation, airports, and airspace services
+17120	1	world2.js (aviation safety investigations)	Events eligible for aviation investigation	Civil aviation, airports, and airspace services
+17133	1	world2.js (aviation safety investigations)	Investigation process	Civil aviation, airports, and airspace services
+17148	1	world2.js (aviation safety investigations)	Findings and uncertainty	Civil aviation, airports, and airspace services
+17156	1	world2.js (aviation safety investigations)	Corrective actions	Civil aviation, airports, and airspace services
+17170	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Global maritime war, trade routes, and undersea operations	Ports, shipping, maritime operations, and subsea infrastructure
+17190	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	UNDERWATER WARFARE AND SUBSEA INFRASTRUCTURE	Ports, shipping, maritime operations, and subsea infrastructure
+17194	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Subsea assets	Ports, shipping, maritime operations, and subsea infrastructure
+17198	0.5	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Underwater environment	Ports, shipping, maritime operations, and subsea infrastructure
+17202	0.5	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Underwater vehicles and support	Ports, shipping, maritime operations, and subsea infrastructure
+17206	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Infrastructure incidents	Ports, shipping, maritime operations, and subsea infrastructure
+17210	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Repair, protection and investigation	Ports, shipping, maritime operations, and subsea infrastructure
+17215	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Maritime transport, ports, merchant shipping, and ocean economy	Ports, shipping, maritime operations, and subsea infrastructure
+17235	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Purpose and scope — Maritime world, merchant shipping, and underwater infrastructure	Ports, shipping, maritime operations, and subsea infrastructure
+17241	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Maritime entity registry	Ports, shipping, maritime operations, and subsea infrastructure
+17257	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Shipping lanes and trade flows	Ports, shipping, maritime operations, and subsea infrastructure
+17263	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Port and harbor operations	Ports, shipping, maritime operations, and subsea infrastructure
+17269	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Merchant shipping and commercial operators	Ports, shipping, maritime operations, and subsea infrastructure
+17275	0.5	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Fishing and coastal livelihoods	Ports, shipping, maritime operations, and subsea infrastructure
+17281	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Maritime rescue and accidents	Ports, shipping, maritime operations, and subsea infrastructure
+17287	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Submarines and underwater infrastructure — abstract model	Ports, shipping, maritime operations, and subsea infrastructure
+17300	1	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Maritime weather and environment	Ports, shipping, maritime operations, and subsea infrastructure
+17304	0.5	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	Maritime law, flags, and jurisdiction	Ports, shipping, maritime operations, and subsea infrastructure
+17308	0.5	sea2.js, naval.js, world2.js (cables), infra.js (ports, ships, rescues)	UI and map layers	Ports, shipping, maritime operations, and subsea infrastructure
+17333	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	RAILWAYS AND STRATEGIC RAIL TRANSPORT	Transport, freight, rail, and public mobility
+17344	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	CIVILIAN PASSENGER TRANSPORT AND PUBLIC MOBILITY	Transport, freight, rail, and public mobility
+17350	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Transport providers and authorities	Transport, freight, rail, and public mobility
+17364	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Network and service model	Transport, freight, rail, and public mobility
+17380	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Household access and economic impact	Transport, freight, rail, and public mobility
+17393	0.5	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Vehicle ownership and road use	Transport, freight, rail, and public mobility
+17397	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Strikes, funding and long-term planning	Transport, freight, rail, and public mobility
+17422	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Public passenger transport services	Transport, freight, rail, and public mobility
+17427	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Multimodal transport and freight mobility	Transport, freight, rail, and public mobility
+17429	0.5	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Network coverage	Transport, freight, rail, and public mobility
+17432	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Capacity and service	Transport, freight, rail, and public mobility
+17435	0.5	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Routing and disruption	Transport, freight, rail, and public mobility
+17438	1	infra.js (rail, public transport), world3.js (roads), supply.js (bridges)	Public and humanitarian priority	Transport, freight, rail, and public mobility

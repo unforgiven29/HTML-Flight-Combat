@@ -1,0 +1,75 @@
+line	cov	where	title	section
+1248	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	One Earth-scale geographic, terrain, map, and streamed rendering system	Global geography, map data, terrain, and rendering
+1250	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Single geographic authority	Global geography, map data, terrain, and rendering
+1256	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Geographic entities and political geography	Global geography, map data, terrain, and rendering
+1269	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	One map, multiple fidelity layers	Global geography, map data, terrain, and rendering
+1279	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Data pipeline and provenance	Global geography, map data, terrain, and rendering
+1283	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Tile streaming and persistent entities	Global geography, map data, terrain, and rendering
+1287	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Routes and networks	Global geography, map data, terrain, and rendering
+1291	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Rendering constraints	Global geography, map data, terrain, and rendering
+1304	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Persistent and varied global campaign map requirements.	Global geography, map data, terrain, and rendering
+1332	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Complete Earth-scale campaign map and world model.	Global geography, map data, terrain, and rendering
+1336	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Global geographic coverage	Global geography, map data, terrain, and rendering
+1349	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Three connected map scales	Global geography, map data, terrain, and rendering
+1353	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Global strategic view	Global geography, map data, terrain, and rendering
+1362	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Regional operational view	Global geography, map data, terrain, and rendering
+1370	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Local tactical view	Global geography, map data, terrain, and rendering
+1379	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Map layers and display modes	Global geography, map data, terrain, and rendering
+1399	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Geographic data, terrain, and procedural detail	Global geography, map data, terrain, and rendering
+1412	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Fog of war and intelligence presentation	Global geography, map data, terrain, and rendering
+1423	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Map interaction and campaign command tools	Global geography, map data, terrain, and rendering
+1429	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Whole-Earth terrain, cities, and streamed Three.js rendering.	Global geography, map data, terrain, and rendering
+1431	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Product requirement	Global geography, map data, terrain, and rendering
+1434	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Preserve the existing technology	Global geography, map data, terrain, and rendering
+1437	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Geographic coordinate authority	Global geography, map data, terrain, and rendering
+1448	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Global geographic layer	Global geography, map data, terrain, and rendering
+1451	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Regional layer	Global geography, map data, terrain, and rendering
+1454	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Local layer	Global geography, map data, terrain, and rendering
+1457	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Tactical layer	Global geography, map data, terrain, and rendering
+1460	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Geographic tile system	Global geography, map data, terrain, and rendering
+1463	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Streaming lifecycle — One Earth-scale geographic, terrain, map, and streamed rendering system	Global geography, map data, terrain, and rendering
+1466	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Terrain generation and stitching	Global geography, map data, terrain, and rendering
+1469	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	City and building representation	Global geography, map data, terrain, and rendering
+1478	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Data-source pipeline	Global geography, map data, terrain, and rendering
+1481	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Runtime performance architecture	Global geography, map data, terrain, and rendering
+1495	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Floating origin and flight stability	Global geography, map data, terrain, and rendering
+1498	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Persistent world entities independent of tiles	Global geography, map data, terrain, and rendering
+1501	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Global simulation and local rendering are separate	Global geography, map data, terrain, and rendering
+1504	0.5	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Offline progression	Global geography, map data, terrain, and rendering
+1512	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Loading, fallback, and failure	Global geography, map data, terrain, and rendering
+1526	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	PERSISTENT ENTITY MIGRATION ACROSS GEOGRAPHIC STREAMING	Global geography, map data, terrain, and rendering
+1531	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Canonical identity and location	Global geography, map data, terrain, and rendering
+1534	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Tile boundaries	Global geography, map data, terrain, and rendering
+1537	1	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Stream lifecycle	Global geography, map data, terrain, and rendering
+1540	0.5	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Long-distance movement	Global geography, map data, terrain, and rendering
+1543	0.5	js/world (Earth-scale terrain, tiles, floating origin), warmap.js, layers.js, intel.js (fog)	Multiplayer — ENTITY MIGRATION ACROSS GEOGRAPHIC STREAMING	Global geography, map data, terrain, and rendering
+1550	0.5	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	TERRAIN, MAP ECOLOGY, AND ENVIRONMENTAL CHANGE	Global geography, map data, terrain, and rendering
+1566	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Geographic data pipeline, coordinate systems, and world-data governance	Global geography, map data, terrain, and rendering
+1568	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	One canonical geographic model	Global geography, map data, terrain, and rendering
+1585	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Source ingestion and data build pipeline	Global geography, map data, terrain, and rendering
+1599	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Geographic truth versus campaign state	Global geography, map data, terrain, and rendering
+1609	0.5	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Data quality and uncertainty — Geographic data pipeline, coordinate systems, and world-data governance	Global geography, map data, terrain, and rendering
+1628	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	World content coverage, country depth, and regional differentiation	Global geography, map data, terrain, and rendering
+1630	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Coverage tiers	Global geography, map data, terrain, and rendering
+1638	1	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Honest coverage	Global geography, map data, terrain, and rendering
+1641	0.5	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Country packs	Global geography, map data, terrain, and rendering
+1644	0.5	natdata.js (coverage), assets/world/SOURCES.md, infantry.js (terrain damage)	Regional differentiation	Global geography, map data, terrain, and rendering
+1651	1	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	NAVIGATION, POSITIONING, TIMING, AND RESILIENT OPERATIONS	Navigation, routing, movement, and positioning
+1653	1	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Navigation source model	Navigation, routing, movement, and positioning
+1656	1	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Degraded navigation state	Navigation, routing, movement, and positioning
+1659	0.5	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Platform differences	Navigation, routing, movement, and positioning
+1662	0.5	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Time synchronization and data freshness	Navigation, routing, movement, and positioning
+1665	0.5	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Navigation databases and map updates	Navigation, routing, movement, and positioning
+1668	0.5	chronicle.js (navigation sources, degraded state), infowar.js (GPS jamming)	Civilian consequences — NAVIGATION, POSITIONING, TIMING, AND RESILIENT OPERATIONS	Navigation, routing, movement, and positioning
+1679	1	extras.js (route planner)	MISSION ROUTE PLANNER, WAYPOINTS, AND FLIGHT PLAN MANAGEMENT	Navigation, routing, movement, and positioning
+1683	1	extras.js (route planner)	Route elements	Navigation, routing, movement, and positioning
+1698	1	extras.js (route planner)	Route editing	Navigation, routing, movement, and positioning
+1708	0.5	extras.js (route planner)	Navigation integration	Navigation, routing, movement, and positioning
+1715	0.5	extras.js (route planner)	Fuel and timing estimates	Navigation, routing, movement, and positioning
+1719	0.5	extras.js (route planner)	Multiplayer planning	Navigation, routing, movement, and positioning
+1723	1	extras.js (route planner)	Persistence and reuse	Navigation, routing, movement, and positioning
+1737	0.5	world3.js (roads), land.js (movement)	Shared navigation, routing, and movement foundations	Navigation, routing, movement, and positioning
+1739	0.5	world3.js (roads), land.js (movement)	Shared navigation service	Navigation, routing, movement, and positioning
+1754	1	world3.js (roads), land.js (movement)	Tactical movement versus strategic movement	Navigation, routing, movement, and positioning
+1762	0.5	world3.js (roads), land.js (movement)	Collision and congestion	Navigation, routing, movement, and positioning
+1771	0.5	world3.js (roads), land.js (movement)	Accessibility and fallback behavior	Navigation, routing, movement, and positioning

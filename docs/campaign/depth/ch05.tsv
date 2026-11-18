@@ -1,0 +1,180 @@
+line	cov	where	title	section
+2857	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Country, government, and world-order foundations	National identity, governments, diplomacy, alliances, and political continuity
+2859	1	worldwar.js, diplomacy.js, world2.js, natpol.js	One political world model	National identity, governments, diplomacy, alliances, and political continuity
+2863	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Separate legal identity from operational alignment	National identity, governments, diplomacy, alliances, and political continuity
+2867	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Government and institutional continuity	National identity, governments, diplomacy, alliances, and political continuity
+2871	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Diplomacy and international organizations	National identity, governments, diplomacy, alliances, and political continuity
+2875	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Crisis and conflict lifecycle	National identity, governments, diplomacy, alliances, and political continuity
+2879	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Territory and occupation	National identity, governments, diplomacy, alliances, and political continuity
+2883	1	worldwar.js, diplomacy.js, world2.js, natpol.js	Non-state and illicit actors	National identity, governments, diplomacy, alliances, and political continuity
+2887	1	worldwar.js, diplomacy.js, world2.js, natpol.js	No group stereotyping	National identity, governments, diplomacy, alliances, and political continuity
+2901	1	strategy.js, leaders.js, aicore.js, polity.js	Unified national leadership, government decision-making, political continuity, and transitions	National identity, governments, diplomacy, alliances, and political continuity
+2906	1	strategy.js, leaders.js, aicore.js, polity.js	Command authorities	National identity, governments, diplomacy, alliances, and political continuity
+2909	1	strategy.js, leaders.js, aicore.js, polity.js	Decision records	National identity, governments, diplomacy, alliances, and political continuity
+2919	1	strategy.js, leaders.js, aicore.js, polity.js	Competing priorities	National identity, governments, diplomacy, alliances, and political continuity
+2922	1	strategy.js, leaders.js, aicore.js, polity.js	Leadership change	National identity, governments, diplomacy, alliances, and political continuity
+2925	1	strategy.js, leaders.js, aicore.js, polity.js	Strategic AI	National identity, governments, diplomacy, alliances, and political continuity
+2928	1	strategy.js, leaders.js, aicore.js, polity.js	Player integration — STRATEGIC COMMAND, NATIONAL LEADERSHIP, AND DECISION-MAKING	National identity, governments, diplomacy, alliances, and political continuity
+2971	1	natpol.js (government, parties, elections), nations.js, polity.js	Government model	National identity, governments, diplomacy, alliances, and political continuity
+2988	1	natpol.js (government, parties, elections), nations.js, polity.js	Political parties and movements	National identity, governments, diplomacy, alliances, and political continuity
+3004	1	natpol.js (government, parties, elections), nations.js, polity.js	Elections and succession	National identity, governments, diplomacy, alliances, and political continuity
+3012	1	natpol.js (government, parties, elections), nations.js, polity.js	Public support and social stability	National identity, governments, diplomacy, alliances, and political continuity
+3028	1	natpol.js (government, parties, elections), nations.js, polity.js	Policy decisions and constraints	National identity, governments, diplomacy, alliances, and political continuity
+3044	1	natpol.js (government, parties, elections), nations.js, polity.js	Coalition politics and diplomacy	National identity, governments, diplomacy, alliances, and political continuity
+3050	0.5	natpol.js (government, parties, elections), nations.js, polity.js	Public communication and accountability	National identity, governments, diplomacy, alliances, and political continuity
+3056	0.5	natpol.js (government, parties, elections), nations.js, polity.js	Local and regional government	National identity, governments, diplomacy, alliances, and political continuity
+3071	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Political crises, government continuity, and domestic pressure.	National identity, governments, diplomacy, alliances, and political continuity
+3073	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Government structure and succession	National identity, governments, diplomacy, alliances, and political continuity
+3076	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Legislative approval and emergency powers	National identity, governments, diplomacy, alliances, and political continuity
+3079	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Public support and political factions	National identity, governments, diplomacy, alliances, and political continuity
+3082	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Cabinet disagreement and policy friction	National identity, governments, diplomacy, alliances, and political continuity
+3085	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Government relocation and continuity of operations	National identity, governments, diplomacy, alliances, and political continuity
+3088	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Elections, leadership changes, and policy shifts	National identity, governments, diplomacy, alliances, and political continuity
+3091	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Public demonstrations, strikes, and civil unrest	National identity, governments, diplomacy, alliances, and political continuity
+3103	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Political institutions	National identity, governments, diplomacy, alliances, and political continuity
+3106	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Electoral cycles	National identity, governments, diplomacy, alliances, and political continuity
+3109	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Political behavior	National identity, governments, diplomacy, alliances, and political continuity
+3112	1	polity.js (cabinet, legislature, continuity, protests), natpol.js	Government formation and continuity	National identity, governments, diplomacy, alliances, and political continuity
+3119	1	polity.js (regional institutions)	Regional cooperation and shared cross-border systems	National identity, governments, diplomacy, alliances, and political continuity
+3121	1	polity.js (regional institutions)	Regional institutions	National identity, governments, diplomacy, alliances, and political continuity
+3124	0.5	polity.js (regional institutions)	Shared assets and obligations	National identity, governments, diplomacy, alliances, and political continuity
+3127	1	polity.js (regional institutions)	Resilience	National identity, governments, diplomacy, alliances, and political continuity
+3134	1	world2.js (deterrence), polity.js (arms control), strategic.js	STRATEGIC ARMS CONTROL AND INTERNATIONAL SECURITY GOVERNANCE	National identity, governments, diplomacy, alliances, and political continuity
+3136	1	world2.js (deterrence), polity.js (arms control), strategic.js	Purpose and strict scope	National identity, governments, diplomacy, alliances, and political continuity
+3140	1	world2.js (deterrence), polity.js (arms control), strategic.js	Agreements and obligations	National identity, governments, diplomacy, alliances, and political continuity
+3155	1	world2.js (deterrence), polity.js (arms control), strategic.js	National declarations and status	National identity, governments, diplomacy, alliances, and political continuity
+3168	1	world2.js (deterrence), polity.js (arms control), strategic.js	Verification and monitoring	National identity, governments, diplomacy, alliances, and political continuity
+3183	1	world2.js (deterrence), polity.js (arms control), strategic.js	Risk reduction and crisis communication	National identity, governments, diplomacy, alliances, and political continuity
+3198	1	world2.js (deterrence), polity.js (arms control), strategic.js	Treaty breakdown and restoration	National identity, governments, diplomacy, alliances, and political continuity
+3214	1	world2.js (deterrence), polity.js (arms control), strategic.js	Rules of engagement, diplomacy, and campaign consequences	National identity, governments, diplomacy, alliances, and political continuity
+3228	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Global World War framework and coalition structure	National identity, governments, diplomacy, alliances, and political continuity
+3250	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Coalition command, interoperability, host-nation support, and national caveats	National identity, governments, diplomacy, alliances, and political continuity
+3268	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Allies are independent institutions	National identity, governments, diplomacy, alliances, and political continuity
+3271	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Equipment and support compatibility	National identity, governments, diplomacy, alliances, and political continuity
+3274	0.5	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Language and terminology	National identity, governments, diplomacy, alliances, and political continuity
+3277	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	National caveats and political approvals	National identity, governments, diplomacy, alliances, and political continuity
+3280	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Host-nation agreements and basing rights	National identity, governments, diplomacy, alliances, and political continuity
+3283	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Coalition logistics and cost sharing	National identity, governments, diplomacy, alliances, and political continuity
+3286	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Intelligence-sharing tiers	National identity, governments, diplomacy, alliances, and political continuity
+3289	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Combined operations and interoperability friction	National identity, governments, diplomacy, alliances, and political continuity
+3292	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Coalition disagreement and exit risk	National identity, governments, diplomacy, alliances, and political continuity
+3303	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Neutral countries, diplomatic pressure, and global legitimacy	National identity, governments, diplomacy, alliances, and political continuity
+3317	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Negotiations and diplomacy that can actually end the war	National identity, governments, diplomacy, alliances, and political continuity
+3331	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	DIPLOMACY, ALLIANCE POLITICS, AND NATIONAL DECISION-MAKING	National identity, governments, diplomacy, alliances, and political continuity
+3345	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	International organizations, observers, and global governance	National identity, governments, diplomacy, alliances, and political continuity
+3354	1	worldwar.js, diplomacy.js, turncoat.js, polity.js (coalition terms), world2.js	Independent group behavior and internal politics	National identity, governments, diplomacy, alliances, and political continuity
+3367	1	worldwar.js registry (all countries), natdata.js, natpol.js	Expanded global country registry, national identity, and independent country behavior	National identity, governments, diplomacy, alliances, and political continuity
+3371	1	worldwar.js registry (all countries), natdata.js, natpol.js	Global coverage requirement	National identity, governments, diplomacy, alliances, and political continuity
+3391	1	worldwar.js registry (all countries), natdata.js, natpol.js	Country identity is not faction identity	National identity, governments, diplomacy, alliances, and political continuity
+3405	1	worldwar.js registry (all countries), natdata.js, natpol.js	Expanded country coverage and priority national packages	National identity, governments, diplomacy, alliances, and political continuity
+3409	1	worldwar.js registry (all countries), natdata.js, natpol.js	North America and the Caribbean	National identity, governments, diplomacy, alliances, and political continuity
+3413	1	worldwar.js registry (all countries), natdata.js, natpol.js	South America	National identity, governments, diplomacy, alliances, and political continuity
+3417	1	worldwar.js registry (all countries), natdata.js, natpol.js	Western, Northern, Central, and Eastern Europe	National identity, governments, diplomacy, alliances, and political continuity
+3421	1	worldwar.js registry (all countries), natdata.js, natpol.js	Caucasus, Central Asia, and the wider Middle East	National identity, governments, diplomacy, alliances, and political continuity
+3425	1	worldwar.js registry (all countries), natdata.js, natpol.js	South Asia	National identity, governments, diplomacy, alliances, and political continuity
+3429	1	worldwar.js registry (all countries), natdata.js, natpol.js	East and Southeast Asia	National identity, governments, diplomacy, alliances, and political continuity
+3433	1	worldwar.js registry (all countries), natdata.js, natpol.js	Africa	National identity, governments, diplomacy, alliances, and political continuity
+3437	1	worldwar.js registry (all countries), natdata.js, natpol.js	Oceania and the Pacific	National identity, governments, diplomacy, alliances, and political continuity
+3443	1	worldwar.js registry (all countries), natdata.js, natpol.js	National packages and unequal levels of detail	National identity, governments, diplomacy, alliances, and political continuity
+3454	1	worldwar.js registry (all countries), natdata.js, natpol.js	Country-specific military and equipment representation	National identity, governments, diplomacy, alliances, and political continuity
+3466	1	worldwar.js registry (all countries), natdata.js, natpol.js	National diplomacy, government, and coalition decision-making	National identity, governments, diplomacy, alliances, and political continuity
+3482	1	worldwar.js registry (all countries), natdata.js, natpol.js	National population, economy, and civilian continuity	National identity, governments, diplomacy, alliances, and political continuity
+3488	0.5	worldwar.js registry (all countries), natdata.js, natpol.js	National intelligence and information boundaries	National identity, governments, diplomacy, alliances, and political continuity
+3492	0.5	worldwar.js registry (all countries), natdata.js, natpol.js	Country registry, save compatibility, and modding	National identity, governments, diplomacy, alliances, and political continuity
+3498	0.5	worldwar.js registry (all countries), natdata.js, natpol.js	Country system acceptance tests	National identity, governments, diplomacy, alliances, and political continuity
+3515	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	A persistent war that keeps moving	Conflict, force posture, escalation, and non-state actors
+3534	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Strategic weapons, missile forces, warning, defense, CBRN consequences, and escalation governance	Conflict, force posture, escalation, and non-state actors
+3549	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Strategic missile force configuration, warning uncertainty, and nuclear escalation.	Conflict, force posture, escalation, and non-state actors
+3568	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Strategic weapons governance and abstract CBRN hazard consequences.	Conflict, force posture, escalation, and non-state actors
+3583	0.5	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Global special operations, resistance, and internal security	Conflict, force posture, escalation, and non-state actors
+3596	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	War termination, ceasefires, surrender, armistices, frozen conflicts, and postwar state	Conflict, force posture, escalation, and non-state actors
+3609	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Peace, capitulation, surrender, and formal war termination.	Conflict, force posture, escalation, and non-state actors
+3613	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Ceasefire enforcement, armistices, and frozen-conflict outcomes.	Conflict, force posture, escalation, and non-state actors
+3625	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Non-state actors, terrorism, militias, proxies, sponsorship, and asymmetric conflict	Conflict, force posture, escalation, and non-state actors
+3629	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Non-state actor taxonomy and legal distinctions.	Conflict, force posture, escalation, and non-state actors
+3638	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	State sponsorship, proxy relationships, and external support.	Conflict, force posture, escalation, and non-state actors
+3652	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Integrated non-state group behavior and campaign consequences.	Conflict, force posture, escalation, and non-state actors
+3666	1	worldwar.js, strategic.js, world2.js, leaders.js, diplomacy.js, nations.js	Non-state groups as spoilers or participants in peace	Conflict, force posture, escalation, and non-state actors
+3676	1	world2.js (tension), polity.js (QRA), turncoat.js	PRE-WAR INTERNATIONAL TENSIONS, CRISIS ESCALATION, AND PEACETIME INTERCEPT MISSIONS	Conflict, force posture, escalation, and non-state actors
+3685	1	world2.js (tension), polity.js (QRA), turncoat.js	Separate country relationships and crisis states	Conflict, force posture, escalation, and non-state actors
+3714	1	world2.js (tension), polity.js (QRA), turncoat.js	Pre-war events and tension drivers	Conflict, force posture, escalation, and non-state actors
+3733	1	world2.js (tension), polity.js (QRA), turncoat.js	Daily crisis development and strategic decision-making	Conflict, force posture, escalation, and non-state actors
+3749	1	world2.js (tension), polity.js (QRA), turncoat.js	Quick reaction alert and pre-war sortie generation	Conflict, force posture, escalation, and non-state actors
+3764	0.5	world2.js (tension), polity.js (QRA), turncoat.js	Intercept mission types and player experience	Conflict, force posture, escalation, and non-state actors
+3782	1	world2.js (tension), polity.js (QRA), turncoat.js	Intercept lifecycle and identification uncertainty	Conflict, force posture, escalation, and non-state actors
+3800	0.5	world2.js (tension), polity.js (QRA), turncoat.js	Pre-war rules of engagement and authority	Conflict, force posture, escalation, and non-state actors
+3810	1	world2.js (tension), polity.js (QRA), turncoat.js	Intercept mission outcomes	Conflict, force posture, escalation, and non-state actors
+3829	1	world2.js (tension), polity.js (QRA), turncoat.js	Civilian aviation and accidental escalation	Conflict, force posture, escalation, and non-state actors
+3839	1	world2.js (tension), polity.js (QRA), turncoat.js	Crisis communication and de-escalation	Conflict, force posture, escalation, and non-state actors
+3855	1	world2.js (tension), polity.js (QRA), turncoat.js	Escalation, accidents, and limited incidents	Conflict, force posture, escalation, and non-state actors
+3871	1	world2.js (tension), polity.js (QRA), turncoat.js	News, public opinion, and personal histories	Conflict, force posture, escalation, and non-state actors
+3881	0.5	world2.js (tension), polity.js (QRA), turncoat.js	Campaign start options and scenario control	Conflict, force posture, escalation, and non-state actors
+3923	1	world2.js (tension), polity.js (QRA), turncoat.js	Civilian protection, law, and legitimacy	Occupation, borders, territory, prisoners, and civilian protection
+3936	1	life.js, polity.js (five dimensions), world2.js	Occupation, liberation, territorial control, and post-capture administration	Occupation, borders, territory, prisoners, and civilian protection
+3938	1	life.js, polity.js (five dimensions), world2.js	Purpose and relationship to existing occupation systems	Occupation, borders, territory, prisoners, and civilian protection
+3944	1	life.js, polity.js (five dimensions), world2.js	Five independent territorial status dimensions	Occupation, borders, territory, prisoners, and civilian protection
+3956	1	life.js, polity.js (five dimensions), world2.js	Transition phases	Occupation, borders, territory, prisoners, and civilian protection
+3970	1	life.js, polity.js (five dimensions), world2.js	Civilian administration and continuity of services	Occupation, borders, territory, prisoners, and civilian protection
+3987	1	life.js, polity.js (five dimensions), world2.js	Local representation, legitimacy, and consultation	Occupation, borders, territory, prisoners, and civilian protection
+3995	1	life.js, polity.js (five dimensions), world2.js	Security, civilian policing, and conduct oversight	Occupation, borders, territory, prisoners, and civilian protection
+4003	1	life.js, polity.js (five dimensions), world2.js	Residents, property, return, and competing claims	Occupation, borders, territory, prisoners, and civilian protection
+4011	1	life.js, polity.js (five dimensions), world2.js	Humanitarian access and external monitoring	Occupation, borders, territory, prisoners, and civilian protection
+4017	0.5	life.js, polity.js (five dimensions), world2.js	Negotiated transfer, autonomy, and long-term outcomes	Occupation, borders, territory, prisoners, and civilian protection
+4023	1	life.js, polity.js (five dimensions), world2.js	Interface and player feedback	Occupation, borders, territory, prisoners, and civilian protection
+4044	1	life.js, polity.js (five dimensions), world2.js	Territory occupation and post-capture governance.	Occupation, borders, territory, prisoners, and civilian protection
+4048	1	life.js, polity.js (five dimensions), world2.js	Occupation state	Occupation, borders, territory, prisoners, and civilian protection
+4052	1	life.js, polity.js (five dimensions), world2.js	Local administration	Occupation, borders, territory, prisoners, and civilian protection
+4056	1	life.js, polity.js (five dimensions), world2.js	Security and public trust	Occupation, borders, territory, prisoners, and civilian protection
+4060	0.5	life.js, polity.js (five dimensions), world2.js	Resistance and reconciliation	Occupation, borders, territory, prisoners, and civilian protection
+4064	1	life.js, polity.js (five dimensions), world2.js	Occupation outcomes	Occupation, borders, territory, prisoners, and civilian protection
+4069	1	life.js, polity.js (five dimensions), world2.js	Surrender terms, recognition, and visible surrender behavior	Ceasefire, surrender, negotiation, and postwar peace
+4090	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	PEACE NEGOTIATION AND POSTWAR WORLD — MAKE THE ENDING PLAYABLE	Ceasefire, surrender, negotiation, and postwar peace
+4104	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	CEASEFIRE ENFORCEMENT AND POSTWAR INTERNATIONAL MONITORING	Ceasefire, surrender, negotiation, and postwar peace
+4106	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Ceasefire agreement model	Ceasefire, surrender, negotiation, and postwar peace
+4110	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Monitoring organizations	Ceasefire, surrender, negotiation, and postwar peace
+4114	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Demilitarized and buffer areas	Ceasefire, surrender, negotiation, and postwar peace
+4118	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Verification and uncertainty	Ceasefire, surrender, negotiation, and postwar peace
+4122	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Prisoner and missing-person processes	Ceasefire, surrender, negotiation, and postwar peace
+4126	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Withdrawal and separation of forces	Ceasefire, surrender, negotiation, and postwar peace
+4130	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Violations and escalation	Ceasefire, surrender, negotiation, and postwar peace
+4134	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Frozen conflicts and renewed hostilities	Ceasefire, surrender, negotiation, and postwar peace
+4138	0.5	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	Ceasefire acceptance tests	Ceasefire, surrender, negotiation, and postwar peace
+4146	1	diplomacy.js, world2.js, polity.js (monitoring), postwar.js, csar.js	POSTWAR TRANSITION, DEMOBILIZATION AND LONG-TERM WORLD STATE	Ceasefire, surrender, negotiation, and postwar peace
+4157	1	justice.js, polity.js (ROE reviews, compensation)	LAW, RULES OF ENGAGEMENT, AND ACCOUNTABILITY	Law, justice, investigations, and accountability
+4172	1	justice.js, polity.js (ROE reviews, compensation)	Military and international investigations, evidence, accountability, and transitional justice	Law, justice, investigations, and accountability
+4174	1	justice.js, polity.js (ROE reviews, compensation)	Incident record and evidence chain	Law, justice, investigations, and accountability
+4177	1	justice.js, polity.js (ROE reviews, compensation)	Incident categories	Law, justice, investigations, and accountability
+4180	1	justice.js, polity.js (ROE reviews, compensation)	Rules-of-engagement review	Law, justice, investigations, and accountability
+4183	1	justice.js, polity.js (ROE reviews, compensation)	Command responsibility and disciplinary outcomes	Law, justice, investigations, and accountability
+4186	1	justice.js, polity.js (ROE reviews, compensation)	Civilian harm assessment and compensation	Law, justice, investigations, and accountability
+4189	1	justice.js, polity.js (ROE reviews, compensation)	Prisoner and detainee standards	Law, justice, investigations, and accountability
+4192	1	justice.js, polity.js (ROE reviews, compensation)	Public communication and contested narratives	Law, justice, investigations, and accountability
+4204	1	justice.js, polity.js (ROE reviews, compensation)	Purpose and legal separation	Law, justice, investigations, and accountability
+4210	1	justice.js, polity.js (ROE reviews, compensation)	Institutions and jurisdiction	Law, justice, investigations, and accountability
+4216	1	justice.js, polity.js (ROE reviews, compensation)	Referral and case lifecycle	Law, justice, investigations, and accountability
+4236	1	justice.js, polity.js (ROE reviews, compensation)	Evidence provenance and integrity	Law, justice, investigations, and accountability
+4242	1	justice.js, polity.js (ROE reviews, compensation)	Witnesses, victims, and affected communities	Law, justice, investigations, and accountability
+4248	1	justice.js, polity.js (ROE reviews, compensation)	Defense rights, impartiality, and fair process	Law, justice, investigations, and accountability
+4254	1	justice.js, polity.js (ROE reviews, compensation)	Cooperation, obstruction, and diplomatic consequences	Law, justice, investigations, and accountability
+4260	1	justice.js, polity.js (ROE reviews, compensation)	Outcomes and remedies	Law, justice, investigations, and accountability
+4266	0.5	justice.js, polity.js (ROE reviews, compensation)	Historical record and education	Law, justice, investigations, and accountability
+4287	1	justice.js (offence-specific classification)	Offense-specific classification and evidentiary safeguards.	Law, justice, investigations, and accountability
+4289	1	justice.js (offence-specific classification)	Purpose and relationship to Chapter 05	Law, justice, investigations, and accountability
+4307	1	justice.js (offence-specific classification)	Legal classification and scenario-law configuration	Law, justice, investigations, and accountability
+4331	1	justice.js (offence-specific classification)	Genocide	Law, justice, investigations, and accountability
+4348	1	justice.js (offence-specific classification)	Torture as a separately modeled offense	Law, justice, investigations, and accountability
+4366	1	justice.js (offence-specific classification)	Sexual violence during armed conflict	Law, justice, investigations, and accountability
+4385	1	justice.js (offence-specific classification)	Starvation of civilians as a method of warfare	Law, justice, investigations, and accountability
+4401	1	justice.js (offence-specific classification)	Using civilians or protected persons as human shields	Law, justice, investigations, and accountability
+4418	1	justice.js (offence-specific classification)	Recruiting or using children in armed forces or armed groups	Law, justice, investigations, and accountability
+4435	1	justice.js (offence-specific classification)	Perfidy and misuse of protected emblems or signs	Law, justice, investigations, and accountability
+4448	1	justice.js (offence-specific classification)	Pillage as a separately modeled offense	Law, justice, investigations, and accountability
+4464	1	justice.js (offence-specific classification)	Enforced disappearances	Law, justice, investigations, and accountability
+4485	1	justice.js (offence-specific classification)	Shared incident taxonomy and responsibility model	Law, justice, investigations, and accountability
+4504	1	justice.js (offence-specific classification)	News, public information, and privacy	Law, justice, investigations, and accountability
+4515	0.5	justice.js (offence-specific classification)	Survivor, victim, family, and community support	Law, justice, investigations, and accountability
+4572	0.5	world2.js (data privacy), polity.js	Digital identity, privacy, and data governance	Law, justice, investigations, and accountability
+4574	0.5	world2.js (data privacy), polity.js	Identity and records	Law, justice, investigations, and accountability
+4577	0.5	world2.js (data privacy), polity.js	Data lifecycle	Law, justice, investigations, and accountability
+4580	0.5	world2.js (data privacy), polity.js	Interoperability and exclusion	Law, justice, investigations, and accountability
+4583	0.5	world2.js (data privacy), polity.js	Privacy and multiplayer	Law, justice, investigations, and accountability

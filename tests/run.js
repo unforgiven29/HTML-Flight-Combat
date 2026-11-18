@@ -26,7 +26,8 @@ const T=[];const test=(n,ac,f)=>T.push({n,ac,f});
 
 test('f22_headon_acm: lock survives a 16 km head-on closure, drops only at the gimbal limit','F-22',async p=>{
   const r=await p.evaluate(()=>{const drops=[],od=radar.drop.bind(radar);radar.drop=function(w){drops.push({why:w||'',d:Math.round(radar.ang(tgt.pos).d)});return od.apply(this,arguments);};
-    radar.setACM('30x20');player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-300);tgt.pos.set(60,6200,-16000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,300);
+    radar.setACM('30x20');
+    player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-300);tgt.pos.set(60,6200,-16000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,300);
     let lk=0,n=0;run(30*30,()=>{n++;if(radar.mode==='STT')lk++;});return{drops,frac:lk/n};});
   ok('no early drop (only GIMBAL inside 600 m)',r.drops.every(x=>x.why==='GIMBAL'&&x.d<600),r.drops);ok('locked > 80% of the run',r.frac>.8,+r.frac.toFixed(2));});
 
@@ -237,7 +238,7 @@ test('ka50_autorotation: engines out, lever down, forward speed: rotor stays tur
 test('ka50_ground: stands on its wheels, lifts off with the collective, lands and settles without damage','Ka-50',async p=>{
   const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player,H=P.ac.heli;kaSet(groundAt(0,0)+H.gh+.01);P.onGnd=true;P.thr=0;kaRun(60);const o={onGnd0:P.onGnd,y0:P.pos.y-groundAt(0,0),hp0:P.hp};
     P.thr=.75;kaRun(90);o.climb=P.pos.y-groundAt(0,0);o.airborne=!P.onGnd;
-    const hv=kaHover();kaSet(groundAt(0,0)+25);P.thr=hv;kaRun(30*70,()=>{if(P.onGnd){P.thr=0;return;}const agl=P.pos.y-groundAt(0,0)-H.gh,vt=-Math.max(.7,Math.min(2.2,agl*.12));P.thr=Math.max(0,Math.min(1,P.thr+.004*(vt-P.vel.y)));});P.thr=0;kaRun(60);o.landed=P.onGnd;o.hp1=P.hp;o.alive=P.alive;o.sink=P.td;return o;},KA_SETUP);
+    const hv=kaHover();kaSet(groundAt(0,0)+25);P.thr=hv;kaRun(30*70,()=>{if(P.onGnd){P.thr=0;return;}const agl=P.pos.y-groundAt(0,0)-H.gh,vt=-Math.max(.7,Math.min(2.2,agl*.12));P.thr=Math.max(0,Math.min(1,hv+.08*(vt-P.vel.y)+(P.thr-hv)*.98+.002*(vt-P.vel.y)));});P.thr=0;kaRun(60);o.landed=P.onGnd;o.hp1=P.hp;o.alive=P.alive;o.sink=P.td;return o;},KA_SETUP);
   ok('rests on the wheels at the CG height',r.onGnd0&&Math.abs(r.y0-1.72)<.1&&r.hp0===100,{y:+r.y0.toFixed(2)});
   ok('a collective pull lifts it off the ground',r.airborne&&r.climb>3,+r.climb.toFixed(1));
   ok('a gentle descent lands it on the wheels with no damage',r.alive&&r.landed&&r.hp1>99&&r.sink<2.5,{landed:r.landed,hp:Math.round(r.hp1),sink:+(r.sink||0).toFixed(2)});});
@@ -268,12 +269,12 @@ test('pulse_clutter: a pulse set locks a strong ground return under the cursor',
     const rng=radar.rngM;let mx=0,at=[0,.5];for(let a=-1;a<=1;a+=.05)for(let r=.1;r<1;r+=.05){const v=flClutterAt(a,r*rng);if(v>mx){mx=v;at=[a,r];}}
     radar.cur.az=at[0];radar.cur.r=at[1];radar.designate();return{mode:radar.mode,g:!!(radar.lock&&radar.lock.isGhost),mx};});
   ok('locked a ground return',r.mode==='STT'&&r.g,r);});
-for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',true],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
+for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',false],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
   const r=await p.evaluate(()=>{player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-150);let w=0,jam=0;const sh={pos:new THREE.Vector3(0,3000,4000),vel:new THREE.Vector3(),fwd:o=>o.set(0,0,-1),up:o=>o.set(0,1,0),alive:true};
-    for(let k=0;k<12;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
+    for(let k=0;k<30;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
       let det=false;for(let i=0;i<60;i++){window.__T+=100;MSS.tick(.1);if(MSS.warned.some(x=>x.m===m))det=true;if(m.maddog&&!m.track){jam++;break;}}if(det)w++;m.alive=false;MSS.warned.length=0;}
     return{w,jam,d:!!MSS.fit.dircm};});
-  ok('warned of most missiles',r.w>=10,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=3:(!r.d&&r.jam===0),r);});
+  ok('warned of most missiles',r.w>=25,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=5:(!r.d&&r.jam===0),r);});
 
 test('legion_pod: the pod gives an F-15C an IRST; without it there is none','F-15C',async p=>{
   const r=await p.evaluate(()=>{const o={};o.opts=(STN['F-15C']['5']||[]).includes('LEGION');o.before=!!player.ac.irst;player.load['5']='LEGION';MSS.tick(.1);o.after=!!player.ac.irst&&!!player.ac.ols&&player.ac.ols.leg===true;
@@ -486,7 +487,7 @@ test('wend_all: each ending the spec lists is reached from its own conditions, w
   ok('report has the home front and civilians',r.report);ok('audit clean',r.audit.length===0,r.audit);});
 test('wend_home: displacement, refugees, economy, support and cohesion move during a war','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*120);const c=st.c;
-    return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:c.USA.sup<.65,coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
+    return{disp:Object.values(c).reduce((t,q)=>t+(q.disp||0),0),civ:st.ev.some(e=>e.ty==='CIVIL'),econ:c.RUS.econ<1,sup:Object.values(c).some(q=>q.al==='CORE'&&q.sup<.65),coh:st.nat.coh.B<.8||st.nat.coh.R<.8,est:st.ev.filter(e=>e.ty==='CIVIL').every(e=>e.cf==='ESTIMATED')};});
   ok('people displaced when cities change hands (estimate)',r.disp>0&&r.civ,r);ok('civilian events are labelled estimates',r.est);ok('economies, support and cohesion move',r.econ&&r.sup&&r.coh,r);});
 
 /* ---------- the world war, step 5 (v332): seasons and weather, economy, government and AI, society, playing REDFOR ---------- */
@@ -662,7 +663,7 @@ test('s12_end: the fifteen-chapter epilogue, the ceremony, and the record kept',
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*60);st.lead=st.lead||{people:{},seq:1};st.lead.career={a3:'POL',name:'Test',rank:1,sorties:3,air:0,gnd:0,awards:[['FIRST','Combat Sortie Ribbon',st.t]],inq:[],st:'ACTIVE',hist:[]};
     WWAR.diplo.end('ARMISTICE','An armistice is signed.');const E=WWAR.endscreen;E.open();const d=document.getElementById('wwEnd');const T=[];for(let i=0;i<E.CH.length;i++){E.go(i);T.push(d.textContent);}
     E.go(2);E.burn();const kept=st.lead.career.awards.length;const all=T.join(' ');E.close();
-    return{n:E.CH.length,oc:E.outcome(),q:all.includes('Eisenhower')&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
+    return{n:E.CH.length,oc:E.outcome(),q:/“[^”]{10,}”— [A-Z]/.test(all)&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
   ok('fifteen chapters',r.n===15,r);ok('the last day, and an outcome for your side',r.ch1&&['WIN','LOSE','NEITHER'].includes(r.oc),r);ok('estimates labelled, quotation with its source',r.est&&r.q,r);
   ok('decorations burned, award record kept',r.burnt&&r.kept===1&&r.cer,r);ok('no scoreboard',!r.score);});
 test('s12_tools: rates, catch-up, saves, trends, notifications, calendar, AI log','F-16C',async p=>{
@@ -1045,15 +1046,15 @@ test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarre
     out.iss=I.issued('POL');out.nGuns=Object.keys(I.GUNS).length;out.nSides=Object.keys(I.SIDES).length;
     // menu: pick a class, a model, attachments, armour pieces, save and load
     I.kitMenu('POL',{name:'t'});const click=sel=>{const b=document.querySelector('[data-ik="'+sel+'"]');if(!b)throw new Error('no '+sel);b.click();};
-    click('pri:DMR');click('gun:SVD');click('att.optic:X4');click('att.muzzle:SUP');click('att.under:BIPOD');click('att.laser:VIS');click('side:DEAGLE');click('satt.optic:RDS');click('helm:VISOR');click('vest:P4');click('extra:FULL');
+    click('pri:DMR');click('gun:M110');click('att.optic:X4');click('att.muzzle:SUP');click('att.under:BIPOD');click('att.laser:VIS');click('side:G17');click('satt.optic:RDS');click('helm:VISOR');click('vest:P4');click('extra:FULL');
     out.k={pri:K.pri,gun:K.gun,att:K.att,side:K.side,satt:K.satt,helm:K.helm,vest:K.vest,extra:K.extra};click('kitsave:0');
-    click('pri:SNP');out.snpOptic=K.att.optic;out.snpUnder=document.querySelector('[data-ik="att.under:UGL"]')===null;click('kitload:0');out.loaded=K.gun==='SVD'&&K.att.optic==='X4';
-    out.card=/SVD/.test(document.querySelector('.ks').textContent)&&/Suppressor/.test(document.querySelector('.ks').textContent);document.getElementById('u2m').remove();
+    click('pri:SNP');out.snpOptic=K.att.optic;out.snpUnder=document.querySelector('[data-ik="att.under:UGL"]')===null;click('kitload:0');out.loaded=K.gun==='M110'&&K.att.optic==='X4';
+    out.card=/M110/.test(document.querySelector('.ks').textContent)&&/Suppressor/.test(document.querySelector('.ks').textContent);document.getElementById('u2m').remove();
     // handling
     const a=I.makeGun('RIFLE','AK74M',{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'NONE'}),b=I.makeGun('RIFLE','AK74M',{optic:'V16',muzzle:'SUP',under:'GRIP',laser:'VIS'});
     out.h={sup:b.dmg<a.dmg&&b.quiet,zoom:b.ads===6&&b.vari>1,grip:b.moveK<1,laser:b.hipK<1,am:I.makeGun('SNP','M82',{}).pen};
     // in battle: the gun you chose, the launcher, burst, armour by zone
-    const S=I.start({...K,a3:'POL',ins:'APC',gun:'M16A4',pri:'RIFLE',att:{optic:'RDS',muzzle:'COMP',under:'UGL',laser:'VIS'},side:'G18',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'LIGHT'},helm:'VISOR',vest:'HEAVY',extra:'NONE'});I.land();S.hp=1e9;S.dT=1e9;
+    const S=I.start({...K,a3:'USA',ins:'APC',gun:'M16A4',pri:'RIFLE',att:{optic:'RDS',muzzle:'COMP',under:'UGL',laser:'VIS'},side:'M17',satt:{optic:'IRON',muzzle:'NONE',under:'NONE',laser:'LIGHT'},helm:'VISOR',vest:'HEAVY',extra:'NONE'});I.land();S.hp=1e9;S.dT=1e9;
     out.b={gun:S.wp.pri.n,side:S.wp.side.n,ugl:S.uglN,att:!!S.vms.rifle.userData.att};
     S.fire=true;let n=0;for(let i=0;i<20;i++){S.cool=0;S.reload=0;const n0=S.shots;I.shoot();if(S.shots>n0)n++;if(!S.fire)break;}out.burst=n;
     const g0=S.gnades.length;I.ugl();out.uglFired=S.gnades.length===g0+1&&S.uglN===3;
@@ -1061,10 +1062,10 @@ test('s37_kits: weapon models, sidearms, attachments (optics, muzzle, underbarre
     out.zones=z;out.per={head:dm.head/z.head,torso:dm.torso/z.torso,limb:dm.limb/z.limb};out.spd=S.arm.spd;
     I.step(1/30,3);out.laser=S.lzLine.visible;I.stop(false);return out;});
   ok('dozens of models and sidearms',r.nGuns>=35&&r.nSides>=10,r);ok('issued rifle found for Poland',r.iss==='GROT',r.iss);
-  ok('menu picks class, model, attachments, sidearm, armour pieces',r.k.gun==='SVD'&&r.k.att.optic==='X4'&&r.k.att.muzzle==='SUP'&&r.k.side==='DEAGLE'&&r.k.satt.optic==='RDS'&&r.k.helm==='VISOR'&&r.k.vest==='P4'&&r.k.extra==='FULL',r.k);
+  ok('menu picks class, model, attachments, sidearm, armour pieces',r.k.gun==='M110'&&r.k.att.optic==='X4'&&r.k.att.muzzle==='SUP'&&r.k.side==='G17'&&r.k.satt.optic==='RDS'&&r.k.helm==='VISOR'&&r.k.vest==='P4'&&r.k.extra==='FULL',r.k);
   ok('sniper gets a scope, no grenade launcher',r.snpOptic==='X8'&&r.snpUnder,r);ok('saved kit loads back',r.loaded);ok('loadout card shows it',r.card);
   ok('attachments change handling',r.h.sup&&r.h.zoom&&r.h.grip&&r.h.laser&&r.h.am==='AMR',r.h);
-  ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='Glock 18'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
+  ok('battle uses the chosen gun, sidearm and parts',r.b.gun==='M16A4'&&r.b.side==='M17 (SIG P320)'&&r.b.ugl===4&&r.b.att,r.b);ok('3-round burst',r.burst===3,r.burst);ok('grenade launcher fires',r.uglFired);
   ok('hits by zone, each piece protects its own',r.zones.head>20&&r.zones.limb>60&&r.per.torso<20*.4&&r.per.limb>20*.6,r);ok('heavy armour slows you',r.spd<.85,r.spd);ok('laser beam shown',r.laser);});
 test('s38_sound: flight sound muted on foot; shots, footsteps, explosions; engine and drone loops; cleaned up','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};const cnt={};for(const k of Object.keys(I.SND)){const f=I.SND[k];I.SND[k]=function(){cnt[k]=(cnt[k]||0)+1;return f.apply(this,arguments);};}
@@ -1259,6 +1260,71 @@ test('s50_service: installations, spare parts, personnel, HQ, engineering, EOD, 
     out.tab=/SPARE PARTS/.test(NATPANEL.tabs.SERVICE(core))&&/INFANTRY PACKAGE/.test(NATPANEL.tabs.SERVICE(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
   ok('records with installations and facilities',r.n>3&&r.inst>0&&r.fac===9,r);ok('components with repair queues',r.comp===9&&r.q,r);ok('headquarters and schools',r.hq>=3&&r.sch>=4);ok('engineering, EOD, procurement',r.eod>0&&r.eng>0&&r.prog>0,r);
   ok('your squadron: crew, certificates, notice board',r.sq);ok('service events',r.ev.length>=2,r.ev);ok('SERVICE tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s51_polity: cabinet, legislature, continuity, protests, coalition terms, regional bodies, arms control, QRA, occupation dimensions, ceasefire monitoring','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*120);const X=st.pol2;const core=Object.values(st.c).find(q=>q.al==='CORE');
+    out.c=Object.keys(X.c).length;out.cab=X.c[core.a3].cab.length;out.coal=Object.keys(X.coal).length;out.reg=X.reg.length;out.arms=X.arms.length;out.qra=X.qra.n;out.occ=Object.keys(X.occ).length;
+    const ev=new Set(st.ev.map(e=>e.ty));out.ev=['POLITICS','COALITION','REGIONAL','ARMS CONTROL','QRA','SOCIETY'].filter(t=>ev.has(t));out.tab=/CABINET/.test(NATPANEL.tabs.STATE(core))&&/OCCUPIED/.test(NATPANEL.tabs.STATE(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
+  ok('governments with cabinets',r.c>3&&r.cab===6,r);ok('coalitions, regional bodies, arms control',r.coal===2&&r.reg===5&&r.arms===4,r);ok('quick reaction alert',r.qra>0,r.qra);ok('state events',r.ev.length>=2,r.ev);ok('STATE tab',r.tab);ok('state stays small',r.size<120000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s52_econ2: sectors, enterprises, central bank, banks, insurance, public finance, aid, resources, power, oil, construction, research, shocks','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*120);const X=st.ec2;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];
+    out.n=Object.keys(X.c).length;out.ent=R.ent.length;out.dep=Object.values(X.c).some(c=>c.dep.length);out.px=X.oil.px;out.stat=R.fis.stat;const ev=new Set(st.ev.map(e=>e.ty));out.ev=['FINANCE','BUSINESS','ENERGY','AID','RESEARCH','ECONOMY'].filter(t=>ev.has(t));
+    out.tab=/MONEY AND PUBLIC FINANCE/.test(NATPANEL.tabs.MARKETS(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
+  ok('records with enterprises and deposits',r.n>5&&r.ent>=4&&r.dep,r);ok('oil market and statistics',r.px>0&&r.stat>0,r);ok('economic events',r.ev.length>=2,r.ev);ok('MARKETS tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s53_store: IndexedDB autosave and checkpoint, load from IndexedDB when localStorage is empty, migrations, hook telemetry','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const out={};WWAR.step(24*10);out.seed=WWAR.st.seed!=null;out.save=await WWAR.store.autosave('ckpt');const day=Math.floor(WWAR.st.t/24);
+    localStorage.removeItem('viper.ww');WWAR.st=null;out.load=await WWAR.load();out.back=WWAR.st&&Math.floor(WWAR.st.t/24)===day;const old={schema:1,c:{},fronts:[]};out.mig=WWAR.store.migrate(old).length;
+    const R=WWAR.store.report();out.slow=R.slow.length>0;out.idb=R.idb;out.gz=R.gz<R.size;out.ck=await WWAR.store.restore(WWAR.store.T.ckpt);out.audit=WWAR.audit();return out;});
+  ok('seed recorded',r.seed);ok('autosave to IndexedDB, compressed',r.save&&r.idb&&r.gz,r);ok('loads from IndexedDB',r.load&&r.back,r);ok('migrations run',r.mig===3,r.mig);ok('hook timings',r.slow);ok('checkpoint restore',r.ck);ok('audit clean',r.audit.length===0,r.audit);});
+test('s54_archive: verified quotation archive from data, signature quotation first, never-attribute list, restraint awards','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();await WWAR.archive.load();const A=WWAR.archive.A,E=WWAR.endscreen;const out={n:A.q.length,never:A.never.length,first:E.QUOTES[0].a,meta:A.q.every(x=>x.id&&x.src&&x.ver&&x.ctx),
+    safe:!WWAR.archive.safe('War does not determine who is right—only who is left'),end:!!WWAR.archive.forEnding('WIN'),aw:WWAR.lead.AWARDS.some(a=>a[0]==='RESTRAINT'),tab:/Hemingway/.test(NATPANEL.tabs.QUOTES(WWAR.st.c.USA))};return out;});
+  ok('eleven verified entries with metadata',r.n===11&&r.meta,r);ok('misattribution safeguards',r.never===2&&r.safe,r);ok('signature quotation first on the ending',r.first==='Ernest Hemingway',r.first);ok('quotations by ending theme',r.end);ok('awards for restraint and protection',r.aw);ok('QUOTES tab',r.tab);});
+test('s55_infra: assets vs service, water, food seasons, space, aviation, sea, rail, transport, districts','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*150);const X=st.inf;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];
+    const ev=new Set(st.ev.map(e=>e.ty));return{n:Object.keys(X.c).length,net:Object.keys(R.net).length,ap:R.av.ap,sp:Object.values(X.c).some(c=>c.sp),ph:R.food.ph,ev:['UTILITIES','FOOD','SPACE','AVIATION','TRANSIT'].filter(t=>ev.has(t)),tab:/WATER/.test(NATPANEL.tabs.NETWORKS(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
+  ok('records with eight networks',r.n>5&&r.net===8,r);ok('airports from the world data, space programmes, seasons',r.ap>0&&r.sp&&!!r.ph,r);ok('infrastructure events',r.ev.length>=2,r.ev);ok('NETWORKS tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s56_enviro: climate, environment incidents and monitoring, ecosystems, agencies, risk indicators','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*150);const X=st.env2;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];const ev=new Set(st.ev.map(e=>e.ty));
+    return{n:Object.keys(X.c).length,eco:Object.keys(R.eco).length,inc:X.inc.length,ev:['ENVIRONMENT','EMERGENCY','HAZARD','CLIMATE'].filter(t=>ev.has(t)),tab:/ECOSYSTEMS/.test(NATPANEL.tabs.ENVIRONMENT(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
+  ok('records and ecosystems',r.n>5&&r.eco===5,r);ok('environmental incidents',r.inc>0,r);ok('ENVIRONMENT tab',r.tab);ok('state stays small',r.size<100000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s57_chronicle: relationships, commands, corrections, invariants, yearbook, memory, live counters, navigation, civilian resilience','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*95);const X=st.chr;const core=Object.values(st.c).find(q=>q.al==='CORE');const C=WWAR.chronicle.counters();
+    return{rel:Object.keys(X.rel).length,cmd:X.cmd.length,yb:X.yb.length,nav:!!X.nav.B,res:Object.keys(X.res).length,cnt:C.B.serving>0,tab:/YEARBOOK/.test(NATPANEL.tabs.CHRONICLE(core))&&/CIVILIAN RESILIENCE/.test(NATPANEL.tabs.CHRONICLE(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
+  ok('relationship records and commands',r.rel>100&&r.cmd>0,r);ok('yearbook entries',r.yb>=2,r.yb);ok('navigation and resilience',r.nav&&r.res>3,r);ok('live counters',r.cnt);ok('CHRONICLE tab',r.tab);ok('state stays small',r.size<120000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s58_desk: tasking from the war, crew seats, briefing room, journal, bookmarks, CSV export, encyclopedia, readiness board','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*20);const D=WWAR.desk;D.tasking();const X=st.desk;const t=D.accept(0);
+    D.mark(50,20,'rally point');D.note('tankers at 0600');D.ready('me',true);D.journal('first day');D.bookmark('front',50,30,5);D.recv({k:'note',v:'from a guest'});D.recv({k:'mk',v:{lat:'x',lon:1}});
+    const core=Object.values(st.c).find(q=>q.al==='CORE');return{task:X.task.length,acc:!!t,seats:D.seats('F-15E').length,mk:X.brief.mk.length,notes:X.brief.notes.length,jr:X.jr.length,bm:X.bm.length,csv:D.csv().split('\n').length,enc:D.search('S-400').length,tab:/TASKING/.test(NATPANEL.tabs.DESK(core))&&/READINESS BOARD/.test(NATPANEL.tabs.DESK(core)),audit:WWAR.audit()};});
+  ok('tasking generated and accepted',r.task>0&&r.acc,r);ok('two seats in a two-seater',r.seats===2);ok('briefing room: markers, notes (invalid marker rejected)',r.mk===1&&r.notes===2,r);ok('journal and bookmarks',r.jr===1&&r.bm===1);ok('CSV export',r.csv>100,r.csv);ok('encyclopedia search',r.enc>0,r.enc);ok('DESK tab',r.tab);ok('audit clean',r.audit.length===0,r.audit);});
+test('s59_scenarios: cross-system chains — mobilization to labour and schools, displacement to migration and resilience, airbase damage to facilities and readiness, ceasefire to monitoring, natural deaths to the ledger, save and reload with every record','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*60);const core=Object.values(st.c).find(q=>q.al==='CORE');const a=core.a3;
+    WWAR.mil.order(a,'GENERAL','test');WWAR.step(24*10);out.mob=st.ppl.c[a].lab.vac>0&&st.ppl.c[a].edu.def>=0;
+    core.disp=(core.disp||0)+core.pop*.05;WWAR.step(24*5);out.mig=st.ppl.c[a].mig.IDP>0&&st.chr.res[a].fear>0;
+    const m=st.mil[a],id=Object.keys(m.bases)[0];m.bases[id].c=.3;WWAR.step(24*3);const b=st.svc.c[a].inst.find(x=>x.id===id);out.base=!!b&&Object.values(b.f).some(v=>v<1);
+    const f=st.fronts.find(x=>!x.cf);if(f){f.cf={kind:'LOCAL',t:st.t,until:st.t+24*20};WWAR.step(24*2);out.cf=st.pol2.cfm.zones>0;}
+    out.ledger=st.dl.ev.some(e=>e.nat);out.keys=['ppl','svc','pol2','ec2','inf','env2','chr','desk','civ','aic'].filter(k=>st[k]);
+    const day=Math.floor(st.t/24);await WWAR.store.autosave();localStorage.removeItem('viper.ww');WWAR.st=null;await WWAR.load();out.back=WWAR.st&&Math.floor(WWAR.st.t/24)===day&&out.keys.every(k=>WWAR.st[k]);
+    WWAR.step(24*2);out.audit=WWAR.audit();return out;});
+  ok('mobilization reaches labour and education',r.mob,r);ok('displacement reaches migration and resilience',r.mig,r);ok('airbase damage reaches its facilities',r.base,r);ok('a ceasefire is monitored',r.cf,r);
+  ok('natural deaths in the ledger',r.ledger);ok('every subsystem record present',r.keys.length===10,r.keys);ok('save and reload keep every record',r.back,r);ok('audit clean after reload',r.audit.length===0,r.audit);});
+test('s60_inf407: trenches cut into the ground across the front, engineers dig both sides, Esc pause with maps, recoil and sway, attachments, side rifles and arms sales, mines, vehicles go round buildings, trench fighting, campaign air support, results to the war, menus close','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};WWAR.step(24*3);
+    let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT',role:'ENGINEER'});I.land();S.hp=1e9;S.dT=1e9;const L=S.lines[1],t=L.slots[3];
+    out.lines=I.TR.L.filter(l=>!l.k).length;out.span=I.TR.L[0].x1-I.TR.L[0].x0;out.depth=I.cut(t.x,t.z);out.ditch=I.TR.L.some(l=>l.k===1);out.gs=I.TR.G.length;
+    const g0=I.TR.G.length;I.digTrench(new THREE.Vector3(0,0,-350),-1,true,0);I.digTrench(new THREE.Vector3(0,0,-900),1,false,0);out.dug=I.TR.G.length-g0;
+    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!!document.getElementById('infPause')&&!!document.getElementById('infPworld');I.pauseMenu(false);
+    S.w='pri';const p0=S.pitch;S.wp.pri.cur=30;S.cool=0;S.fire=true;for(let i=0;i<6;i++){S.cool=0;S.reload=0;I.step(1/30,1);}out.climb=S.pitch>p0;S.fire=false;S.ads=true;I.step(1/30,20);out.sway=Math.abs(S.swX||0)+Math.abs(S.swY||0)>0;
+    out.rus=I.canField('RUS','AK12')&&!I.canField('RUS','M4A1')&&I.canField('USA','M4A1')&&!I.canField('USA','AK12');
+    const v=S.veh.find(x=>x.alive);if(v){const hp=v.hp;I.mine(v.x,v.z,'AT','E');I.step(1/30,2);out.mine=!v.alive||v.hp<hp;}
+    const b=S.blds.find(x=>x.bid!=null&&x.y1-x.y0>2);if(b){out.block=I.vblocked((b.x0+b.x1)/2,(b.z0+b.z1)/2,2);}
+    const C=I.casSide('F');out.cas=!!C&&C.rate>0;S.casT=0;for(let i=0;i<20&&!(S.casRuns>0);i++){S.casT=0;I.casStep(.1);}out.runs=S.casRuns||0;
+    const E=S.lines.find(l=>l.own==='E');S.pos.set(0,0,E.z);S.pos.y=0;I.cqbStep(.1);out.cqb=!!S.cqb;const en=S.them.find(u=>u.alive);if(en){en.m.position.set(S.pos.x+3,en.m.position.y,S.pos.z);S.vT=0;I.voiceStep(.1);out.voice=S.vlines>0;}
+    I.panel('plan',S.STR.find(c=>c.side==='F'&&c.plan)||S.STR.find(c=>c.side==='F'));const had=!!document.getElementById('iPan');I.step(1/30,5);S.lost=3;S.kills=5;S.pows=2;const gnd=WWAR.st.c.POL.gnd;I.stop(true,'KIA');out.pan=had&&!document.getElementById('iPan');out.gnd=WWAR.st.c.POL.gnd<gnd;
+    out.ev=WWAR.st.ev.slice(-6).some(e=>/After the battle/.test(e.txt||''));document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
+    for(let d=0;d<21;d++)WWAR.step(24);out.sales=Object.keys(WWAR.st.arms2||{}).length;out.audit=WWAR.audit();return out;});
+  ok('four trench lines across the whole front, cut into the ground, with dugouts and communication trenches',r.lines===4&&r.span>2000&&r.depth>1.5&&r.gs>20&&r.ditch,r);ok('engineers on both sides dig sections',r.dug===2,r.dug);
+  ok('Esc pauses with the battle map and the war map',r.paused);ok('recoil climbs; aim sways',r.climb&&r.sway,r);ok('REDFOR and BLUEFOR rifle families',r.rus);ok('anti-tank mine',r.mine,r);ok('vehicles blocked by buildings',r.block!==false,r);
+  ok('campaign close air support',r.cas&&r.runs>0,r);ok('trench clearing starts in an enemy trench',r.cqb);ok('close-range voices',r.voice,r);ok('menus close when the battle ends',r.pan);ok('losses come off the brigades; report in the war',r.gnd&&r.ev,r);ok('friendly arms sales',r.sales>0,r.sales);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

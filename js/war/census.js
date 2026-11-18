@@ -33,7 +33,10 @@ function draw(n,p){if(n<=0||p<=0)return 0;const m=n*p,sd=Math.sqrt(Math.max(0,n*
 function gauss(){let u=0,v=0;while(u===0)u=rn();while(v===0)v=rn();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 const S=()=>W.st.census||(W.st.census={c:{},acc:{},mun:{},dow:[]});
 function acct(p){const s=S();return s.c[p.a3]||(s.c[p.a3]={pop0:p.pop,births:0,nat:0,warM:0,warC:0,lastAir:p.lostAir,lastGnd:p.lostGnd,lastNav:null});}
-function rec(p,o){const r=C.record(Object.assign({a3:p.a3,src:null},o));if(!r)return;const a=acct(p);if(o.nat)a.nat+=o.n;else if(o.kind==='MIL'&&o.st!=='MISSING')a.warM+=o.n;else if(o.kind==='CIV')a.warC+=o.n;if(!o.nat)p.pop=Math.max(1e4,p.pop-(o.st==='MISSING'?0:o.n));}   /* natural deaths are already in life.js's growth rate */
+function rec(p,o){let r=null;
+  // v400: natural deaths are one record per country per 30 days (the count grows; each person keeps a stable slot)
+  if(o.nat){const l=W.st.dl,k=l&&l.natL&&l.natL[p.a3];const x=k!=null&&l.ev.find(e=>e.id===k);if(x&&W.st.t-x.t<24*30&&x.cause===o.cause){x.n+=o.n;r=x;}}
+  if(!r){r=C.record(Object.assign({a3:p.a3,src:null},o));if(r&&o.nat){const l=W.st.dl;(l.natL||(l.natL={}))[p.a3]=r.id;}}if(!r)return;const a=acct(p);if(o.nat)a.nat+=o.n;else if(o.kind==='MIL'&&o.st!=='MISSING')a.warM+=o.n;else if(o.kind==='CIV')a.warC+=o.n;if(!o.nat)p.pop=Math.max(1e4,p.pop-(o.st==='MISSING'?0:o.n));}   /* natural deaths are already in life.js's growth rate */
 // what the sorties already resolved person by person: aircraft and vehicles (cemetery.js records count here)
 if(typeof Jet!=='undefined'){const _k=Jet.prototype.kill;Jet.prototype.kill=function(){const was=this.alive&&this._ws&&W.st&&window.WSORTIE&&WSORTIE.WS.on&&this!==player;const r=_k.apply(this,arguments);if(was&&!this.alive){const a=S().acc;a[this._ws]=a[this._ws]||{air:0,gnd:0};a[this._ws].air++;}return r;};}
 if(typeof GUnit!=='undefined'){const _k=GUnit.prototype.kill;GUnit.prototype.kill=function(){const was=this.alive&&this._ws&&W.st&&this._bde;const r=_k.apply(this,arguments);if(was&&!this.alive){const a=S().acc;a[this._ws]=a[this._ws]||{air:0,gnd:0};a[this._ws].gnd+=.01;}return r;};}
