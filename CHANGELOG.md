@@ -1202,3 +1202,8 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v411
 - Esc in a battle pauses it and opens the main menu on the CAMPAIGN tab (world-war map centred on the battle, your position marked); RESUME THE BATTLE (or Esc) returns. Infantry voice lines appear low on the left like the RIO calls. Campaign map: military airports only by default (AIRPORTS toggle shows all); unit markers for both sides with fog of war (enemy units only when detected, with the age of the report). Menu tabs no longer cover the title. A logo for the page (favicon, menu) and the repository README.
+
+## v412 — the long fronts
+- The war is fought on a few long fronts (the longest per principal pairing, C.maxFronts); other enemy borders stay quiet.
+- Fronts wear: every day of fighting adds to a front's wear (about three months to the worst; ceasefires heal it slowly). A battle on a worn front is built with craters (hundreds), shot-up and collapsed houses (their windows and chimneys go with them), burnt-out vehicles, shattered stumps, churned mud, more drone nets and extra trench lines behind the old ones. The campaign map hatches dug-in fronts.
+- In the live world trench lines run 10 km along the front.
