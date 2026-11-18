@@ -1352,6 +1352,22 @@ test('s64_tank: playable tank as driver or gunner; commander calls targets, gunn
     const ai=S.veh.find(v=>v.tank&&!v.me&&v.alive);const u=(ai&&ai.side==='E'?S.us:S.them).find(x=>x.alive);if(ai&&u){const yy=I.S.pos.y-1.7;ai.x=20;ai.z=I.S.pos.z;ai.m.position.set(20,yy,ai.z);ai.mv=false;ai.goal=null;u.m.position.set(60,yy,ai.z);ai.nofire=false;const hp=u.hp;for(let i=0;i<300;i++)I.tankMG(ai,.1);out.mg=u.hp<hp||!u.alive;out.mgd=[ai.side,ai.mgc,ai.mgb,u.alive,u.hp,I.los(ai.m.position.clone().setY(ai.m.position.y+2.6),u.m.position.clone().setY(u.m.position.y+1.1))];}
     I.stop(false);out.audit=WWAR.audit();return out;});
   ok('drive a tank',r.tk&&r.drove,r);ok('the AI gunner engages the commander\'s target',r.fired&&r.tgt&&r.dmg,r);ok('hits damage parts and crew',r.mod);ok('as gunner: fire, autoloader reloads',r.g&&r.gfire&&r.reloaded,r);ok('tank machine guns hit infantry',r.mg,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s65_infmp: two pages in one room fight the same infantry battle: the invitation, each other\'s soldiers, shots and hits','F-16C',async p=>{
+  const [g]=await Promise.all([p.waitForEvent('popup'),p.evaluate(()=>{window.open(location.href,'guest2');})]);await g.waitForFunction(()=>typeof WWNET!=='undefined'&&typeof localRoom==='function'&&window.INFNET,null,{timeout:90000});
+  await p.evaluate(async()=>{localStorage.removeItem('viper.ww');game.team='BLUE';await WWAR.newWar('EST');WWAR.step(24*3);window.LOCAL_ROOM=localRoom();const c=document.getElementById('cs');if(c)c.value='Host';WWNET.N.code='t9';
+    const i=document.createElement('input');i.id='wwCode';i.value='t9';document.body.appendChild(i);await WWNET.join();});
+  await g.evaluate(async()=>{game.team='BLUE';window.LOCAL_ROOM=localRoom();const c=document.getElementById('cs');if(c)c.value='Guest';const i=document.createElement('input');i.id='wwCode';i.value='t9';document.body.appendChild(i);await WWNET.join();});
+  await g.waitForFunction(()=>WWNET.N.got,null,{timeout:20000}).catch(()=>{});
+  await p.evaluate(()=>{const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',noRide:true});I.land();S.hp=1e9;S.dT=1e9;});
+  await g.waitForFunction(()=>!!INFNET.N.invite,null,{timeout:10000}).catch(()=>{});const inv=await g.evaluate(()=>!!INFNET.N.invite&&!!document.getElementById('iNetJ'));
+  await g.evaluate(async()=>{await INFNET.joinInvite();const S=INFANTRY.S;INFANTRY.land();S.hp=1e9;S.dT=1e9;});
+  for(let i=0;i<20;i++){await p.evaluate(()=>INFANTRY.step(1/30,3));await g.evaluate(()=>INFANTRY.step(1/30,3));await p.waitForTimeout(60);}
+  const seen=await g.evaluate(()=>({rk:INFNET.N.rk,n:INFNET.N.peers.size,m:[...INFNET.N.peers.values()].some(q=>!!q.m),same:INFNET.N.key}));const hk=await p.evaluate(()=>({n:INFNET.N.peers.size,key:INFNET.N.key}));
+  // the guest shoots the host (friendly fire is counted and sent)
+  const hp0=await p.evaluate(()=>{const S=INFANTRY.S;S.hp=100;return S.hp;});
+  await g.evaluate(()=>{const S=INFANTRY.S;const q=[...INFNET.N.peers.values()][0];if(!q||!q.m)return;const o=q.m.position.clone().add(new THREE.Vector3(0,1.2,6));S.pos.copy(o);const d=q.m.position.clone().setY(q.m.position.y+1.2).sub(o).normalize();INFNET.shot(o,d,30,'gun');});
+  await p.waitForTimeout(600);const hp1=await p.evaluate(()=>INFANTRY.S.hp);await g.close();
+  ok('the invitation reaches the other page',inv);ok('both in the same battle, each drawing the other',seen.n>0&&seen.m&&hk.n>0&&seen.same===hk.key,{seen,hk});ok('a hit between players is delivered',hp1<hp0,{hp0,hp1});});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

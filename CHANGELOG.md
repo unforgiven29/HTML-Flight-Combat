@@ -1217,3 +1217,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Driver: W/S, A/D, mouse looks through the periscope, V outside. Gunner: mouse traverses (at the turret rate) and elevates, left button main gun, right button coax, 1/2/3 sabot/HEAT/HE, Q zoom, X fights a fire.
 - Your tank is hit by part (engine, tracks, turret drive, gun, optics, ammunition, fire) and crew; damage changes what the crew can do; ammunition can cook off; you can bail out of a fire. Anti-tank teams engage you.
 - Every tank fires its machine guns at infantry: coax and the commander's heavy MG (Kord / NSVT on Russian-pattern, M2 on Western, MG3 on Leopards).
+
+## v415 — infantry multiplayer
+- infnet.js: starting a battle tells the room where; others get a JOIN button and start the same battle at the same place (co-op on your side, or against you from the other side). Players in the same battle see each other as soldiers or tanks with callsigns (blue / red), see each other's tracers, and hits between players (rifles, machine guns, tank guns) are delivered; friendly fire counts.
