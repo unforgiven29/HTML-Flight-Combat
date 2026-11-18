@@ -9217,7 +9217,7 @@ function ckShadowGate(dt){const sm=renderer.shadowMap;if(gfx.mode==='HIGH'||!ckS
   if(_ckSh.force||_ckSh.t>=1/15||(d.x*p.x+d.y*p.y+d.z*p.z)/l<.99998){sm.needsUpdate=true;_ckSh.t=0;_ckSh.force=false;d.copy(p).divideScalar(l);}}
 /* v259 perf: LOW graphics draws the terrain from every second grid vertex (a quarter of the ~390k triangles). The height field used for
    collision and the radar is untouched. */
-function terrLOD(){const T=window.TERRAIN;if(!T)return;const g=T.geometry,want=gfx.mode==='LOW'?2:1;if(g._lod===want)return;
+function terrLOD(){const T=window.TERRAIN;if(!T)return;const g=T.geometry,want=gfx.mode==='LOW'&&!(player&&player.infantry)?2:1;   /* v428: on the ground the terrain is never thinned: the coarse mesh would float above you (you would see the sea through it) */if(g._lod===want)return;
   if(!g._idx1)g._idx1=g.index;
   if(want===2&&!g._idx2){const n=Math.round(Math.sqrt(g.attributes.position.count)),S=n-1,A=[];
     for(let iy=0;iy+2<=S;iy+=2)for(let ix=0;ix+2<=S;ix+=2){const a=ix+n*iy,b=ix+n*(iy+2),c=ix+2+n*(iy+2),e=ix+2+n*iy;A.push(a,b,e,b,c,e);}
