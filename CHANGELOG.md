@@ -1162,3 +1162,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v396
 - Chapter 08: js/war/people.js (migration, coalition totals, welfare, labour, health, aircrew medicine, psychological health, disability, education, followed fictional lives with unique names). POPULATION and LIVES tabs. Depth 78.6%.
+
+## v397
+- Infantry in the live world: plain town blocks within 3 km are solid (you, the enemy and vehicles stop at them) and get a facade with windows, floor bands and doors; 140 nearest are full enterable buildings (was 60); the APC and helicopter routes are kept clear. Your aircraft never appears during infantry; leaving returns you to the menu. The visible laser is off while aiming through a sight.
