@@ -1,38 +1,38 @@
 line	cov	where	title	section
-21209	0		Unified multiplayer authority, cooperative command, shared campaigns, security, and synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
-21211	0		One authority map	Multiplayer authority, cooperative play, and shared-world synchronization
-21215	0		Transaction integrity	Multiplayer authority, cooperative play, and shared-world synchronization
-21219	0		Reconnect and host migration	Multiplayer authority, cooperative play, and shared-world synchronization
-21223	0		Privacy and permissions	Multiplayer authority, cooperative play, and shared-world synchronization
-21227	0		Security and abuse resistance	Multiplayer authority, cooperative play, and shared-world synchronization
-21240	0		Shared campaign lifecycle and peer participation.	Multiplayer authority, cooperative play, and shared-world synchronization
-21253	0		Cooperative command and persistent shared campaigns.	Multiplayer authority, cooperative play, and shared-world synchronization
-21266	0		Authority, synchronization, and conflict resolution.	Multiplayer authority, cooperative play, and shared-world synchronization
-21268	0		Host-authoritative campaign state	Multiplayer authority, cooperative play, and shared-world synchronization
-21272	0		Command model	Multiplayer authority, cooperative play, and shared-world synchronization
-21285	0		Event synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
-21289	0		Information permissions	Multiplayer authority, cooperative play, and shared-world synchronization
-21293	0		Reconnection	Multiplayer authority, cooperative play, and shared-world synchronization
-21304	0		Host loss and campaign continuity	Multiplayer authority, cooperative play, and shared-world synchronization
-21310	0		Optional always-on campaign service	Multiplayer authority, cooperative play, and shared-world synchronization
-21314	0		Abuse and network safety	Multiplayer authority, cooperative play, and shared-world synchronization
-21335	0		Cooperative squadron rooms, shared briefings, and human crew stations	Multiplayer authority, cooperative play, and shared-world synchronization
-21339	0		Shared briefing room	Multiplayer authority, cooperative play, and shared-world synchronization
-21353	0		Player assignments	Multiplayer authority, cooperative play, and shared-world synchronization
-21365	0		Shared map markers and planning notes	Multiplayer authority, cooperative play, and shared-world synchronization
-21373	0		Host authority and synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
-21382	0		Briefing readiness and launch	Multiplayer authority, cooperative play, and shared-world synchronization
-21399	0		Aircraft seat definitions	Multiplayer authority, cooperative play, and shared-world synchronization
-21406	0		Seat assignment and authority	Multiplayer authority, cooperative play, and shared-world synchronization
-21415	0		Shared cockpit state	Multiplayer authority, cooperative play, and shared-world synchronization
-21423	0		Crew coordination	Multiplayer authority, cooperative play, and shared-world synchronization
-21431	0		User experience and accessibility	Multiplayer authority, cooperative play, and shared-world synchronization
-21451	0		Threat model and authority	Multiplayer authority, cooperative play, and shared-world synchronization
-21457	0		Identity and access	Multiplayer authority, cooperative play, and shared-world synchronization
-21472	0		Command validation	Multiplayer authority, cooperative play, and shared-world synchronization
-21485	0		Network consistency	Multiplayer authority, cooperative play, and shared-world synchronization
-21496	0		Host departure, migration, and recovery	Multiplayer authority, cooperative play, and shared-world synchronization
-21508	0		Abuse prevention and moderation	Multiplayer authority, cooperative play, and shared-world synchronization
-21531	0		Authoritative ownership	Multiplayer authority, cooperative play, and shared-world synchronization
-21534	0		Transactions	Multiplayer authority, cooperative play, and shared-world synchronization
-21537	0		Event ordering	Multiplayer authority, cooperative play, and shared-world synchronization
+21209	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Unified multiplayer authority, cooperative command, shared campaigns, security, and synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
+21211	1	warnet.js (host authority, sync, validation, host migration), localroom.js	One authority map	Multiplayer authority, cooperative play, and shared-world synchronization
+21215	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Transaction integrity	Multiplayer authority, cooperative play, and shared-world synchronization
+21219	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Reconnect and host migration	Multiplayer authority, cooperative play, and shared-world synchronization
+21223	0.5	warnet.js (host authority, sync, validation, host migration), localroom.js	Privacy and permissions	Multiplayer authority, cooperative play, and shared-world synchronization
+21227	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Security and abuse resistance	Multiplayer authority, cooperative play, and shared-world synchronization
+21240	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Shared campaign lifecycle and peer participation.	Multiplayer authority, cooperative play, and shared-world synchronization
+21253	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Cooperative command and persistent shared campaigns.	Multiplayer authority, cooperative play, and shared-world synchronization
+21266	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Authority, synchronization, and conflict resolution.	Multiplayer authority, cooperative play, and shared-world synchronization
+21268	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Host-authoritative campaign state	Multiplayer authority, cooperative play, and shared-world synchronization
+21272	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Command model	Multiplayer authority, cooperative play, and shared-world synchronization
+21285	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Event synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
+21289	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Information permissions	Multiplayer authority, cooperative play, and shared-world synchronization
+21293	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Reconnection	Multiplayer authority, cooperative play, and shared-world synchronization
+21304	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Host loss and campaign continuity	Multiplayer authority, cooperative play, and shared-world synchronization
+21310	0.5	warnet.js (host authority, sync, validation, host migration), localroom.js	Optional always-on campaign service	Multiplayer authority, cooperative play, and shared-world synchronization
+21314	1	warnet.js (host authority, sync, validation, host migration), localroom.js	Abuse and network safety	Multiplayer authority, cooperative play, and shared-world synchronization
+21335	1	desk.js (shared briefing room, markers, notes, ready check)	Cooperative squadron rooms, shared briefings, and human crew stations	Multiplayer authority, cooperative play, and shared-world synchronization
+21339	1	desk.js (shared briefing room, markers, notes, ready check)	Shared briefing room	Multiplayer authority, cooperative play, and shared-world synchronization
+21353	1	desk.js (shared briefing room, markers, notes, ready check)	Player assignments	Multiplayer authority, cooperative play, and shared-world synchronization
+21365	1	desk.js (shared briefing room, markers, notes, ready check)	Shared map markers and planning notes	Multiplayer authority, cooperative play, and shared-world synchronization
+21373	1	desk.js (shared briefing room, markers, notes, ready check)	Host authority and synchronization	Multiplayer authority, cooperative play, and shared-world synchronization
+21382	0.5	desk.js (shared briefing room, markers, notes, ready check)	Briefing readiness and launch	Multiplayer authority, cooperative play, and shared-world synchronization
+21399	1	desk.js (crew seats, assignment)	Aircraft seat definitions	Multiplayer authority, cooperative play, and shared-world synchronization
+21406	1	desk.js (crew seats, assignment)	Seat assignment and authority	Multiplayer authority, cooperative play, and shared-world synchronization
+21415	0	desk.js (crew seats, assignment)	Shared cockpit state	Multiplayer authority, cooperative play, and shared-world synchronization
+21423	0.5	desk.js (crew seats, assignment)	Crew coordination	Multiplayer authority, cooperative play, and shared-world synchronization
+21431	0.5	desk.js (crew seats, assignment)	User experience and accessibility	Multiplayer authority, cooperative play, and shared-world synchronization
+21451	1	warnet.js (validation, ordering, ownership)	Threat model and authority	Multiplayer authority, cooperative play, and shared-world synchronization
+21457	0.5	warnet.js (validation, ordering, ownership)	Identity and access	Multiplayer authority, cooperative play, and shared-world synchronization
+21472	1	warnet.js (validation, ordering, ownership)	Command validation	Multiplayer authority, cooperative play, and shared-world synchronization
+21485	1	warnet.js (validation, ordering, ownership)	Network consistency	Multiplayer authority, cooperative play, and shared-world synchronization
+21496	1	warnet.js (validation, ordering, ownership)	Host departure, migration, and recovery	Multiplayer authority, cooperative play, and shared-world synchronization
+21508	0.5	warnet.js (validation, ordering, ownership)	Abuse prevention and moderation	Multiplayer authority, cooperative play, and shared-world synchronization
+21531	1	warnet.js (validation, ordering, ownership)	Authoritative ownership	Multiplayer authority, cooperative play, and shared-world synchronization
+21534	1	warnet.js (validation, ordering, ownership)	Transactions	Multiplayer authority, cooperative play, and shared-world synchronization
+21537	1	warnet.js (validation, ordering, ownership)	Event ordering	Multiplayer authority, cooperative play, and shared-world synchronization

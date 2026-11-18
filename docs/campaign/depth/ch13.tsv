@@ -1,79 +1,79 @@
 line	cov	where	title	section
-18360	0		Player campaign, missions, career, and flight experience	Player flight experience, career, controls, and pilot progression
-18362	0		One player-facing campaign	Player flight experience, career, controls, and pilot progression
-18366	0		Mission generation and world consequences	Player flight experience, career, controls, and pilot progression
-18370	0		Briefing and debriefing	Player flight experience, career, controls, and pilot progression
-18374	0		Career and service continuity	Player flight experience, career, controls, and pilot progression
-18378	0		Training, rehearsal, and accessibility	Player flight experience, career, controls, and pilot progression
-18383	0		FLIGHT RECORDER, BLACK BOX, TELEMETRY, AND MISSION REPLAY	Player flight experience, career, controls, and pilot progression
-18387	0		Recording lifecycle	Player flight experience, career, controls, and pilot progression
-18395	0		Telemetry data	Player flight experience, career, controls, and pilot progression
-18409	0		Replay viewer	Player flight experience, career, controls, and pilot progression
-18423	0		AI and squadron recording	Player flight experience, career, controls, and pilot progression
-18430	0		Storage, export, and retention	Player flight experience, career, controls, and pilot progression
-18440	0		Flight recorder integration	Player flight experience, career, controls, and pilot progression
-18456	0		ADVANCED HOTAS, JOYSTICK, RUDDER PEDAL, AND MULTI-DEVICE INPUT CONFIGURATION	Player flight experience, career, controls, and pilot progression
-18460	0		Device discovery and profiles	Player flight experience, career, controls, and pilot progression
-18470	0		Axis assignment and calibration	Player flight experience, career, controls, and pilot progression
-18480	0		Button, hat, and modifier mapping	Player flight experience, career, controls, and pilot progression
-18488	0		Runtime resilience	Player flight experience, career, controls, and pilot progression
-18506	0		PLAYER-INTERACTIVE PREFLIGHT AND STARTUP CHECKLIST COMPLETION	Player flight experience, career, controls, and pilot progression
-18510	0		Aircraft-specific procedure source	Player flight experience, career, controls, and pilot progression
-18517	0		Interactive checklist presentation	Player flight experience, career, controls, and pilot progression
-18526	0		Preflight inspections and ground-service coordination	Player flight experience, career, controls, and pilot progression
-18534	0		Persistence and options	Player flight experience, career, controls, and pilot progression
-18551	0		LOCAL VISUAL GROUND-SERVICE AND FLIGHT-LINE ACTIVITY	Player flight experience, career, controls, and pilot progression
-18555	0		Visible ground-service tasks	Player flight experience, career, controls, and pilot progression
-18567	0		Simulation truth and animation	Player flight experience, career, controls, and pilot progression
-18575	0		HTML5 / Three.js performance	Player flight experience, career, controls, and pilot progression
-18594	0		PLAYER PILOT RECOVERY, CAPTURE, AND RETURN TO CAMPAIGN	Player flight experience, career, controls, and pilot progression
-18608	0		PLAYER CAREER, PERSONAL AGENCY, AND OPTIONAL COMMAND ROLES	Player flight experience, career, controls, and pilot progression
-18621	0		PLAYER PILOT CAREER, SERVICE RECORD, AND FLIGHT STATISTICS	Player flight experience, career, controls, and pilot progression
-18651	0		FLIGHT ACADEMY, QUALIFICATIONS, AND NON-CAMPAIGN TRAINING RANGE	Player flight experience, career, controls, and pilot progression
-18655	0		Training environment	Player flight experience, career, controls, and pilot progression
-18659	0		Training courses	Player flight experience, career, controls, and pilot progression
-18678	0		Instructor and evaluation	Player flight experience, career, controls, and pilot progression
-18687	0		Qualifications and career linkage	Player flight experience, career, controls, and pilot progression
-18691	0		Progress tracking	Player flight experience, career, controls, and pilot progression
-18705	0		ISOLATED REHEARSAL OF REAL CAMPAIGN MISSIONS	Player flight experience, career, controls, and pilot progression
-18709	0		Rehearsal snapshot	Player flight experience, career, controls, and pilot progression
-18717	0		Rehearsal behavior	Player flight experience, career, controls, and pilot progression
-18726	0		Debrief and comparison	Player flight experience, career, controls, and pilot progression
-18743	0		MISSION PATCH COLLECTION AND DEPLOYMENT INSIGNIA ARCHIVE	Player flight experience, career, controls, and pilot progression
-18747	0		Patch records	Player flight experience, career, controls, and pilot progression
-18757	0		Earning and display	Player flight experience, career, controls, and pilot progression
-18773	0		Player onboarding, training, encyclopedia, accessibility, and campaign setup	Player flight experience, career, controls, and pilot progression
-18775	0		First-session onboarding	Player flight experience, career, controls, and pilot progression
-18788	0		Interactive training	Player flight experience, career, controls, and pilot progression
-18801	0		Searchable campaign encyclopedia	Player flight experience, career, controls, and pilot progression
-18817	0		Campaign setup wizard	Player flight experience, career, controls, and pilot progression
-18832	0		Accessibility and input	Player flight experience, career, controls, and pilot progression
-18857	0		Missions and player interaction	Mission generation, tasking, and campaign operations
-18868	0		Dynamic mission generation, campaign tasking, event-driven operations, and contingencies	Mission generation, tasking, and campaign operations
-18900	0		Mission families to add	Mission generation, tasking, and campaign operations
-18926	0		Dynamic mission generation, quality rules, and constraints	Mission generation, tasking, and campaign operations
-18930	0		Mission lifecycle	Mission generation, tasking, and campaign operations
-18934	0		Player choice and consequences	Mission generation, tasking, and campaign operations
-18938	0		Additional dynamic mission families and emergent operations.	Mission generation, tasking, and campaign operations
-18942	0		Pilot physiology and survival missions	Mission generation, tasking, and campaign operations
-18949	0		Airbase operations missions	Mission generation, tasking, and campaign operations
-18956	0		Carrier and maritime aviation missions	Mission generation, tasking, and campaign operations
-18963	0		CBRN and public-health response missions	Mission generation, tasking, and campaign operations
-18970	0		Deception and intelligence missions	Mission generation, tasking, and campaign operations
-18977	0		Navigation and infrastructure missions	Mission generation, tasking, and campaign operations
-18983	0		Law, investigation, and accountability missions	Mission generation, tasking, and campaign operations
-18990	0		Coalition and diplomatic missions	Mission generation, tasking, and campaign operations
-18997	0		Research, repair, and modernization missions	Mission generation, tasking, and campaign operations
-19004	0		Public-health and domestic resilience missions	Mission generation, tasking, and campaign operations
-19027	0		Sources of complications	Mission generation, tasking, and campaign operations
-19044	0		Player communication and choices	Mission generation, tasking, and campaign operations
-19052	0		AI response	Mission generation, tasking, and campaign operations
-19056	0		Fairness and frequency controls	Mission generation, tasking, and campaign operations
-19075	0		SCENARIO CONTROLS AND DIFFICULTY SETTINGS	Mission generation, tasking, and campaign operations
-19082	0		BRIEFINGS, DEBRIEFINGS, AND THE PLAYER'S UNDERSTANDING	Briefings, debriefings, observation, and player understanding
-19095	0		CAMPAIGN DIFFICULTY, REALISM, AND PLAYER CONTROL	Briefings, debriefings, observation, and player understanding
-19108	0		LIVE CAMPAIGN OBSERVER MODE AND SPECTATOR CAMERA	Briefings, debriefings, observation, and player understanding
-19112	0		Entry and permissions	Briefings, debriefings, observation, and player understanding
-19121	0		Camera modes	Briefings, debriefings, observation, and player understanding
-19134	0		Observation controls and information display	Briefings, debriefings, observation, and player understanding
-19143	0		Observer privacy and performance	Briefings, debriefings, observation, and player understanding
+18360	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Player campaign, missions, career, and flight experience	Player flight experience, career, controls, and pilot progression
+18362	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	One player-facing campaign	Player flight experience, career, controls, and pilot progression
+18366	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Mission generation and world consequences	Player flight experience, career, controls, and pilot progression
+18370	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Briefing and debriefing	Player flight experience, career, controls, and pilot progression
+18374	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Career and service continuity	Player flight experience, career, controls, and pilot progression
+18378	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Training, rehearsal, and accessibility	Player flight experience, career, controls, and pilot progression
+18383	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	FLIGHT RECORDER, BLACK BOX, TELEMETRY, AND MISSION REPLAY	Player flight experience, career, controls, and pilot progression
+18387	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Recording lifecycle	Player flight experience, career, controls, and pilot progression
+18395	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Telemetry data	Player flight experience, career, controls, and pilot progression
+18409	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Replay viewer	Player flight experience, career, controls, and pilot progression
+18423	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	AI and squadron recording	Player flight experience, career, controls, and pilot progression
+18430	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Storage, export, and retention	Player flight experience, career, controls, and pilot progression
+18440	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Flight recorder integration	Player flight experience, career, controls, and pilot progression
+18456	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	ADVANCED HOTAS, JOYSTICK, RUDDER PEDAL, AND MULTI-DEVICE INPUT CONFIGURATION	Player flight experience, career, controls, and pilot progression
+18460	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Device discovery and profiles	Player flight experience, career, controls, and pilot progression
+18470	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Axis assignment and calibration	Player flight experience, career, controls, and pilot progression
+18480	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Button, hat, and modifier mapping	Player flight experience, career, controls, and pilot progression
+18488	0.5	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Runtime resilience	Player flight experience, career, controls, and pilot progression
+18506	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	PLAYER-INTERACTIVE PREFLIGHT AND STARTUP CHECKLIST COMPLETION	Player flight experience, career, controls, and pilot progression
+18510	0.5	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Aircraft-specific procedure source	Player flight experience, career, controls, and pilot progression
+18517	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Interactive checklist presentation	Player flight experience, career, controls, and pilot progression
+18526	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Preflight inspections and ground-service coordination	Player flight experience, career, controls, and pilot progression
+18534	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Persistence and options	Player flight experience, career, controls, and pilot progression
+18551	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	LOCAL VISUAL GROUND-SERVICE AND FLIGHT-LINE ACTIVITY	Player flight experience, career, controls, and pilot progression
+18555	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Visible ground-service tasks	Player flight experience, career, controls, and pilot progression
+18567	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	Simulation truth and animation	Player flight experience, career, controls, and pilot progression
+18575	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	HTML5 / Three.js performance	Player flight experience, career, controls, and pilot progression
+18594	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	PLAYER PILOT RECOVERY, CAPTURE, AND RETURN TO CAMPAIGN	Player flight experience, career, controls, and pilot progression
+18608	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	PLAYER CAREER, PERSONAL AGENCY, AND OPTIONAL COMMAND ROLES	Player flight experience, career, controls, and pilot progression
+18621	1	player.js (recorder, patches, rehearsal, observer), cockpit.js (HOTAS, preflight, flight line), media.js (replay), csar.js, leaders.js (career), ui2.js (briefing, debrief)	PLAYER PILOT CAREER, SERVICE RECORD, AND FLIGHT STATISTICS	Player flight experience, career, controls, and pilot progression
+18651	0.5	cockpit.js (academy, qualifications)	FLIGHT ACADEMY, QUALIFICATIONS, AND NON-CAMPAIGN TRAINING RANGE	Player flight experience, career, controls, and pilot progression
+18655	0.5	cockpit.js (academy, qualifications)	Training environment	Player flight experience, career, controls, and pilot progression
+18659	0.5	cockpit.js (academy, qualifications)	Training courses	Player flight experience, career, controls, and pilot progression
+18678	0.5	cockpit.js (academy, qualifications)	Instructor and evaluation	Player flight experience, career, controls, and pilot progression
+18687	1	cockpit.js (academy, qualifications)	Qualifications and career linkage	Player flight experience, career, controls, and pilot progression
+18691	0.5	cockpit.js (academy, qualifications)	Progress tracking	Player flight experience, career, controls, and pilot progression
+18705	1	player.js (rehearsal, patches)	ISOLATED REHEARSAL OF REAL CAMPAIGN MISSIONS	Player flight experience, career, controls, and pilot progression
+18709	1	player.js (rehearsal, patches)	Rehearsal snapshot	Player flight experience, career, controls, and pilot progression
+18717	1	player.js (rehearsal, patches)	Rehearsal behavior	Player flight experience, career, controls, and pilot progression
+18726	0.5	player.js (rehearsal, patches)	Debrief and comparison	Player flight experience, career, controls, and pilot progression
+18743	1	player.js (rehearsal, patches)	MISSION PATCH COLLECTION AND DEPLOYMENT INSIGNIA ARCHIVE	Player flight experience, career, controls, and pilot progression
+18747	1	player.js (rehearsal, patches)	Patch records	Player flight experience, career, controls, and pilot progression
+18757	1	player.js (rehearsal, patches)	Earning and display	Player flight experience, career, controls, and pilot progression
+18773	1	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	Player onboarding, training, encyclopedia, accessibility, and campaign setup	Player flight experience, career, controls, and pilot progression
+18775	1	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	First-session onboarding	Player flight experience, career, controls, and pilot progression
+18788	0.5	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	Interactive training	Player flight experience, career, controls, and pilot progression
+18801	1	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	Searchable campaign encyclopedia	Player flight experience, career, controls, and pilot progression
+18817	0.5	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	Campaign setup wizard	Player flight experience, career, controls, and pilot progression
+18832	1	desk.js (onboarding hints, encyclopedia), ui2.js, tools.js (accessibility)	Accessibility and input	Player flight experience, career, controls, and pilot progression
+18857	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Missions and player interaction	Mission generation, tasking, and campaign operations
+18868	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Dynamic mission generation, campaign tasking, event-driven operations, and contingencies	Mission generation, tasking, and campaign operations
+18900	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Mission families to add	Mission generation, tasking, and campaign operations
+18926	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Dynamic mission generation, quality rules, and constraints	Mission generation, tasking, and campaign operations
+18930	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Mission lifecycle	Mission generation, tasking, and campaign operations
+18934	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Player choice and consequences	Mission generation, tasking, and campaign operations
+18938	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Additional dynamic mission families and emergent operations.	Mission generation, tasking, and campaign operations
+18942	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Pilot physiology and survival missions	Mission generation, tasking, and campaign operations
+18949	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Airbase operations missions	Mission generation, tasking, and campaign operations
+18956	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Carrier and maritime aviation missions	Mission generation, tasking, and campaign operations
+18963	0	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	CBRN and public-health response missions	Mission generation, tasking, and campaign operations
+18970	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Deception and intelligence missions	Mission generation, tasking, and campaign operations
+18977	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Navigation and infrastructure missions	Mission generation, tasking, and campaign operations
+18983	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Law, investigation, and accountability missions	Mission generation, tasking, and campaign operations
+18990	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Coalition and diplomatic missions	Mission generation, tasking, and campaign operations
+18997	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Research, repair, and modernization missions	Mission generation, tasking, and campaign operations
+19004	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Public-health and domestic resilience missions	Mission generation, tasking, and campaign operations
+19027	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Sources of complications	Mission generation, tasking, and campaign operations
+19044	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Player communication and choices	Mission generation, tasking, and campaign operations
+19052	0.5	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	AI response	Mission generation, tasking, and campaign operations
+19056	1	desk.js (tasking families, complications, fairness), airops.js, airbattle.js	Fairness and frequency controls	Mission generation, tasking, and campaign operations
+19075	1	player.js (difficulty, realism, observer), ui2.js	SCENARIO CONTROLS AND DIFFICULTY SETTINGS	Mission generation, tasking, and campaign operations
+19082	1	player.js (difficulty, realism, observer), ui2.js	BRIEFINGS, DEBRIEFINGS, AND THE PLAYER'S UNDERSTANDING	Briefings, debriefings, observation, and player understanding
+19095	1	player.js (difficulty, realism, observer), ui2.js	CAMPAIGN DIFFICULTY, REALISM, AND PLAYER CONTROL	Briefings, debriefings, observation, and player understanding
+19108	1	player.js (difficulty, realism, observer), ui2.js	LIVE CAMPAIGN OBSERVER MODE AND SPECTATOR CAMERA	Briefings, debriefings, observation, and player understanding
+19112	1	player.js (difficulty, realism, observer), ui2.js	Entry and permissions	Briefings, debriefings, observation, and player understanding
+19121	1	player.js (difficulty, realism, observer), ui2.js	Camera modes	Briefings, debriefings, observation, and player understanding
+19134	1	player.js (difficulty, realism, observer), ui2.js	Observation controls and information display	Briefings, debriefings, observation, and player understanding
+19143	0.5	player.js (difficulty, realism, observer), ui2.js	Observer privacy and performance	Briefings, debriefings, observation, and player understanding
