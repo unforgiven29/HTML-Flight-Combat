@@ -1385,6 +1385,14 @@ test('s69_ground: FIGHT FOR menu, FRONT tank, AI turret slew and unstuck, nothin
     out.top=document.getElementById('iTop').style.display==='none';
     I.stop(true,'LEFT');return out;});
   ok('menu: tanker, no mission choice, crew positions only',r.menu,r);ok('a FRONT battle in a tank starts, an enemy tank in it',r.tk&&r.e,r);ok('the AI turret traverses at a rate',r.slew,r);ok('threats are radio calls top left; no top bar',r.radio&&r.top,r);});
+test('s70_cuts: every trench cut near you is open (no invisible trench walls)','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*3);const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT',noRide:true});I.land();
+    const T=I.TR;const out={n:T.G.length,lines:T.L.length};let bad=0;
+    // walk the whole front: every cut within 60 m of the player is one of the drawn ones
+    for(let x=-600;x<=600;x+=60)for(const z of[-300,-470,-760,-1040]){S.pos.set(x,0,z+5);I.trSync();const drawn=T.U.uTGn.value;const near=T.G.filter(g=>Math.hypot((g.x0+g.x1)/2-x,(g.z0+g.z1)/2-z)<60).length;if(near>drawn)bad++;
+      const W=T.U.uTG.value.slice(0,drawn);for(const g of T.G){const d=Math.hypot((g.x0+g.x1)/2-x,(g.z0+g.z1)/2-z);if(d<40&&!W.some(v=>Math.abs(v.x-T.O.x-g.x0)<.01&&Math.abs(v.y-T.O.z-g.z0)<.01))bad++;}}
+    out.bad=bad;I.stop(true,'LEFT');return out;});
+  ok('cuts near the player are drawn',r.bad===0,r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
