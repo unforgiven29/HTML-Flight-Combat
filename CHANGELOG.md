@@ -1207,3 +1207,7 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - The war is fought on a few long fronts (the longest per principal pairing, C.maxFronts); other enemy borders stay quiet.
 - Fronts wear: every day of fighting adds to a front's wear (about three months to the worst; ceasefires heal it slowly). A battle on a worn front is built with craters (hundreds), shot-up and collapsed houses (their windows and chimneys go with them), burnt-out vehicles, shattered stumps, churned mud, more drone nets and extra trench lines behind the old ones. The campaign map hatches dug-in fronts.
 - In the live world trench lines run 10 km along the front.
+
+## v413 — your squad
+- Your squad (squad.js): eight fictional soldiers per country you fight for, with roles, home towns, traits, habits, morale and history; trust between each pair and toward you. Battles change them: survivors grow closer, the dead are remembered by name and replaced by green men, the wounded come back from hospital. Your first six men in a battle are the squad. SQUAD tab.
+- The ride to the front: an APC / IFV insertion begins in the motor-pool garage and drives the road past checkpoints, a field hospital, wrecks and shell holes; you sit inside on the bench while the squad talks about home, the war, the news, the dead and each other. Space or Enter skips.
