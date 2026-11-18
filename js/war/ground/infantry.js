@@ -779,7 +779,7 @@ function land(){if(S.res)return;if(S.trip)rideEnd();S.phase='FIGHT';const C=S.ca
   else if(S.mission==='FRONT'){const L=S.lines[S.cur],t=L.slots[(L.slots.length/2)|0];S.pos.set(t.x+2,H(t.x+2,t.z)+1.7,t.z);S.yaw=0;S.us.forEach(u=>{const q=slotOf(u);u.m.position.set(q.x,H(q.x,q.z),q.z);u.m.visible=true;});}
   else S.us.forEach((u,i)=>{const x=S.pos.x+((i%3)-1)*3,z=S.pos.z+3+Math.floor(i/3)*3;u.m.position.set(x,H(x,z),z);u.m.visible=true;});
   if(S.ins==='IFV'){S.ifv={m:C.m,hp:800,side:'F',x:C.m.position.x,z:C.m.position.z,cool:2,alive:true};S.veh.push(S.ifv);}
-  else if(S.ins!=='IFV')S.leave=C;{const q=clearSpot(S.pos.x,S.pos.z);if(q.x!==S.pos.x||q.z!==S.pos.z){S.pos.x=q.x;S.pos.z=q.z;S.pos.y=H(q.x,q.z)+1.7;}}say(S.mission==='FRONT'?'HOLD THE LINE · PUSH WITH O OR THE COMMAND POST (E)':S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
+  else if(S.ins!=='IFV')S.leave=C;if(S.mission!=='FRONT'&&S.mission!=='DEFEND'){const q=clearSpot(S.pos.x,S.pos.z);   /* v430: only landings move off buildings; a trench position is meant to be among sandbags */if(q.x!==S.pos.x||q.z!==S.pos.z){S.pos.x=q.x;S.pos.z=q.z;S.pos.y=H(q.x,q.z)+1.7;}}say(S.mission==='FRONT'?'HOLD THE LINE · PUSH WITH O OR THE COMMAND POST (E)':S.mission==='DEFEND'?'HOLD THE TRENCHES BEFORE '+S.loc.name.toUpperCase():'TAKE AND HOLD '+S.loc.name.toUpperCase(),4);}
 
 /* ------------------------------------------------------------------ input */
 // v409: the browser refuses the mouse right after you released it (Esc) and reports it as a rejected promise; that is
@@ -1252,11 +1252,17 @@ async function startWorld0(cfg){const G=window.WGEO;if(!window.WSORTIE||!window.
   try{
   await WSORTIE.start(cfg.a3,cfg.ap);for(let i=0;i<200&&!(WF.on&&player);i++)await new Promise(r=>setTimeout(r,100));if(!WF.on||!player)return start(cfg);
   if(player.mesh)player.mesh.visible=false;player.infantry=true;
-  const q=G.ll2xz(loc.lat,loc.lon);player.pos.set(q.x,groundAt(q.x,q.z)+60,q.z);player.vel.set(0,0,0);try{await WF.rebase();}catch(e){}
+  /* v430: the world is recentred on the battle. A rebuild already running (the one the sortie start begins) made
+     rebase() return at once, leaving the terrain centred on the airbase, often 100+ km away: no ground under the battle
+     (only the sea plane) and the F-16 at the airfield. Wait for it, recentre, and check that it worked. */
+  const sl=ms=>new Promise(r=>setTimeout(r,ms));let cen=false;
+  for(let t=0;t<4&&!cen;t++){for(let i=0;i<300&&WF.busy;i++)await sl(100);const q=G.ll2xz(loc.lat,loc.lon);player.pos.set(q.x,groundAt(q.x,q.z)+60,q.z);player.vel.set(0,0,0);
+    cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · BUILDING THE MAP …';try{await WF.rebase();}catch(e){}for(let i=0;i<300&&WF.busy;i++)await sl(100);const q2=G.ll2xz(loc.lat,loc.lon);cen=Math.hypot(q2.x,q2.z)<15000;}
+  if(!cen){unc();console.warn('[infantry] world map could not be centred on',loc.name);const r2=start(cfg);setTimeout(()=>{try{vline('HQ','The map of '+loc.name+' could not be built: this battle is fought on generated terrain.');}catch(e){}},2500);return r2;}
   // wait for the ground at the site to be loaded (its height settles)
   /* v421: the whole battlefield's detailed terrain is in before anything is built on it, and kept (pinned) until the
      battle ends, so trenches and houses are not left standing on heights the terrain later replaces */
-  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';let tr=null;for(let k=0;k<5;k++){const r=tr=await G.prefetch(loc.lat,loc.lon,2600,(d,n)=>{cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+d+' / '+n;},15000);if(r.have>=r.need)break;cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+r.have+' / '+r.need+' · RETRYING';await new Promise(q=>setTimeout(q,1500));}   /* v424: wait until every tile of the battlefield is in */if(tr&&tr.have<tr.need){/* v427: the real terrain did not load: fight on generated ground rather than on a broken (sea-level) one */unc();try{if(typeof player!=='undefined'&&player)player.infantry=false;}catch(e){}
+  try{if(G.prefetch){cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · LOADING TERRAIN …';let tr=null;for(let k=0;k<5;k++){const r=tr=await G.prefetch(loc.lat,loc.lon,2600,(d,n)=>{cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+d+' / '+n;},15000);if(r.have>=r.need)break;cov.textContent='MOVING TO THE FRONT · '+loc.name.toUpperCase()+' · TERRAIN '+r.have+' / '+r.need+' · RETRYING';await new Promise(q=>setTimeout(q,1500));}   /* v424: wait until every tile of the battlefield is in */if(tr&&tr.have<tr.need){/* v427: the real terrain did not load: fight on generated ground rather than on a broken (sea-level) one */unc();
       const r2=start(cfg);setTimeout(()=>{try{vline('HQ','The map of '+loc.name+' did not load ('+tr.have+' of '+tr.need+' terrain tiles): this battle is fought on generated terrain.');}catch(e){}},2500);return r2;}
     G.pin(loc.lat,loc.lon,2600,true);window._infPin=[loc.lat,loc.lon];if(WF.build){WF.build();}   /* v422: the terrain mesh is rebuilt from the detailed heights: the battle is built on that mesh, never on a sea-level gap */}}catch(e){}
   {const q1=G.ll2xz(loc.lat,loc.lon);let h0=groundAt(q1.x,q1.z);for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,100));const h=groundAt(q1.x,q1.z);if(Math.abs(h-h0)<.05&&i>3)break;h0=h;}}
