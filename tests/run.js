@@ -1233,6 +1233,17 @@ test('s47_civic: media (outlets, editions, breaking, correspondents, footage), c
   ok('civil society with projects',r.cso>=5&&r.proj>0,r);ok('support institutions',r.inst>=14);ok('heritage sites and sport',r.her>0&&!!r.sport,r);ok('city councils and services',r.muni>0);
   ok('police cases moving through stages; civil claims',r.cases>5&&r.stages>=2&&r.claims>0,r);ok('crime and corruption',r.crime);ok('evacuations, organisations, sanctions',r.neo>0&&r.io>=4&&r.sanc>0,r);
   ok('civic events in the diary',r.ev.length>=4,r.ev);ok('NEWSROOM and CIVIC tabs; generated stills',r.tabs&&r.still);ok('state stays small',r.size<400000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s48_people: migration categories, coalition totals, welfare, labour, health, pilots, psych, disability, education, followed lives with unique names','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*90);const X=st.ppl;const core=Object.values(st.c).find(q=>q.al==='CORE'&&X.c[q.a3]);const R=X.c[core.a3];
+    out.n=Object.keys(X.c).length;out.mig=WWAR.people.MIG.filter(k=>R.mig[k]>0).length;out.tot=Object.keys(WWAR.people.totals()).length;out.ppl=R.ppl.length;
+    const all=[];for(const k in X.c)for(const P of X.c[k].ppl)all.push(P.n);out.uniq=new Set(all).size===all.length;out.logs=R.ppl.reduce((t,P)=>t+P.log.length,0);
+    const pr=WWAR.people.prof(R.ppl[0]);out.prof=!!(pr.tr&&pr.look&&pr.voice&&pr.langs.length&&pr.goal);out.stable=JSON.stringify(WWAR.people.prof(R.ppl[0]).look)===JSON.stringify(pr.look);
+    out.fam=R.ppl.some(P=>P.kids.length);out.lab=R.lab.wf>0&&Object.keys(R.lab.short).length>=3;out.hl=R.hl.hosp>0;out.edu=R.edu.schools>0;out.dis=Object.values(R.dis).some(v=>v>0);
+    const ev=new Set(st.ev.map(e=>e.ty));out.ev=['MIGRATION','WELFARE','LABOUR','HEALTH','EDUCATION','CALENDAR','SOCIETY'].filter(t=>ev.has(t));
+    out.tabs=/COALITION TOTALS/.test(NATPANEL.tabs.POPULATION(core))&&/temperament/.test(NATPANEL.tabs.LIVES(core));out.size=JSON.stringify(X).length;out.dbg=[JSON.stringify(R).length,JSON.stringify(R.ppl).length,JSON.stringify(X.names).length,JSON.stringify(Object.values(X.c).find(z=>!z.ppl.length)).length];out.audit=WWAR.audit();return out;});
+  ok('records and migration categories',r.n>5&&r.mig>=2,r);ok('coalition totals',r.tot>=2,r.tot);ok('followed lives with unique names and logs',r.ppl>=10&&r.uniq&&r.logs>=r.ppl,r);
+  ok('derived, stable profiles',r.prof&&r.stable);ok('families',r.fam);ok('labour, health, education, disability',r.lab&&r.hl&&r.edu&&r.dis,r);ok('population events',r.ev.length>=3,r.ev);
+  ok('POPULATION and LIVES tabs',r.tabs);ok('state stays small',r.size<200000,[r.size,r.dbg]);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

@@ -1159,3 +1159,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 - Headless duel test (modern-era flares every 0.35 s, 3.5 km tail shot, 14 trials each): AIM-9B 0/14, AIM-9L 5/14, AIM-9M 9/14, R-73 8/14, AIM-9X 14/14. All thresholds and rates are estimates, not published data.
 ## v276 — F-4 radar scope shows the whole scan
 - The pulse-radar clutter grid was fixed at ±30° but the F-4's B-scope spans ±60°, so only the middle of the scan was painted and track marks beyond ±30° were skipped. The grid now follows the radar gimbal (±60° on the APQ-120); the MiG pulse scopes stay at ±30°.
+
+## v396
+- Chapter 08: js/war/people.js (migration, coalition totals, welfare, labour, health, aircrew medicine, psychological health, disability, education, followed fictional lives with unique names). POPULATION and LIVES tabs. Depth 78.6%.

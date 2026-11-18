@@ -1,286 +1,286 @@
 line	cov	where	title	section
-10884	0		Prisoners, missing persons, surrender consequences, exchanges, and reconciliation	Population, demographics, migration, and social structure
-10896	0		Post-surrender outcomes for forces, prisoners, and civilians.	Population, demographics, migration, and social structure
-10908	0		Unified population registry, demographics, migration, citizenship, and social structure	Population, demographics, migration, and social structure
-10910	0		One living population system	Population, demographics, migration, and social structure
-10914	0		Person and household continuity	Population, demographics, migration, and social structure
-10918	0		Demographics and population accounting	Population, demographics, migration, and social structure
-10922	0		Ordinary life and personal development	Population, demographics, migration, and social structure
-10926	0		Education, skills, employment, and careers	Population, demographics, migration, and social structure
-10930	0		Migration, language, and cultural life	Population, demographics, migration, and social structure
-10934	0		Health, injury, disability, and care	Population, demographics, migration, and social structure
-10938	0		Privacy and ethical representation	Population, demographics, migration, and social structure
-10956	0		Migration categories	Population, demographics, migration, and social structure
-10961	0		Legal status and institutions	Population, demographics, migration, and social structure
-10964	0		Migration drivers	Population, demographics, migration, and social structure
-10967	0		Integration and local capacity	Population, demographics, migration, and social structure
-10970	0		Remittances and transnational ties	Population, demographics, migration, and social structure
-10985	0		Side-by-side coalition totals	Population, demographics, migration, and social structure
-11001	0		Alignment categories and who counts toward each side	Population, demographics, migration, and social structure
-11015	0		Residence, citizenship, allegiance, and displacement are different fields	Population, demographics, migration, and social structure
-11033	0		Country, regional, and local population model	Population, demographics, migration, and social structure
-11048	0		Population change over the campaign	Population, demographics, migration, and social structure
-11064	0		Public attitudes inside each coalition	Population, demographics, migration, and social structure
-11079	0		Population, recruitment, and the draft	Population, demographics, migration, and social structure
-11095	0		Population and national resilience	Population, demographics, migration, and social structure
-11101	0		News and historical reporting	Population, demographics, migration, and social structure
-11115	0		Player-facing population interface	Population, demographics, migration, and social structure
-11132	0		Data integrity and aggregation rules	Population, demographics, migration, and social structure
-11145	0		Performance and simulation tiers	Population, demographics, migration, and social structure
-11212	0		DEMOGRAPHIC TRANSITIONS, PENSIONS AND SOCIAL WELFARE	Population, demographics, migration, and social structure
-11217	0		Demographic indicators	Population, demographics, migration, and social structure
-11233	0		Pensions and retirement	Population, demographics, migration, and social structure
-11249	0		Social welfare and support	Population, demographics, migration, and social structure
-11265	0		Household resilience	Population, demographics, migration, and social structure
-11269	0		Demographic policy	Population, demographics, migration, and social structure
-11284	0		Labor markets, employment relations, and workforce mobility	Population, demographics, migration, and social structure
-11286	0		Workforce model	Population, demographics, migration, and social structure
-11289	0		Labor demand and supply	Population, demographics, migration, and social structure
-11292	0		Wages and working conditions	Population, demographics, migration, and social structure
-11295	0		Unions and collective bargaining	Population, demographics, migration, and social structure
-11298	0		War and recovery effects	Population, demographics, migration, and social structure
-11305	0		Social cohesion, inequality, and human development	Population, demographics, migration, and social structure
-11309	0		Institutional and community conditions	Population, demographics, migration, and social structure
-11312	0		No collective blame	Population, demographics, migration, and social structure
-11319	0		Personal language skills, cultural exchange, and communication barriers	Individuals, identity, personality, and daily life
-11324	0		Language registry	Individuals, identity, personality, and daily life
-11327	0		Individual language profiles	Individuals, identity, personality, and daily life
-11330	0		Institutional language access	Individuals, identity, personality, and daily life
-11333	0		Cultural exchange	Individuals, identity, personality, and daily life
-11336	0		Identity safeguards	Individuals, identity, personality, and daily life
-11347	0		Person-level language profile	Individuals, identity, personality, and daily life
-11353	0		Communication outcomes	Individuals, identity, personality, and daily life
-11359	0		Translators and interpreting services	Individuals, identity, personality, and daily life
-11363	0		UI and player accessibility	Individuals, identity, personality, and daily life
-11380	0		PERSONAL LIFE PLANNING, GOALS, AND LONG-TERM DECISIONS	Individuals, identity, personality, and daily life
-11385	0		Goal model	Individuals, identity, personality, and daily life
-11388	0		Decision constraints	Individuals, identity, personality, and daily life
-11391	0		Goal change	Individuals, identity, personality, and daily life
-11394	0		Privacy and presentation	Individuals, identity, personality, and daily life
-11401	0		INDIVIDUAL EMPLOYMENT, CAREERS, AND LABOR-MARKET PARTICIPATION	Individuals, identity, personality, and daily life
-11406	0		Employment records	Individuals, identity, personality, and daily life
-11409	0		Military service career lifecycle — INDIVIDUAL EMPLOYMENT, CAREERS, AND LABOR-MARKET PARTICIPATION	Individuals, identity, personality, and daily life
-11412	0		Matching and constraints	Individuals, identity, personality, and daily life
-11415	0		Employer behavior	Individuals, identity, personality, and daily life
-11418	0		Household integration	Individuals, identity, personality, and daily life
-11425	0		PERSONAL TRAVEL, COMMUTING, AND EVERYDAY MOBILITY	Individuals, identity, personality, and daily life
-11430	0		Trip categories	Individuals, identity, personality, and daily life
-11433	0		Mobility choices	Individuals, identity, personality, and daily life
-11436	0		Aggregate and sampled simulation	Individuals, identity, personality, and daily life
-11439	0		Disruption	Individuals, identity, personality, and daily life
-11446	0		Campaign storytelling, events, and personality	Individuals, identity, personality, and daily life
-11466	0		DAILY LIFE, ROUTINES AND SMALL HUMAN DETAILS	Individuals, identity, personality, and daily life
-11470	0		Military routines	Individuals, identity, personality, and daily life
-11474	0		Civilian routines	Individuals, identity, personality, and daily life
-11478	0		Character continuity	Individuals, identity, personality, and daily life
-11482	0		Environmental storytelling	Individuals, identity, personality, and daily life
-11486	0		Small immersive details	Individuals, identity, personality, and daily life
-11509	0		INDIVIDUAL PERSONALITY, TEMPERAMENT, PREFERENCES, AND BEHAVIORAL CHARACTERISTICS	Individuals, identity, personality, and daily life
-11518	0		Keep different kinds of information separate	Individuals, identity, personality, and daily life
-11534	0		Personality trait dimensions	Individuals, identity, personality, and daily life
-11538	0		Emotional and self-regulation tendencies	Individuals, identity, personality, and daily life
-11546	0		Social and interpersonal tendencies	Individuals, identity, personality, and daily life
-11555	0		Thinking and decision tendencies	Individuals, identity, personality, and daily life
-11564	0		Motivation and work tendencies	Individuals, identity, personality, and daily life
-11574	0		Personal and community orientation	Individuals, identity, personality, and daily life
-11584	0		Traits must not become stereotypes or moral scores	Individuals, identity, personality, and daily life
-11594	0		Contradictory and nuanced personalities	Individuals, identity, personality, and daily life
-11609	0		Characteristics influence decisions, not predetermined outcomes	Individuals, identity, personality, and daily life
-11624	0		Role-specific behavior profiles	Individuals, identity, personality, and daily life
-11642	0		Interests, hobbies, routines, and preferences	Individuals, identity, personality, and daily life
-11656	0		Values, priorities, and personal boundaries	Individuals, identity, personality, and daily life
-11664	0		Trait development and life experience	Individuals, identity, personality, and daily life
-11678	0		Relationships and social influence	Individuals, identity, personality, and daily life
-11686	0		Dialogue and visible behavior	Individuals, identity, personality, and daily life
-11699	0		Character generation and simulation scale	Individuals, identity, personality, and daily life
-11711	0		Suggested person record extension	Individuals, identity, personality, and daily life
-11727	0		Player-facing presentation and privacy	Individuals, identity, personality, and daily life
-11782	0		CAMPAIGN-WIDE CHARACTER NAMING, NAME GENERATION, AND IDENTITY UNIQUENESS	Individuals, identity, personality, and daily life
-11795	0		What counts as an individual character	Individuals, identity, personality, and daily life
-11806	0		One authoritative identity and name record	Individuals, identity, personality, and daily life
-11831	0		Culturally appropriate name generation	Individuals, identity, personality, and daily life
-11853	0		Campaign-wide uniqueness enforcement	Individuals, identity, personality, and daily life
-11876	0		Resolving a duplicate without ugly artificial names	Individuals, identity, personality, and daily life
-11890	0		Authored characters, migration, and existing duplicate names	Individuals, identity, personality, and daily life
-11908	0		Names, aliases, callsigns, and radio traffic	Individuals, identity, personality, and daily life
-11926	0		Stable generation across time, chunks, and save files	Individuals, identity, personality, and daily life
-11945	0		Multiplayer and concurrent character creation	Individuals, identity, personality, and daily life
-11953	0		Player-facing roster and search behavior	Individuals, identity, personality, and daily life
-11961	0		Performance and data quality	Individuals, identity, personality, and daily life
-12019	0		INDIVIDUAL APPEARANCE, CLOTHING, AND VOICE IDENTITY	Individuals, identity, personality, and daily life
-12024	0		Appearance profile	Individuals, identity, personality, and daily life
-12030	0		Persistent visual continuity	Individuals, identity, personality, and daily life
-12036	0		Clothing and context	Individuals, identity, personality, and daily life
-12040	0		Voice identity	Individuals, identity, personality, and daily life
-12046	0		Privacy and performance	Individuals, identity, personality, and daily life
-12064	0		CHARACTER AGING, LIFE STAGES, AND LONG-TERM PERSONAL DEVELOPMENT	Individuals, identity, personality, and daily life
-12071	0		Stable birth and age records	Individuals, identity, personality, and daily life
-12077	0		Life stages and transitions	Individuals, identity, personality, and daily life
-12083	0		Aging and capabilities	Individuals, identity, personality, and daily life
-12089	0		Family generations and historical continuity	Individuals, identity, personality, and daily life
-12095	0		Children and privacy safeguards	Individuals, identity, personality, and daily life
-12114	0		PERSISTENT INDIVIDUAL CHARACTER ACTIVITY LOGS AND LIFE HISTORIES	Individuals, identity, personality, and daily life
-12121	0		What should be recorded	Individuals, identity, personality, and daily life
-12125	0		Civilian life	Individuals, identity, personality, and daily life
-12130	0		Military and aviation service	Individuals, identity, personality, and daily life
-12135	0		PMC, government, and organizational work	Individuals, identity, personality, and daily life
-12139	0		Emergency, medical, and legal events	Individuals, identity, personality, and daily life
-12143	0		Relationships and social life	Individuals, identity, personality, and daily life
-12147	0		Action, experience, observation, and knowledge must be distinct	Individuals, identity, personality, and daily life
-12162	0		Event-entry structure	Individuals, identity, personality, and daily life
-12181	0		A person's daily activity summary	Individuals, identity, personality, and daily life
-12187	0		Personal log versus public biography	Individuals, identity, personality, and daily life
-12198	0		Character memory and emotional consequences	Individuals, identity, personality, and daily life
-12208	0		Death, missing persons, capture, and historical continuity	Individuals, identity, personality, and daily life
-12214	0		Group-level activity and individual attribution	Individuals, identity, personality, and daily life
-12220	0		Player-facing character history interface	Individuals, identity, personality, and daily life
-12238	0		Storage and performance — INDIVIDUAL CHARACTER ACTIVITY LOGS AND LIFE HISTORIES	Individuals, identity, personality, and daily life
-12269	0		Civilian Life, Accessibility, and Reintegration	Individuals, identity, personality, and daily life
-12271	0		Civilian disability continuity	Individuals, identity, personality, and daily life
-12287	0		Family and household effects	Individuals, identity, personality, and daily life
-12300	0		Education and employment	Individuals, identity, personality, and daily life
-12314	0		Accessible public infrastructure	Individuals, identity, personality, and daily life
-12328	0		Veterans and former service members	Individuals, identity, personality, and daily life
-12343	0		Privacy, dignity, and representation	Individuals, identity, personality, and daily life
-12350	0		Canonical data model	Individuals, identity, personality, and daily life
-12371	0		Household life, consumption, income, savings, and personal finances	Families, households, relationships, and community life
-12376	0		Household profile	Families, households, relationships, and community life
-12379	0		Consumption categories	Families, households, relationships, and community life
-12382	0		Household decision model	Families, households, relationships, and community life
-12385	0		Living standards	Families, households, relationships, and community life
-12388	0		Shocks and adaptation	Families, households, relationships, and community life
-12401	0		Individual and household finances	Families, households, relationships, and community life
-12407	0		Economic shocks and life events	Families, households, relationships, and community life
-12413	0		Privacy and social consequences	Families, households, relationships, and community life
-12432	0		FAMILY TREES, GENERATIONAL CONTINUITY, AND INHERITANCE	Families, households, relationships, and community life
-12437	0		Relationship graph	Families, households, relationships, and community life
-12440	0		Identity continuity	Families, households, relationships, and community life
-12443	0		Generational records	Families, households, relationships, and community life
-12446	0		Inheritance	Families, households, relationships, and community life
-12453	0		Homes, households, vehicles, property, and personal possessions	Families, households, relationships, and community life
-12458	0		Asset categories	Families, households, relationships, and community life
-12461	0		Ownership and custody	Families, households, relationships, and community life
-12464	0		Valuation and depreciation	Families, households, relationships, and community life
-12467	0		Lifecycle events	Families, households, relationships, and community life
-12470	0		Privacy and scope	Families, households, relationships, and community life
-12481	0		Residence and household model	Families, households, relationships, and community life
-12487	0		Property and possessions	Families, households, relationships, and community life
-12493	0		Relocation and displacement	Families, households, relationships, and community life
-12497	0		Privacy and safety	Families, households, relationships, and community life
-12515	0		HUMAN, FAMILY, CULTURAL, AND INSTITUTIONAL CONTINUITY	Families, households, relationships, and community life
-12519	0		Military families and notification systems	Families, households, relationships, and community life
-12522	0		Memorials, funerals, and ceremonies	Families, households, relationships, and community life
-12525	0		Chaplains, counselors, and peer support	Families, households, relationships, and community life
-12528	0		Language, regional identity, and localization	Families, households, relationships, and community life
-12531	0		Cultural heritage, museums, and historic places	Families, households, relationships, and community life
-12534	0		Black markets, smuggling, and corruption as campaign abstractions	Families, households, relationships, and community life
-12537	0		Military intelligence archives and classified records	Families, households, relationships, and community life
-12540	0		Diplomatic hotlines and leadership calls	Families, households, relationships, and community life
-12543	0		Scientific institutions and civilian research	Families, households, relationships, and community life
-12546	0		Industrial accidents and public safety emergencies	Families, households, relationships, and community life
-12549	0		Procurement scandals and institutional corruption	Families, households, relationships, and community life
-12552	0		Civilian employment and labor mobilization	Families, households, relationships, and community life
-12563	0		DOMESTIC PETS, LIVESTOCK, VETERINARY CARE, AND ANIMAL RESCUE	Families, households, relationships, and community life
-12568	0		Animal categories and identity	Families, households, relationships, and community life
-12574	0		Owners, shelters, and veterinary care	Families, households, relationships, and community life
-12580	0		War, evacuation, and recovery	Families, households, relationships, and community life
-12600	0		PERSONAL COMMUNICATION NETWORKS, FRIEND GROUPS, AND COMMUNITY CONNECTIONS	Families, households, relationships, and community life
-12605	0		Network relationships and communication channels	Families, households, relationships, and community life
-12611	0		Messages and information flow	Families, households, relationships, and community life
-12617	0		Relationships and behavior	Families, households, relationships, and community life
-12621	0		Emergencies and resilience	Families, households, relationships, and community life
-12639	0		BIRTHDAYS, HOLIDAYS, CULTURAL CALENDARS, AND COMMUNITY EVENTS	Families, households, relationships, and community life
-12644	0		Personal milestones	Families, households, relationships, and community life
-12648	0		Local calendars and cultural variation	Families, households, relationships, and community life
-12652	0		Community events	Families, households, relationships, and community life
-12658	0		War and postwar effects	Families, households, relationships, and community life
-12674	0		SOCIAL MOBILITY, OPPORTUNITY, AND REGIONAL INEQUALITY	Civilian and military life-course continuity
-12679	0		Indicators	Civilian and military life-course continuity
-12682	0		Opportunity pathways	Civilian and military life-course continuity
-12685	0		Regional comparison	Civilian and military life-course continuity
-12688	0		Policy and shocks	Civilian and military life-course continuity
-12695	0		Human life, morale, civilians, and the emotional side of war	Civilian and military life-course continuity
-12725	0		Unified healthcare, combat medicine, evacuation, public health, and long-term recovery	Health, injury, disability, medical care, and veterans
-12749	0		Medical personnel and unit organization	Health, injury, disability, medical care, and veterans
-12757	0		Casualty states and patient persistence	Health, injury, disability, medical care, and veterans
-12766	0		Combat medic autonomy	Health, injury, disability, medical care, and veterans
-12776	0		Medical supplies and facilities	Health, injury, disability, medical care, and veterans
-12786	0		Medical evacuation and humanitarian behavior	Health, injury, disability, medical care, and veterans
-12797	0		Medical reporting and after-action consequences	Health, injury, disability, medical care, and veterans
-12804	0		Medical-system integration, treatment capacity, and long-term recovery.	Health, injury, disability, medical care, and veterans
-12819	0		Healthcare network entities	Health, injury, disability, medical care, and veterans
-12822	0		Hospital capacity and demand	Health, injury, disability, medical care, and veterans
-12825	0		Civilian health and outbreaks	Health, injury, disability, medical care, and veterans
-12828	0		Medical supply chain	Health, injury, disability, medical care, and veterans
-12831	0		Public-health authorities and communication	Health, injury, disability, medical care, and veterans
-12834	0		Vulnerable groups and accessibility	Health, injury, disability, medical care, and veterans
-12837	0		Long-term recovery	Health, injury, disability, medical care, and veterans
-12847	0		Pilot physiology, human performance, and survival requirements.	Health, injury, disability, medical care, and veterans
-12849	0		Individual pilot condition	Health, injury, disability, medical care, and veterans
-12866	0		Aircraft life-support and emergency equipment integration	Health, injury, disability, medical care, and veterans
-12871	0		Ejection and post-ejection survival lifecycle	Health, injury, disability, medical care, and veterans
-12883	0		Medical evaluation and return-to-flight standards	Health, injury, disability, medical care, and veterans
-12886	0		Pilot careers and institutional memory	Health, injury, disability, medical care, and veterans
-12889	0		AI pilot self-preservation and reporting	Health, injury, disability, medical care, and veterans
-12900	0		Long-term health-system recovery and continuity of care.	Health, injury, disability, medical care, and veterans
-12904	0		Healthcare institutions	Health, injury, disability, medical care, and veterans
-12920	0		Workforce and service capacity	Health, injury, disability, medical care, and veterans
-12938	0		Medical supply and pharmaceutical economy	Health, injury, disability, medical care, and veterans
-12955	0		Public-health surveillance	Health, injury, disability, medical care, and veterans
-12970	0		Emergency medicine and conflict/disaster response	Health, injury, disability, medical care, and veterans
-12984	0		Long-term care and recovery	Health, injury, disability, medical care, and veterans
-12999	0		Healthcare finance and equity	Health, injury, disability, medical care, and veterans
-13015	0		VETERANS, FAMILIES AND POST-SERVICE LIFE	Health, injury, disability, medical care, and veterans
-13024	0		WARTIME PSYCHOLOGICAL HEALTH, SUICIDE, AND PREVENTION	Health, injury, disability, medical care, and veterans
-13028	0		Psychological wellbeing as a distinct human state	Health, injury, disability, medical care, and veterans
-13032	0		Sources of wartime distress	Health, injury, disability, medical care, and veterans
-13036	0		Supportive relationships and protective factors	Health, injury, disability, medical care, and veterans
-13040	0		Distress events and crisis response	Health, injury, disability, medical care, and veterans
-13046	0		Suicide as a rare, non-graphic campaign outcome	Health, injury, disability, medical care, and veterans
-13052	0		Prevention and intervention	Health, injury, disability, medical care, and veterans
-13056	0		Consequences for family, unit, and community	Health, injury, disability, medical care, and veterans
-13060	0		Respectful news and privacy handling	Health, injury, disability, medical care, and veterans
-13064	0		Accessibility and content settings	Health, injury, disability, medical care, and veterans
-13068	0		Avoiding harmful stereotypes	Health, injury, disability, medical care, and veterans
-13072	0		Player-character boundaries	Health, injury, disability, medical care, and veterans
-13076	0		Psychological-health acceptance tests	Health, injury, disability, medical care, and veterans
-13083	0		Persistent Disability and Life-Changing Injury System	Health, injury, disability, medical care, and veterans
-13085	0		Purpose and design principles — Disability and Life-Changing Injury System	Health, injury, disability, medical care, and veterans
-13101	0		People covered	Health, injury, disability, medical care, and veterans
-13113	0		Injury and impairment taxonomy	Health, injury, disability, medical care, and veterans
-13117	0		Physical and mobility-related	Health, injury, disability, medical care, and veterans
-13126	0		Sensory	Health, injury, disability, medical care, and veterans
-13131	0		Cognitive and neurological	Health, injury, disability, medical care, and veterans
-13136	0		Psychological and behavioral health	Health, injury, disability, medical care, and veterans
-13158	0		Functional impact, not blanket incapacity	Health, injury, disability, medical care, and veterans
-13171	0		Injury lifecycle and state transitions	Health, injury, disability, medical care, and veterans
-13194	0		Injury events and causal provenance	Health, injury, disability, medical care, and veterans
-13215	0		Temporary versus permanent outcomes	Health, injury, disability, medical care, and veterans
-13228	0		Assistive devices and accessibility equipment	Health, injury, disability, medical care, and veterans
-13244	0		Rehabilitation and long-term care	Health, injury, disability, medical care, and veterans
-13260	0		Medical Withdrawal from Combat and Military Service Pathways	Health, injury, disability, medical care, and veterans
-13262	0		Separate combat fitness from service membership	Health, injury, disability, medical care, and veterans
-13278	0		Medical withdrawal categories	Health, injury, disability, medical care, and veterans
-13293	0		Medical review and decision process	Health, injury, disability, medical care, and veterans
-13306	0		Military roster and unit consequences	Health, injury, disability, medical care, and veterans
-13319	0		Career and identity continuity	Health, injury, disability, medical care, and veterans
-13334	0		Return to service and reassignment	Health, injury, disability, medical care, and veterans
-13341	0		Disability-system AI, authority, and persistence contracts	Health, injury, disability, medical care, and veterans
-13343	0		Disability-specific AI behavior	Health, injury, disability, medical care, and veterans
-13356	0		Disability-specific multiplayer authority and persistence	Health, injury, disability, medical care, and veterans
-13367	0		Education, schools, universities, science, vocational training, and workforce development	Education, skills, and personal development
-13369	0		Purpose and existing foundations	Education, skills, and personal development
-13373	0		Education institutions	Education, skills, and personal development
-13387	0		Students, educators, and institutional staff	Education, skills, and personal development
-13395	0		Curriculum, schedules, attendance, and progression	Education, skills, and personal development
-13401	0		Education and character life histories	Education, skills, and personal development
-13407	0		Schools during emergencies and conflict	Education, skills, and personal development
-13415	0		Displacement, remote learning, and educational continuity	Education, skills, and personal development
-13421	0		Universities, research independence, and industry links	Education, skills, and personal development
-13427	0		Student life and community role	Education, skills, and personal development
-13433	0		Relationship with the draft and workforce	Education, skills, and personal development
-13451	0		Science, vocational training, and workforce development.	Education, skills, and personal development
-13470	0		Education pipeline	Education, skills, and personal development
-13486	0		Workforce and skills	Education, skills, and personal development
-13505	0		Brain drain, migration and skills recovery	Education, skills, and personal development
-13509	0		Research and education partnerships	Education, skills, and personal development
+10884	0.5	js/war/people.js	Prisoners, missing persons, surrender consequences, exchanges, and reconciliation	Population, demographics, migration, and social structure
+10896	0.5	postwar.js	Post-surrender outcomes for forces, prisoners, and civilians.	Population, demographics, migration, and social structure
+10908	1	js/war/people.js	Unified population registry, demographics, migration, citizenship, and social structure	Population, demographics, migration, and social structure
+10910	1	js/war/people.js	One living population system	Population, demographics, migration, and social structure
+10914	1	js/war/people.js	Person and household continuity	Population, demographics, migration, and social structure
+10918	1	life.js, census.js, people.js	Demographics and population accounting	Population, demographics, migration, and social structure
+10922	1	js/war/people.js	Ordinary life and personal development	Population, demographics, migration, and social structure
+10926	1	js/war/people.js	Education, skills, employment, and careers	Population, demographics, migration, and social structure
+10930	1	js/war/people.js	Migration, language, and cultural life	Population, demographics, migration, and social structure
+10934	1	js/war/people.js	Health, injury, disability, and care	Population, demographics, migration, and social structure
+10938	1	js/war/people.js	Privacy and ethical representation	Population, demographics, migration, and social structure
+10956	1	js/war/people.js	Migration categories	Population, demographics, migration, and social structure
+10961	1	js/war/people.js	Legal status and institutions	Population, demographics, migration, and social structure
+10964	1	js/war/people.js	Migration drivers	Population, demographics, migration, and social structure
+10967	1	js/war/people.js	Integration and local capacity	Population, demographics, migration, and social structure
+10970	1	js/war/people.js	Remittances and transnational ties	Population, demographics, migration, and social structure
+10985	1	js/war/people.js	Side-by-side coalition totals	Population, demographics, migration, and social structure
+11001	1	js/war/people.js	Alignment categories and who counts toward each side	Population, demographics, migration, and social structure
+11015	0.5	js/war/people.js	Residence, citizenship, allegiance, and displacement are different fields	Population, demographics, migration, and social structure
+11033	0.5	js/war/people.js	Country, regional, and local population model	Population, demographics, migration, and social structure
+11048	1	life.js, census.js, people.js	Population change over the campaign	Population, demographics, migration, and social structure
+11064	1	js/war/people.js	Public attitudes inside each coalition	Population, demographics, migration, and social structure
+11079	1	military.js, people.js	Population, recruitment, and the draft	Population, demographics, migration, and social structure
+11095	0.5	js/war/people.js	Population and national resilience	Population, demographics, migration, and social structure
+11101	1	js/war/people.js	News and historical reporting	Population, demographics, migration, and social structure
+11115	1	js/war/people.js	Player-facing population interface	Population, demographics, migration, and social structure
+11132	0.5	js/war/people.js	Data integrity and aggregation rules	Population, demographics, migration, and social structure
+11145	1	js/war/people.js	Performance and simulation tiers	Population, demographics, migration, and social structure
+11212	1	js/war/people.js	DEMOGRAPHIC TRANSITIONS, PENSIONS AND SOCIAL WELFARE	Population, demographics, migration, and social structure
+11217	1	js/war/people.js	Demographic indicators	Population, demographics, migration, and social structure
+11233	1	js/war/people.js	Pensions and retirement	Population, demographics, migration, and social structure
+11249	1	js/war/people.js	Social welfare and support	Population, demographics, migration, and social structure
+11265	1	js/war/people.js	Household resilience	Population, demographics, migration, and social structure
+11269	1	js/war/people.js	Demographic policy	Population, demographics, migration, and social structure
+11284	1	js/war/people.js	Labor markets, employment relations, and workforce mobility	Population, demographics, migration, and social structure
+11286	1	js/war/people.js	Workforce model	Population, demographics, migration, and social structure
+11289	1	js/war/people.js	Labor demand and supply	Population, demographics, migration, and social structure
+11292	1	js/war/people.js	Wages and working conditions	Population, demographics, migration, and social structure
+11295	1	js/war/people.js	Unions and collective bargaining	Population, demographics, migration, and social structure
+11298	1	js/war/people.js	War and recovery effects	Population, demographics, migration, and social structure
+11305	1	js/war/people.js	Social cohesion, inequality, and human development	Population, demographics, migration, and social structure
+11309	0.5	civic.js	Institutional and community conditions	Population, demographics, migration, and social structure
+11312	1	js/war/people.js	No collective blame	Population, demographics, migration, and social structure
+11319	1	js/war/people.js	Personal language skills, cultural exchange, and communication barriers	Individuals, identity, personality, and daily life
+11324	0.5	js/war/people.js	Language registry	Individuals, identity, personality, and daily life
+11327	1	js/war/people.js	Individual language profiles	Individuals, identity, personality, and daily life
+11330	1	js/war/people.js	Institutional language access	Individuals, identity, personality, and daily life
+11333	0.5	js/war/people.js	Cultural exchange	Individuals, identity, personality, and daily life
+11336	0.5	js/war/people.js	Identity safeguards	Individuals, identity, personality, and daily life
+11347	1	js/war/people.js	Person-level language profile	Individuals, identity, personality, and daily life
+11353	0.5	js/war/people.js	Communication outcomes	Individuals, identity, personality, and daily life
+11359	1	js/war/people.js	Translators and interpreting services	Individuals, identity, personality, and daily life
+11363	0	js/war/people.js	UI and player accessibility	Individuals, identity, personality, and daily life
+11380	0.5	js/war/people.js	PERSONAL LIFE PLANNING, GOALS, AND LONG-TERM DECISIONS	Individuals, identity, personality, and daily life
+11385	1	js/war/people.js	Goal model	Individuals, identity, personality, and daily life
+11388	0.5	js/war/people.js	Decision constraints	Individuals, identity, personality, and daily life
+11391	1	js/war/people.js	Goal change	Individuals, identity, personality, and daily life
+11394	0.5	js/war/people.js	Privacy and presentation	Individuals, identity, personality, and daily life
+11401	1	js/war/people.js	INDIVIDUAL EMPLOYMENT, CAREERS, AND LABOR-MARKET PARTICIPATION	Individuals, identity, personality, and daily life
+11406	0.5	js/war/people.js	Employment records	Individuals, identity, personality, and daily life
+11409	1	military.js, people.js	Military service career lifecycle — INDIVIDUAL EMPLOYMENT, CAREERS, AND LABOR-MARKET PARTICIPATION	Individuals, identity, personality, and daily life
+11412	0.5	js/war/people.js	Matching and constraints	Individuals, identity, personality, and daily life
+11415	0.5	js/war/people.js	Employer behavior	Individuals, identity, personality, and daily life
+11418	0.5	js/war/people.js	Household integration	Individuals, identity, personality, and daily life
+11425	0	js/war/people.js	PERSONAL TRAVEL, COMMUTING, AND EVERYDAY MOBILITY	Individuals, identity, personality, and daily life
+11430	0	js/war/people.js	Trip categories	Individuals, identity, personality, and daily life
+11433	0	js/war/people.js	Mobility choices	Individuals, identity, personality, and daily life
+11436	0	js/war/people.js	Aggregate and sampled simulation	Individuals, identity, personality, and daily life
+11439	0.5	js/war/people.js	Disruption	Individuals, identity, personality, and daily life
+11446	1	js/war/people.js	Campaign storytelling, events, and personality	Individuals, identity, personality, and daily life
+11466	1	js/war/people.js	DAILY LIFE, ROUTINES AND SMALL HUMAN DETAILS	Individuals, identity, personality, and daily life
+11470	1	js/war/people.js	Military routines	Individuals, identity, personality, and daily life
+11474	1	js/war/people.js	Civilian routines	Individuals, identity, personality, and daily life
+11478	1	js/war/people.js	Character continuity	Individuals, identity, personality, and daily life
+11482	0.5	js/war/people.js	Environmental storytelling	Individuals, identity, personality, and daily life
+11486	0.5	js/war/people.js	Small immersive details	Individuals, identity, personality, and daily life
+11509	1	js/war/people.js	INDIVIDUAL PERSONALITY, TEMPERAMENT, PREFERENCES, AND BEHAVIORAL CHARACTERISTICS	Individuals, identity, personality, and daily life
+11518	1	js/war/people.js	Keep different kinds of information separate	Individuals, identity, personality, and daily life
+11534	1	js/war/people.js	Personality trait dimensions	Individuals, identity, personality, and daily life
+11538	1	js/war/people.js	Emotional and self-regulation tendencies	Individuals, identity, personality, and daily life
+11546	1	js/war/people.js	Social and interpersonal tendencies	Individuals, identity, personality, and daily life
+11555	1	js/war/people.js	Thinking and decision tendencies	Individuals, identity, personality, and daily life
+11564	1	js/war/people.js	Motivation and work tendencies	Individuals, identity, personality, and daily life
+11574	1	js/war/people.js	Personal and community orientation	Individuals, identity, personality, and daily life
+11584	1	js/war/people.js	Traits must not become stereotypes or moral scores	Individuals, identity, personality, and daily life
+11594	1	js/war/people.js	Contradictory and nuanced personalities	Individuals, identity, personality, and daily life
+11609	0.5	js/war/people.js	Characteristics influence decisions, not predetermined outcomes	Individuals, identity, personality, and daily life
+11624	0.5	js/war/people.js	Role-specific behavior profiles	Individuals, identity, personality, and daily life
+11642	1	js/war/people.js	Interests, hobbies, routines, and preferences	Individuals, identity, personality, and daily life
+11656	1	js/war/people.js	Values, priorities, and personal boundaries	Individuals, identity, personality, and daily life
+11664	0	js/war/people.js	Trait development and life experience	Individuals, identity, personality, and daily life
+11678	1	js/war/people.js	Relationships and social influence	Individuals, identity, personality, and daily life
+11686	0.5	js/war/people.js	Dialogue and visible behavior	Individuals, identity, personality, and daily life
+11699	1	js/war/people.js	Character generation and simulation scale	Individuals, identity, personality, and daily life
+11711	1	js/war/people.js	Suggested person record extension	Individuals, identity, personality, and daily life
+11727	1	js/war/people.js	Player-facing presentation and privacy	Individuals, identity, personality, and daily life
+11782	1	js/war/people.js	CAMPAIGN-WIDE CHARACTER NAMING, NAME GENERATION, AND IDENTITY UNIQUENESS	Individuals, identity, personality, and daily life
+11795	0.5	js/war/people.js	What counts as an individual character	Individuals, identity, personality, and daily life
+11806	1	js/war/people.js	One authoritative identity and name record	Individuals, identity, personality, and daily life
+11831	1	js/war/people.js	Culturally appropriate name generation	Individuals, identity, personality, and daily life
+11853	1	js/war/people.js	Campaign-wide uniqueness enforcement	Individuals, identity, personality, and daily life
+11876	1	js/war/people.js	Resolving a duplicate without ugly artificial names	Individuals, identity, personality, and daily life
+11890	0.5	js/war/people.js	Authored characters, migration, and existing duplicate names	Individuals, identity, personality, and daily life
+11908	0.5	js/war/people.js	Names, aliases, callsigns, and radio traffic	Individuals, identity, personality, and daily life
+11926	1	js/war/people.js	Stable generation across time, chunks, and save files	Individuals, identity, personality, and daily life
+11945	0	js/war/people.js	Multiplayer and concurrent character creation	Individuals, identity, personality, and daily life
+11953	0.5	js/war/people.js	Player-facing roster and search behavior	Individuals, identity, personality, and daily life
+11961	1	js/war/people.js	Performance and data quality	Individuals, identity, personality, and daily life
+12019	1	js/war/people.js	INDIVIDUAL APPEARANCE, CLOTHING, AND VOICE IDENTITY	Individuals, identity, personality, and daily life
+12024	1	js/war/people.js	Appearance profile	Individuals, identity, personality, and daily life
+12030	1	js/war/people.js	Persistent visual continuity	Individuals, identity, personality, and daily life
+12036	1	js/war/people.js	Clothing and context	Individuals, identity, personality, and daily life
+12040	1	js/war/people.js	Voice identity	Individuals, identity, personality, and daily life
+12046	1	js/war/people.js	Privacy and performance	Individuals, identity, personality, and daily life
+12064	1	js/war/people.js	CHARACTER AGING, LIFE STAGES, AND LONG-TERM PERSONAL DEVELOPMENT	Individuals, identity, personality, and daily life
+12071	1	js/war/people.js	Stable birth and age records	Individuals, identity, personality, and daily life
+12077	1	js/war/people.js	Life stages and transitions	Individuals, identity, personality, and daily life
+12083	0	js/war/people.js	Aging and capabilities	Individuals, identity, personality, and daily life
+12089	0.5	js/war/people.js	Family generations and historical continuity	Individuals, identity, personality, and daily life
+12095	0.5	js/war/people.js	Children and privacy safeguards	Individuals, identity, personality, and daily life
+12114	1	js/war/people.js	PERSISTENT INDIVIDUAL CHARACTER ACTIVITY LOGS AND LIFE HISTORIES	Individuals, identity, personality, and daily life
+12121	1	js/war/people.js	What should be recorded	Individuals, identity, personality, and daily life
+12125	1	js/war/people.js	Civilian life	Individuals, identity, personality, and daily life
+12130	1	js/war/people.js	Military and aviation service	Individuals, identity, personality, and daily life
+12135	0	js/war/people.js	PMC, government, and organizational work	Individuals, identity, personality, and daily life
+12139	1	js/war/people.js	Emergency, medical, and legal events	Individuals, identity, personality, and daily life
+12143	1	js/war/people.js	Relationships and social life	Individuals, identity, personality, and daily life
+12147	0	js/war/people.js	Action, experience, observation, and knowledge must be distinct	Individuals, identity, personality, and daily life
+12162	1	js/war/people.js	Event-entry structure	Individuals, identity, personality, and daily life
+12181	1	js/war/people.js	A person's daily activity summary	Individuals, identity, personality, and daily life
+12187	0.5	js/war/people.js	Personal log versus public biography	Individuals, identity, personality, and daily life
+12198	1	js/war/people.js	Character memory and emotional consequences	Individuals, identity, personality, and daily life
+12208	1	js/war/people.js	Death, missing persons, capture, and historical continuity	Individuals, identity, personality, and daily life
+12214	0	js/war/people.js	Group-level activity and individual attribution	Individuals, identity, personality, and daily life
+12220	1	js/war/people.js	Player-facing character history interface	Individuals, identity, personality, and daily life
+12238	1	js/war/people.js	Storage and performance — INDIVIDUAL CHARACTER ACTIVITY LOGS AND LIFE HISTORIES	Individuals, identity, personality, and daily life
+12269	0.5	js/war/people.js	Civilian Life, Accessibility, and Reintegration	Individuals, identity, personality, and daily life
+12271	1	js/war/people.js	Civilian disability continuity	Individuals, identity, personality, and daily life
+12287	0.5	js/war/people.js	Family and household effects	Individuals, identity, personality, and daily life
+12300	0.5	js/war/people.js	Education and employment	Individuals, identity, personality, and daily life
+12314	0	js/war/people.js	Accessible public infrastructure	Individuals, identity, personality, and daily life
+12328	0.5	js/war/people.js	Veterans and former service members	Individuals, identity, personality, and daily life
+12343	1	js/war/people.js	Privacy, dignity, and representation	Individuals, identity, personality, and daily life
+12350	0.5	js/war/people.js	Canonical data model	Individuals, identity, personality, and daily life
+12371	1	js/war/people.js	Household life, consumption, income, savings, and personal finances	Families, households, relationships, and community life
+12376	0.5	js/war/people.js	Household profile	Families, households, relationships, and community life
+12379	1	js/war/people.js	Consumption categories	Families, households, relationships, and community life
+12382	0.5	js/war/people.js	Household decision model	Families, households, relationships, and community life
+12385	1	js/war/people.js	Living standards	Families, households, relationships, and community life
+12388	1	js/war/people.js	Shocks and adaptation	Families, households, relationships, and community life
+12401	0.5	js/war/people.js	Individual and household finances	Families, households, relationships, and community life
+12407	0.5	js/war/people.js	Economic shocks and life events	Families, households, relationships, and community life
+12413	0.5	js/war/people.js	Privacy and social consequences	Families, households, relationships, and community life
+12432	0.5	js/war/people.js	FAMILY TREES, GENERATIONAL CONTINUITY, AND INHERITANCE	Families, households, relationships, and community life
+12437	0.5	js/war/people.js	Relationship graph	Families, households, relationships, and community life
+12440	1	js/war/people.js	Identity continuity	Families, households, relationships, and community life
+12443	0.5	js/war/people.js	Generational records	Families, households, relationships, and community life
+12446	0.5	js/war/people.js	Inheritance	Families, households, relationships, and community life
+12453	0.5	js/war/people.js	Homes, households, vehicles, property, and personal possessions	Families, households, relationships, and community life
+12458	0.5	js/war/people.js	Asset categories	Families, households, relationships, and community life
+12461	0.5	js/war/people.js	Ownership and custody	Families, households, relationships, and community life
+12464	0.5	js/war/people.js	Valuation and depreciation	Families, households, relationships, and community life
+12467	0.5	js/war/people.js	Lifecycle events	Families, households, relationships, and community life
+12470	0.5	js/war/people.js	Privacy and scope	Families, households, relationships, and community life
+12481	0.5	js/war/people.js	Residence and household model	Families, households, relationships, and community life
+12487	0.5	js/war/people.js	Property and possessions	Families, households, relationships, and community life
+12493	1	js/war/people.js	Relocation and displacement	Families, households, relationships, and community life
+12497	0.5	js/war/people.js	Privacy and safety	Families, households, relationships, and community life
+12515	0.5	js/war/people.js	HUMAN, FAMILY, CULTURAL, AND INSTITUTIONAL CONTINUITY	Families, households, relationships, and community life
+12519	1	cemetery.js, deep.js	Military families and notification systems	Families, households, relationships, and community life
+12522	1	cemetery.js, deep.js	Memorials, funerals, and ceremonies	Families, households, relationships, and community life
+12525	1	civic.js	Chaplains, counselors, and peer support	Families, households, relationships, and community life
+12528	0.5	js/war/people.js	Language, regional identity, and localization	Families, households, relationships, and community life
+12531	1	civic.js	Cultural heritage, museums, and historic places	Families, households, relationships, and community life
+12534	1	civic.js	Black markets, smuggling, and corruption as campaign abstractions	Families, households, relationships, and community life
+12537	0.5	js/war/people.js	Military intelligence archives and classified records	Families, households, relationships, and community life
+12540	0.5	civic.js	Diplomatic hotlines and leadership calls	Families, households, relationships, and community life
+12543	0.5	js/war/people.js	Scientific institutions and civilian research	Families, households, relationships, and community life
+12546	0.5	hazards.js	Industrial accidents and public safety emergencies	Families, households, relationships, and community life
+12549	1	civic.js	Procurement scandals and institutional corruption	Families, households, relationships, and community life
+12552	1	js/war/people.js	Civilian employment and labor mobilization	Families, households, relationships, and community life
+12563	1	js/war/people.js	DOMESTIC PETS, LIVESTOCK, VETERINARY CARE, AND ANIMAL RESCUE	Families, households, relationships, and community life
+12568	0.5	js/war/people.js	Animal categories and identity	Families, households, relationships, and community life
+12574	1	js/war/people.js	Owners, shelters, and veterinary care	Families, households, relationships, and community life
+12580	1	js/war/people.js	War, evacuation, and recovery	Families, households, relationships, and community life
+12600	1	js/war/people.js	PERSONAL COMMUNICATION NETWORKS, FRIEND GROUPS, AND COMMUNITY CONNECTIONS	Families, households, relationships, and community life
+12605	0.5	js/war/people.js	Network relationships and communication channels	Families, households, relationships, and community life
+12611	0	js/war/people.js	Messages and information flow	Families, households, relationships, and community life
+12617	1	js/war/people.js	Relationships and behavior	Families, households, relationships, and community life
+12621	0.5	js/war/people.js	Emergencies and resilience	Families, households, relationships, and community life
+12639	1	js/war/people.js	BIRTHDAYS, HOLIDAYS, CULTURAL CALENDARS, AND COMMUNITY EVENTS	Families, households, relationships, and community life
+12644	1	js/war/people.js	Personal milestones	Families, households, relationships, and community life
+12648	0.5	js/war/people.js	Local calendars and cultural variation	Families, households, relationships, and community life
+12652	0.5	js/war/people.js	Community events	Families, households, relationships, and community life
+12658	1	js/war/people.js	War and postwar effects	Families, households, relationships, and community life
+12674	1	js/war/people.js	SOCIAL MOBILITY, OPPORTUNITY, AND REGIONAL INEQUALITY	Civilian and military life-course continuity
+12679	1	js/war/people.js	Indicators	Civilian and military life-course continuity
+12682	0.5	js/war/people.js	Opportunity pathways	Civilian and military life-course continuity
+12685	0.5	js/war/people.js	Regional comparison	Civilian and military life-course continuity
+12688	0.5	js/war/people.js	Policy and shocks	Civilian and military life-course continuity
+12695	1	js/war/people.js	Human life, morale, civilians, and the emotional side of war	Civilian and military life-course continuity
+12725	1	infantry.js (medics, medevac, wounds), people.js	Unified healthcare, combat medicine, evacuation, public health, and long-term recovery	Health, injury, disability, medical care, and veterans
+12749	0.5	infantry.js (medics, medevac, wounds), people.js	Medical personnel and unit organization	Health, injury, disability, medical care, and veterans
+12757	1	infantry.js (medics, medevac, wounds), people.js	Casualty states and patient persistence	Health, injury, disability, medical care, and veterans
+12766	1	infantry.js (medics, medevac, wounds), people.js	Combat medic autonomy	Health, injury, disability, medical care, and veterans
+12776	0.5	infantry.js (medics, medevac, wounds), people.js	Medical supplies and facilities	Health, injury, disability, medical care, and veterans
+12786	1	infantry.js (medics, medevac, wounds), people.js	Medical evacuation and humanitarian behavior	Health, injury, disability, medical care, and veterans
+12797	0.5	infantry.js (medics, medevac, wounds), people.js	Medical reporting and after-action consequences	Health, injury, disability, medical care, and veterans
+12804	1	infantry.js (medics, medevac, wounds), people.js	Medical-system integration, treatment capacity, and long-term recovery.	Health, injury, disability, medical care, and veterans
+12819	1	js/war/people.js	Healthcare network entities	Health, injury, disability, medical care, and veterans
+12822	1	js/war/people.js	Hospital capacity and demand	Health, injury, disability, medical care, and veterans
+12825	1	js/war/people.js	Civilian health and outbreaks	Health, injury, disability, medical care, and veterans
+12828	1	js/war/people.js	Medical supply chain	Health, injury, disability, medical care, and veterans
+12831	1	js/war/people.js	Public-health authorities and communication	Health, injury, disability, medical care, and veterans
+12834	0.5	js/war/people.js	Vulnerable groups and accessibility	Health, injury, disability, medical care, and veterans
+12837	1	js/war/people.js	Long-term recovery	Health, injury, disability, medical care, and veterans
+12847	1	js/war/people.js	Pilot physiology, human performance, and survival requirements.	Health, injury, disability, medical care, and veterans
+12849	0.5	js/war/people.js	Individual pilot condition	Health, injury, disability, medical care, and veterans
+12866	0	js/war/people.js	Aircraft life-support and emergency equipment integration	Health, injury, disability, medical care, and veterans
+12871	1	csar.js, people.js	Ejection and post-ejection survival lifecycle	Health, injury, disability, medical care, and veterans
+12883	1	js/war/people.js	Medical evaluation and return-to-flight standards	Health, injury, disability, medical care, and veterans
+12886	0.5	js/war/people.js	Pilot careers and institutional memory	Health, injury, disability, medical care, and veterans
+12889	0.5	js/war/people.js	AI pilot self-preservation and reporting	Health, injury, disability, medical care, and veterans
+12900	1	js/war/people.js	Long-term health-system recovery and continuity of care.	Health, injury, disability, medical care, and veterans
+12904	1	js/war/people.js	Healthcare institutions	Health, injury, disability, medical care, and veterans
+12920	0.5	js/war/people.js	Workforce and service capacity	Health, injury, disability, medical care, and veterans
+12938	1	js/war/people.js	Medical supply and pharmaceutical economy	Health, injury, disability, medical care, and veterans
+12955	1	js/war/people.js	Public-health surveillance	Health, injury, disability, medical care, and veterans
+12970	1	js/war/people.js	Emergency medicine and conflict/disaster response	Health, injury, disability, medical care, and veterans
+12984	1	js/war/people.js	Long-term care and recovery	Health, injury, disability, medical care, and veterans
+12999	1	js/war/people.js	Healthcare finance and equity	Health, injury, disability, medical care, and veterans
+13015	0.5	js/war/people.js	VETERANS, FAMILIES AND POST-SERVICE LIFE	Health, injury, disability, medical care, and veterans
+13024	1	js/war/people.js	WARTIME PSYCHOLOGICAL HEALTH, SUICIDE, AND PREVENTION	Health, injury, disability, medical care, and veterans
+13028	1	js/war/people.js	Psychological wellbeing as a distinct human state	Health, injury, disability, medical care, and veterans
+13032	1	js/war/people.js	Sources of wartime distress	Health, injury, disability, medical care, and veterans
+13036	1	js/war/people.js	Supportive relationships and protective factors	Health, injury, disability, medical care, and veterans
+13040	0.5	js/war/people.js	Distress events and crisis response	Health, injury, disability, medical care, and veterans
+13046	1	js/war/people.js	Suicide as a rare, non-graphic campaign outcome	Health, injury, disability, medical care, and veterans
+13052	1	js/war/people.js	Prevention and intervention	Health, injury, disability, medical care, and veterans
+13056	1	js/war/people.js	Consequences for family, unit, and community	Health, injury, disability, medical care, and veterans
+13060	1	js/war/people.js	Respectful news and privacy handling	Health, injury, disability, medical care, and veterans
+13064	1	js/war/people.js	Accessibility and content settings	Health, injury, disability, medical care, and veterans
+13068	1	js/war/people.js	Avoiding harmful stereotypes	Health, injury, disability, medical care, and veterans
+13072	0.5	js/war/people.js	Player-character boundaries	Health, injury, disability, medical care, and veterans
+13076	1	js/war/people.js	Psychological-health acceptance tests	Health, injury, disability, medical care, and veterans
+13083	1	js/war/people.js	Persistent Disability and Life-Changing Injury System	Health, injury, disability, medical care, and veterans
+13085	1	js/war/people.js	Purpose and design principles — Disability and Life-Changing Injury System	Health, injury, disability, medical care, and veterans
+13101	1	js/war/people.js	People covered	Health, injury, disability, medical care, and veterans
+13113	1	js/war/people.js	Injury and impairment taxonomy	Health, injury, disability, medical care, and veterans
+13117	1	js/war/people.js	Physical and mobility-related	Health, injury, disability, medical care, and veterans
+13126	1	js/war/people.js	Sensory	Health, injury, disability, medical care, and veterans
+13131	1	js/war/people.js	Cognitive and neurological	Health, injury, disability, medical care, and veterans
+13136	1	js/war/people.js	Psychological and behavioral health	Health, injury, disability, medical care, and veterans
+13158	0.5	js/war/people.js	Functional impact, not blanket incapacity	Health, injury, disability, medical care, and veterans
+13171	1	js/war/people.js	Injury lifecycle and state transitions	Health, injury, disability, medical care, and veterans
+13194	0.5	js/war/people.js	Injury events and causal provenance	Health, injury, disability, medical care, and veterans
+13215	1	js/war/people.js	Temporary versus permanent outcomes	Health, injury, disability, medical care, and veterans
+13228	1	js/war/people.js	Assistive devices and accessibility equipment	Health, injury, disability, medical care, and veterans
+13244	1	js/war/people.js	Rehabilitation and long-term care	Health, injury, disability, medical care, and veterans
+13260	1	js/war/people.js	Medical Withdrawal from Combat and Military Service Pathways	Health, injury, disability, medical care, and veterans
+13262	1	js/war/people.js	Separate combat fitness from service membership	Health, injury, disability, medical care, and veterans
+13278	1	js/war/people.js	Medical withdrawal categories	Health, injury, disability, medical care, and veterans
+13293	1	js/war/people.js	Medical review and decision process	Health, injury, disability, medical care, and veterans
+13306	0.5	js/war/people.js	Military roster and unit consequences	Health, injury, disability, medical care, and veterans
+13319	0.5	js/war/people.js	Career and identity continuity	Health, injury, disability, medical care, and veterans
+13334	1	js/war/people.js	Return to service and reassignment	Health, injury, disability, medical care, and veterans
+13341	0.5	js/war/people.js	Disability-system AI, authority, and persistence contracts	Health, injury, disability, medical care, and veterans
+13343	0	js/war/people.js	Disability-specific AI behavior	Health, injury, disability, medical care, and veterans
+13356	0	js/war/people.js	Disability-specific multiplayer authority and persistence	Health, injury, disability, medical care, and veterans
+13367	1	js/war/people.js	Education, schools, universities, science, vocational training, and workforce development	Education, skills, and personal development
+13369	1	js/war/people.js	Purpose and existing foundations	Education, skills, and personal development
+13373	1	js/war/people.js	Education institutions	Education, skills, and personal development
+13387	0.5	js/war/people.js	Students, educators, and institutional staff	Education, skills, and personal development
+13395	0.5	js/war/people.js	Curriculum, schedules, attendance, and progression	Education, skills, and personal development
+13401	0.5	js/war/people.js	Education and character life histories	Education, skills, and personal development
+13407	1	js/war/people.js	Schools during emergencies and conflict	Education, skills, and personal development
+13415	1	js/war/people.js	Displacement, remote learning, and educational continuity	Education, skills, and personal development
+13421	1	js/war/people.js	Universities, research independence, and industry links	Education, skills, and personal development
+13427	0	js/war/people.js	Student life and community role	Education, skills, and personal development
+13433	1	js/war/people.js	Relationship with the draft and workforce	Education, skills, and personal development
+13451	1	js/war/people.js	Science, vocational training, and workforce development.	Education, skills, and personal development
+13470	0.5	js/war/people.js	Education pipeline	Education, skills, and personal development
+13486	1	js/war/people.js	Workforce and skills	Education, skills, and personal development
+13505	1	js/war/people.js	Brain drain, migration and skills recovery	Education, skills, and personal development
+13509	1	js/war/people.js	Research and education partnerships	Education, skills, and personal development
