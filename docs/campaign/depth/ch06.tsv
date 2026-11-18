@@ -1,607 +1,607 @@
 line	cov	where	title	section
-4611	0		National mobilization, conscription, reserves, order of battle, and force regeneration	Military command, personnel, careers, training, and mobilization
-4618	0		National draft policy and legal framework	Military command, personnel, careers, training, and mobilization
-4634	0		Draft activation and government decision	Military command, personnel, careers, training, and mobilization
-4650	0		Draft announcement and public information	Military command, personnel, careers, training, and mobilization
-4662	0		Individual eligibility and selection	Military command, personnel, careers, training, and mobilization
-4676	0		Exemptions, deferments, appeals, and alternative service	Military command, personnel, careers, training, and mobilization
-4690	0		Individual responses and consequences	Military command, personnel, careers, training, and mobilization
-4705	0		Induction, training, and force generation	Military command, personnel, careers, training, and mobilization
-4719	0		Effects on family, work, education, and the economy	Military command, personnel, careers, training, and mobilization
-4734	0		Draft resistance, noncompliance, and justice	Military command, personnel, careers, training, and mobilization
-4740	0		Drafts, pre-war tension, and escalation	Military command, personnel, careers, training, and mobilization
-4746	0		End of service and demobilization	Military command, personnel, careers, training, and mobilization
-4750	0		Player and AI controls	Military command, personnel, careers, training, and mobilization
-4786	0		Mobilization states	Military command, personnel, careers, training, and mobilization
-4789	0		Personnel and equipment	Military command, personnel, careers, training, and mobilization
-4792	0		Industrial and civilian effects	Military command, personnel, careers, training, and mobilization
-4795	0		Legal and political oversight	Military command, personnel, careers, training, and mobilization
-4798	0		Demobilization	Military command, personnel, careers, training, and mobilization
-4804	0		Mobilization effects on civilian society, workforce, and national resilience.	Military command, personnel, careers, training, and mobilization
-4806	0		National mobilization model	Military command, personnel, careers, training, and mobilization
-4810	0		Conscription and reserve call-ups	Military command, personnel, careers, training, and mobilization
-4814	0		Workforce competition	Military command, personnel, careers, training, and mobilization
-4818	0		Rationing and public services	Military command, personnel, careers, training, and mobilization
-4822	0		Labor disputes and public response	Military command, personnel, careers, training, and mobilization
-4826	0		Education and training disruption	Military command, personnel, careers, training, and mobilization
-4830	0		Economic resilience and inequality	Military command, personnel, careers, training, and mobilization
-4834	0		Demobilization and return to civilian life	Military command, personnel, careers, training, and mobilization
-4838	0		Mobilization acceptance tests	Military command, personnel, careers, training, and mobilization
-4863	0		Armed forces, command, personnel, equipment, readiness, and sustainment	Military command, personnel, careers, training, and mobilization
-4865	0		One military enterprise	Military command, personnel, careers, training, and mobilization
-4869	0		Unit and order-of-battle authority	Military command, personnel, careers, training, and mobilization
-4873	0		Command and tasking	Military command, personnel, careers, training, and mobilization
-4877	0		Personnel, career, and mobilization	Military command, personnel, careers, training, and mobilization
-4881	0		Training and doctrine	Military command, personnel, careers, training, and mobilization
-4885	0		Equipment and lifecycle	Military command, personnel, careers, training, and mobilization
-4889	0		Weapons catalogue and ammunition accounting	Military command, personnel, careers, training, and mobilization
-4893	0		Maintenance and readiness	Military command, personnel, careers, training, and mobilization
-4897	0		Logistics and supply	Military command, personnel, careers, training, and mobilization
-4901	0		Airbase, carrier, and naval operations	Military command, personnel, careers, training, and mobilization
-4905	0		Global force and loss accounting	Military command, personnel, careers, training, and mobilization
-4909	0		Integration with the existing flight-combat game	Military command, personnel, careers, training, and mobilization
-4923	0		MILITARY TRAINING, DOCTRINE, EXERCISES, AND INSTITUTIONAL LEARNING	Military command, personnel, careers, training, and mobilization
-4928	0		Training pipeline	Military command, personnel, careers, training, and mobilization
-4931	0		Training capacity	Military command, personnel, careers, training, and mobilization
-4934	0		Exercises	Military command, personnel, careers, training, and mobilization
-4937	0		Doctrine lifecycle	Military command, personnel, careers, training, and mobilization
-4940	0		Lessons learned	Military command, personnel, careers, training, and mobilization
-4947	0		Military personnel records, crew rosters, career management, and continuity	Military command, personnel, careers, training, and mobilization
-4952	0		Personnel record	Military command, personnel, careers, training, and mobilization
-4955	0		Military service career lifecycle — MILITARY PERSONNEL ADMINISTRATION AND CAREER MANAGEMENT	Military command, personnel, careers, training, and mobilization
-4958	0		Assignment matching	Military command, personnel, careers, training, and mobilization
-4961	0		Retention and shortages	Military command, personnel, careers, training, and mobilization
-4964	0		Fair process and records	Military command, personnel, careers, training, and mobilization
-4983	0		Unified commander mode, player authority, orders, priorities, and delegation	Military command, personnel, careers, training, and mobilization
-5009	0		Orders, priorities, and delegation.	Military command, personnel, careers, training, and mobilization
-5022	0		Strategic player control of the wider campaign.	Military command, personnel, careers, training, and mobilization
-5043	0		Personnel recruitment, replacement, reinforcement, and reconstitution	Military command, personnel, careers, training, and mobilization
-5047	0		Personnel pool	Military command, personnel, careers, training, and mobilization
-5051	0		Recruitment and mobilization	Military command, personnel, careers, training, and mobilization
-5055	0		Replacement and integration	Military command, personnel, careers, training, and mobilization
-5059	0		Reserve and rotation systems	Military command, personnel, careers, training, and mobilization
-5063	0		Personnel records and careers	Military command, personnel, careers, training, and mobilization
-5070	0		Training facilities	Military command, personnel, careers, training, and mobilization
-5074	0		Training activities	Military command, personnel, careers, training, and mobilization
-5078	0		Doctrine and organizational learning	Military command, personnel, careers, training, and mobilization
-5082	0		Readiness reporting	Military command, personnel, careers, training, and mobilization
-5086	0		Exercises and diplomatic effects	Military command, personnel, careers, training, and mobilization
-5114	0		JOINT COMMAND HEADQUARTERS AND THEATER ORGANIZATION	Military command, personnel, careers, training, and mobilization
-5118	0		Headquarters types	Military command, personnel, careers, training, and mobilization
-5122	0		Staff roles	Military command, personnel, careers, training, and mobilization
-5126	0		Planning and tasking	Military command, personnel, careers, training, and mobilization
-5130	0		Command authority and friction	Military command, personnel, careers, training, and mobilization
-5134	0		Command succession	Military command, personnel, careers, training, and mobilization
-5139	0		Equipment readiness, maintenance, ground-force organization, and lifecycle	Equipment condition, maintenance, and lifecycle
-5146	0		Condition model	Equipment condition, maintenance, and lifecycle
-5149	0		Maintenance organizations	Equipment condition, maintenance, and lifecycle
-5152	0		Spare parts	Equipment condition, maintenance, and lifecycle
-5155	0		Readiness and sortie generation	Equipment condition, maintenance, and lifecycle
-5158	0		Reliability and records	Equipment condition, maintenance, and lifecycle
-5168	0		COMPLETE SHIPBOARD DAMAGE-CONTROL SIMULATION	Equipment condition, maintenance, and lifecycle
-5170	0		Ships as compartment-based entities	Equipment condition, maintenance, and lifecycle
-5176	0		Damage propagation and ship condition	Equipment condition, maintenance, and lifecycle
-5182	0		Damage-control teams	Equipment condition, maintenance, and lifecycle
-5188	0		Fire, flooding, electrical failure, and structural incidents	Equipment condition, maintenance, and lifecycle
-5192	0		Emergency power and degraded operation	Equipment condition, maintenance, and lifecycle
-5196	0		Crew casualties and medical response	Equipment condition, maintenance, and lifecycle
-5200	0		Towing, salvage, and repair	Equipment condition, maintenance, and lifecycle
-5204	0		Ship abandonment and rescue	Equipment condition, maintenance, and lifecycle
-5208	0		Shipboard acceptance tests	Equipment condition, maintenance, and lifecycle
-5215	0		Persistent military bases, airbases, squadrons, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
-5219	0		Airfield registry	Bases, airfields, carriers, and fixed installations
-5222	0		Capacity	Bases, airfields, carriers, and fixed installations
-5225	0		Sortie lifecycle	Bases, airfields, carriers, and fixed installations
-5228	0		Airfield disruption and recovery	Bases, airfields, carriers, and fixed installations
-5231	0		Ground operations — Airbase, air force, squadron, facility, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
-5234	0		Dispersal and alternate fields	Bases, airfields, carriers, and fixed installations
-5237	0		Player integration — Airbase, air force, squadron, facility, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
-5243	0		Airbases as persistent military installations.	Bases, airfields, carriers, and fixed installations
-5257	0		Air force, airbase, squadron, and aircraft lifecycle.	Bases, airfields, carriers, and fixed installations
-5286	0		Installation identity and classification	Bases, airfields, carriers, and fixed installations
-5302	0		Persistent facility components	Bases, airfields, carriers, and fixed installations
-5318	0		Personnel and daily operations	Bases, airfields, carriers, and fixed installations
-5335	0		Capacity and readiness	Bases, airfields, carriers, and fixed installations
-5349	0		Construction, expansion, and closure	Bases, airfields, carriers, and fixed installations
-5355	0		Security, emergencies, and protection	Bases, airfields, carriers, and fixed installations
-5361	0		Ownership, basing rights, and diplomacy	Bases, airfields, carriers, and fixed installations
-5365	0		Installation history and UI	Bases, airfields, carriers, and fixed installations
-5383	0		AIRCRAFT CARRIER OPERATIONS AND SHIPBOARD AVIATION	Bases, airfields, carriers, and fixed installations
-5385	0		Carrier as a moving airbase	Bases, airfields, carriers, and fixed installations
-5388	0		Flight-deck cycle	Bases, airfields, carriers, and fixed installations
-5391	0		Launch and recovery equipment state	Bases, airfields, carriers, and fixed installations
-5394	0		Air wing and carrier air group	Bases, airfields, carriers, and fixed installations
-5397	0		Shipboard maintenance and storage	Bases, airfields, carriers, and fixed installations
-5400	0		Sea state and operational limits	Bases, airfields, carriers, and fixed installations
-5403	0		Carrier emergencies and damage control	Bases, airfields, carriers, and fixed installations
-5406	0		Carrier group coordination	Bases, airfields, carriers, and fixed installations
-5417	0		Equipment readiness, maintenance, ground-force organization, and lifecycle	Force structure, national rosters, and equipment catalogues
-5431	0		Ground forces and land campaign	Force structure, national rosters, and equipment catalogues
-5449	0		Authoritative military roster, platform registry, and country-specific force packages	Force structure, national rosters, and equipment catalogues
-5467	0		Ground combat formations	Force structure, national rosters, and equipment catalogues
-5494	0		Armored vehicles and direct-fire units	Force structure, national rosters, and equipment catalogues
-5515	0		Artillery, rockets, and ground-based fires	Force structure, national rosters, and equipment catalogues
-5532	0		Ground-based air defense and missile defense	Force structure, national rosters, and equipment catalogues
-5552	0		Combat aircraft and specialist aviation units	Force structure, national rosters, and equipment catalogues
-5579	0		Helicopters and rotary-wing formations	Force structure, national rosters, and equipment catalogues
-5594	0		Uncrewed aircraft, drones, and autonomous systems — unified factional catalogue	Force structure, national rosters, and equipment catalogues
-5610	0		BLUFOR uncrewed aircraft and drone roster.	Force structure, national rosters, and equipment catalogues
-5614	0		United States	Force structure, national rosters, and equipment catalogues
-5616	0		Long-endurance and theatre-level ISR	Force structure, national rosters, and equipment catalogues
-5622	0		Tactical and small-unit ISR	Force structure, national rosters, and equipment catalogues
-5631	0		Experimental or future systems — do not make standard equipment by default	Force structure, national rosters, and equipment catalogues
-5636	0		United Kingdom — uncrewed aircraft	Force structure, national rosters, and equipment catalogues
-5642	0		France	Force structure, national rosters, and equipment catalogues
-5648	0		Germany	Force structure, national rosters, and equipment catalogues
-5655	0		Italy and other European Bluefor members	Force structure, national rosters, and equipment catalogues
-5661	0		Japan — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
-5666	0		South Korea — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
-5672	0		Australia and Canada	Force structure, national rosters, and equipment catalogues
-5677	0		REDFOR uncrewed aircraft and drone roster.	Force structure, national rosters, and equipment catalogues
-5679	0		China	Force structure, national rosters, and equipment catalogues
-5681	0		High-altitude, long-endurance, and strategic reconnaissance	Force structure, national rosters, and equipment catalogues
-5687	0		Medium-altitude and tactical systems	Force structure, national rosters, and equipment catalogues
-5696	0		Carrier and maritime support	Force structure, national rosters, and equipment catalogues
-5701	0		Russia — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
-5703	0		Reconnaissance and surveillance	Force structure, national rosters, and equipment catalogues
-5713	0		Loitering and one-way uncrewed systems	Force structure, national rosters, and equipment catalogues
-5718	0		Special or future systems	Force structure, national rosters, and equipment catalogues
-5722	0		Redfor partner countries — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
-5728	0		Naval combatants and fleets	Force structure, national rosters, and equipment catalogues
-5757	0		Strategic missile, early-warning, and national defense units	Force structure, national rosters, and equipment catalogues
-5773	0		Special operations, intelligence, and security formations	Force structure, national rosters, and equipment catalogues
-5792	0		Logistics, transport, and sustainment units	Force structure, national rosters, and equipment catalogues
-5814	0		Engineering, infrastructure, and environmental support units	Force structure, national rosters, and equipment catalogues
-5834	0		Medical and personnel-support units	Force structure, national rosters, and equipment catalogues
-5849	0		Civil protection, internal security, and humanitarian units	Force structure, national rosters, and equipment catalogues
-5868	0		Irregular forces, militias, and non-state organizations	Force structure, national rosters, and equipment catalogues
-5882	0		Command, communications, and support infrastructure units	Force structure, national rosters, and equipment catalogues
-5898	0		Fixed installations and map-based military assets	Force structure, national rosters, and equipment catalogues
-5916	0		Suggested initial implementation roster	Force structure, national rosters, and equipment catalogues
-5935	0		Military unit roster data schema and balance requirements	Force structure, national rosters, and equipment catalogues
-5957	0		Factional named equipment and unit rosters (BLUFOR and REDFOR)	Force structure, national rosters, and equipment catalogues
-5959	0		Force-side content package: BLUEFOR.	Force structure, national rosters, and equipment catalogues
-5963	0		REDFOR named equipment and unit roster requirements.	Force structure, national rosters, and equipment catalogues
-5965	0		Force-side content package: REDFOR.	Force structure, national rosters, and equipment catalogues
-5970	0		United States — ground forces	Force structure, national rosters, and equipment catalogues
-6012	0		United States — aircraft and aviation units	Force structure, national rosters, and equipment catalogues
-6041	0		United States — naval forces	Force structure, national rosters, and equipment catalogues
-6061	0		Russia — ground forces	Force structure, national rosters, and equipment catalogues
-6079	0		Russia — naval forces	Force structure, national rosters, and equipment catalogues
-6097	0		China — ground forces	Force structure, national rosters, and equipment catalogues
-6115	0		China — naval forces	Force structure, national rosters, and equipment catalogues
-6137	0		NATIONAL FORMATIONS, UNIT NAMES, AND FORCE GENERATION	Force structure, national rosters, and equipment catalogues
-6151	0		EQUIPMENT DATA RULES — MAKE THE ROSTER USEFUL AND ACCURATE	Force structure, national rosters, and equipment catalogues
-6171	0		EQUIPMENT, VEHICLE, AIRCRAFT, SHIP, AND WEAPONS-PLATFORM COUNTERS	Force structure, national rosters, and equipment catalogues
-6208	0		CIVILIAN AIRCRAFT MODEL ROSTER AND OPERATOR FLEETS	Force structure, national rosters, and equipment catalogues
-6212	0		Civilian aircraft roster data and operator requirements	Force structure, national rosters, and equipment catalogues
-6226	0		Mainline passenger airliners	Force structure, national rosters, and equipment catalogues
-6230	0		Airbus:	Force structure, national rosters, and equipment catalogues
-6239	0		Boeing:	Force structure, national rosters, and equipment catalogues
-6250	0		Legacy and other mainline aircraft:	Force structure, national rosters, and equipment catalogues
-6261	0		Regional passenger aircraft	Force structure, national rosters, and equipment catalogues
-6278	0		Civilian cargo and freight aircraft	Force structure, national rosters, and equipment catalogues
-6293	0		Business jets, private aviation, and general aviation	Force structure, national rosters, and equipment catalogues
-6297	0		Business jets:	Force structure, national rosters, and equipment catalogues
-6307	0		Piston and light aircraft:	Force structure, national rosters, and equipment catalogues
-6317	0		Turboprop and utility aircraft:	Force structure, national rosters, and equipment catalogues
-6326	0		Medical, humanitarian, public-service, and special-purpose aircraft	Force structure, national rosters, and equipment catalogues
-6340	0		Airlines, owners, and believable fleet composition	Force structure, national rosters, and equipment catalogues
-6357	0		Civilian aircraft visuals and player recognition	Force structure, national rosters, and equipment catalogues
-6363	0		Roster validation and scenario controls	Force structure, national rosters, and equipment catalogues
-6375	0		Unified weapon database, infantry catalogue, national coverage, and logistics integration	Force structure, national rosters, and equipment catalogues
-6377	0		One authoritative weapon record	Force structure, national rosters, and equipment catalogues
-6395	0		Distinguish weapons from platforms	Force structure, national rosters, and equipment catalogues
-6401	0		Finite ammunition and national stockpiles	Force structure, national rosters, and equipment catalogues
-6415	0		Country-specific weapon behavior without national stereotypes	Force structure, national rosters, and equipment catalogues
-6419	0		Integration with existing systems — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
-6447	0		Country-specific weapon catalogue coverage and source validation.	Force structure, national rosters, and equipment catalogues
-6449	0		What “all weapons” means in this campaign	Force structure, national rosters, and equipment catalogues
-6468	0		Country ownership and weapon provenance	Force structure, national rosters, and equipment catalogues
-6484	0		Safe game-data representation	Force structure, national rosters, and equipment catalogues
-6506	0		National weapons coverage roadmap	Force structure, national rosters, and equipment catalogues
-6510	0		South Asia — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
-6512	0		India	Force structure, national rosters, and equipment catalogues
-6519	0		Pakistan	Force structure, national rosters, and equipment catalogues
-6525	0		Bangladesh, Sri Lanka, Nepal, Bhutan, Maldives, and Afghanistan	Force structure, national rosters, and equipment catalogues
-6530	0		East and Southeast Asia	Force structure, national rosters, and equipment catalogues
-6532	0		Japan	Force structure, national rosters, and equipment catalogues
-6539	0		South Korea	Force structure, national rosters, and equipment catalogues
-6546	0		Taiwan	Force structure, national rosters, and equipment catalogues
-6553	0		China	Force structure, national rosters, and equipment catalogues
-6557	0		North Korea	Force structure, national rosters, and equipment catalogues
-6561	0		Vietnam, Thailand, Indonesia, Malaysia, Singapore, Philippines, Myanmar, Cambodia, Laos, Brunei, and Timor-Leste	Force structure, national rosters, and equipment catalogues
-6566	0		Middle East and Caucasus — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
-6568	0		Israel	Force structure, national rosters, and equipment catalogues
-6575	0		Türkiye	Force structure, national rosters, and equipment catalogues
-6582	0		Iran	Force structure, national rosters, and equipment catalogues
-6590	0		Saudi Arabia, United Arab Emirates, Qatar, Kuwait, Bahrain, Oman, Iraq, Jordan, Lebanon, Syria, Armenia, Azerbaijan, and Georgia	Force structure, national rosters, and equipment catalogues
-6597	0		Europe	Force structure, national rosters, and equipment catalogues
-6599	0		Ukraine	Force structure, national rosters, and equipment catalogues
-6607	0		Sweden	Force structure, national rosters, and equipment catalogues
-6613	0		Norway	Force structure, national rosters, and equipment catalogues
-6619	0		Finland	Force structure, national rosters, and equipment catalogues
-6625	0		Poland	Force structure, national rosters, and equipment catalogues
-6637	0		Africa — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
-6639	0		Egypt	Force structure, national rosters, and equipment catalogues
-6650	0		North America, Latin America, and Oceania	Force structure, national rosters, and equipment catalogues
-6652	0		Canada	Force structure, national rosters, and equipment catalogues
-6656	0		Mexico	Force structure, national rosters, and equipment catalogues
-6659	0		Brazil	Force structure, national rosters, and equipment catalogues
-6665	0		Argentina, Chile, Colombia, Peru, Venezuela, Ecuador, Bolivia, Paraguay, Uruguay, and other Latin American states	Force structure, national rosters, and equipment catalogues
-6670	0		Australia and New Zealand	Force structure, national rosters, and equipment catalogues
-6677	0		Countries with small or no standing armed forces	Force structure, national rosters, and equipment catalogues
-6681	0		Country inventory completeness and source validation	Force structure, national rosters, and equipment catalogues
-6702	0		Required infantry weapon classes	Force structure, national rosters, and equipment catalogues
-6724	0		Infantry weapon data fields	Force structure, national rosters, and equipment catalogues
-6744	0		Infantry weapon identity and variants	Force structure, national rosters, and equipment catalogues
-6755	0		Country-specific infantry weapon reference packages.	Force structure, national rosters, and equipment catalogues
-6759	0		United States and Canada	Force structure, national rosters, and equipment catalogues
-6761	0		United States	Force structure, national rosters, and equipment catalogues
-6773	0		Canada	Force structure, national rosters, and equipment catalogues
-6781	0		United Kingdom, Ireland, and Western Europe	Force structure, national rosters, and equipment catalogues
-6783	0		United Kingdom	Force structure, national rosters, and equipment catalogues
-6791	0		France	Force structure, national rosters, and equipment catalogues
-6799	0		Germany	Force structure, national rosters, and equipment catalogues
-6807	0		Italy	Force structure, national rosters, and equipment catalogues
-6813	0		Spain	Force structure, national rosters, and equipment catalogues
-6819	0		Netherlands, Belgium, Luxembourg	Force structure, national rosters, and equipment catalogues
-6824	0		Switzerland, Austria, and other central European states	Force structure, national rosters, and equipment catalogues
-6834	0		Nordic and Baltic states	Force structure, national rosters, and equipment catalogues
-6836	0		Sweden	Force structure, national rosters, and equipment catalogues
-6843	0		Norway	Force structure, national rosters, and equipment catalogues
-6850	0		Finland	Force structure, national rosters, and equipment catalogues
-6857	0		Denmark, Estonia, Latvia, and Lithuania	Force structure, national rosters, and equipment catalogues
-6863	0		Russia, Ukraine, Belarus, and other eastern European states	Force structure, national rosters, and equipment catalogues
-6865	0		Russia	Force structure, national rosters, and equipment catalogues
-6875	0		Ukraine	Force structure, national rosters, and equipment catalogues
-6882	0		Belarus	Force structure, national rosters, and equipment catalogues
-6886	0		Moldova and other eastern European states	Force structure, national rosters, and equipment catalogues
-6890	0		South Asia — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
-6892	0		India	Force structure, national rosters, and equipment catalogues
-6900	0		Pakistan	Force structure, national rosters, and equipment catalogues
-6914	0		China, Japan, the Koreas, and Taiwan	Force structure, national rosters, and equipment catalogues
-6916	0		China	Force structure, national rosters, and equipment catalogues
-6925	0		Japan	Force structure, national rosters, and equipment catalogues
-6933	0		South Korea	Force structure, national rosters, and equipment catalogues
-6941	0		North Korea	Force structure, national rosters, and equipment catalogues
-6946	0		Taiwan	Force structure, national rosters, and equipment catalogues
-6953	0		Southeast Asia	Force structure, national rosters, and equipment catalogues
-6955	0		Singapore	Force structure, national rosters, and equipment catalogues
-6962	0		Indonesia	Force structure, national rosters, and equipment catalogues
-6969	0		Malaysia	Force structure, national rosters, and equipment catalogues
-6975	0		Thailand	Force structure, national rosters, and equipment catalogues
-6981	0		Philippines	Force structure, national rosters, and equipment catalogues
-6987	0		Vietnam	Force structure, national rosters, and equipment catalogues
-6993	0		Myanmar, Cambodia, Laos, Brunei, and Timor-Leste	Force structure, national rosters, and equipment catalogues
-6998	0		Middle East and Caucasus — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
-7000	0		Israel	Force structure, national rosters, and equipment catalogues
-7008	0		Türkiye	Force structure, national rosters, and equipment catalogues
-7016	0		Iran	Force structure, national rosters, and equipment catalogues
-7024	0		Saudi Arabia, UAE, Qatar, Kuwait, Bahrain, Oman, Iraq, Jordan, Lebanon, Syria	Force structure, national rosters, and equipment catalogues
-7030	0		Armenia, Azerbaijan, and Georgia	Force structure, national rosters, and equipment catalogues
-7035	0		Africa — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
-7037	0		Egypt	Force structure, national rosters, and equipment catalogues
-7041	0		Algeria	Force structure, national rosters, and equipment catalogues
-7044	0		Morocco and Tunisia	Force structure, national rosters, and equipment catalogues
-7048	0		South Africa	Force structure, national rosters, and equipment catalogues
-7055	0		Nigeria, Kenya, Ethiopia, Angola, Uganda, Ghana, Senegal, Sudan, South Sudan, Somalia, and other African states	Force structure, national rosters, and equipment catalogues
-7060	0		Latin America and the Caribbean	Force structure, national rosters, and equipment catalogues
-7062	0		Brazil	Force structure, national rosters, and equipment catalogues
-7069	0		Mexico	Force structure, national rosters, and equipment catalogues
-7076	0		Argentina	Force structure, national rosters, and equipment catalogues
-7082	0		Chile	Force structure, national rosters, and equipment catalogues
-7088	0		Colombia	Force structure, national rosters, and equipment catalogues
-7094	0		Peru, Venezuela, Ecuador, Bolivia, Paraguay, Uruguay, and other Caribbean states	Force structure, national rosters, and equipment catalogues
-7099	0		Oceania	Force structure, national rosters, and equipment catalogues
-7101	0		Australia	Force structure, national rosters, and equipment catalogues
-7108	0		New Zealand	Force structure, national rosters, and equipment catalogues
-7115	0		Pacific island states	Force structure, national rosters, and equipment catalogues
-7119	0		Ground-based air defense, radar command, counter-UAS, and surface-to-air missile catalogue	Force structure, national rosters, and equipment catalogues
-7123	0		United States — ground-based air defense	Force structure, national rosters, and equipment catalogues
-7136	0		United Kingdom — ground-based air defense	Force structure, national rosters, and equipment catalogues
-7144	0		France and Italy	Force structure, national rosters, and equipment catalogues
-7150	0		Germany and other European NATO members	Force structure, national rosters, and equipment catalogues
-7165	0		Poland and Eastern/Northern Europe	Force structure, national rosters, and equipment catalogues
-7175	0		Japan — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
-7184	0		South Korea — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
-7192	0		Optional Bluefor partner: Israel	Force structure, national rosters, and equipment catalogues
-7201	0		REDFOR ground-based air-defense and SAM roster.	Force structure, national rosters, and equipment catalogues
-7203	0		Russia — ground-based air defense	Force structure, national rosters, and equipment catalogues
-7204	0		Long-range and strategic air defense	Force structure, national rosters, and equipment catalogues
-7211	0		Medium- and short-range systems	Force structure, national rosters, and equipment catalogues
-7225	0		China — ground-based air defense	Force structure, national rosters, and equipment catalogues
-7226	0		Long- and medium-range systems	Force structure, national rosters, and equipment catalogues
-7233	0		Short-range and point-defense systems	Force structure, national rosters, and equipment catalogues
-7243	0		Redfor partner countries — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
-7248	0		Air-defense radar, command, and counter-UAS support units.	Force structure, national rosters, and equipment catalogues
-7252	0		Bluefor sensor and command examples	Force structure, national rosters, and equipment catalogues
-7267	0		Redfor sensor and command examples	Force structure, national rosters, and equipment catalogues
-7278	0		Counter-UAS and point-defense classes	Force structure, national rosters, and equipment catalogues
-7290	0		SUPPORT AVIATION AS PERSISTENT CAMPAIGN ENTITIES	Force structure, national rosters, and equipment catalogues
-7294	0		Support aircraft categories	Force structure, national rosters, and equipment catalogues
-7311	0		Persistent operational lifecycle	Force structure, national rosters, and equipment catalogues
-7329	0		AWACS / AEW&C rework	Force structure, national rosters, and equipment catalogues
-7342	0		Tanker operations rework	Force structure, national rosters, and equipment catalogues
-7354	0		Transport and cargo operations	Force structure, national rosters, and equipment catalogues
-7362	0		Reconnaissance and uncrewed aviation	Force structure, national rosters, and equipment catalogues
-7366	0		Support-aircraft acceptance tests	Force structure, national rosters, and equipment catalogues
-7381	0		NAVAL TASK FORCE, FLEET READINESS, AND MARITIME OPERATIONS	Operations, formations, and force employment
-7386	0		Fleet registry	Operations, formations, and force employment
-7389	0		Readiness	Operations, formations, and force employment
-7392	0		Deployment lifecycle	Operations, formations, and force employment
-7395	0		Replenishment and logistics	Operations, formations, and force employment
-7398	0		Fleet coordination	Operations, formations, and force employment
-7405	0		Naval warfare and coastal operations	Operations, formations, and force employment
-7417	0		Special operations, infiltration, sabotage, and irregular warfare	Operations, formations, and force employment
-7431	0		United Kingdom	Operations, formations, and force employment
-7445	0		France	Operations, formations, and force employment
-7460	0		Germany	Operations, formations, and force employment
-7473	0		Poland and Central/Eastern European NATO forces	Operations, formations, and force employment
-7484	0		Nordic Allies	Operations, formations, and force employment
-7492	0		Canada and close Bluefor partners in the Indo-Pacific	Operations, formations, and force employment
-7501	0		Scenario-dependent Redfor partners and aligned states	Operations, formations, and force employment
-7505	0		Belarus — possible Russian-aligned participant	Operations, formations, and force employment
-7510	0		Iran — possible independent partner, co-belligerent, or neutral actor	Operations, formations, and force employment
-7518	0		North Korea — possible independent participant or co-belligerent	Operations, formations, and force employment
-7525	0		Other countries	Operations, formations, and force employment
-7529	0		Movement and maneuver	Operations, formations, and force employment
-7542	0		UNCREWED GROUND AND MARITIME SYSTEMS	Operations, formations, and force employment
-7544	0		Uncrewed ground vehicles	Operations, formations, and force employment
-7554	0		Uncrewed maritime systems	Operations, formations, and force employment
-7559	0		PILOT DOWN, SEARCH AND RESCUE, COMBAT SEARCH AND RESCUE, AND PLAYER PILOT RECOVERY	Operations, formations, and force employment
-7563	0		Pilot identity and downed state	Operations, formations, and force employment
-7571	0		Playable player-pilot survival mode	Operations, formations, and force employment
-7582	0		AI pilot survival behavior	Operations, formations, and force employment
-7589	0		Rescue request and mission generation	Operations, formations, and force employment
-7599	0		Search information and campaign intelligence	Operations, formations, and force employment
-7607	0		Rescue team and extraction behavior	Operations, formations, and force employment
-7616	0		Capture, escape, prisoner exchange, and repatriation	Operations, formations, and force employment
-7624	0		Player pilot recovery and squadron consequences	Operations, formations, and force employment
-7633	0		News, morale, and campaign integration	Operations, formations, and force employment
-7641	0		GROUND COMBAT AS A PERSISTENT COMBINED-ARMS SYSTEM	Operations, formations, and force employment
-7655	0		EXPLOSIVE ORDNANCE DISPOSAL AND POST-BATTLE HAZARDS	Operations, formations, and force employment
-7659	0		Hazard categories — EXPLOSIVE ORDNANCE DISPOSAL AND POST-BATTLE HAZARDS	Operations, formations, and force employment
-7663	0		EOD and clearance units	Operations, formations, and force employment
-7667	0		Persistent effects	Operations, formations, and force employment
-7671	0		Clearance missions	Operations, formations, and force employment
-7675	0		Safety and abstraction	Operations, formations, and force employment
-7680	0		ADVANCED INFANTRY AND GROUND-LEVEL SIMULATION	Operations, formations, and force employment
-7682	0		Ground forces as persistent organizations	Operations, formations, and force employment
-7695	0		Personnel roles and qualifications	Operations, formations, and force employment
-7701	0		Ground movement and formation behavior	Operations, formations, and force employment
-7714	0		Suppression, stress, cohesion, and morale	Operations, formations, and force employment
-7720	0		Ground defenses and field fortifications	Operations, formations, and force employment
-7726	0		Urban and interior spaces	Operations, formations, and force employment
-7732	0		Ground vehicles, crews, and recovery	Operations, formations, and force employment
-7738	0		Infantry medical support and evacuation	Operations, formations, and force employment
-7742	0		Ground-unit identity and human continuity	Operations, formations, and force employment
-7746	0		Ground AI acceptance requirements	Operations, formations, and force employment
-7753	0		BATTLEFIELD ENGINEERING AND INFRASTRUCTURE CONSTRUCTION	Operations, formations, and force employment
-7755	0		Engineering as a persistent campaign function	Operations, formations, and force employment
-7759	0		Engineering organizations	Operations, formations, and force employment
-7763	0		Projects and material dependencies	Operations, formations, and force employment
-7767	0		Infrastructure types	Operations, formations, and force employment
-7771	0		Temporary and permanent facilities	Operations, formations, and force employment
-7775	0		Inspection and maintenance	Operations, formations, and force employment
-7779	0		Civilian-military engineering coordination	Operations, formations, and force employment
-7783	0		Engineering mission generation	Operations, formations, and force employment
-7787	0		Engineering acceptance tests	Operations, formations, and force employment
-7794	0		FORMATION SURVIVAL, UNIT ELIMINATION, AND ORDER OF BATTLE	Operations, formations, and force employment
-7818	0		Unit-strength display examples	Operations, formations, and force employment
-7822	0		Example ground formation	Operations, formations, and force employment
-7830	0		Example air squadron	Operations, formations, and force employment
-7836	0		Example naval task group	Operations, formations, and force employment
-7844	0		SQUADRON CONTINUITY, WINGMAN RELATIONSHIPS, AND PILOT SOCIAL HISTORY	Operations, formations, and force employment
-7848	0		Persistent squadron roster	Operations, formations, and force employment
-7852	0		Stable wingman assignments	Operations, formations, and force employment
-7860	0		Relationships and trust	Operations, formations, and force employment
-7864	0		Operational effects — SQUADRON CONTINUITY, WINGMAN RELATIONSHIPS, AND PILOT SOCIAL HISTORY	Operations, formations, and force employment
-7876	0		Squadron culture and identity	Operations, formations, and force employment
-7880	0		Dialogue and memory	Operations, formations, and force employment
-7884	0		Personnel wellbeing and privacy	Operations, formations, and force employment
-7898	0		GROUND-CREW CONTRIBUTION, RECOGNITION, AND SERVICE RECORDS	Operations, formations, and force employment
-7902	0		Contributions to record	Operations, formations, and force employment
-7914	0		Fair evaluation	Operations, formations, and force employment
-7921	0		Recognition and career history	Operations, formations, and force employment
-7934	0		Infantry unit issue, loadouts, and battlefield inventory	Operations, formations, and force employment
-7936	0		Infantry organization and issue profiles	Operations, formations, and force employment
-7957	0		Individual and unit inventory	Operations, formations, and force employment
-7968	0		Training, qualification, and familiarity	Operations, formations, and force employment
-7981	0		Infantry weapons and logistics	Operations, formations, and force employment
-7992	0		Civilian and law-enforcement weapon separation	Operations, formations, and force employment
-8001	0		Military command, leadership, and organizational hierarchy	Operations, formations, and force employment
-8003	0		Purpose and design principles — Military command, leadership, and organizational hierarchy	Operations, formations, and force employment
-8011	0		Organizational model	Operations, formations, and force employment
-8031	0		Command relationships and authority	Operations, formations, and force employment
-8049	0		Persistent commanders and staff	Operations, formations, and force employment
-8072	0		Orders and command intent	Operations, formations, and force employment
-8092	0		Communications delay and command friction	Operations, formations, and force employment
-8098	0		Cohesion, readiness, and command performance	Operations, formations, and force employment
-8116	0		Integration and user interface	Operations, formations, and force employment
-8130	0		Persistence, multiplayer, and performance	Operations, formations, and force employment
-8150	0		Logistics, economy, industry, and resources	Logistics, supply, sustainment, procurement, and support
-8173	0		Ground logistics and recovery behavior	Logistics, supply, sustainment, procurement, and support
-8183	0		GROUND SUPPORT, LOGISTICS, ENGINEERING, MEDICAL, AND RECOVERY VEHICLES	Logistics, supply, sustainment, procurement, and support
-8187	0		Bluefor examples	Logistics, supply, sustainment, procurement, and support
-8207	0		Redfor examples	Logistics, supply, sustainment, procurement, and support
-8221	0		Support unit behavior	Logistics, supply, sustainment, procurement, and support
-8230	0		NAVAL SUPPORT AND LOGISTICS UNITS THAT THE CAMPAIGN NEEDS	Logistics, supply, sustainment, procurement, and support
-8259	0		NAVAL OPERATIONS, PORTS, AND MARITIME LOGISTICS	Logistics, supply, sustainment, procurement, and support
-8273	0		LOGISTICS AS A NETWORK WITH CAPACITY, BOTTLENECKS, AND PRIORITIES	Logistics, supply, sustainment, procurement, and support
-8290	0		FUEL DISTRIBUTION TO MILITARY FORCES	Logistics, supply, sustainment, procurement, and support
-8305	0		AMMUNITION, ORDNANCE AND WEAPONS ECONOMY	Logistics, supply, sustainment, procurement, and support
-8309	0		Ammunition classes	Logistics, supply, sustainment, procurement, and support
-8329	0		Production and manufacturing	Logistics, supply, sustainment, procurement, and support
-8335	0		Stockpiles and distribution	Logistics, supply, sustainment, procurement, and support
-8341	0		Allocation and scarcity	Logistics, supply, sustainment, procurement, and support
-8347	0		Quality, compatibility and storage	Logistics, supply, sustainment, procurement, and support
-8351	0		Rearming gameplay	Logistics, supply, sustainment, procurement, and support
-8355	0		AI behavior and campaign consequences	Logistics, supply, sustainment, procurement, and support
-8362	0		DEFENSE INDUSTRY, RAW MATERIALS AND PROCUREMENT	Logistics, supply, sustainment, procurement, and support
-8366	0		Industrial ecosystem	Logistics, supply, sustainment, procurement, and support
-8370	0		Procurement, production, and contracts	Logistics, supply, sustainment, procurement, and support
-8374	0		Industry workforce	Logistics, supply, sustainment, procurement, and support
-8378	0		Exports and international supply	Logistics, supply, sustainment, procurement, and support
-8382	0		Industrial damage and recovery	Logistics, supply, sustainment, procurement, and support
-8387	0		DEFENSE PROCUREMENT, INDUSTRIAL POLICY AND EXPORTS	Logistics, supply, sustainment, procurement, and support
-8396	0		SHARED ECONOMY, LOGISTICS AND CIVILIAN IMPACT INTEGRATION	Logistics, supply, sustainment, procurement, and support
-8417	0		Airbase as an operating organization	Logistics, supply, sustainment, procurement, and support
-8420	0		Aircraft parking and ground handling	Logistics, supply, sustainment, procurement, and support
-8425	0		Ground crews and shift schedules	Logistics, supply, sustainment, procurement, and support
-8428	0		Turnaround and sortie generation	Logistics, supply, sustainment, procurement, and support
-8431	0		Runway and airfield condition	Logistics, supply, sustainment, procurement, and support
-8434	0		Base services and emergency response	Logistics, supply, sustainment, procurement, and support
-8437	0		Weather preparation and seasonal operations	Logistics, supply, sustainment, procurement, and support
-8440	0		Alert posture and quick-reaction readiness	Logistics, supply, sustainment, procurement, and support
-8443	0		Airbase command and local personalities	Logistics, supply, sustainment, procurement, and support
-8455	0		SPARE PARTS, COMPONENT HEALTH, AND DEPOT-LEVEL MAINTENANCE ECONOMY	Logistics, supply, sustainment, procurement, and support
-8457	0		Component-level abstraction	Logistics, supply, sustainment, procurement, and support
-8460	0		Component condition and service life	Logistics, supply, sustainment, procurement, and support
-8463	0		Repair levels	Logistics, supply, sustainment, procurement, and support
-8466	0		Spare-parts catalogs and compatibility	Logistics, supply, sustainment, procurement, and support
-8469	0		Cannibalization and stored components	Logistics, supply, sustainment, procurement, and support
-8472	0		Maintenance workforce and qualifications	Logistics, supply, sustainment, procurement, and support
-8475	0		Repair priorities and command decisions	Logistics, supply, sustainment, procurement, and support
-8478	0		Maintenance data and reliability learning	Logistics, supply, sustainment, procurement, and support
-8489	0		INTERNATIONAL ARMS TRADE, FOREIGN MILITARY ASSISTANCE, AND PROCUREMENT	Logistics, supply, sustainment, procurement, and support
-8491	0		National procurement profiles	Logistics, supply, sustainment, procurement, and support
-8495	0		Arms purchase and transfer agreements	Logistics, supply, sustainment, procurement, and support
-8499	0		Delivery and acceptance	Logistics, supply, sustainment, procurement, and support
-8503	0		Export controls and end-use conditions	Logistics, supply, sustainment, procurement, and support
-8507	0		Training and support packages	Logistics, supply, sustainment, procurement, and support
-8511	0		Coalition donations and burden sharing	Logistics, supply, sustainment, procurement, and support
-8515	0		Domestic industry and licensed production	Logistics, supply, sustainment, procurement, and support
-8519	0		Black markets and illicit diversion	Logistics, supply, sustainment, procurement, and support
-8523	0		Procurement scandals and failures	Logistics, supply, sustainment, procurement, and support
-8527	0		Arms trade acceptance tests	Logistics, supply, sustainment, procurement, and support
-8534	0		EQUIPMENT INVENTORY, READINESS, AND PROCUREMENT STATISTICS	Logistics, supply, sustainment, procurement, and support
-8558	0		Missing support, engineering, logistics, and non-frontline equipment coverage	Logistics, supply, sustainment, procurement, and support
-8562	0		Infantry ancillary equipment	Logistics, supply, sustainment, procurement, and support
-8578	0		Combat engineering and obstacle support	Logistics, supply, sustainment, procurement, and support
-8594	0		Logistics and transport vehicles	Logistics, supply, sustainment, procurement, and support
-8612	0		Ground-based support and electronic systems	Logistics, supply, sustainment, procurement, and support
-8628	0		Space and strategic infrastructure	Logistics, supply, sustainment, procurement, and support
-8639	0		Catalogue validation	Logistics, supply, sustainment, procurement, and support
-8644	0		Integrated logistics and supply network	Logistics, supply, sustainment, procurement, and support
-8651	0		Resource catalogue	Logistics, supply, sustainment, procurement, and support
-8668	0		Facilities and nodes	Logistics, supply, sustainment, procurement, and support
-8687	0		Transport network	Logistics, supply, sustainment, procurement, and support
-8695	0		Shipments and chain of custody	Logistics, supply, sustainment, procurement, and support
-8719	0		Demand, prioritization, and shortages	Logistics, supply, sustainment, procurement, and support
-8734	0		Reconciliation with ammunition and expenditure ledgers	Logistics, supply, sustainment, procurement, and support
-8745	0		Civilian and humanitarian logistics	Logistics, supply, sustainment, procurement, and support
-8751	0		User interface	Logistics, supply, sustainment, procurement, and support
-8781	0		DEFENSE PROCUREMENT, ACQUISITION, AND SUPPLIER COMPETITION	Logistics, supply, sustainment, procurement, and support
-8786	0		Program lifecycle	Logistics, supply, sustainment, procurement, and support
-8789	0		Actors	Logistics, supply, sustainment, procurement, and support
-8792	0		Program risks	Logistics, supply, sustainment, procurement, and support
-8795	0		Competition and governance	Logistics, supply, sustainment, procurement, and support
-8798	0		Deliveries and fielding	Logistics, supply, sustainment, procurement, and support
-8808	0		CIVILIANS CAN FOUND, OWN, GROW, AND OPERATE THEIR OWN PMCs	Logistics, supply, sustainment, procurement, and support
-8814	0		Definition and separation from other organizations	Logistics, supply, sustainment, procurement, and support
-8824	0		Civilian founders and autonomous company creation	Logistics, supply, sustainment, procurement, and support
-8843	0		Company formation, registration, and growth stages	Logistics, supply, sustainment, procurement, and support
-8856	0		Corporate identity, ownership, and internal governance	Logistics, supply, sustainment, procurement, and support
-8869	0		Recruitment, employment, and personnel welfare	Logistics, supply, sustainment, procurement, and support
-8885	0		Qualifications, standards, and company capability	Logistics, supply, sustainment, procurement, and support
-8897	0		Equipment ownership, procurement, and sustainment	Logistics, supply, sustainment, procurement, and support
-8909	0		Contracts, clients, and service obligations	Logistics, supply, sustainment, procurement, and support
-8929	0		Company autonomy, loyalty, and behavior during the war	Logistics, supply, sustainment, procurement, and support
-8944	0		Financial survival and the possibility of failure	Logistics, supply, sustainment, procurement, and support
-8957	0		Legal status, oversight, and accountability	Logistics, supply, sustainment, procurement, and support
-8972	0		Civilian community effects and public reputation	Logistics, supply, sustainment, procurement, and support
-8984	0		Competition, mergers, internal factions, and organizational change	Logistics, supply, sustainment, procurement, and support
-8996	0		Player interaction and campaign interface	Logistics, supply, sustainment, procurement, and support
-9013	0		Campaign events, news, and narrative history	Logistics, supply, sustainment, procurement, and support
-9028	0		Autonomous AI decisions and simulation scale	Logistics, supply, sustainment, procurement, and support
-9040	0		Canonical data model and persistence requirements	Logistics, supply, sustainment, procurement, and support
-9055	0		Multiplayer and authority	Logistics, supply, sustainment, procurement, and support
-9068	0		Global air operations, theater planning, and dynamic air mission generation	Operational behavior, AI support, and coordination
-9091	0		Global air war and theater campaign behavior.	Operational behavior, AI support, and coordination
-9112	0		Operational planning interface	Operational behavior, AI support, and coordination
-9118	0		Package construction	Operational behavior, AI support, and coordination
-9124	0		Support and coordination requests	Operational behavior, AI support, and coordination
-9130	0		Scheduling and deconfliction	Operational behavior, AI support, and coordination
-9134	0		Mission routes and campaign constraints	Operational behavior, AI support, and coordination
-9138	0		AI-generated plans and recommendations	Operational behavior, AI support, and coordination
-9142	0		Execution monitoring	Operational behavior, AI support, and coordination
-9146	0		Debrief and lessons learned	Operational behavior, AI support, and coordination
-9150	0		Planning room acceptance tests	Operational behavior, AI support, and coordination
-9157	0		Unit organization, behavior, and simulation requirements	Operational behavior, AI support, and coordination
-9175	0		Italy, Spain, Netherlands, Belgium, Greece, Portugal, and other NATO members	Operational behavior, AI support, and coordination
-9185	0		Russia — aircraft and helicopters	Operational behavior, AI support, and coordination
-9204	0		China — aircraft and helicopters	Operational behavior, AI support, and coordination
-9223	0		DYNAMIC GROUND-FORCE BEHAVIOR	Operational behavior, AI support, and coordination
-9228	0		Combat posture and survival behavior	Operational behavior, AI support, and coordination
-9240	0		Tactical coordination and support requests	Operational behavior, AI support, and coordination
-9249	0		DYNAMIC NAVAL AI	Operational behavior, AI support, and coordination
-9263	0		CRITICAL SCOPE CORRECTION: DO NOT REBUILD THE EXISTING AIRCRAFT	Operational behavior, AI support, and coordination
-9284	0		Factional special-mission support-aircraft catalogue: AEW&C, airlift, tankers, and aeromedical evacuation	Operational behavior, AI support, and coordination
-9299	0		United Kingdom and European NATO	Operational behavior, AI support, and coordination
-9309	0		Indo-Pacific Bluefor	Operational behavior, AI support, and coordination
-9315	0		REDFOR AWACS, AEW&C, command, and special-mission support aircraft.	Operational behavior, AI support, and coordination
-9336	0		BLUFOR airlift, cargo, aerial refueling, and aeromedical evacuation.	Operational behavior, AI support, and coordination
-9338	0		Strategic and tactical transport	Operational behavior, AI support, and coordination
-9350	0		Tankers and refueling support	Operational behavior, AI support, and coordination
-9357	0		Special cargo and medical variants	Operational behavior, AI support, and coordination
-9362	0		REDFOR airlift, cargo, aerial refueling, and aeromedical evacuation.	Operational behavior, AI support, and coordination
-9364	0		China — transport and tanker aircraft	Operational behavior, AI support, and coordination
-9375	0		Russia — Factional special-mission support-aircraft catalogue: AEW&C, airlift, ta	Operational behavior, AI support, and coordination
-9386	0		Redfor partner countries — Factional special-mission support-aircraft catalogue: AEW&C, airlift, ta	Operational behavior, AI support, and coordination
-9392	0		GROUND SUPPORT UNITS, MOBILE AIR DEFENSE, AND CAMPAIGN SERVICE VEHICLES	Operational behavior, AI support, and coordination
-9396	0		Air-defense formations	Operational behavior, AI support, and coordination
-9404	0		Ground support and service vehicle registry	Operational behavior, AI support, and coordination
-9423	0		Ground unit lifecycle and state	Operational behavior, AI support, and coordination
-9427	0		Logistics and service behavior	Operational behavior, AI support, and coordination
-9431	0		AI unit autonomy	Operational behavior, AI support, and coordination
-9447	0		COMBAT CLAIM VERIFICATION, EVIDENCE REVIEW, AND DEBRIEF CONFIDENCE	Operational behavior, AI support, and coordination
-9451	0		Separate event, claim, and assessment	Operational behavior, AI support, and coordination
-9462	0		Assessment categories	Operational behavior, AI support, and coordination
-9478	0		Evidence sources	Operational behavior, AI support, and coordination
-9495	0		Scoring and career records	Operational behavior, AI support, and coordination
-9504	0		Campaign and media consequences	Operational behavior, AI support, and coordination
-9518	0		PERSISTENT AIRCRAFT WEATHERING, SERVICE WEAR, AND REPAINT HISTORY	Operational behavior, AI support, and coordination
-9522	0		Appearance state	Operational behavior, AI support, and coordination
-9535	0		Appearance must follow history	Operational behavior, AI support, and coordination
-9544	0		Visual implementation	Operational behavior, AI support, and coordination
-9560	0		FORMAL PILOT, AIRCREW, AND AIRCRAFT CERTIFICATE PRESENTATION	Operational behavior, AI support, and coordination
-9564	0		Pilot and aircrew certificates	Operational behavior, AI support, and coordination
-9578	0		Aircraft and maintenance release documents	Operational behavior, AI support, and coordination
-9591	0		Currency and renewal	Operational behavior, AI support, and coordination
-9608	0		AIRCRAFT DELIVERY, ACCEPTANCE, TRANSFER, AND RETIREMENT CEREMONIES	Operational behavior, AI support, and coordination
-9619	0		Transfers and reassignment	Operational behavior, AI support, and coordination
-9625	0		Retirement and final disposition	Operational behavior, AI support, and coordination
-9643	0		PLAYER PRESENTATION, BRIEFING, AND INFORMATION QUALITY	Operational history, public information, and campaign consequences
-9645	0		Readable status rather than raw simulation noise	Operational history, public information, and campaign consequences
-9648	0		Explain delays and failures	Operational history, public information, and campaign consequences
-9651	0		Decision history	Operational history, public information, and campaign consequences
-9654	0		Briefings and debriefings	Operational history, public information, and campaign consequences
-9657	0		Accessibility and localization	Operational history, public information, and campaign consequences
-9661	0		SQUADRON NOTICE BOARD AND DAILY UNIT BULLETIN	Operational history, public information, and campaign consequences
-9665	0		Board content	Operational history, public information, and campaign consequences
-9679	0		Authorship and delivery	Operational history, public information, and campaign consequences
-9696	0		AIRCRAFT PHOTOGRAPHY, DEPLOYMENT ALBUM, AND VISUAL HISTORY ARCHIVE	Operational history, public information, and campaign consequences
-9700	0		Capture sources	Operational history, public information, and campaign consequences
-9704	0		Metadata and history	Operational history, public information, and campaign consequences
-9715	0		Albums	Operational history, public information, and campaign consequences
-9728	0		Storage and performance — AIRCRAFT PHOTOGRAPHY, DEPLOYMENT ALBUM, AND VISUAL HISTORY ARCHIVE	Operational history, public information, and campaign consequences
-9744	0		CIVILIAN AIRCRAFT DAMAGE, ACCIDENTAL SHOOTDOWNS, AND DELIBERATE ATTACK INCIDENTS	Operational history, public information, and campaign consequences
-9748	0		Distinct aircraft-loss event classes	Operational history, public information, and campaign consequences
-9762	0		How incidents can arise	Operational history, public information, and campaign consequences
-9776	0		Player and AI responsibility	Operational history, public information, and campaign consequences
-9785	0		Incident event record and evidence	Operational history, public information, and campaign consequences
-9802	0		Immediate rescue and emergency response	Operational history, public information, and campaign consequences
-9814	0		Civilian aircraft incident consequences across the campaign	Operational history, public information, and campaign consequences
-9832	0		Investigation, accountability, and compensation	Operational history, public information, and campaign consequences
-9847	0		Presentation and player feedback	Operational history, public information, and campaign consequences
-9862	0		NATIONAL AND LOCAL CIVIL DEFENSE — CONNECTED EMERGENCY READINESS NETWORK	Operational history, public information, and campaign consequences
-9869	0		Institutional structure	Operational history, public information, and campaign consequences
-9875	0		Hazard and warning lifecycle	Operational history, public information, and campaign consequences
-9891	0		Shelter registry and capacity	Operational history, public information, and campaign consequences
-9906	0		Civilian alert channels and public information	Operational history, public information, and campaign consequences
-9914	0		Volunteers, training, and public preparedness	Operational history, public information, and campaign consequences
-9920	0		Evacuation, sheltering, and individual decisions	Operational history, public information, and campaign consequences
-9926	0		Interagency coordination and continuity	Operational history, public information, and campaign consequences
-9932	0		Emergency supplies and mutual aid	Operational history, public information, and campaign consequences
-9938	0		Civil-defense performance and public trust	Operational history, public information, and campaign consequences
+4611	1	military.js (mobilization, draft), people.js (labour, education)	National mobilization, conscription, reserves, order of battle, and force regeneration	Military command, personnel, careers, training, and mobilization
+4618	1	military.js (mobilization, draft), people.js (labour, education)	National draft policy and legal framework	Military command, personnel, careers, training, and mobilization
+4634	1	military.js (mobilization, draft), people.js (labour, education)	Draft activation and government decision	Military command, personnel, careers, training, and mobilization
+4650	1	military.js (mobilization, draft), people.js (labour, education)	Draft announcement and public information	Military command, personnel, careers, training, and mobilization
+4662	0.5	military.js (mobilization, draft), people.js (labour, education)	Individual eligibility and selection	Military command, personnel, careers, training, and mobilization
+4676	1	military.js (mobilization, draft), people.js (labour, education)	Exemptions, deferments, appeals, and alternative service	Military command, personnel, careers, training, and mobilization
+4690	0.5	military.js (mobilization, draft), people.js (labour, education)	Individual responses and consequences	Military command, personnel, careers, training, and mobilization
+4705	1	military.js (mobilization, draft), people.js (labour, education)	Induction, training, and force generation	Military command, personnel, careers, training, and mobilization
+4719	1	military.js (mobilization, draft), people.js (labour, education)	Effects on family, work, education, and the economy	Military command, personnel, careers, training, and mobilization
+4734	1	military.js (mobilization, draft), people.js (labour, education)	Draft resistance, noncompliance, and justice	Military command, personnel, careers, training, and mobilization
+4740	0.5	military.js (mobilization, draft), people.js (labour, education)	Drafts, pre-war tension, and escalation	Military command, personnel, careers, training, and mobilization
+4746	1	military.js (mobilization, draft), people.js (labour, education)	End of service and demobilization	Military command, personnel, careers, training, and mobilization
+4750	0.5	military.js (mobilization, draft), people.js (labour, education)	Player and AI controls	Military command, personnel, careers, training, and mobilization
+4786	1	military.js (mobilization, draft), people.js (labour, education)	Mobilization states	Military command, personnel, careers, training, and mobilization
+4789	1	military.js (mobilization, draft), people.js (labour, education)	Personnel and equipment	Military command, personnel, careers, training, and mobilization
+4792	1	military.js (mobilization, draft), people.js (labour, education)	Industrial and civilian effects	Military command, personnel, careers, training, and mobilization
+4795	0.5	military.js (mobilization, draft), people.js (labour, education)	Legal and political oversight	Military command, personnel, careers, training, and mobilization
+4798	1	military.js (mobilization, draft), people.js (labour, education)	Demobilization	Military command, personnel, careers, training, and mobilization
+4804	1	military.js (mobilization, draft), people.js (labour, education)	Mobilization effects on civilian society, workforce, and national resilience.	Military command, personnel, careers, training, and mobilization
+4806	1	military.js (mobilization, draft), people.js (labour, education)	National mobilization model	Military command, personnel, careers, training, and mobilization
+4810	1	military.js (mobilization, draft), people.js (labour, education)	Conscription and reserve call-ups	Military command, personnel, careers, training, and mobilization
+4814	1	military.js (mobilization, draft), people.js (labour, education)	Workforce competition	Military command, personnel, careers, training, and mobilization
+4818	0.5	military.js (mobilization, draft), people.js (labour, education)	Rationing and public services	Military command, personnel, careers, training, and mobilization
+4822	1	military.js (mobilization, draft), people.js (labour, education)	Labor disputes and public response	Military command, personnel, careers, training, and mobilization
+4826	1	military.js (mobilization, draft), people.js (labour, education)	Education and training disruption	Military command, personnel, careers, training, and mobilization
+4830	1	military.js (mobilization, draft), people.js (labour, education)	Economic resilience and inequality	Military command, personnel, careers, training, and mobilization
+4834	1	military.js (mobilization, draft), people.js (labour, education)	Demobilization and return to civilian life	Military command, personnel, careers, training, and mobilization
+4838	1	military.js (mobilization, draft), people.js (labour, education)	Mobilization acceptance tests	Military command, personnel, careers, training, and mobilization
+4863	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Armed forces, command, personnel, equipment, readiness, and sustainment	Military command, personnel, careers, training, and mobilization
+4865	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	One military enterprise	Military command, personnel, careers, training, and mobilization
+4869	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Unit and order-of-battle authority	Military command, personnel, careers, training, and mobilization
+4873	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Command and tasking	Military command, personnel, careers, training, and mobilization
+4877	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Personnel, career, and mobilization	Military command, personnel, careers, training, and mobilization
+4881	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Training and doctrine	Military command, personnel, careers, training, and mobilization
+4885	0.5	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Equipment and lifecycle	Military command, personnel, careers, training, and mobilization
+4889	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Weapons catalogue and ammunition accounting	Military command, personnel, careers, training, and mobilization
+4893	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Maintenance and readiness	Military command, personnel, careers, training, and mobilization
+4897	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Logistics and supply	Military command, personnel, careers, training, and mobilization
+4901	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Airbase, carrier, and naval operations	Military command, personnel, careers, training, and mobilization
+4905	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Global force and loss accounting	Military command, personnel, careers, training, and mobilization
+4909	1	military.js, orbat.js, forces.js, supply.js, ops.js, census.js, warsortie.js	Integration with the existing flight-combat game	Military command, personnel, careers, training, and mobilization
+4923	1	military.js (training, exercises), learn.js, service.js (schools)	MILITARY TRAINING, DOCTRINE, EXERCISES, AND INSTITUTIONAL LEARNING	Military command, personnel, careers, training, and mobilization
+4928	1	military.js (training, exercises), learn.js, service.js (schools)	Training pipeline	Military command, personnel, careers, training, and mobilization
+4931	1	military.js (training, exercises), learn.js, service.js (schools)	Training capacity	Military command, personnel, careers, training, and mobilization
+4934	1	military.js (training, exercises), learn.js, service.js (schools)	Exercises	Military command, personnel, careers, training, and mobilization
+4937	0.5	military.js (training, exercises), learn.js, service.js (schools)	Doctrine lifecycle	Military command, personnel, careers, training, and mobilization
+4940	1	military.js (training, exercises), learn.js, service.js (schools)	Lessons learned	Military command, personnel, careers, training, and mobilization
+4947	1	service.js (personnel administration), forces.js (roster)	Military personnel records, crew rosters, career management, and continuity	Military command, personnel, careers, training, and mobilization
+4952	0.5	service.js (personnel administration), forces.js (roster)	Personnel record	Military command, personnel, careers, training, and mobilization
+4955	0.5	service.js (personnel administration), forces.js (roster)	Military service career lifecycle — MILITARY PERSONNEL ADMINISTRATION AND CAREER MANAGEMENT	Military command, personnel, careers, training, and mobilization
+4958	1	service.js (personnel administration), forces.js (roster)	Assignment matching	Military command, personnel, careers, training, and mobilization
+4961	1	service.js (personnel administration), forces.js (roster)	Retention and shortages	Military command, personnel, careers, training, and mobilization
+4964	1	service.js (personnel administration), forces.js (roster)	Fair process and records	Military command, personnel, careers, training, and mobilization
+4983	1	deep.js (planning room), aicore.js, military.js	Unified commander mode, player authority, orders, priorities, and delegation	Military command, personnel, careers, training, and mobilization
+5009	1	deep.js (planning room), aicore.js, military.js	Orders, priorities, and delegation.	Military command, personnel, careers, training, and mobilization
+5022	1	deep.js (planning room), aicore.js, military.js	Strategic player control of the wider campaign.	Military command, personnel, careers, training, and mobilization
+5043	1	military.js, service.js (schools), orbat.js	Personnel recruitment, replacement, reinforcement, and reconstitution	Military command, personnel, careers, training, and mobilization
+5047	1	military.js, service.js (schools), orbat.js	Personnel pool	Military command, personnel, careers, training, and mobilization
+5051	1	military.js, service.js (schools), orbat.js	Recruitment and mobilization	Military command, personnel, careers, training, and mobilization
+5055	0.5	military.js, service.js (schools), orbat.js	Replacement and integration	Military command, personnel, careers, training, and mobilization
+5059	0.5	military.js, service.js (schools), orbat.js	Reserve and rotation systems	Military command, personnel, careers, training, and mobilization
+5063	0.5	military.js, service.js (schools), orbat.js	Personnel records and careers	Military command, personnel, careers, training, and mobilization
+5070	1	military.js, service.js (schools), orbat.js	Training facilities	Military command, personnel, careers, training, and mobilization
+5074	1	military.js, service.js (schools), orbat.js	Training activities	Military command, personnel, careers, training, and mobilization
+5078	1	military.js, service.js (schools), orbat.js	Doctrine and organizational learning	Military command, personnel, careers, training, and mobilization
+5082	1	military.js, service.js (schools), orbat.js	Readiness reporting	Military command, personnel, careers, training, and mobilization
+5086	0.5	military.js, service.js (schools), orbat.js	Exercises and diplomatic effects	Military command, personnel, careers, training, and mobilization
+5114	1	military.js (HQ, succession), service.js (HQ types, staff branches)	JOINT COMMAND HEADQUARTERS AND THEATER ORGANIZATION	Military command, personnel, careers, training, and mobilization
+5118	1	military.js (HQ, succession), service.js (HQ types, staff branches)	Headquarters types	Military command, personnel, careers, training, and mobilization
+5122	1	military.js (HQ, succession), service.js (HQ types, staff branches)	Staff roles	Military command, personnel, careers, training, and mobilization
+5126	1	military.js (HQ, succession), service.js (HQ types, staff branches)	Planning and tasking	Military command, personnel, careers, training, and mobilization
+5130	1	military.js (HQ, succession), service.js (HQ types, staff branches)	Command authority and friction	Military command, personnel, careers, training, and mobilization
+5134	1	military.js (HQ, succession), service.js (HQ types, staff branches)	Command succession	Military command, personnel, careers, training, and mobilization
+5139	1	supply.js, service.js (components, repair levels, MTBF)	Equipment readiness, maintenance, ground-force organization, and lifecycle	Equipment condition, maintenance, and lifecycle
+5146	1	supply.js, service.js (components, repair levels, MTBF)	Condition model	Equipment condition, maintenance, and lifecycle
+5149	1	supply.js, service.js (components, repair levels, MTBF)	Maintenance organizations	Equipment condition, maintenance, and lifecycle
+5152	1	supply.js, service.js (components, repair levels, MTBF)	Spare parts	Equipment condition, maintenance, and lifecycle
+5155	1	supply.js, service.js (components, repair levels, MTBF)	Readiness and sortie generation	Equipment condition, maintenance, and lifecycle
+5158	1	supply.js, service.js (components, repair levels, MTBF)	Reliability and records	Equipment condition, maintenance, and lifecycle
+5168	0.5	forces.js (compartments, fires, flooding, repair)	COMPLETE SHIPBOARD DAMAGE-CONTROL SIMULATION	Equipment condition, maintenance, and lifecycle
+5170	1	forces.js (compartments, fires, flooding, repair)	Ships as compartment-based entities	Equipment condition, maintenance, and lifecycle
+5176	0.5	forces.js (compartments, fires, flooding, repair)	Damage propagation and ship condition	Equipment condition, maintenance, and lifecycle
+5182	0.5	forces.js (compartments, fires, flooding, repair)	Damage-control teams	Equipment condition, maintenance, and lifecycle
+5188	1	forces.js (compartments, fires, flooding, repair)	Fire, flooding, electrical failure, and structural incidents	Equipment condition, maintenance, and lifecycle
+5192	0.5	forces.js (compartments, fires, flooding, repair)	Emergency power and degraded operation	Equipment condition, maintenance, and lifecycle
+5196	0.5	forces.js (compartments, fires, flooding, repair)	Crew casualties and medical response	Equipment condition, maintenance, and lifecycle
+5200	0.5	forces.js (compartments, fires, flooding, repair)	Towing, salvage, and repair	Equipment condition, maintenance, and lifecycle
+5204	0.5	forces.js (compartments, fires, flooding, repair)	Ship abandonment and rescue	Equipment condition, maintenance, and lifecycle
+5208	0.5	forces.js (compartments, fires, flooding, repair)	Shipboard acceptance tests	Equipment condition, maintenance, and lifecycle
+5215	1	military.js (base condition), service.js (installations)	Persistent military bases, airbases, squadrons, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
+5219	1	military.js (base condition), service.js (installations)	Airfield registry	Bases, airfields, carriers, and fixed installations
+5222	1	military.js (base condition), service.js (installations)	Capacity	Bases, airfields, carriers, and fixed installations
+5225	1	military.js (base condition), service.js (installations)	Sortie lifecycle	Bases, airfields, carriers, and fixed installations
+5228	1	military.js (base condition), service.js (installations)	Airfield disruption and recovery	Bases, airfields, carriers, and fixed installations
+5231	1	military.js (base condition), service.js (installations)	Ground operations — Airbase, air force, squadron, facility, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
+5234	1	military.js (base condition), service.js (installations)	Dispersal and alternate fields	Bases, airfields, carriers, and fixed installations
+5237	1	military.js (base condition), service.js (installations)	Player integration — Airbase, air force, squadron, facility, servicing, and sortie lifecycle	Bases, airfields, carriers, and fixed installations
+5243	1	military.js (base condition), service.js (installations)	Airbases as persistent military installations.	Bases, airfields, carriers, and fixed installations
+5257	1	military.js (base condition), service.js (installations)	Air force, airbase, squadron, and aircraft lifecycle.	Bases, airfields, carriers, and fixed installations
+5286	1	military.js (base condition), service.js (installations)	Installation identity and classification	Bases, airfields, carriers, and fixed installations
+5302	1	military.js (base condition), service.js (installations)	Persistent facility components	Bases, airfields, carriers, and fixed installations
+5318	1	military.js (base condition), service.js (installations)	Personnel and daily operations	Bases, airfields, carriers, and fixed installations
+5335	1	military.js (base condition), service.js (installations)	Capacity and readiness	Bases, airfields, carriers, and fixed installations
+5349	0.5	military.js (base condition), service.js (installations)	Construction, expansion, and closure	Bases, airfields, carriers, and fixed installations
+5355	0.5	military.js (base condition), service.js (installations)	Security, emergencies, and protection	Bases, airfields, carriers, and fixed installations
+5361	0.5	military.js (base condition), service.js (installations)	Ownership, basing rights, and diplomacy	Bases, airfields, carriers, and fixed installations
+5365	0.5	military.js (base condition), service.js (installations)	Installation history and UI	Bases, airfields, carriers, and fixed installations
+5383	1	forces.js (deck cycle, air wing, sea state), realwar.js	AIRCRAFT CARRIER OPERATIONS AND SHIPBOARD AVIATION	Bases, airfields, carriers, and fixed installations
+5385	1	forces.js (deck cycle, air wing, sea state), realwar.js	Carrier as a moving airbase	Bases, airfields, carriers, and fixed installations
+5388	1	forces.js (deck cycle, air wing, sea state), realwar.js	Flight-deck cycle	Bases, airfields, carriers, and fixed installations
+5391	0.5	forces.js (deck cycle, air wing, sea state), realwar.js	Launch and recovery equipment state	Bases, airfields, carriers, and fixed installations
+5394	1	forces.js (deck cycle, air wing, sea state), realwar.js	Air wing and carrier air group	Bases, airfields, carriers, and fixed installations
+5397	0.5	forces.js (deck cycle, air wing, sea state), realwar.js	Shipboard maintenance and storage	Bases, airfields, carriers, and fixed installations
+5400	1	forces.js (deck cycle, air wing, sea state), realwar.js	Sea state and operational limits	Bases, airfields, carriers, and fixed installations
+5403	0.5	forces.js (deck cycle, air wing, sea state), realwar.js	Carrier emergencies and damage control	Bases, airfields, carriers, and fixed installations
+5406	0.5	forces.js (deck cycle, air wing, sea state), realwar.js	Carrier group coordination	Bases, airfields, carriers, and fixed installations
+5417	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Equipment readiness, maintenance, ground-force organization, and lifecycle	Force structure, national rosters, and equipment catalogues
+5431	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Ground forces and land campaign	Force structure, national rosters, and equipment catalogues
+5449	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Authoritative military roster, platform registry, and country-specific force packages	Force structure, national rosters, and equipment catalogues
+5467	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Ground combat formations	Force structure, national rosters, and equipment catalogues
+5494	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Armored vehicles and direct-fire units	Force structure, national rosters, and equipment catalogues
+5515	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Artillery, rockets, and ground-based fires	Force structure, national rosters, and equipment catalogues
+5532	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Ground-based air defense and missile defense	Force structure, national rosters, and equipment catalogues
+5552	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Combat aircraft and specialist aviation units	Force structure, national rosters, and equipment catalogues
+5579	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Helicopters and rotary-wing formations	Force structure, national rosters, and equipment catalogues
+5594	1	orbat.js, land.js, gfight.js, armor.js, strategic.js, airops.js, deep.js, infantry.js	Uncrewed aircraft, drones, and autonomous systems — unified factional catalogue	Force structure, national rosters, and equipment catalogues
+5610	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	BLUFOR uncrewed aircraft and drone roster.	Force structure, national rosters, and equipment catalogues
+5614	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	United States	Force structure, national rosters, and equipment catalogues
+5616	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Long-endurance and theatre-level ISR	Force structure, national rosters, and equipment catalogues
+5622	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Tactical and small-unit ISR	Force structure, national rosters, and equipment catalogues
+5631	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Experimental or future systems — do not make standard equipment by default	Force structure, national rosters, and equipment catalogues
+5636	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	United Kingdom — uncrewed aircraft	Force structure, national rosters, and equipment catalogues
+5642	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	France	Force structure, national rosters, and equipment catalogues
+5648	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Germany	Force structure, national rosters, and equipment catalogues
+5655	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Italy and other European Bluefor members	Force structure, national rosters, and equipment catalogues
+5661	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Japan — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
+5666	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	South Korea — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
+5672	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Australia and Canada	Force structure, national rosters, and equipment catalogues
+5677	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	REDFOR uncrewed aircraft and drone roster.	Force structure, national rosters, and equipment catalogues
+5679	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	China	Force structure, national rosters, and equipment catalogues
+5681	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	High-altitude, long-endurance, and strategic reconnaissance	Force structure, national rosters, and equipment catalogues
+5687	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Medium-altitude and tactical systems	Force structure, national rosters, and equipment catalogues
+5696	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Carrier and maritime support	Force structure, national rosters, and equipment catalogues
+5701	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Russia — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
+5703	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Reconnaissance and surveillance	Force structure, national rosters, and equipment catalogues
+5713	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Loitering and one-way uncrewed systems	Force structure, national rosters, and equipment catalogues
+5718	0.5	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Special or future systems	Force structure, national rosters, and equipment catalogues
+5722	1	natdata.js (UAVR/UAVA per country), forces.js (uncrewed)	Redfor partner countries — Uncrewed aircraft, drones, and autonomous systems — unified factional ca	Force structure, national rosters, and equipment catalogues
+5728	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Naval combatants and fleets	Force structure, national rosters, and equipment catalogues
+5757	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Strategic missile, early-warning, and national defense units	Force structure, national rosters, and equipment catalogues
+5773	0.5	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Special operations, intelligence, and security formations	Force structure, national rosters, and equipment catalogues
+5792	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Logistics, transport, and sustainment units	Force structure, national rosters, and equipment catalogues
+5814	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Engineering, infrastructure, and environmental support units	Force structure, national rosters, and equipment catalogues
+5834	0.5	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Medical and personnel-support units	Force structure, national rosters, and equipment catalogues
+5849	0.5	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Civil protection, internal security, and humanitarian units	Force structure, national rosters, and equipment catalogues
+5868	0.5	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Irregular forces, militias, and non-state organizations	Force structure, national rosters, and equipment catalogues
+5882	0.5	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Command, communications, and support infrastructure units	Force structure, national rosters, and equipment catalogues
+5898	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Fixed installations and map-based military assets	Force structure, national rosters, and equipment catalogues
+5916	1	naval.js, strategic.js, service.js (SOF), ops.js, targets.js	Suggested initial implementation roster	Force structure, national rosters, and equipment catalogues
+5935	0.5	natdata.js, data/nat/units.txt (realwar.js), forces.js	Military unit roster data schema and balance requirements	Force structure, national rosters, and equipment catalogues
+5957	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	Factional named equipment and unit rosters (BLUFOR and REDFOR)	Force structure, national rosters, and equipment catalogues
+5959	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	Force-side content package: BLUEFOR.	Force structure, national rosters, and equipment catalogues
+5963	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	REDFOR named equipment and unit roster requirements.	Force structure, national rosters, and equipment catalogues
+5965	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	Force-side content package: REDFOR.	Force structure, national rosters, and equipment catalogues
+5970	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	United States — ground forces	Force structure, national rosters, and equipment catalogues
+6012	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	United States — aircraft and aviation units	Force structure, national rosters, and equipment catalogues
+6041	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	United States — naval forces	Force structure, national rosters, and equipment catalogues
+6061	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	Russia — ground forces	Force structure, national rosters, and equipment catalogues
+6079	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	Russia — naval forces	Force structure, national rosters, and equipment catalogues
+6097	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	China — ground forces	Force structure, national rosters, and equipment catalogues
+6115	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	China — naval forces	Force structure, national rosters, and equipment catalogues
+6137	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	NATIONAL FORMATIONS, UNIT NAMES, AND FORCE GENERATION	Force structure, national rosters, and equipment catalogues
+6151	0.5	natdata.js, data/nat/units.txt (realwar.js), forces.js	EQUIPMENT DATA RULES — MAKE THE ROSTER USEFUL AND ACCURATE	Force structure, national rosters, and equipment catalogues
+6171	1	natdata.js, data/nat/units.txt (realwar.js), forces.js	EQUIPMENT, VEHICLE, AIRCRAFT, SHIP, AND WEAPONS-PLATFORM COUNTERS	Force structure, national rosters, and equipment catalogues
+6208	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	CIVILIAN AIRCRAFT MODEL ROSTER AND OPERATOR FLEETS	Force structure, national rosters, and equipment catalogues
+6212	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Civilian aircraft roster data and operator requirements	Force structure, national rosters, and equipment catalogues
+6226	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Mainline passenger airliners	Force structure, national rosters, and equipment catalogues
+6230	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Airbus:	Force structure, national rosters, and equipment catalogues
+6239	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Boeing:	Force structure, national rosters, and equipment catalogues
+6250	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Legacy and other mainline aircraft:	Force structure, national rosters, and equipment catalogues
+6261	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Regional passenger aircraft	Force structure, national rosters, and equipment catalogues
+6278	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Civilian cargo and freight aircraft	Force structure, national rosters, and equipment catalogues
+6293	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Business jets, private aviation, and general aviation	Force structure, national rosters, and equipment catalogues
+6297	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Business jets:	Force structure, national rosters, and equipment catalogues
+6307	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Piston and light aircraft:	Force structure, national rosters, and equipment catalogues
+6317	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Turboprop and utility aircraft:	Force structure, national rosters, and equipment catalogues
+6326	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Medical, humanitarian, public-service, and special-purpose aircraft	Force structure, national rosters, and equipment catalogues
+6340	1	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Airlines, owners, and believable fleet composition	Force structure, national rosters, and equipment catalogues
+6357	0.5	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Civilian aircraft visuals and player recognition	Force structure, national rosters, and equipment catalogues
+6363	0.5	service.js (civil aviation roster, fictional airlines), turncoat.js (airliners)	Roster validation and scenario controls	Force structure, national rosters, and equipment catalogues
+6375	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Unified weapon database, infantry catalogue, national coverage, and logistics integration	Force structure, national rosters, and equipment catalogues
+6377	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	One authoritative weapon record	Force structure, national rosters, and equipment catalogues
+6395	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Distinguish weapons from platforms	Force structure, national rosters, and equipment catalogues
+6401	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Finite ammunition and national stockpiles	Force structure, national rosters, and equipment catalogues
+6415	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Country-specific weapon behavior without national stereotypes	Force structure, national rosters, and equipment catalogues
+6419	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Integration with existing systems — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
+6447	0.5	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Country-specific weapon catalogue coverage and source validation.	Force structure, national rosters, and equipment catalogues
+6449	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	What “all weapons” means in this campaign	Force structure, national rosters, and equipment catalogues
+6468	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Country ownership and weapon provenance	Force structure, national rosters, and equipment catalogues
+6484	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Safe game-data representation	Force structure, national rosters, and equipment catalogues
+6506	0.5	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	National weapons coverage roadmap	Force structure, national rosters, and equipment catalogues
+6510	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	South Asia — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
+6512	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	India	Force structure, national rosters, and equipment catalogues
+6519	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Pakistan	Force structure, national rosters, and equipment catalogues
+6525	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Bangladesh, Sri Lanka, Nepal, Bhutan, Maldives, and Afghanistan	Force structure, national rosters, and equipment catalogues
+6530	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	East and Southeast Asia	Force structure, national rosters, and equipment catalogues
+6532	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Japan	Force structure, national rosters, and equipment catalogues
+6539	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	South Korea	Force structure, national rosters, and equipment catalogues
+6546	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Taiwan	Force structure, national rosters, and equipment catalogues
+6553	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	China	Force structure, national rosters, and equipment catalogues
+6557	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	North Korea	Force structure, national rosters, and equipment catalogues
+6561	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Vietnam, Thailand, Indonesia, Malaysia, Singapore, Philippines, Myanmar, Cambodia, Laos, Brunei, and Timor-Leste	Force structure, national rosters, and equipment catalogues
+6566	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Middle East and Caucasus — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
+6568	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Israel	Force structure, national rosters, and equipment catalogues
+6575	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Türkiye	Force structure, national rosters, and equipment catalogues
+6582	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Iran	Force structure, national rosters, and equipment catalogues
+6590	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Saudi Arabia, United Arab Emirates, Qatar, Kuwait, Bahrain, Oman, Iraq, Jordan, Lebanon, Syria, Armenia, Azerbaijan, and Georgia	Force structure, national rosters, and equipment catalogues
+6597	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Europe	Force structure, national rosters, and equipment catalogues
+6599	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Ukraine	Force structure, national rosters, and equipment catalogues
+6607	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Sweden	Force structure, national rosters, and equipment catalogues
+6613	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Norway	Force structure, national rosters, and equipment catalogues
+6619	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Finland	Force structure, national rosters, and equipment catalogues
+6625	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Poland	Force structure, national rosters, and equipment catalogues
+6637	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Africa — weapon database, national coverage, game balance, and campaign logistics	Force structure, national rosters, and equipment catalogues
+6639	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Egypt	Force structure, national rosters, and equipment catalogues
+6650	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	North America, Latin America, and Oceania	Force structure, national rosters, and equipment catalogues
+6652	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Canada	Force structure, national rosters, and equipment catalogues
+6656	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Mexico	Force structure, national rosters, and equipment catalogues
+6659	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Brazil	Force structure, national rosters, and equipment catalogues
+6665	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Argentina, Chile, Colombia, Peru, Venezuela, Ecuador, Bolivia, Paraguay, Uruguay, and other Latin American states	Force structure, national rosters, and equipment catalogues
+6670	1	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Australia and New Zealand	Force structure, national rosters, and equipment catalogues
+6677	0.5	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Countries with small or no standing armed forces	Force structure, national rosters, and equipment catalogues
+6681	0.5	natdata.js (126 countries x 33 classes), forces.js CAT, census.js (munitions)	Country inventory completeness and source validation	Force structure, national rosters, and equipment catalogues
+6702	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Required infantry weapon classes	Force structure, national rosters, and equipment catalogues
+6724	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Infantry weapon data fields	Force structure, national rosters, and equipment catalogues
+6744	0.5	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Infantry weapon identity and variants	Force structure, national rosters, and equipment catalogues
+6755	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Country-specific infantry weapon reference packages.	Force structure, national rosters, and equipment catalogues
+6759	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	United States and Canada	Force structure, national rosters, and equipment catalogues
+6761	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	United States	Force structure, national rosters, and equipment catalogues
+6773	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Canada	Force structure, national rosters, and equipment catalogues
+6781	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	United Kingdom, Ireland, and Western Europe	Force structure, national rosters, and equipment catalogues
+6783	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	United Kingdom	Force structure, national rosters, and equipment catalogues
+6791	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	France	Force structure, national rosters, and equipment catalogues
+6799	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Germany	Force structure, national rosters, and equipment catalogues
+6807	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Italy	Force structure, national rosters, and equipment catalogues
+6813	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Spain	Force structure, national rosters, and equipment catalogues
+6819	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Netherlands, Belgium, Luxembourg	Force structure, national rosters, and equipment catalogues
+6824	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Switzerland, Austria, and other central European states	Force structure, national rosters, and equipment catalogues
+6834	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Nordic and Baltic states	Force structure, national rosters, and equipment catalogues
+6836	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Sweden	Force structure, national rosters, and equipment catalogues
+6843	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Norway	Force structure, national rosters, and equipment catalogues
+6850	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Finland	Force structure, national rosters, and equipment catalogues
+6857	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Denmark, Estonia, Latvia, and Lithuania	Force structure, national rosters, and equipment catalogues
+6863	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Russia, Ukraine, Belarus, and other eastern European states	Force structure, national rosters, and equipment catalogues
+6865	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Russia	Force structure, national rosters, and equipment catalogues
+6875	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Ukraine	Force structure, national rosters, and equipment catalogues
+6882	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Belarus	Force structure, national rosters, and equipment catalogues
+6886	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Moldova and other eastern European states	Force structure, national rosters, and equipment catalogues
+6890	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	South Asia — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
+6892	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	India	Force structure, national rosters, and equipment catalogues
+6900	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Pakistan	Force structure, national rosters, and equipment catalogues
+6914	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	China, Japan, the Koreas, and Taiwan	Force structure, national rosters, and equipment catalogues
+6916	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	China	Force structure, national rosters, and equipment catalogues
+6925	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Japan	Force structure, national rosters, and equipment catalogues
+6933	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	South Korea	Force structure, national rosters, and equipment catalogues
+6941	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	North Korea	Force structure, national rosters, and equipment catalogues
+6946	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Taiwan	Force structure, national rosters, and equipment catalogues
+6953	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Southeast Asia	Force structure, national rosters, and equipment catalogues
+6955	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Singapore	Force structure, national rosters, and equipment catalogues
+6962	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Indonesia	Force structure, national rosters, and equipment catalogues
+6969	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Malaysia	Force structure, national rosters, and equipment catalogues
+6975	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Thailand	Force structure, national rosters, and equipment catalogues
+6981	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Philippines	Force structure, national rosters, and equipment catalogues
+6987	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Vietnam	Force structure, national rosters, and equipment catalogues
+6993	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Myanmar, Cambodia, Laos, Brunei, and Timor-Leste	Force structure, national rosters, and equipment catalogues
+6998	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Middle East and Caucasus — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
+7000	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Israel	Force structure, national rosters, and equipment catalogues
+7008	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Türkiye	Force structure, national rosters, and equipment catalogues
+7016	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Iran	Force structure, national rosters, and equipment catalogues
+7024	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Saudi Arabia, UAE, Qatar, Kuwait, Bahrain, Oman, Iraq, Jordan, Lebanon, Syria	Force structure, national rosters, and equipment catalogues
+7030	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Armenia, Azerbaijan, and Georgia	Force structure, national rosters, and equipment catalogues
+7035	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Africa — Infantry weapons: common classification, national packages, and inventor	Force structure, national rosters, and equipment catalogues
+7037	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Egypt	Force structure, national rosters, and equipment catalogues
+7041	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Algeria	Force structure, national rosters, and equipment catalogues
+7044	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Morocco and Tunisia	Force structure, national rosters, and equipment catalogues
+7048	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	South Africa	Force structure, national rosters, and equipment catalogues
+7055	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Nigeria, Kenya, Ethiopia, Angola, Uganda, Ghana, Senegal, Sudan, South Sudan, Somalia, and other African states	Force structure, national rosters, and equipment catalogues
+7060	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Latin America and the Caribbean	Force structure, national rosters, and equipment catalogues
+7062	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Brazil	Force structure, national rosters, and equipment catalogues
+7069	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Mexico	Force structure, national rosters, and equipment catalogues
+7076	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Argentina	Force structure, national rosters, and equipment catalogues
+7082	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Chile	Force structure, national rosters, and equipment catalogues
+7088	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Colombia	Force structure, national rosters, and equipment catalogues
+7094	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Peru, Venezuela, Ecuador, Bolivia, Paraguay, Uruguay, and other Caribbean states	Force structure, national rosters, and equipment catalogues
+7099	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Oceania	Force structure, national rosters, and equipment catalogues
+7101	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Australia	Force structure, national rosters, and equipment catalogues
+7108	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	New Zealand	Force structure, national rosters, and equipment catalogues
+7115	1	natdata.js RIFLE/MANPADS/ATGM + service.js infantry package by tradition, infantry.js weapons	Pacific island states	Force structure, national rosters, and equipment catalogues
+7119	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Ground-based air defense, radar command, counter-UAS, and surface-to-air missile catalogue	Force structure, national rosters, and equipment catalogues
+7123	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	United States — ground-based air defense	Force structure, national rosters, and equipment catalogues
+7136	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	United Kingdom — ground-based air defense	Force structure, national rosters, and equipment catalogues
+7144	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	France and Italy	Force structure, national rosters, and equipment catalogues
+7150	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Germany and other European NATO members	Force structure, national rosters, and equipment catalogues
+7165	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Poland and Eastern/Northern Europe	Force structure, national rosters, and equipment catalogues
+7175	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Japan — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
+7184	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	South Korea — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
+7192	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Optional Bluefor partner: Israel	Force structure, national rosters, and equipment catalogues
+7201	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	REDFOR ground-based air-defense and SAM roster.	Force structure, national rosters, and equipment catalogues
+7203	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Russia — ground-based air defense	Force structure, national rosters, and equipment catalogues
+7204	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Long-range and strategic air defense	Force structure, national rosters, and equipment catalogues
+7211	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Medium- and short-range systems	Force structure, national rosters, and equipment catalogues
+7225	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	China — ground-based air defense	Force structure, national rosters, and equipment catalogues
+7226	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Long- and medium-range systems	Force structure, national rosters, and equipment catalogues
+7233	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Short-range and point-defense systems	Force structure, national rosters, and equipment catalogues
+7243	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Redfor partner countries — Ground-based air defense, radar command, counter-UAS, and surface-to-air	Force structure, national rosters, and equipment catalogues
+7248	0.5	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Air-defense radar, command, and counter-UAS support units.	Force structure, national rosters, and equipment catalogues
+7252	0.5	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Bluefor sensor and command examples	Force structure, national rosters, and equipment catalogues
+7267	0.5	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Redfor sensor and command examples	Force structure, national rosters, and equipment catalogues
+7278	1	natdata.js (LRSAM/MRSAM/SHORAD), service.js (counter-drone), strategic.js	Counter-UAS and point-defense classes	Force structure, national rosters, and equipment catalogues
+7290	1	deep.js (support aviation)	SUPPORT AVIATION AS PERSISTENT CAMPAIGN ENTITIES	Force structure, national rosters, and equipment catalogues
+7294	1	deep.js (support aviation)	Support aircraft categories	Force structure, national rosters, and equipment catalogues
+7311	1	deep.js (support aviation)	Persistent operational lifecycle	Force structure, national rosters, and equipment catalogues
+7329	1	deep.js (support aviation)	AWACS / AEW&C rework	Force structure, national rosters, and equipment catalogues
+7342	1	deep.js (support aviation)	Tanker operations rework	Force structure, national rosters, and equipment catalogues
+7354	1	deep.js (support aviation)	Transport and cargo operations	Force structure, national rosters, and equipment catalogues
+7362	1	deep.js (support aviation)	Reconnaissance and uncrewed aviation	Force structure, national rosters, and equipment catalogues
+7366	0.5	deep.js (support aviation)	Support-aircraft acceptance tests	Force structure, national rosters, and equipment catalogues
+7381	1	naval.js, sea2.js	NAVAL TASK FORCE, FLEET READINESS, AND MARITIME OPERATIONS	Operations, formations, and force employment
+7386	1	naval.js, sea2.js	Fleet registry	Operations, formations, and force employment
+7389	1	naval.js, sea2.js	Readiness	Operations, formations, and force employment
+7392	1	naval.js, sea2.js	Deployment lifecycle	Operations, formations, and force employment
+7395	0.5	naval.js, sea2.js	Replenishment and logistics	Operations, formations, and force employment
+7398	0.5	naval.js, sea2.js	Fleet coordination	Operations, formations, and force employment
+7405	1	naval.js, sea2.js	Naval warfare and coastal operations	Operations, formations, and force employment
+7417	0.5	service.js (SOF units by country), world2.js	Special operations, infiltration, sabotage, and irregular warfare	Operations, formations, and force employment
+7431	1	service.js (SOF units by country), world2.js	United Kingdom	Operations, formations, and force employment
+7445	1	service.js (SOF units by country), world2.js	France	Operations, formations, and force employment
+7460	1	service.js (SOF units by country), world2.js	Germany	Operations, formations, and force employment
+7473	1	service.js (SOF units by country), world2.js	Poland and Central/Eastern European NATO forces	Operations, formations, and force employment
+7484	1	service.js (SOF units by country), world2.js	Nordic Allies	Operations, formations, and force employment
+7492	1	service.js (SOF units by country), world2.js	Canada and close Bluefor partners in the Indo-Pacific	Operations, formations, and force employment
+7501	1	service.js (SOF units by country), world2.js	Scenario-dependent Redfor partners and aligned states	Operations, formations, and force employment
+7505	1	service.js (SOF units by country), world2.js	Belarus — possible Russian-aligned participant	Operations, formations, and force employment
+7510	1	service.js (SOF units by country), world2.js	Iran — possible independent partner, co-belligerent, or neutral actor	Operations, formations, and force employment
+7518	1	service.js (SOF units by country), world2.js	North Korea — possible independent participant or co-belligerent	Operations, formations, and force employment
+7525	1	service.js (SOF units by country), world2.js	Other countries	Operations, formations, and force employment
+7529	1	service.js (SOF units by country), world2.js	Movement and maneuver	Operations, formations, and force employment
+7542	1	service.js (UGV/USV), forces.js CAT	UNCREWED GROUND AND MARITIME SYSTEMS	Operations, formations, and force employment
+7544	1	service.js (UGV/USV), forces.js CAT	Uncrewed ground vehicles	Operations, formations, and force employment
+7554	1	service.js (UGV/USV), forces.js CAT	Uncrewed maritime systems	Operations, formations, and force employment
+7559	1	csar.js, infantry.js (downed, medevac)	PILOT DOWN, SEARCH AND RESCUE, COMBAT SEARCH AND RESCUE, AND PLAYER PILOT RECOVERY	Operations, formations, and force employment
+7563	1	csar.js, infantry.js (downed, medevac)	Pilot identity and downed state	Operations, formations, and force employment
+7571	0.5	csar.js, infantry.js (downed, medevac)	Playable player-pilot survival mode	Operations, formations, and force employment
+7582	1	csar.js, infantry.js (downed, medevac)	AI pilot survival behavior	Operations, formations, and force employment
+7589	1	csar.js, infantry.js (downed, medevac)	Rescue request and mission generation	Operations, formations, and force employment
+7599	0.5	csar.js, infantry.js (downed, medevac)	Search information and campaign intelligence	Operations, formations, and force employment
+7607	1	csar.js, infantry.js (downed, medevac)	Rescue team and extraction behavior	Operations, formations, and force employment
+7616	1	csar.js, infantry.js (downed, medevac)	Capture, escape, prisoner exchange, and repatriation	Operations, formations, and force employment
+7624	0.5	csar.js, infantry.js (downed, medevac)	Player pilot recovery and squadron consequences	Operations, formations, and force employment
+7633	1	csar.js, infantry.js (downed, medevac)	News, morale, and campaign integration	Operations, formations, and force employment
+7641	1	military.js (hazards), service.js (EOD)	GROUND COMBAT AS A PERSISTENT COMBINED-ARMS SYSTEM	Operations, formations, and force employment
+7655	1	military.js (hazards), service.js (EOD)	EXPLOSIVE ORDNANCE DISPOSAL AND POST-BATTLE HAZARDS	Operations, formations, and force employment
+7659	1	military.js (hazards), service.js (EOD)	Hazard categories — EXPLOSIVE ORDNANCE DISPOSAL AND POST-BATTLE HAZARDS	Operations, formations, and force employment
+7663	1	military.js (hazards), service.js (EOD)	EOD and clearance units	Operations, formations, and force employment
+7667	1	military.js (hazards), service.js (EOD)	Persistent effects	Operations, formations, and force employment
+7671	1	military.js (hazards), service.js (EOD)	Clearance missions	Operations, formations, and force employment
+7675	1	military.js (hazards), service.js (EOD)	Safety and abstraction	Operations, formations, and force employment
+7680	1	infantry.js, land.js	ADVANCED INFANTRY AND GROUND-LEVEL SIMULATION	Operations, formations, and force employment
+7682	1	infantry.js, land.js	Ground forces as persistent organizations	Operations, formations, and force employment
+7695	1	infantry.js, land.js	Personnel roles and qualifications	Operations, formations, and force employment
+7701	1	infantry.js, land.js	Ground movement and formation behavior	Operations, formations, and force employment
+7714	1	infantry.js, land.js	Suppression, stress, cohesion, and morale	Operations, formations, and force employment
+7720	1	infantry.js, land.js	Ground defenses and field fortifications	Operations, formations, and force employment
+7726	1	infantry.js, land.js	Urban and interior spaces	Operations, formations, and force employment
+7732	1	infantry.js, land.js	Ground vehicles, crews, and recovery	Operations, formations, and force employment
+7738	1	infantry.js, land.js	Infantry medical support and evacuation	Operations, formations, and force employment
+7742	0.5	infantry.js, land.js	Ground-unit identity and human continuity	Operations, formations, and force employment
+7746	1	infantry.js, land.js	Ground AI acceptance requirements	Operations, formations, and force employment
+7753	1	service.js (engineering projects), military.js, infantry.js (engineers)	BATTLEFIELD ENGINEERING AND INFRASTRUCTURE CONSTRUCTION	Operations, formations, and force employment
+7755	1	service.js (engineering projects), military.js, infantry.js (engineers)	Engineering as a persistent campaign function	Operations, formations, and force employment
+7759	1	service.js (engineering projects), military.js, infantry.js (engineers)	Engineering organizations	Operations, formations, and force employment
+7763	1	service.js (engineering projects), military.js, infantry.js (engineers)	Projects and material dependencies	Operations, formations, and force employment
+7767	1	service.js (engineering projects), military.js, infantry.js (engineers)	Infrastructure types	Operations, formations, and force employment
+7771	1	service.js (engineering projects), military.js, infantry.js (engineers)	Temporary and permanent facilities	Operations, formations, and force employment
+7775	1	service.js (engineering projects), military.js, infantry.js (engineers)	Inspection and maintenance	Operations, formations, and force employment
+7779	1	service.js (engineering projects), military.js, infantry.js (engineers)	Civilian-military engineering coordination	Operations, formations, and force employment
+7783	1	service.js (engineering projects), military.js, infantry.js (engineers)	Engineering mission generation	Operations, formations, and force employment
+7787	0.5	service.js (engineering projects), military.js, infantry.js (engineers)	Engineering acceptance tests	Operations, formations, and force employment
+7794	1	orbat.js, land.js	FORMATION SURVIVAL, UNIT ELIMINATION, AND ORDER OF BATTLE	Operations, formations, and force employment
+7818	0.5	orbat.js, land.js	Unit-strength display examples	Operations, formations, and force employment
+7822	0.5	orbat.js, land.js	Example ground formation	Operations, formations, and force employment
+7830	0.5	orbat.js, land.js	Example air squadron	Operations, formations, and force employment
+7836	0.5	orbat.js, land.js	Example naval task group	Operations, formations, and force employment
+7844	1	forces.js (roster, wingman)	SQUADRON CONTINUITY, WINGMAN RELATIONSHIPS, AND PILOT SOCIAL HISTORY	Operations, formations, and force employment
+7848	1	forces.js (roster, wingman)	Persistent squadron roster	Operations, formations, and force employment
+7852	1	forces.js (roster, wingman)	Stable wingman assignments	Operations, formations, and force employment
+7860	0.5	forces.js (roster, wingman)	Relationships and trust	Operations, formations, and force employment
+7864	0.5	forces.js (roster, wingman)	Operational effects — SQUADRON CONTINUITY, WINGMAN RELATIONSHIPS, AND PILOT SOCIAL HISTORY	Operations, formations, and force employment
+7876	0.5	forces.js (roster, wingman)	Squadron culture and identity	Operations, formations, and force employment
+7880	0.5	forces.js (roster, wingman)	Dialogue and memory	Operations, formations, and force employment
+7884	0.5	forces.js (roster, wingman)	Personnel wellbeing and privacy	Operations, formations, and force employment
+7898	1	service.js (ground crew contributions, commendations)	GROUND-CREW CONTRIBUTION, RECOGNITION, AND SERVICE RECORDS	Operations, formations, and force employment
+7902	1	service.js (ground crew contributions, commendations)	Contributions to record	Operations, formations, and force employment
+7914	0.5	service.js (ground crew contributions, commendations)	Fair evaluation	Operations, formations, and force employment
+7921	1	service.js (ground crew contributions, commendations)	Recognition and career history	Operations, formations, and force employment
+7934	1	forces.js (infantry issue), infantry.js (kits)	Infantry unit issue, loadouts, and battlefield inventory	Operations, formations, and force employment
+7936	1	forces.js (infantry issue), infantry.js (kits)	Infantry organization and issue profiles	Operations, formations, and force employment
+7957	1	forces.js (infantry issue), infantry.js (kits)	Individual and unit inventory	Operations, formations, and force employment
+7968	0.5	forces.js (infantry issue), infantry.js (kits)	Training, qualification, and familiarity	Operations, formations, and force employment
+7981	1	forces.js (infantry issue), infantry.js (kits)	Infantry weapons and logistics	Operations, formations, and force employment
+7992	0.5	forces.js (infantry issue), infantry.js (kits)	Civilian and law-enforcement weapon separation	Operations, formations, and force employment
+8001	1	military.js, leaders.js, aicore.js	Military command, leadership, and organizational hierarchy	Operations, formations, and force employment
+8003	1	military.js, leaders.js, aicore.js	Purpose and design principles — Military command, leadership, and organizational hierarchy	Operations, formations, and force employment
+8011	1	military.js, leaders.js, aicore.js	Organizational model	Operations, formations, and force employment
+8031	1	military.js, leaders.js, aicore.js	Command relationships and authority	Operations, formations, and force employment
+8049	1	military.js, leaders.js, aicore.js	Persistent commanders and staff	Operations, formations, and force employment
+8072	1	military.js, leaders.js, aicore.js	Orders and command intent	Operations, formations, and force employment
+8092	1	military.js, leaders.js, aicore.js	Communications delay and command friction	Operations, formations, and force employment
+8098	1	military.js, leaders.js, aicore.js	Cohesion, readiness, and command performance	Operations, formations, and force employment
+8116	1	military.js, leaders.js, aicore.js	Integration and user interface	Operations, formations, and force employment
+8130	0.5	military.js, leaders.js, aicore.js	Persistence, multiplayer, and performance	Operations, formations, and force employment
+8150	1	ops.js, supply.js, world3.js	Logistics, economy, industry, and resources	Logistics, supply, sustainment, procurement, and support
+8173	1	ops.js, supply.js, world3.js	Ground logistics and recovery behavior	Logistics, supply, sustainment, procurement, and support
+8183	0.5	ops.js, supply.js, world3.js	GROUND SUPPORT, LOGISTICS, ENGINEERING, MEDICAL, AND RECOVERY VEHICLES	Logistics, supply, sustainment, procurement, and support
+8187	0.5	ops.js, supply.js, world3.js	Bluefor examples	Logistics, supply, sustainment, procurement, and support
+8207	0.5	ops.js, supply.js, world3.js	Redfor examples	Logistics, supply, sustainment, procurement, and support
+8221	0.5	ops.js, supply.js, world3.js	Support unit behavior	Logistics, supply, sustainment, procurement, and support
+8230	0.5	naval.js, ops.js, military.js (munitions), census.js	NAVAL SUPPORT AND LOGISTICS UNITS THAT THE CAMPAIGN NEEDS	Logistics, supply, sustainment, procurement, and support
+8259	1	naval.js, ops.js, military.js (munitions), census.js	NAVAL OPERATIONS, PORTS, AND MARITIME LOGISTICS	Logistics, supply, sustainment, procurement, and support
+8273	1	naval.js, ops.js, military.js (munitions), census.js	LOGISTICS AS A NETWORK WITH CAPACITY, BOTTLENECKS, AND PRIORITIES	Logistics, supply, sustainment, procurement, and support
+8290	1	naval.js, ops.js, military.js (munitions), census.js	FUEL DISTRIBUTION TO MILITARY FORCES	Logistics, supply, sustainment, procurement, and support
+8305	1	naval.js, ops.js, military.js (munitions), census.js	AMMUNITION, ORDNANCE AND WEAPONS ECONOMY	Logistics, supply, sustainment, procurement, and support
+8309	1	naval.js, ops.js, military.js (munitions), census.js	Ammunition classes	Logistics, supply, sustainment, procurement, and support
+8329	1	naval.js, ops.js, military.js (munitions), census.js	Production and manufacturing	Logistics, supply, sustainment, procurement, and support
+8335	1	naval.js, ops.js, military.js (munitions), census.js	Stockpiles and distribution	Logistics, supply, sustainment, procurement, and support
+8341	1	naval.js, ops.js, military.js (munitions), census.js	Allocation and scarcity	Logistics, supply, sustainment, procurement, and support
+8347	0.5	naval.js, ops.js, military.js (munitions), census.js	Quality, compatibility and storage	Logistics, supply, sustainment, procurement, and support
+8351	1	naval.js, ops.js, military.js (munitions), census.js	Rearming gameplay	Logistics, supply, sustainment, procurement, and support
+8355	1	naval.js, ops.js, military.js (munitions), census.js	AI behavior and campaign consequences	Logistics, supply, sustainment, procurement, and support
+8362	1	forces.js, economy.js, service.js (procurement)	DEFENSE INDUSTRY, RAW MATERIALS AND PROCUREMENT	Logistics, supply, sustainment, procurement, and support
+8366	1	forces.js, economy.js, service.js (procurement)	Industrial ecosystem	Logistics, supply, sustainment, procurement, and support
+8370	1	forces.js, economy.js, service.js (procurement)	Procurement, production, and contracts	Logistics, supply, sustainment, procurement, and support
+8374	1	forces.js, economy.js, service.js (procurement)	Industry workforce	Logistics, supply, sustainment, procurement, and support
+8378	1	forces.js, economy.js, service.js (procurement)	Exports and international supply	Logistics, supply, sustainment, procurement, and support
+8382	1	forces.js, economy.js, service.js (procurement)	Industrial damage and recovery	Logistics, supply, sustainment, procurement, and support
+8387	1	forces.js, economy.js, service.js (procurement)	DEFENSE PROCUREMENT, INDUSTRIAL POLICY AND EXPORTS	Logistics, supply, sustainment, procurement, and support
+8396	1	forces.js, economy.js, service.js (procurement)	SHARED ECONOMY, LOGISTICS AND CIVILIAN IMPACT INTEGRATION	Logistics, supply, sustainment, procurement, and support
+8417	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Airbase as an operating organization	Logistics, supply, sustainment, procurement, and support
+8420	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Aircraft parking and ground handling	Logistics, supply, sustainment, procurement, and support
+8425	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Ground crews and shift schedules	Logistics, supply, sustainment, procurement, and support
+8428	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Turnaround and sortie generation	Logistics, supply, sustainment, procurement, and support
+8431	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Runway and airfield condition	Logistics, supply, sustainment, procurement, and support
+8434	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Base services and emergency response	Logistics, supply, sustainment, procurement, and support
+8437	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Weather preparation and seasonal operations	Logistics, supply, sustainment, procurement, and support
+8440	1	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Alert posture and quick-reaction readiness	Logistics, supply, sustainment, procurement, and support
+8443	0.5	service.js (installations: shifts, parking, turnaround, services, weather, QRA, commander)	Airbase command and local personalities	Logistics, supply, sustainment, procurement, and support
+8455	1	service.js (components)	SPARE PARTS, COMPONENT HEALTH, AND DEPOT-LEVEL MAINTENANCE ECONOMY	Logistics, supply, sustainment, procurement, and support
+8457	1	service.js (components)	Component-level abstraction	Logistics, supply, sustainment, procurement, and support
+8460	1	service.js (components)	Component condition and service life	Logistics, supply, sustainment, procurement, and support
+8463	1	service.js (components)	Repair levels	Logistics, supply, sustainment, procurement, and support
+8466	0.5	service.js (components)	Spare-parts catalogs and compatibility	Logistics, supply, sustainment, procurement, and support
+8469	1	service.js (components)	Cannibalization and stored components	Logistics, supply, sustainment, procurement, and support
+8472	1	service.js (components)	Maintenance workforce and qualifications	Logistics, supply, sustainment, procurement, and support
+8475	1	service.js (components)	Repair priorities and command decisions	Logistics, supply, sustainment, procurement, and support
+8478	1	service.js (components)	Maintenance data and reliability learning	Logistics, supply, sustainment, procurement, and support
+8489	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	INTERNATIONAL ARMS TRADE, FOREIGN MILITARY ASSISTANCE, AND PROCUREMENT	Logistics, supply, sustainment, procurement, and support
+8491	0.5	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	National procurement profiles	Logistics, supply, sustainment, procurement, and support
+8495	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Arms purchase and transfer agreements	Logistics, supply, sustainment, procurement, and support
+8499	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Delivery and acceptance	Logistics, supply, sustainment, procurement, and support
+8503	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Export controls and end-use conditions	Logistics, supply, sustainment, procurement, and support
+8507	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Training and support packages	Logistics, supply, sustainment, procurement, and support
+8511	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Coalition donations and burden sharing	Logistics, supply, sustainment, procurement, and support
+8515	1	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Domestic industry and licensed production	Logistics, supply, sustainment, procurement, and support
+8519	0.5	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Black markets and illicit diversion	Logistics, supply, sustainment, procurement, and support
+8523	0.5	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Procurement scandals and failures	Logistics, supply, sustainment, procurement, and support
+8527	0.5	forces.js (arms trade), service.js (programmes: end-use, training packages, licence)	Arms trade acceptance tests	Logistics, supply, sustainment, procurement, and support
+8534	1	forces.js, service.js	EQUIPMENT INVENTORY, READINESS, AND PROCUREMENT STATISTICS	Logistics, supply, sustainment, procurement, and support
+8558	0.5	forces.js, service.js	Missing support, engineering, logistics, and non-frontline equipment coverage	Logistics, supply, sustainment, procurement, and support
+8562	0.5	forces.js, service.js	Infantry ancillary equipment	Logistics, supply, sustainment, procurement, and support
+8578	0.5	forces.js, service.js	Combat engineering and obstacle support	Logistics, supply, sustainment, procurement, and support
+8594	0.5	forces.js, service.js	Logistics and transport vehicles	Logistics, supply, sustainment, procurement, and support
+8612	0.5	forces.js, service.js	Ground-based support and electronic systems	Logistics, supply, sustainment, procurement, and support
+8628	0.5	forces.js, service.js	Space and strategic infrastructure	Logistics, supply, sustainment, procurement, and support
+8639	0.5	forces.js, service.js	Catalogue validation	Logistics, supply, sustainment, procurement, and support
+8644	1	world3.js, ops.js, census.js, hazards.js	Integrated logistics and supply network	Logistics, supply, sustainment, procurement, and support
+8651	0.5	world3.js, ops.js, census.js, hazards.js	Resource catalogue	Logistics, supply, sustainment, procurement, and support
+8668	1	world3.js, ops.js, census.js, hazards.js	Facilities and nodes	Logistics, supply, sustainment, procurement, and support
+8687	1	world3.js, ops.js, census.js, hazards.js	Transport network	Logistics, supply, sustainment, procurement, and support
+8695	0.5	world3.js, ops.js, census.js, hazards.js	Shipments and chain of custody	Logistics, supply, sustainment, procurement, and support
+8719	1	world3.js, ops.js, census.js, hazards.js	Demand, prioritization, and shortages	Logistics, supply, sustainment, procurement, and support
+8734	1	world3.js, ops.js, census.js, hazards.js	Reconciliation with ammunition and expenditure ledgers	Logistics, supply, sustainment, procurement, and support
+8745	0.5	world3.js, ops.js, census.js, hazards.js	Civilian and humanitarian logistics	Logistics, supply, sustainment, procurement, and support
+8751	1	world3.js, ops.js, census.js, hazards.js	User interface	Logistics, supply, sustainment, procurement, and support
+8781	1	service.js (programme lifecycle, suppliers, risks, deliveries)	DEFENSE PROCUREMENT, ACQUISITION, AND SUPPLIER COMPETITION	Logistics, supply, sustainment, procurement, and support
+8786	1	service.js (programme lifecycle, suppliers, risks, deliveries)	Program lifecycle	Logistics, supply, sustainment, procurement, and support
+8789	1	service.js (programme lifecycle, suppliers, risks, deliveries)	Actors	Logistics, supply, sustainment, procurement, and support
+8792	1	service.js (programme lifecycle, suppliers, risks, deliveries)	Program risks	Logistics, supply, sustainment, procurement, and support
+8795	0.5	service.js (programme lifecycle, suppliers, risks, deliveries)	Competition and governance	Logistics, supply, sustainment, procurement, and support
+8798	1	service.js (programme lifecycle, suppliers, risks, deliveries)	Deliveries and fielding	Logistics, supply, sustainment, procurement, and support
+8808	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	CIVILIANS CAN FOUND, OWN, GROW, AND OPERATE THEIR OWN PMCs	Logistics, supply, sustainment, procurement, and support
+8814	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Definition and separation from other organizations	Logistics, supply, sustainment, procurement, and support
+8824	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Civilian founders and autonomous company creation	Logistics, supply, sustainment, procurement, and support
+8843	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Company formation, registration, and growth stages	Logistics, supply, sustainment, procurement, and support
+8856	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Corporate identity, ownership, and internal governance	Logistics, supply, sustainment, procurement, and support
+8869	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Recruitment, employment, and personnel welfare	Logistics, supply, sustainment, procurement, and support
+8885	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Qualifications, standards, and company capability	Logistics, supply, sustainment, procurement, and support
+8897	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Equipment ownership, procurement, and sustainment	Logistics, supply, sustainment, procurement, and support
+8909	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Contracts, clients, and service obligations	Logistics, supply, sustainment, procurement, and support
+8929	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Company autonomy, loyalty, and behavior during the war	Logistics, supply, sustainment, procurement, and support
+8944	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Financial survival and the possibility of failure	Logistics, supply, sustainment, procurement, and support
+8957	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Legal status, oversight, and accountability	Logistics, supply, sustainment, procurement, and support
+8972	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Civilian community effects and public reputation	Logistics, supply, sustainment, procurement, and support
+8984	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Competition, mergers, internal factions, and organizational change	Logistics, supply, sustainment, procurement, and support
+8996	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Player interaction and campaign interface	Logistics, supply, sustainment, procurement, and support
+9013	1	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Campaign events, news, and narrative history	Logistics, supply, sustainment, procurement, and support
+9028	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Autonomous AI decisions and simulation scale	Logistics, supply, sustainment, procurement, and support
+9040	0.5	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Canonical data model and persistence requirements	Logistics, supply, sustainment, procurement, and support
+9055	0	service.js (civilian-founded PMCs), turncoat.js (combat PMCs)	Multiplayer and authority	Logistics, supply, sustainment, procurement, and support
+9068	1	deep.js, airops.js, extras.js, airbattle.js	Global air operations, theater planning, and dynamic air mission generation	Operational behavior, AI support, and coordination
+9091	1	deep.js, airops.js, extras.js, airbattle.js	Global air war and theater campaign behavior.	Operational behavior, AI support, and coordination
+9112	1	deep.js, airops.js, extras.js, airbattle.js	Operational planning interface	Operational behavior, AI support, and coordination
+9118	1	deep.js, airops.js, extras.js, airbattle.js	Package construction	Operational behavior, AI support, and coordination
+9124	1	deep.js, airops.js, extras.js, airbattle.js	Support and coordination requests	Operational behavior, AI support, and coordination
+9130	1	deep.js, airops.js, extras.js, airbattle.js	Scheduling and deconfliction	Operational behavior, AI support, and coordination
+9134	1	deep.js, airops.js, extras.js, airbattle.js	Mission routes and campaign constraints	Operational behavior, AI support, and coordination
+9138	1	deep.js, airops.js, extras.js, airbattle.js	AI-generated plans and recommendations	Operational behavior, AI support, and coordination
+9142	1	deep.js, airops.js, extras.js, airbattle.js	Execution monitoring	Operational behavior, AI support, and coordination
+9146	0.5	deep.js, airops.js, extras.js, airbattle.js	Debrief and lessons learned	Operational behavior, AI support, and coordination
+9150	0.5	deep.js, airops.js, extras.js, airbattle.js	Planning room acceptance tests	Operational behavior, AI support, and coordination
+9157	0.5	natdata.js	Unit organization, behavior, and simulation requirements	Operational behavior, AI support, and coordination
+9175	1	natdata.js	Italy, Spain, Netherlands, Belgium, Greece, Portugal, and other NATO members	Operational behavior, AI support, and coordination
+9185	1	natdata.js	Russia — aircraft and helicopters	Operational behavior, AI support, and coordination
+9204	1	natdata.js	China — aircraft and helicopters	Operational behavior, AI support, and coordination
+9223	1	land.js, gfight.js, infantry.js, sea2.js	DYNAMIC GROUND-FORCE BEHAVIOR	Operational behavior, AI support, and coordination
+9228	1	land.js, gfight.js, infantry.js, sea2.js	Combat posture and survival behavior	Operational behavior, AI support, and coordination
+9240	1	land.js, gfight.js, infantry.js, sea2.js	Tactical coordination and support requests	Operational behavior, AI support, and coordination
+9249	0.5	land.js, gfight.js, infantry.js, sea2.js	DYNAMIC NAVAL AI	Operational behavior, AI support, and coordination
+9263	1	natdata.js (AEW/TNK/TRN per country), deep.js	CRITICAL SCOPE CORRECTION: DO NOT REBUILD THE EXISTING AIRCRAFT	Operational behavior, AI support, and coordination
+9284	1	natdata.js (AEW/TNK/TRN per country), deep.js	Factional special-mission support-aircraft catalogue: AEW&C, airlift, tankers, and aeromedical evacuation	Operational behavior, AI support, and coordination
+9299	1	natdata.js (AEW/TNK/TRN per country), deep.js	United Kingdom and European NATO	Operational behavior, AI support, and coordination
+9309	1	natdata.js (AEW/TNK/TRN per country), deep.js	Indo-Pacific Bluefor	Operational behavior, AI support, and coordination
+9315	1	natdata.js (AEW/TNK/TRN per country), deep.js	REDFOR AWACS, AEW&C, command, and special-mission support aircraft.	Operational behavior, AI support, and coordination
+9336	1	natdata.js (AEW/TNK/TRN per country), deep.js	BLUFOR airlift, cargo, aerial refueling, and aeromedical evacuation.	Operational behavior, AI support, and coordination
+9338	1	natdata.js (AEW/TNK/TRN per country), deep.js	Strategic and tactical transport	Operational behavior, AI support, and coordination
+9350	1	natdata.js (AEW/TNK/TRN per country), deep.js	Tankers and refueling support	Operational behavior, AI support, and coordination
+9357	0.5	natdata.js (AEW/TNK/TRN per country), deep.js	Special cargo and medical variants	Operational behavior, AI support, and coordination
+9362	1	natdata.js (AEW/TNK/TRN per country), deep.js	REDFOR airlift, cargo, aerial refueling, and aeromedical evacuation.	Operational behavior, AI support, and coordination
+9364	1	natdata.js (AEW/TNK/TRN per country), deep.js	China — transport and tanker aircraft	Operational behavior, AI support, and coordination
+9375	1	natdata.js (AEW/TNK/TRN per country), deep.js	Russia — Factional special-mission support-aircraft catalogue: AEW&C, airlift, ta	Operational behavior, AI support, and coordination
+9386	1	natdata.js (AEW/TNK/TRN per country), deep.js	Redfor partner countries — Factional special-mission support-aircraft catalogue: AEW&C, airlift, ta	Operational behavior, AI support, and coordination
+9392	1	ops.js, natdata.js, gfight.js	GROUND SUPPORT UNITS, MOBILE AIR DEFENSE, AND CAMPAIGN SERVICE VEHICLES	Operational behavior, AI support, and coordination
+9396	1	ops.js, natdata.js, gfight.js	Air-defense formations	Operational behavior, AI support, and coordination
+9404	0.5	ops.js, natdata.js, gfight.js	Ground support and service vehicle registry	Operational behavior, AI support, and coordination
+9423	0.5	ops.js, natdata.js, gfight.js	Ground unit lifecycle and state	Operational behavior, AI support, and coordination
+9427	1	ops.js, natdata.js, gfight.js	Logistics and service behavior	Operational behavior, AI support, and coordination
+9431	1	ops.js, natdata.js, gfight.js	AI unit autonomy	Operational behavior, AI support, and coordination
+9447	1	forces.js (event / claim / assessment)	COMBAT CLAIM VERIFICATION, EVIDENCE REVIEW, AND DEBRIEF CONFIDENCE	Operational behavior, AI support, and coordination
+9451	1	forces.js (event / claim / assessment)	Separate event, claim, and assessment	Operational behavior, AI support, and coordination
+9462	0.5	forces.js (event / claim / assessment)	Assessment categories	Operational behavior, AI support, and coordination
+9478	0.5	forces.js (event / claim / assessment)	Evidence sources	Operational behavior, AI support, and coordination
+9495	0.5	forces.js (event / claim / assessment)	Scoring and career records	Operational behavior, AI support, and coordination
+9504	0.5	forces.js (event / claim / assessment)	Campaign and media consequences	Operational behavior, AI support, and coordination
+9518	0.5	service.js (wear, repaint history; not yet drawn on the model)	PERSISTENT AIRCRAFT WEATHERING, SERVICE WEAR, AND REPAINT HISTORY	Operational behavior, AI support, and coordination
+9522	0.5	service.js (wear, repaint history; not yet drawn on the model)	Appearance state	Operational behavior, AI support, and coordination
+9535	0.5	service.js (wear, repaint history; not yet drawn on the model)	Appearance must follow history	Operational behavior, AI support, and coordination
+9544	0.5	service.js (wear, repaint history; not yet drawn on the model)	Visual implementation	Operational behavior, AI support, and coordination
+9560	1	service.js (certificates, currency, release to service)	FORMAL PILOT, AIRCREW, AND AIRCRAFT CERTIFICATE PRESENTATION	Operational behavior, AI support, and coordination
+9564	1	service.js (certificates, currency, release to service)	Pilot and aircrew certificates	Operational behavior, AI support, and coordination
+9578	0.5	service.js (certificates, currency, release to service)	Aircraft and maintenance release documents	Operational behavior, AI support, and coordination
+9591	1	service.js (certificates, currency, release to service)	Currency and renewal	Operational behavior, AI support, and coordination
+9608	1	service.js (acceptance ceremonies), forces.js (retirement)	AIRCRAFT DELIVERY, ACCEPTANCE, TRANSFER, AND RETIREMENT CEREMONIES	Operational behavior, AI support, and coordination
+9619	0.5	service.js (acceptance ceremonies), forces.js (retirement)	Transfers and reassignment	Operational behavior, AI support, and coordination
+9625	1	service.js (acceptance ceremonies), forces.js (retirement)	Retirement and final disposition	Operational behavior, AI support, and coordination
+9643	1	ui2.js, aicore.js (decision history), deep.js	PLAYER PRESENTATION, BRIEFING, AND INFORMATION QUALITY	Operational history, public information, and campaign consequences
+9645	1	ui2.js, aicore.js (decision history), deep.js	Readable status rather than raw simulation noise	Operational history, public information, and campaign consequences
+9648	0.5	ui2.js, aicore.js (decision history), deep.js	Explain delays and failures	Operational history, public information, and campaign consequences
+9651	1	ui2.js, aicore.js (decision history), deep.js	Decision history	Operational history, public information, and campaign consequences
+9654	1	ui2.js, aicore.js (decision history), deep.js	Briefings and debriefings	Operational history, public information, and campaign consequences
+9657	0.5	ui2.js, aicore.js (decision history), deep.js	Accessibility and localization	Operational history, public information, and campaign consequences
+9661	1	service.js (notice board)	SQUADRON NOTICE BOARD AND DAILY UNIT BULLETIN	Operational history, public information, and campaign consequences
+9665	1	service.js (notice board)	Board content	Operational history, public information, and campaign consequences
+9679	0.5	service.js (notice board)	Authorship and delivery	Operational history, public information, and campaign consequences
+9696	1	forces.js (deployment album)	AIRCRAFT PHOTOGRAPHY, DEPLOYMENT ALBUM, AND VISUAL HISTORY ARCHIVE	Operational history, public information, and campaign consequences
+9700	0.5	forces.js (deployment album)	Capture sources	Operational history, public information, and campaign consequences
+9704	0.5	forces.js (deployment album)	Metadata and history	Operational history, public information, and campaign consequences
+9715	1	forces.js (deployment album)	Albums	Operational history, public information, and campaign consequences
+9728	1	forces.js (deployment album)	Storage and performance — AIRCRAFT PHOTOGRAPHY, DEPLOYMENT ALBUM, AND VISUAL HISTORY ARCHIVE	Operational history, public information, and campaign consequences
+9744	1	turncoat.js (airliner shootdowns, investigation)	CIVILIAN AIRCRAFT DAMAGE, ACCIDENTAL SHOOTDOWNS, AND DELIBERATE ATTACK INCIDENTS	Operational history, public information, and campaign consequences
+9748	1	turncoat.js (airliner shootdowns, investigation)	Distinct aircraft-loss event classes	Operational history, public information, and campaign consequences
+9762	1	turncoat.js (airliner shootdowns, investigation)	How incidents can arise	Operational history, public information, and campaign consequences
+9776	1	turncoat.js (airliner shootdowns, investigation)	Player and AI responsibility	Operational history, public information, and campaign consequences
+9785	0.5	turncoat.js (airliner shootdowns, investigation)	Incident event record and evidence	Operational history, public information, and campaign consequences
+9802	0.5	turncoat.js (airliner shootdowns, investigation)	Immediate rescue and emergency response	Operational history, public information, and campaign consequences
+9814	1	turncoat.js (airliner shootdowns, investigation)	Civilian aircraft incident consequences across the campaign	Operational history, public information, and campaign consequences
+9832	0.5	turncoat.js (airliner shootdowns, investigation)	Investigation, accountability, and compensation	Operational history, public information, and campaign consequences
+9847	1	turncoat.js (airliner shootdowns, investigation)	Presentation and player feedback	Operational history, public information, and campaign consequences
+9862	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	NATIONAL AND LOCAL CIVIL DEFENSE — CONNECTED EMERGENCY READINESS NETWORK	Operational history, public information, and campaign consequences
+9869	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Institutional structure	Operational history, public information, and campaign consequences
+9875	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Hazard and warning lifecycle	Operational history, public information, and campaign consequences
+9891	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Shelter registry and capacity	Operational history, public information, and campaign consequences
+9906	1	forces.js (civil defence), hazards.js, infowar.js (alarms)	Civilian alert channels and public information	Operational history, public information, and campaign consequences
+9914	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Volunteers, training, and public preparedness	Operational history, public information, and campaign consequences
+9920	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Evacuation, sheltering, and individual decisions	Operational history, public information, and campaign consequences
+9926	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Interagency coordination and continuity	Operational history, public information, and campaign consequences
+9932	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Emergency supplies and mutual aid	Operational history, public information, and campaign consequences
+9938	0.5	forces.js (civil defence), hazards.js, infowar.js (alarms)	Civil-defense performance and public trust	Operational history, public information, and campaign consequences
