@@ -452,7 +452,11 @@ function build(cfg){const LOC=cfg.loc||{pop:3000};const GR=LOC.pop>5e5?5:LOC.pop
       const e=Math.max(b[3],b[4])*.55;boxes.push({x0:x-e,y0:b[2]-1,z0:z-e,x1:x+e,y1:b[2]-1+b[5],z1:z+e,m:null,wb:b});}}
     for(const b of near){WF.townMesh.getMatrixAt(b[6],M0);hidden.push([b,M0.clone()]);WF.townMesh.setMatrixAt(b[6],Z);const x=b[0]-cfg.O.x,z=b[1]-cfg.O.z,w=Math.max(7,Math.min(40,b[3])),d=Math.max(7,Math.min(40,b[4])),h=b[5];
       if(w*d>350&&h<12)hall(x,z,w,d,Math.max(6,h),rn()<.5?'WAREHOUSE':'FACTORY',wallM[3]);else house(x,z,Math.round(w),Math.round(d),Math.max(1,Math.min(8,Math.round(h/3))),wallM[(rn()*wallM.length)|0],h>15?'APARTMENTS':'HOUSE');REAL++;}
-    WF.townMesh.instanceMatrix.needsUpdate=true;if(REAL<8)REAL=0;}
+    WF.townMesh.instanceMatrix.needsUpdate=true;if(REAL<8)REAL=0;
+    /* v431: the world's own town blocks (the plain boxes with window texture) are solid in the battle: vehicles steer
+       round them, men cannot walk through them. Their footprint is rotated in the world, so a box a little inside it. */
+    const hid=new Set(hidden.map(h=>h[0]));let tob=0;for(const b of WF.bldg){if(!b[7]||hid.has(b))continue;const x=b[0]-cfg.O.x,z=b[1]-cfg.O.z;if(Math.abs(x)>3000||Math.abs(z)>3000)continue;
+      const r=Math.max(2,Math.min(b[3],b[4])/2*.95);boxes.push({x0:x-r,x1:x+r,z0:z-r,z1:z+r,y0:b[2]-1,y1:b[2]-1+b[5],m:null,bid:null,str:1,town:b});tob++;}cfg.townObs=tob;}
   const lots=[];for(let gx=-GR;gx<=GR;gx++)for(let gz=-GR;gz<=GR;gz++){if(nearTr(village.z+gz*30,22))continue;if(rn()<.18&&!(gx===GR&&gz===-GR))continue;const cx=village.x+gx*30+(rn()-.5)*4,cz=village.z+gz*30+(rn()-.5)*4;if(Math.abs(gx)<1&&Math.abs(gz)<1)continue;
     const cen=1-Math.max(Math.abs(gx),Math.abs(gz))/(GR+1),w=8+rn()*6+(FLMAX>4?cen*6:0),d=8+rn()*6+(FLMAX>4?cen*6:0),fl=1+((rn()*Math.max(1,FLMAX*cen+1))|0);if(gx===GR&&gz===-GR&&!REAL)hall(cx,cz,16,24,7,'CHURCH',wallM[2]);else if(Math.abs(gx)===GR&&rn()<.35&&!REAL)hall(cx,cz,18,22,8,rn()<.5?'WAREHOUSE':'FACTORY',wallM[3]);else if(!REAL)lots.push(house(cx,cz,Math.round(w),Math.max(8,Math.round(d)),fl,wallM[(rn()*wallM.length)|0]));}
   // streets

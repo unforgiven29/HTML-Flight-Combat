@@ -1415,6 +1415,13 @@ test('s73_centre: the world is recentred on the battle even when a terrain rebui
     const C=I.locChoices({...I.K,a3:'POL'});await I.startWorld({...I.K,a3:'POL',ins:'IFV',mis:'FRONT',noRide:true,ap:L[L.length-1].a,loc0:C[C.length-1].id});WSORTIE.start=st0;const S=I.S;I.land();
     const q=WGEO.ll2xz(S.loc.lat,S.loc.lon);const out={WM:!!S.WM,d:Math.round(Math.hypot(q.x,q.z)),inTrench:I.TR&&I.Hf(S.pos.x,S.pos.z)<groundAt(S.O.x+S.pos.x,S.O.z+S.pos.z)-.5};I.stop(true,'LEFT');return out;});
   ok('battle built on the recentred map',r.WM&&r.d<15000,r);ok('FRONT spawn is in the trench',r.inTrench,r);});
+test('s74_townobs: world town blocks are obstacles: a tank does not drive through one','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(48);const I=INFANTRY;const L=WSORTIE.basesFor('POL');
+    await I.startWorld({...I.K,a3:'POL',ins:'APC',mis:'FRONT',noRide:true,ap:L[0].a});const S=I.S;I.land();S.hp=1e9;const out={n:S.cfg.townObs||0};
+    const b=S.blds.find(q=>q.town&&Math.abs((q.x0+q.x1)/2)<1500&&Math.abs((q.z0+q.z1)/2)<1500&&q.x1-q.x0>6);out.has=!!b;
+    if(b){const cx=(b.x0+b.x1)/2,cz=(b.z0+b.z1)/2;const v={x:cx,z:cz+40,tank:1,alive:true,m:{position:new THREE.Vector3()}};S.veh.push(v);let inside=0;for(let k=0;k<600;k++){I.vmove(v,0,-1,.2);if(v.x>b.x0&&v.x<b.x1&&v.z>b.z0&&v.z<b.z1)inside++;}out.inside=inside;out.end=[+(v.x-cx).toFixed(0),+(v.z-cz).toFixed(0)];S.veh.pop();}
+    I.stop(true,'LEFT');return out;});
+  ok('town blocks become obstacles',r.n>0&&r.has,r);ok('a tank steers round a town block',r.inside===0,r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
