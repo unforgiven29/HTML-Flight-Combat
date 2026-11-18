@@ -1196,3 +1196,6 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 
 ## v409
 - No name tags over soldiers (names still recorded). Esc pauses and opens the campaign world map centred on the battle with your position marked; Esc again resumes (also when the browser releases the mouse first). Houses are not built on trench lines and nobody digs a trench inside a building. The aircraft is silent during the move to the front.
+
+## v410
+- Fix: resuming with Esc no longer raises a crash report (the browser refuses the mouse right after it was released; the refusal is now handled and the next click takes the mouse).
