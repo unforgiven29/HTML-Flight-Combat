@@ -6689,9 +6689,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v340 (js/war/intel.js): intelligence picture per side with uncertainty, electronic-warfare edge, network health, cyber incidents with attribution labels, satellites and reversible jamming, claims versus assessments",
+   "note": "v392 js/war/infowar.js: decoys (inflatable armour, mock air-defence sites, dummy HQs) inflating the other side's estimates and wasting strikes, camouflage hiding strength, feints drawing reserves, exposure by intelligence; infantry.js: decoy vehicles in battle (deflate when hit)",
    "tests": [
-    "s12_intel"
+    "s44_wounds_iw"
    ]
   },
   {
@@ -6706,9 +6706,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v340 (js/war/intel.js): intelligence picture per side with uncertainty, electronic-warfare edge, network health, cyber incidents with attribution labels, satellites and reversible jamming, claims versus assessments",
+   "note": "v392 js/war/infowar.js: claims with truth status (true / false / misleading / unverified …), claimed vs actual origin, exposure, corrections; bounded effects on morale, allied trust; population resilience; rare false missile alarms with panic, correction and lower trust in alerts (abstract; no escalation from an alarm alone). Individual-level panic modelling not done",
    "tests": [
-    "s12_intel"
+    "s44_wounds_iw"
    ]
   },
   {
@@ -6757,9 +6757,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v340 (js/war/intel.js): intelligence picture per side with uncertainty, electronic-warfare edge, network health, cyber incidents with attribution labels, satellites and reversible jamming, claims versus assessments",
+   "note": "v340 intel.js (EW capacity, network health, cyber, space) + v392 infowar.js (jamming, interception, secure traffic slowing orders)",
    "tests": [
-    "s12_intel"
+    "s44_wounds_iw"
    ]
   },
   {
@@ -6774,9 +6774,9 @@
    "phase": 3,
    "status": "implement",
    "progress": "partial",
-   "note": "v340 (js/war/intel.js): intelligence picture per side with uncertainty, electronic-warfare edge, network health, cyber incidents with attribution labels, satellites and reversible jamming, claims versus assessments",
+   "note": "v392 js/war/infowar.js: claims with truth status (true / false / misleading / unverified …), claimed vs actual origin, exposure, corrections; bounded effects on morale, allied trust; population resilience; rare false missile alarms with panic, correction and lower trust in alerts (abstract; no escalation from an alarm alone). Individual-level panic modelling not done",
    "tests": [
-    "s12_intel"
+    "s44_wounds_iw"
    ]
   },
   {
@@ -6823,10 +6823,12 @@
    "line": 10631,
    "owner": "js/sensors/* (sensor registry, radar, IRST, jamming, NCTR), js/rwr/*",
    "phase": 3,
-   "status": "existing",
+   "status": "implement",
    "progress": "partial",
-   "note": "Aircraft and ground radar, SAM, AWACS, jamming, IRST, RWR exist (js/sensors, js/rwr); campaign-level picture not linked to the ledger yet",
-   "tests": []
+   "note": "v392 js/war/infowar.js: crypto vs signals intelligence per side — reading the other's radio (intercepts warn of attacks; the side read moves to secure traffic), radio and navigation jamming per side; in battle (infantry.js) jammed calls are delayed, drone links lost, bearings spoiled, an order heard by the enemy is answered, intercepts mark enemy positions",
+   "tests": [
+    "s44_wounds_iw"
+   ]
   },
   {
    "id": "R07-016",

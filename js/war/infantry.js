@@ -41,7 +41,7 @@ const PRI={CARB:{n:'Carbine',rpm:750,dmg:30,mag:30,res:210,spr:.016,ads:1.5,rl:2
 // roles set a sensible kit; each item can still be changed
 const ROLE={ASSAULT:{n:'Assault',pri:'RIFLE',lau:'NONE',arm:'PLATE',gren:4},SNIPER:{n:'Sniper',pri:'SNP',lau:'NONE',arm:'SOFT',gren:0},MARKSMAN:{n:'Marksman',pri:'DMR',lau:'NONE',arm:'PLATE',gren:2},
   AT:{n:'Anti-tank',pri:'CARB',lau:'ATGM',arm:'PLATE',gren:2},AA:{n:'Air defence',pri:'CARB',lau:'MANPADS',arm:'SOFT',gren:2},MG:{n:'Machine gunner',pri:'LMG',lau:'NONE',arm:'HEAVY',gren:2},
-  ENGINEER:{n:'Engineer',pri:'CARB',lau:'RPG',arm:'PLATE',gren:2},CQB:{n:'Close quarters',pri:'SMG',lau:'NONE',arm:'HEAVY',gren:4},BREACH:{n:'Breacher',pri:'SHOT',lau:'RPG',arm:'HEAVY',gren:4}};
+  MEDIC:{n:'Medic',pri:'CARB',lau:'NONE',arm:'SOFT',gren:2},ENGINEER:{n:'Engineer',pri:'CARB',lau:'RPG',arm:'PLATE',gren:2},CQB:{n:'Close quarters',pri:'SMG',lau:'NONE',arm:'HEAVY',gren:4},BREACH:{n:'Breacher',pri:'SHOT',lau:'RPG',arm:'HEAVY',gren:4}};
 const LAU={NONE:{n:'None'},RPG:{n:'Anti-tank rocket',mag:1,res:2,spd:120,dmg:400,rl:3.5},ATGM:{n:'Anti-tank guided missile',mag:1,res:1,spd:90,dmg:700,rl:5,guided:1},
            MANPADS:{n:'Portable air-defence missile',mag:1,res:0,spd:400,dmg:600,rl:6,air:1}};
 const ARM={NONE:{n:'None',k:1,spd:1},SOFT:{n:'Soft armour vest',k:.8,spd:.97},PLATE:{n:'Armour plates',k:.55,spd:.9},HEAVY:{n:'Heavy plates and helmet',k:.4,spd:.8}};
@@ -122,7 +122,7 @@ function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=cam
     ln('OBJECTIVE',MISD[K.mis]?MISD[K.mis][0]+' — '+MISD[K.mis][1]:K.mis)+ln('PRIMARY',pr.n)+ln('ATTACHMENTS',['optic','muzzle','under','laser'].map(sl=>K.att[sl]).filter(x=>x!=='NONE'&&x!=='IRON').map(x=>{for(const sl in ATT)if(ATT[sl][x])return ATT[sl][x].n;}).join(', ')||'None')+ln('LAUNCHER',K.lau==='NONE'?'None':(N[K.lau]?N[K.lau]+' — ':'')+la.n)+ln('SIDEARM',(SIDES[K.side]||SIDES.M17).n)+ln('ARMOUR',ar.n)+ln('WEIGHT',ar.kg.toFixed(1)+' kg of armour')+ln('GRENADES',String(K.gren))+ln('INSERTION',INS[K.ins]+(N[K.ins]?' · '+N[K.ins]:''))+
     '<div class="br">'+bar('DAMAGE',pr.dmg/140,pr.dmg+(pr.pel?' ×'+pr.pel:''))+bar('FIRE RATE',pr.rpm/900,String(pr.rpm))+bar('MAGAZINE',pr.mag/100,String(pr.mag))+bar('ACCURACY',1-pr.spr/.07,Math.round((1-pr.spr/.07)*100)+'%')+bar('PROTECTION',(3-ar.k-ar.head-ar.limb)/1.7,Math.round((1-ar.k)*100)+'% body · '+Math.round((1-ar.head)*100)+'% head')+bar('ZOOM',pr.ads/12,pr.ads.toFixed(1)+'×')+bar('MOBILITY',ar.spd,Math.round(ar.spd*100)+'%')+'</div>'+
     '<div class="fine">'+esc(INSB[K.ins])+' Abstract game values, not published data.</div></aside>';
-  const keys=[['WASD','move'],['MOUSE','look'],['Q','aim (or right mouse)'],['B','sandbag wall'],['O','offensive'],['F','place FPV drone'],['V','its feed'],['H','medevac'],['G','grenade'],['4','grenade launcher'],['E','command post / ride'],['K','build command post'],['T','fall back'],['Z','scope zoom (1–6×)'],['L','laser / light'],['Esc','leave']];
+  const keys=[['WASD','move'],['MOUSE','look'],['Q','aim (or right mouse)'],['B','sandbag wall'],['O','offensive'],['F','place FPV drone'],['V','its feed'],['H','medevac'],['G','grenade'],['4','grenade launcher'],['5','tourniquet'],['6','bandage'],['7','medical kit'],['X','go prone'],['E','command post / ride / treat a wounded friend'],['K','build command post'],['T','fall back'],['Z','scope zoom (1–6×)'],['L','laser / light'],['Esc','leave']];
   const h='<header class="mh"><div class="mk">INFANTRY · KIT AND INSERTION</div><h2 id="u2t">INFANTRY — '+esc(p.n.toUpperCase())+'</h2><div class="ms"><span>Your kit and how you get to the front</span></div></header>'+
    '<div class="mb"><div class="kit"><div class="col">'+
    sec('MISSION','<div class="opts c2">'+Object.keys(MISD).map(k=>o('mis',k,MISD[k][0],MISD[k][1]).replace('class="opt"','class="opt big"')).join('')+'</div>')+
@@ -175,12 +175,12 @@ function soldier(friend){const g=new THREE.Group(),P=PAL[friend?'F':'E'],uni=MT(
   if(rn()<.65){const pk=new THREE.Mesh(box('pk',.34,.42,.18),dark);pk.position.set(0,1.22,.22);up.add(pk);pk.userData.part='body';}
   const hd=new THREE.Mesh(GE('hd',()=>new THREE.SphereGeometry(.12,8,6)),sk);hd.position.y=1.62;up.add(hd);
   const cap=rn()<.12;const hm=new THREE.Mesh(cap?GE('cap',()=>new THREE.CylinderGeometry(.14,.15,.08,10)):GE('hm',()=>new THREE.SphereGeometry(.15,10,6,0,6.3,0,1.45)),cap?uni:MT(vary(P[(rn()*P.length)|0],.05)));hm.position.y=cap?1.71:1.65;up.add(hm);
-  const arm=x=>{const sh=new THREE.Group();sh.position.set(x,1.42,0);const a=new THREE.Mesh(box('ar',.11,.56,.12),uni);a.position.y=-.27;sh.add(a);const h=new THREE.Mesh(box('ha',.09,.09,.09),sk);h.position.y=-.58;sh.add(h);a.userData.part=h.userData.part='body';up.add(sh);return sh;};
+  const arm=x=>{const sh=new THREE.Group();sh.position.set(x,1.42,0);const a=new THREE.Mesh(box('ar',.11,.56,.12),uni);a.position.y=-.27;sh.add(a);const h=new THREE.Mesh(box('ha',.09,.09,.09),sk);h.position.y=-.58;sh.add(h);a.userData.part=h.userData.part='arms';up.add(sh);return sh;};
   const AL=arm(-.29),AR=arm(.29);AL.rotation.set(-1.1,0,.35);AR.rotation.set(-1.25,0,-.15);
   const gun=new THREE.Group();gun.position.set(.08,1.3,-.28);const gb=new THREE.Mesh(box('gb',.06,.09,.62),blk);gun.add(gb);const gm=new THREE.Mesh(box('gm',.04,.13,.06),blk);gm.position.set(0,-.1,-.06);gun.add(gm);const gs=new THREE.Mesh(box('gs',.05,.08,.2),blk);gs.position.set(0,-.02,.36);gun.add(gs);up.add(gun);
   tor.userData.part=vest.userData.part='body';hd.userData.part=hm.userData.part='head';g.userData.J={L,R,AL,AR,up,gun,ph:rn()*6};return g;}
 // animation: walk / run cycles, crouch, recoil; nothing once dead
-function animMan(u,dt,spd){const J=u.m.userData.J;if(!J||!u.alive)return;const run=spd>3.5,cr=u.crouch&&spd<.5;J.ph+=dt*(run?11:spd>.3?7:0);const sw=spd>.3?Math.sin(J.ph)*(run?.75:.45):0;
+function animMan(u,dt,spd){const J=u.m.userData.J;if(!J||!u.alive)return;if(u.crawl||u.wounded){u.m.rotation.x=-1.35;J.ph+=dt*4;J.L.hip.rotation.x=Math.sin(J.ph)*.4;J.R.hip.rotation.x=-Math.sin(J.ph)*.4;return;}else if(u.m.rotation.x)u.m.rotation.x=0;const run=spd>3.5,cr=u.crouch&&spd<.5;J.ph+=dt*(run?11:spd>.3?7:0);const sw=spd>.3?Math.sin(J.ph)*(run?.75:.45):0;
   J.L.hip.rotation.x=cr?-1.2:sw;J.R.hip.rotation.x=cr?-.4:-sw;J.L.kn.rotation.x=cr?1.9:Math.max(0,-Math.sin(J.ph))*.8*(spd>.3?1:0);J.R.kn.rotation.x=cr?1.0:Math.max(0,Math.sin(J.ph))*.8*(spd>.3?1:0);
   J.up.position.y=cr?-.42:run?-.05:0;J.up.rotation.x=run?-.18:0;J.L.hip.position.y=J.R.hip.position.y=cr?.6:.92;J.L.hip.position.z=cr?-.15:0;
   J.rec=Math.max(0,(J.rec||0)-dt*6);J.gun.position.z=-.28+J.rec*.08;J.AR.rotation.x=-1.25+J.rec*.15;}
@@ -430,7 +430,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   else{for(let i=0;i<Math.round(10*ePow);i++)S.them.push(man(false,S.village.x+(rn()-.5)*110,S.village.z+(rn()-.5)*110));
     {const v=vehicle('EIFV',0x6a5a3a);const x=S.village.x+40,z=S.village.z-30;v.position.set(x,H(x,z),z);S.sc.add(v);S.veh.push({m:v,hp:600,side:'E',x,z,cool:3,alive:true});}
     {const m=tank(S.en,0x6a5a3a);const x=S.village.x-50,z=S.village.z-60;m.position.set(x,H(x,z),z);S.sc.add(m);S.veh.push({m,hp:1100,side:'E',x,z,cool:4,alive:true,tank:1,name:m.userData.name});}}
-  gridBuild();layGreen();S.uglN=pri.ugl;equipVM();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
+  gridBuild();layGreen();for(const v of S.veh)if(v.side==='E'&&rn()<(S.decoyK||0)*.6+.05&&!v.decoy){v.decoy=true;v.nofire=true;v.immob=true;}S.uglN=pri.ugl;equipVM();S.body={head:100,torso:100,armL:100,armR:100,legL:100,legR:100};S.wounds=[];S.kit2={tq:2,band:3,kit:cfg.role==='MEDIC'?3:1};if(S.us[2])S.us[2].medic=true;if(S.them[3])S.them[3].medic=true;iwInit();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
   if(S.WM)worldOn();
   {const eb=S.STR.filter(c=>c.side==='E'&&c.kind!=='COMMAND POST');const al=S.them.filter(u=>u.alive);eb.forEach((c,i)=>{const u=al[i];if(!u)return;u.m.position.set(c.cx,c.y0,c.cz);u.ox=c.cx-S.village.x;u.oz=c.cz-S.village.z;u.bunk=c;});}
   for(const u of S.us)u.m.visible=false;insertion();bind();loop.last=performance.now();if(!loop.on){loop.on=true;requestAnimationFrame(loop);}
@@ -501,21 +501,21 @@ function land(){if(S.res)return;S.phase='FIGHT';const C=S.carrier;S.pos.y=H(S.po
 /* ------------------------------------------------------------------ input */
 function bind(){const c=S.cv;c.addEventListener('click',()=>{if(AU.C&&AU.C.state==='suspended')AU.C.resume();if(document.pointerLockElement!==c&&c.requestPointerLock)c.requestPointerLock();});
   S.onK=e=>{if(!S)return;S.keys[e.code]=e.type==='keydown';if(e.type!=='keydown')return;e.stopPropagation();
-    if(e.code==='Escape'){stop(true,'LEFT');}if(e.code==='KeyR')reload();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='KeyO')offensive();if(e.code==='KeyE')interact();if(e.code==='KeyK')buildCP();if(e.code==='KeyT')fallBack(true);if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
+    if(e.code==='Escape'){stop(true,'LEFT');}if(e.code==='KeyR')reload();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='Digit5')treat('tq');if(e.code==='Digit6')treat('band');if(e.code==='Digit7')treat('kit');if(e.code==='KeyX')S.prone=!S.prone;if(e.code==='KeyO')radio('OFFENSIVE',()=>{offensive();if(S.readBy&&rn()<.6&&S.mission!=='ATTACK'){say('THEY HEARD THE ORDER · ENEMY BARRAGE ON OUR LINE',3);const L=S.mission==='FRONT'?S.lines[S.cur]:{z:S.trZ||S.pos.z};arty(new V3(0,0,L.z),6,'E');}});if(e.code==='KeyE')interact();if(e.code==='KeyK')buildCP();if(e.code==='KeyT')fallBack(true);if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
   S.onM=e=>{if(!S||document.pointerLockElement!==S.cv)return;const k=S.ads?1/(S.wp[S.w].ads||1):1;S.yaw-=e.movementX*.0022*k;S.pitch=Math.max(-1.45,Math.min(1.45,S.pitch-e.movementY*.0022*k));};
   S.onD=e=>{if(!S)return;if(e.button===0){S.fire=e.type==='mousedown';if(!S.fire)S.bc=0;}if(e.button===2)S.ads=e.type==='mousedown';};S.onC=e=>{if(S)e.preventDefault();};S.onR=()=>{if(!S)return;S.cam.aspect=innerWidth/innerHeight;S.cam.updateProjectionMatrix();S.R&&S.R.setSize(innerWidth,innerHeight,false);};
   addEventListener('keydown',S.onK,true);addEventListener('keyup',S.onK,true);addEventListener('mousemove',S.onM);S.cv.addEventListener('mousedown',S.onD);addEventListener('mouseup',S.onD);S.cv.addEventListener('contextmenu',S.onC);addEventListener('resize',S.onR);}
 function unbind(){removeEventListener('keydown',S.onK,true);removeEventListener('keyup',S.onK,true);removeEventListener('mousemove',S.onM);removeEventListener('mouseup',S.onD);removeEventListener('resize',S.onR);if(document.pointerLockElement)document.exitPointerLock();}
 function swap(w){if(S.w===w)return;S.w=w;S.reload=0;S.cool=.6;}
-function reload(){const g=S.wp[S.w];if(S.reload>0||!g.mag||g.cur>=g.mag||g.res<=0)return;S.reload=g.rl;SND.click();}
+function reload(){const g=S.wp[S.w];if(S.reload>0||!g.mag||g.cur>=g.mag||g.res<=0)return;S.reload=g.rl*(S.sway>.3?1.5:1);SND.click();}
 function say(t,s){S.msg=t;S.msgT=s||3;}
 
 /* ------------------------------------------------------------------ combat */
 const ray=new THREE.Raycaster();
 function aimDir(spr){const d=new V3(0,0,-1).applyEuler(new THREE.Euler(S.pitch,S.yaw,0,'YXZ'));if(spr){d.x+=(rn()-.5)*spr;d.y+=(rn()-.5)*spr;d.z+=(rn()-.5)*spr;d.normalize();}return d;}
-function shoot(){const g=S.wp[S.w];if(S.reload>0||S.cool>0||S.downed||S.evacMe)return;if(g.cur<=0){reload();return;}g.cur--;S.shots++;
-  if(S.w==='lau'){S.cool=1;const d=aimDir(.004);const air=g.air?(S.eheli&&S.eheli.alive?S.eheli:S.drones.filter(x=>x.alive&&x.side==='E'&&x.k!=='FPV').sort((a,b)=>a.m.position.distanceTo(S.pos)-b.m.position.distanceTo(S.pos))[0]):null;
-  SND.launch();S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided?pickVeh():null)});if(g.cur<=0)reload();return;}
+function shoot(){const g=S.wp[S.w];if(S.reload>0||S.cool>0||S.downed||S.evacMe||S.treat)return;if(g.cur<=0){reload();return;}g.cur--;S.shots++;
+  if(S.w==='lau'){S.cool=1;const d=aimDir(.004);const L=lockState();const air=g.air?(L.locked?L.tgt:null):null;if(g.air&&!L.locked)say('NO LOCK · THE MISSILE FLIES BLIND',1.5);if(g.guided&&!g.air&&L.ff&&!L.locked)say('NO LOCK · FIRED DIRECT',1.5);
+  SND.launch();S.rk.push({p:S.pos.clone().add(d.clone().multiplyScalar(1)),v:d.multiplyScalar(g.spd),t:0,g,own:true,tgt:g.air?air:(g.guided&&L.ff?(L.locked?L.tgt:null):null),sac:g.guided&&!g.air&&!L.ff});S.lockT=0;if(g.cur<=0)reload();return;}
   S.cool=60/g.rpm;if(g.burst){S.bc++;if(S.bc>=g.burst){S.fire=false;S.bc=0;S.cool=.25;}}else if(!g.auto)S.fire=false;if(!g.quiet)S.loudT=4;SND.shot(g);if((S.shots&3)===0){const d0=aimDir(0);tracer(S.pos.clone().add(new V3(0,-.15,0)).addScaledVector(d0,1),S.pos.clone().addScaledVector(d0,Math.min(400,rayWorld(S.pos,d0,400))),S.me);}const lz=S.laserOn?(g.hipK||1):1;const mv=S.vel.length()>2?1.8*(g.moveK||1):1,spr=g.spr*(S.ads?.35:lz)*(S.crouch?.7*(g.crouchK||1):1)*mv;let r=null;for(let i=0;i<(g.pel||1);i++)r=hitscan(S.pos,aimDir(g.pel?g.spr:spr),g.dmg,true)||r;
   S.kick=(S.kick||0)+(g.dmg>60?.03:.008)*(g.kickK||1)*(S.crouch&&g.crouchK<1?.5:1);if(g.cur<=0)reload();return r;}
 function pickVeh(){let b=null,bd=1e9;for(const v of S.veh)if(v.alive&&v.side==='E'){const d=Math.hypot(v.x-S.pos.x,v.z-S.pos.z);if(d<bd){bd=d;b=v;}}return b;}
@@ -527,15 +527,16 @@ function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900
   const hs=ray.intersectObjects(targets,false);if(!hs.length){if(tS<900)fx(o.clone().addScaledVector(d,tS),.15);return null;}const h=hs[0],u=owner.get(h.object);
   {const v=vown.get(h.object);if(v){if(v.side==='E')armorHit(v,h.point.clone().sub(S.O),d.clone(),S.wp[S.w].pen||S.cfg.pri);fx(h.point.clone().sub(S.O),.1);return null;}}
   if(!u){fx(h.point.clone().sub(S.O),.15);return null;}
-  const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'?.7:1;hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
+  const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'||part==='arms'?.7:1;if(u.alive&&part!=='head')npcWound(u,part,dmg*k);hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
 function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;if(own){say('FRIENDLY FIRE',3);S.ff=(S.ff||0)+1;}}else if(own)S.kills++;}}
 function mark(hd){const e=document.getElementById('iHit');if(e){e.style.color=hd?'#ff5a4a':'#fff';e.style.opacity=1;clearTimeout(mark.t);mark.t=setTimeout(()=>e.style.opacity=0,120);}}
-function hurt(d,why){if(why==='bullet')SND.hit();let k=1;if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';}}S.lastHurt={d:Math.round(d*k),why,stk:(new Error().stack||'').split('\n').slice(2,5).join('<')};if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
+function hurt(d,why){if(why==='bullet')SND.hit();let k=1,part='torso';if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';part='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';part=['armL','armR','legL','legR','legL','legR'][(rn()*6)|0];}}
+  if(S.body&&S.hp<1e6&&!S.downed){if(why==='bullet')wound(part,d*k,why);else if(why==='blast'){for(let i=0;i<2;i++)wound(['torso','armL','armR','legL','legR'][(rn()*5)|0],d*.4,why);}}S.lastHurt={d:Math.round(d*k),why,stk:(new Error().stack||'').split('\n').slice(2,5).join('<')};if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
 function grenade(){if(S.gren<=0||S.phase!=='FIGHT')return;S.gren--;const d=aimDir(0);S.gnades.push({p:S.pos.clone(),v:d.multiplyScalar(18).add(new V3(0,4,0)),t:0,own:true});}
 function blast(p,r,dmg,own){fx(p,1.4);SND.boom(p,r);if(r>=5)scar(p,r);for(const u of[...S.us,...S.them]){if(!u.alive)continue;const d=u.m.position.distanceTo(p);if(d<r)hitMan(u,dmg*(1-d/r),own);}
   for(const v of S.veh){if(!v.alive)continue;const d=Math.hypot(v.x-p.x,v.z-p.z);if(d<4)hitVeh(v,dmg,own);}
   const d=S.pos.distanceTo(p);if(d<r)hurt(dmg*(1-d/r)*.8,'blast');}
-function hitVeh(v,dmg,own){v.hp-=dmg;if(v.hp<=0&&v.alive){v.alive=false;S.fires.push({p:v.m.position.clone().setY(v.m.position.y+2.5),t:0});fx(v.m.position.clone().setY(v.m.position.y+2),3);v.m.traverse(x=>{if(x.isMesh)x.material=new THREE.MeshLambertMaterial({color:0x222018});});if(own&&v.side==='E'){S.kills++;S.vk=(S.vk||0)+1;say('VEHICLE DESTROYED',2);}}}
+function hitVeh(v,dmg,own){if(v.decoy&&v.alive){v.alive=false;v.m.scale.y=.25;v.m.position.y-=.3;if(own){S.decoys=(S.decoys||0)+1;say('A DECOY · INFLATABLE MOCK-UP · DEFLATED',2.5);}return;}v.hp-=dmg;if(v.hp<=0&&v.alive){v.alive=false;S.fires.push({p:v.m.position.clone().setY(v.m.position.y+2.5),t:0});fx(v.m.position.clone().setY(v.m.position.y+2),3);v.m.traverse(x=>{if(x.isMesh)x.material=new THREE.MeshLambertMaterial({color:0x222018});});if(own&&v.side==='E'){S.kills++;S.vk=(S.vk||0)+1;say('VEHICLE DESTROYED',2);}}}
 const fxL=[];function fx(p,s){const m=new THREE.Mesh(new THREE.SphereGeometry(s,8,6),new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,opacity:.9}));m.position.copy(p);S.sc.add(m);fxL.push({m,t:0});}
 
 function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
@@ -544,15 +545,17 @@ function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
   if(!u.tgt||!u.tgt.alive||rn()<dt*.3){let b=null,bd=320;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(P);if(d<bd){bd=d;b=f;}}
     if(!u.friend&&S.phase==='FIGHT'&&!S.downed&&!S.evacMe){const d=S.pos.distanceTo(P),g=S.wp[S.w],det=(S.loudT>0?1.3:.85)*((g.seen||g.light)&&S.laserOn?1.25:1);if(d<bd*1.1*det)b={alive:true,player:true,m:{position:S.pos}};}u.tgt=b;}
   const goal=S.mission==='FRONT'?frontGoal(u):u.off?new V3((u.ox??=(rn()-.5)*120),0,S.mission==='DEFEND'?S.trZ-350:S.village.z+(u.oz??=(rn()-.5)*40)):S.mission==='DEFEND'?(u.friend?u.slot:new V3((u.ox??=(rn()-.5)*300),0,S.trZ)):u.friend?(S.phase==='FIGHT'?S.village.clone().add(new V3((u.ox??=(rn()-.5)*30),0,(u.oz??=(rn()-.5)*30)+(S.hold>0?0:40))):null):S.village.clone().add(new V3((u.ox??=(rn()-.5)*80),0,(u.oz??=(rn()-.5)*80)));
-  let mv=0,spd=0;const p0x=P.x,p0z=P.z;
+  let mv=0,spd=0;const p0x=P.x,p0z=P.z;const lame=u.crawl||u.wounded?.22:(u.leg??100)<50?.55:1;
+  if(u.wounded||u.treating){const g2=u.treating?u.treating.m.position.clone():P.clone().add(new V3(0,0,u.friend?40:-40));const d2=g2.sub(P).setY(0);if(d2.length()>1.5){d2.normalize();P.x+=d2.x*(u.treating?3.5:.8)*dt;P.z+=d2.z*(u.treating?3.5:.8)*dt;u.m.rotation.y=Math.atan2(-d2.x,-d2.z);}
+    const gy0=H(P.x,P.z);P.y=gy0;animMan(u,dt,u.treating?3:.5);return;}
   // bounding: in a fight, now and then dash 6-14 m toward the objective or sideways to new cover, then go to ground and fire
   u.bt=(u.bt??(2+rn()*5))-dt;if(u.tgt&&!u.slot&&!(S.mission==='FRONT'&&!u.assault)&&u.bt<=0&&!u.bound){u.bt=4+rn()*6;const base=goal?goal.clone().sub(P).setY(0):new V3(rn()-.5,0,rn()-.5);base.normalize();const sd=new V3(-base.z,0,base.x).multiplyScalar((rn()-.5)*14);u.bound=P.clone().addScaledVector(base,6+rn()*8).add(sd);u.boundT=3.5;}
-  if(u.bound){u.boundT-=dt;const d=u.bound.clone().sub(P).setY(0);if(d.length()<1||u.boundT<=0)u.bound=null;else{d.normalize();P.x+=d.x*4.6*dt;P.z+=d.z*4.6*dt;mv=1;u.crouch=false;u.m.rotation.y=Math.atan2(-d.x,-d.z);}}
-  if(!u.bound&&goal&&(!u.tgt||u.sup>0&&u.friend||u.assault)){const d=goal.clone().sub(P).setY(0);if(d.length()>3){d.normalize();P.x+=d.x*2.6*dt;P.z+=d.z*2.6*dt;mv=1;u.m.rotation.y=Math.atan2(-d.x,-d.z);}}
+  if(u.bound){u.boundT-=dt;const d=u.bound.clone().sub(P).setY(0);if(d.length()<1||u.boundT<=0)u.bound=null;else{d.normalize();P.x+=d.x*4.6*lame*dt;P.z+=d.z*4.6*lame*dt;mv=1;u.crouch=false;u.m.rotation.y=Math.atan2(-d.x,-d.z);}}
+  if(!u.bound&&goal&&(!u.tgt||u.sup>0&&u.friend||u.assault)){const d=goal.clone().sub(P).setY(0);if(d.length()>3){d.normalize();P.x+=d.x*2.6*lame*dt;P.z+=d.z*2.6*lame*dt;mv=1;u.m.rotation.y=Math.atan2(-d.x,-d.z);}}
   if(u.tgt&&!u.bound){const tp=u.tgt.m.position,d=tp.clone().sub(P);u.m.rotation.y=Math.atan2(-d.x,-d.z);const L=d.length();if(!mv&&u.cr0===undefined)u.cr0=rn()<.6;u.crouch=!mv&&u.cr0;
     if(L>60&&!mv&&u.friend&&S.phase==='FIGHT'&&S.mission!=='DEFEND'&&S.mission!=='FRONT'){d.setY(0).normalize();P.x+=d.x*2*dt;P.z+=d.z*2*dt;}
     if(u.cool<=0){u.cool=.5+rn()*1.2;const o=P.clone().setY(P.y+(u.crouch?1.05:1.4));if(rn()<.6)SND.far(o,false);if(u.m.userData.J)u.m.userData.J.rec=1;tracer(o,tp.clone().setY(tp.y+(u.tgt.player?-.2:1.2)).add(new V3((rn()-.5)*2,(rn()-.5)*1.5,(rn()-.5)*2)),u.friend?S.me:S.en);
-      const acc=Math.max(.04,.55-L/500)*(u.sup>0?.5:1)*(u.tgt.player?(S.crouch?.6:1)*(S.vel.length()>3?.6:1):1);
+      const acc=(u.wounded?0:1)*((u.arm??100)<50?.5:1)*Math.max(.04,.55-L/500)*(u.sup>0?.5:1)*(u.tgt.player?(S.crouch?.6:1)*(S.vel.length()>3?.6:1):1);
       if(los(o,tp.clone().setY(tp.y+(u.tgt.player?0:1.3)))){if(rn()<acc){if(u.tgt.player)hurt(14+rn()*10,'bullet');else hitMan(u.tgt,22+rn()*14,false);}
         else if(u.tgt.player&&L<120){S.near=.3;if(rn()<.5)SND.whiz(S.pos.clone().add(new V3((rn()-.5)*3,0,(rn()-.5)*3)));}}}}
   const gy=H(P.x,P.z),top=collide(P,P.y,P.y+1.7,.35);P.y=Math.max(gy,top>-1e8?top:gy);spd=Math.hypot(P.x-p0x,P.z-p0z)/Math.max(dt,1e-3);animMan(u,dt,spd);}
@@ -564,9 +567,9 @@ function los(a,b){const d=b.clone().sub(a),L=d.length();if(L<.5)return true;d.di
 function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld();
   if(S.phase==='INSERT'){insertStep(dt);}
   else{// player movement
-    const g=S.wp[S.w],f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw)),r=new V3(-f.z,0,f.x);let sp=(S.keys.ShiftLeft&&!S.ads?6.2:3.4)*(S.crouch?.5:1)*S.arm.spd*(g.slow||1)*(S.ads?.6:1);
+    const g=S.wp[S.w],f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw)),r=new V3(-f.z,0,f.x);let sp=(S.keys.ShiftLeft&&!S.ads&&!S.limp&&!S.crawl?6.2:3.4)*(S.crawl?.28:S.limp?.6:1)*(S.crouch?.5:1)*S.arm.spd*(g.slow||1)*(S.ads?.6:1);
     const w=new V3();if(S.keys.KeyW)w.add(f);if(S.keys.KeyS)w.sub(f);if(S.keys.KeyD)w.add(r);if(S.keys.KeyA)w.sub(r);if(w.lengthSq())w.normalize().multiplyScalar(sp);
-    if(S.downed||S.ride||S.evacMe){w.set(0,0,0);}S.vel.x=w.x;S.vel.z=w.z;const gr=H(S.pos.x,S.pos.z),eye=S.crouch?1.1:1.7;if(S.vel.y===0&&S.keys.Space&&!S.crouch)S.vel.y=4.2;S.vel.y-=9.81*dt;S.pos.addScaledVector(S.vel,dt);
+    if(S.downed||S.ride||S.evacMe){w.set(0,0,0);}S.vel.x=w.x;S.vel.z=w.z;const gr=H(S.pos.x,S.pos.z),eye=S.crawl?.45:S.crouch?1.1:1.7;if(S.vel.y===0&&S.keys.Space&&!S.crouch)S.vel.y=4.2;S.vel.y-=9.81*dt;S.pos.addScaledVector(S.vel,dt);
     {const feet=S.pos.y-eye,top=collide(S.pos,feet,S.pos.y+.1,.3),fl=Math.max(gr,top);if(S.pos.y<fl+eye){S.pos.y=Math.min(fl+eye,S.pos.y+Math.max(.0,fl+eye-S.pos.y));S.vel.y=0;}}
     if(!S.WM){S.pos.x=Math.max(-1150,Math.min(1150,S.pos.x));S.pos.z=Math.max(-1150,Math.min(1150,S.pos.z));}
     S.cool-=dt;if(S.reload>0){S.reload-=dt;if(S.reload<=0){const n=Math.min(g.mag-g.cur,g.res);g.cur+=n;g.res-=n;}}if(S.fire)shoot();S.kick=Math.max(0,(S.kick||0)-dt*.25);
@@ -576,7 +579,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     if(inZone&&!enemyNear){S.hold+=dt;if(S.hold>=30)end('WON');}else S.hold=Math.max(0,S.hold-dt*.5);
     S.waveT-=dt;if(S.waveT<=0&&S.them.filter(u=>u.alive).length<6){S.waveT=80;const n=4;for(let i=0;i<n;i++)S.them.push(man(false,S.village.x+(rn()-.5)*60,S.village.z-160-rn()*40));say('ENEMY REINFORCEMENTS FROM THE NORTH',3);}}
     S.heliT-=dt;if(S.heliT<=0&&!S.eheli){const h=helo(0x6a5a3a);h.position.set(400,80,-500);S.sc.add(h);S.eheli={m:h,hp:500,alive:true,cool:3,t:0};say('ENEMY HELICOPTER',3);S.heliT=1e9;}}
-  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
+  droneStep(dt);if(!S.WM)airStep(dt);vehStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);lockStep(dt);bodyStep(dt);npcStep(dt);iwStep(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
@@ -586,6 +589,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     if(h.cool<=0&&S.phase==='FIGHT'){h.cool=4;const fr=S.us.find(u=>u.alive);if(fr||!(S.downed||S.evacMe)){const tg=(rn()<.4&&!S.downed&&!S.evacMe)||!fr?S.pos.clone():fr.m.position.clone();blast(tg.add(new V3((rn()-.5)*12,0,(rn()-.5)*12)),6,110,false);}}}
   // projectiles
   for(let i=S.rk.length-1;i>=0;i--){const k=S.rk[i];k.t+=dt;if(apsCheck(k)){S.rk.splice(i,1);continue;}
+    if(k.sac&&S.w==='lau'&&S.ads){const ad=aimDir(0),t=Math.min(2000,rayWorld(S.pos,ad,2000));const aim=S.pos.clone().addScaledVector(ad,t);const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
     // your ATGM flies a top-attack profile: up over its target, then down onto the roof
     if(k.own&&k.g.guided&&k.tgt&&k.tgt.alive){const tp=k.tgt.m.position,dh=Math.hypot(tp.x-k.p.x,tp.z-k.p.z);const aim=tp.clone().setY(tp.y+(dh>45?Math.min(70,dh*.45):1.2));const d=aim.sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*3));k.top=dh<45;}
     else if(k.tgtP&&!k.tgt){const d=k.tgtP.clone().sub(k.p).normalize().multiplyScalar(k.g.spd);k.v.lerp(d,Math.min(1,dt*4));}
@@ -593,6 +597,7 @@ function step(dt){if(!S||S.res)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld(
     else k.v.y-=(k.g.air?0:3)*dt;k.p.addScaledVector(k.v,dt);let hit=null;
     for(const v of S.veh)if(v.alive&&Math.hypot(v.x-k.p.x,v.z-k.p.z)<3.5&&k.p.y<v.m.position.y+3.5){if(k.own&&v.side==='E')armorHit(v,k.p.clone(),k.v.clone().normalize(),k.g.guided?'ATGM':'RPG');else hitVeh(v,k.g.dmg,k.own);hit=1;}
     for(const dr of S.drones)if(dr.alive&&k.own&&k.p.distanceTo(dr.m.position)<(dr.k==='MALE'?10:5)){hitDrone(dr,k.g.dmg,true);hit=1;}
+    if(k.own&&k.g.air)for(const a of S.air||[])if(a.alive&&a.side==='E'&&k.p.distanceTo(a.m.position)<14){a.alive=false;a.vy=0;hit=1;S.kills++;say('ENEMY '+String(a.name).toUpperCase()+' SHOT DOWN',3);}
     if(S.eheli&&S.eheli.alive&&k.p.distanceTo(S.eheli.m.position)<6){S.eheli.hp-=k.g.dmg;hit=1;if(S.eheli.hp<=0){S.eheli.alive=false;fx(S.eheli.m.position,4);S.sc.remove(S.eheli.m);if(k.own){S.kills++;say('HELICOPTER DOWN',3);}}}
     if(hit||k.p.y<H(k.p.x,k.p.z)||k.t>8){blast(k.p,5,hit?0:120,k.own);S.rk.splice(i,1);}}
   for(let i=S.gnades.length-1;i>=0;i--){const n=S.gnades[i];n.t+=dt;n.v.y-=9.81*dt;n.p.addScaledVector(n.v,dt);const g=H(n.p.x,n.p.z);if(n.impact&&n.t>.05){const sp=n.v.length()*dt+.01,dn=n.v.clone().normalize();if(rayBoxes(n.p.clone().addScaledVector(dn,-sp),dn,sp)<sp)n.hitg=true;}if(n.p.y<g+.1){n.hitg=true;n.p.y=g+.1;n.v.multiplyScalar(.3);n.v.y=Math.abs(n.v.y);}if(n.t>3.5||(n.impact&&(n.hitg||n.t>6))){blast(n.p,n.impact?7:9,n.impact?130:160,n.own);S.gnades.splice(i,1);}}
@@ -608,7 +613,7 @@ function draw(){if(!S)return;if(!S.WM&&!S.R)return;if(!S.WM)pose();const g=S.wp[
   {const sc2=document.getElementById('iScope');if(sc2)sc2.style.display=scoped?'block':'none';}S.flag.material.color.set(S.hold>0?0x5be1ff:0xffe14a);if(!S.WM)S.R.render(S.sc,S.cam);else if((S.hf=(S.hf||0)+1)%30===1)hideFlight();
   const $=id=>document.getElementById(id);const live=S.us.filter(u=>u.alive).length,elive=S.them.filter(u=>u.alive).length,dv=Math.round(Math.hypot(S.pos.x-S.village.x,S.pos.z-S.village.z));
   const nm=S.w==='pri'?g.n+(g.vari?(S.vlow?' · 1.6×':' · 6×'):'')+(S.uglN?' · GL '+S.uglN:''):S.w==='lau'?((S.N[S.cfg.lau]||'')+' '+g.n):g.n;
-  const brg=((Math.atan2(S.village.x-S.pos.x,-(S.village.z-S.pos.z))*180/Math.PI+360)%360),hd=((-S.yaw*180/Math.PI)%360+360)%360;
+  const brg=S.gpsJam>.45?NaN:((Math.atan2(S.village.x-S.pos.x,-(S.village.z-S.pos.z))*180/Math.PI+360)%360),hd=((-S.yaw*180/Math.PI)%360+360)%360;
   const tl=S.cfg.cond?' · '+String(Math.floor(S.cfg.cond.tod)).padStart(2,'0')+':'+String(Math.floor(S.cfg.cond.tod%1*60)).padStart(2,'0')+' '+S.cfg.cond.wx:'';
   $('iTop').innerHTML=S.mission==='FRONT'&&S.phase!=='INSERT'?'FRONT · '+esc(S.loc.name.toUpperCase())+tl+' · OUR LINE '+(S.cur+1)+' OF '+S.lines.length+(S.push?' · ASSAULTING LINE '+(S.cur+2):'')+(S.digQ&&S.digQ.length?' · DIGGING IN':'')+' · NEXT COUNTER-ATTACK '+Math.max(0,Math.round(S.waveT))+' s<br><span style="font-size:11px;color:#9fb">FRIENDLIES '+live+' · ENEMY '+elive+' · KILLS '+S.kills+' · E PLAN / RIDE · K BUILD COMMAND POST · T FALL BACK</span>':S.phase==='INSERT'?esc(INS[S.ins].toUpperCase()+' · '+S.loc.name.toUpperCase()+tl):S.mission==='DEFEND'?'HOLD THE TRENCHES · '+esc(S.loc.name.toUpperCase())+' · WAVE '+S.wave+'/4'+(S.wave<4?' · NEXT IN '+Math.max(0,Math.round(S.waveT))+' s':'')+' · HDG '+Math.round(hd)+'°<br><span style="font-size:11px;color:#9fb">DEFENDERS '+live+'/'+S.us.length+' · ENEMY '+elive+' · ARMOUR '+S.veh.filter(v=>v.alive&&v.side==='E').length+' · KILLS '+S.kills+'</span>':esc(S.loc.name.toUpperCase())+' · OBJECTIVE '+dv+' m · '+Math.round(brg)+'° · HDG '+Math.round(hd)+'°'+(S.hold>0?' · HOLDING '+Math.round(S.hold)+'/30 s':'')+'<br><span style="font-size:11px;color:#9fb">SQUAD '+live+'/'+S.us.length+' · ENEMY SEEN '+elive+' · KILLS '+S.kills+'</span>';
   $('iBL').innerHTML='HEALTH '+Math.max(0,Math.round(S.hp))+'<br><span style="font-size:11px">'+esc(S.arm.n)+(S.crouch?' · CROUCHED':'')+(S.lastZone?' · last hit: '+S.lastZone:'')+'</span>';
@@ -852,7 +857,7 @@ function v385Step(dt){S.loudT=Math.max(0,S.loudT-dt);const g=S.wp[S.w]||{};const
 // the underbarrel grenade launcher (4): a fast arc, bursts on impact
 function ugl(){if(S.phase!=='FIGHT'||S.w!=='pri')return;if(S.uglN<=0){say('NO LAUNCHER GRENADES',1.2);return;}S.uglN--;const d=aimDir(.004);SND.thunk();S.gnades.push({p:S.pos.clone().addScaledVector(d,.8),v:d.multiplyScalar(70).add(new V3(0,2,0)),t:0,own:true,impact:true});}
 
-function armorHit2(v,pt,dir,wpn){const k=vkind(v),fam=vfam(v),T=PL[fam][k],A=ARMT[k],P=v.m.position,ry=v.m.rotation.y,c=Math.cos(-ry),s2=Math.sin(-ry);
+function armorHit2(v,pt,dir,wpn){if(v.decoy){const r0={v,ld:[dir.x,dir.y,dir.z],name:(v.name||'vehicle')+' (decoy)',k:vkind(v),fam:vfam(v),part:'—',face:'—',ang:0,slope:null,t:0,eff:0,pen:0,res:'DECOY · INFLATABLE MOCK-UP',dmg:[],notes:['no armour, no crew: a decoy to draw fire'],lx:0,lz:0,ly:1,wpn,wh:''};hitVeh(v,1,true);S.armLog.push(r0);showArm(r0);return r0;}const k=vkind(v),fam=vfam(v),T=PL[fam][k],A=ARMT[k],P=v.m.position,ry=v.m.rotation.y,c=Math.cos(-ry),s2=Math.sin(-ry);
   const dx=pt.x-P.x,dz=pt.z-P.z,lx=dx*c-dz*s2,lz=dx*s2+dz*c,ly=pt.y-P.y,ldx=dir.x*c-dir.z*s2,ldz=dir.x*s2+dir.z*c;
   const turret=ly>A.tz&&Math.abs(lz)<A.dim[2]*.35,part=turret?'turret':'hull';let face;
   if(dir.y<-.55&&(wpn==='ATGM'||wpn==='FPV'))face='top';else{const ax=Math.abs(lx)/(A.dim[0]/2),az=Math.abs(lz)/(A.dim[2]/2);face=az>=ax?(lz<0?'front':'rear'):'side';}
@@ -884,6 +889,86 @@ function armorHit2(v,pt,dir,wpn){const k=vkind(v),fam=vfam(v),T=PL[fam][k],A=ARM
     if(bam)for(let i=0;i<4;i++)smoke(v.m.position.clone().setY(v.m.position.y+3.2));res+=' · '+st;}
   else if(heat)hitVeh(v,40,true);
   const rec={v,ld:[ldx,dir.y,ldz],name:v.name||v.m.userData.name||({MBT:'main battle tank',IFV:'infantry fighting vehicle',APC:'armoured personnel carrier'}[k]),k,fam,part,face:tracks?'tracks':face,ang,slope:sl,t:Math.round(t),eff:Math.round(eff),pen:Math.round(pen),res,dmg,notes,lx,lz,ly,wpn,wh};S.armLog.push(rec);showArm(rec);return rec;}
+
+/* ------------------------------------------------------------------ v392: launcher sights, wounds, the information war */
+// LAUNCHER SIGHTS. Aim (Q / right mouse) with the launcher: an anti-tank missile shows its sight in thermal (grey-hot);
+// a fire-and-forget missile (Western-pattern) must LOCK first — hold the target in the box until the seeker settles —
+// then flies top attack; a command-guided one (Soviet-pattern) flies to where your crosshair is while you keep aiming.
+// An air-defence missile's seeker growls when an aircraft, helicopter or armed drone is in its field and gives a steady
+// lock tone when it has it; fired without a lock it flies blind. A rocket launcher has an optical sight with range marks.
+function lockState(){const g=S.wp.lau||{},ff=S.me==='B',air=!!g.air;const L={ff,air,locked:S.lockT>=(air?1.2:2.2)&&!!S.lockTgt&&S.lockTgt.alive!==false,tgt:S.lockTgt};return L;}
+function lockStep(dt){const g=S.wp.lau||{};const on=S.phase==='FIGHT'&&S.w==='lau'&&S.ads&&(g.guided||g.air);let best=null,ba=1e9,bd=0;
+  if(on){const ad=aimDir(0),cone=g.air?.07:.05;const C=g.air?[S.eheli&&S.eheli.alive?S.eheli:null,...S.drones.filter(d=>d.alive&&d.side==='E'&&d.k!=='FPV'),...(S.air||[]).filter(a=>a.alive&&a.side==='E')].filter(Boolean):S.veh.filter(v=>v.alive&&v.side==='E');
+    for(const t of C){const tp=t.m.position.clone().setY(t.m.position.y+(g.air?0:1.5)),d=tp.sub(S.pos),L=d.length();if(L>(g.air?5000:2500)||L<30)continue;const a=Math.acos(Math.min(1,d.normalize().dot(ad)));if(a<cone&&a<ba){if(!g.air&&rayWorld(S.pos,d,L-3)<L-3)continue;ba=a;best=t;bd=L;}}}
+  if(best&&best===S.lockTgt)S.lockT+=dt*(1-(S.jam||0)*.4);else{S.lockTgt=best;S.lockT=best?0:Math.max(0,(S.lockT||0)-dt*3);}
+  // sight overlay and seeker tone
+  let el=document.getElementById('iLau');if(!el){el=document.createElement('div');el.id='iLau';el.style.cssText='position:absolute;inset:0;pointer-events:none;display:none';S.hud.appendChild(el);}
+  const cvs=S.WM?document.getElementById('gl'):S.cv;const show=S.phase==='FIGHT'&&S.w==='lau'&&S.ads;el.style.display=show?'block':'none';if(cvs)cvs.style.filter=show&&g.guided&&!g.air?'grayscale(1) contrast(1.5) brightness(1.15)':'';
+  if(show){const L=lockState(),pr=Math.min(1,(S.lockT||0)/(g.air?1.2:2.2));let h='';
+    if(g.air)h='<svg width="100%" height="100%" style="position:absolute;inset:0"><circle cx="50%" cy="50%" r="11%" fill="none" stroke="#1d1" stroke-width="1.5"/><line x1="50%" y1="35%" x2="50%" y2="41%" stroke="#1d1"/><line x1="50%" y1="59%" x2="50%" y2="65%" stroke="#1d1"/></svg>'+
+      '<div style="position:absolute;left:50%;top:70%;transform:translateX(-50%);color:'+(L.locked?'#ff5a3a':'#9fe0b8')+';letter-spacing:.15em">'+(L.locked?'LOCK · FIRE':best?'SEEKER · TONE · HOLD':'SEARCH')+'</div>';
+    else if(g.guided)h='<div style="position:absolute;inset:6%;border:2px solid rgba(0,0,0,.6)"></div><div style="position:absolute;left:50%;top:50%;width:'+(L.ff?'12%':'1px')+';height:'+(L.ff?'9%':'1px')+';transform:translate(-50%,-50%);border:2px solid '+(L.locked?'#fff':'rgba(255,255,255,.5)')+'"></div>'+
+      '<div style="position:absolute;left:50%;top:22%;transform:translateX(-50%);color:#fff;letter-spacing:.15em;text-shadow:0 0 3px #000">'+(L.ff?(L.locked?'LOCKED · TOP ATTACK · FIRE':best?'TRACKING '+Math.round(pr*100)+' %':'SEEKER · PUT THE BOX ON A VEHICLE'):'COMMAND GUIDANCE · KEEP THE CROSSHAIR ON THE TARGET')+'</div>'+(best?'<div style="position:absolute;left:50%;top:76%;transform:translateX(-50%);color:#fff">'+Math.round(bd)+' m</div>':'');
+    else h='<svg width="100%" height="100%" style="position:absolute;inset:0">'+[100,200,300,400].map((r,i)=>'<line x1="47%" x2="53%" y1="'+(50+i*3)+'%" y2="'+(50+i*3)+'%" stroke="#111"/><text x="54%" y="'+(50.6+i*3)+'%" font-size="10" fill="#111">'+r+'</text>').join('')+'</svg>';
+    el.innerHTML=h;}
+  seekerTone(show&&g.air?(lockState().locked?2:best?1:0):show&&g.guided&&lockState().ff?(lockState().locked?3:best?4:0):0);}
+function seekerTone(m){if(!AU.C)return;if(!AU.st){const o=AU.C.createOscillator(),g=AU.C.createGain();o.type='square';g.gain.value=0;o.connect(g);g.connect(AU.M);o.start();AU.st={o,g};}
+  const t=AU.C.currentTime;AU.st.g.gain.setTargetAtTime(m?.06:0,t,.03);if(m===1)AU.st.o.frequency.setTargetAtTime(380+Math.sin(t*30)*60,t,.02);else if(m===2)AU.st.o.frequency.setTargetAtTime(1150,t,.02);else if(m===3)AU.st.o.frequency.setTargetAtTime(900,t,.02);else if(m===4){AU.st.o.frequency.setTargetAtTime(700,t,.02);AU.st.g.gain.setTargetAtTime((t*4%1)<.3?.05:0,t,.01);}}
+
+// WOUNDS. Each part — head, torso, each arm, each leg — has its own condition; a bullet or fragment wound bleeds (light,
+// heavy, or arterial in a limb). Bleeding drains your blood (the health figure); a hurt leg makes you limp and stops you
+// running, two bad legs or low blood put you on the ground crawling; hurt arms shake your aim and slow reloads; little
+// blood left blurs and darkens what you see. 5 tourniquet (stops the worst limb bleed), 6 bandage (a light or heavy
+// bleed), 7 medical kit (patches every part, some blood back). E next to a wounded friendly treats him. The enemy's and
+// your squad's soldiers are hurt by part too: leg wounds slow them or put them down crawling, arm wounds spoil their
+// aim; they bleed, crawl back when badly hurt, and a medic on each side goes to the wounded.
+const PARTN={head:'head',torso:'torso',armL:'left arm',armR:'right arm',legL:'left leg',legR:'right leg'};
+function wound(part,d,why){const B=S.body;B[part]=Math.max(0,B[part]-d*1.4);const limb=/arm|leg/.test(part);
+  const sev=d>30?(limb&&rn()<.35?'ARTERIAL':'HEAVY'):d>8?'LIGHT':null;if(!sev)return;const bleed={LIGHT:.18,HEAVY:.55,ARTERIAL:1.6}[sev];S.wounds.push({part,sev,bleed,tq:false,band:false});
+  if(sev!=='LIGHT')say((sev==='ARTERIAL'?'ARTERIAL BLEED · ':'HEAVY BLEED · ')+PARTN[part].toUpperCase()+(limb&&sev==='ARTERIAL'?' · TOURNIQUET (5)':' · BANDAGE (6)'),2.5);}
+function treat(kind){if(S.phase!=='FIGHT'||S.treat||S.evacMe)return;const K2=S.kit2;if(!K2[kind]){say('NO '+{tq:'TOURNIQUETS',band:'BANDAGES',kit:'MEDICAL KITS'}[kind]+' LEFT',1.5);return;}
+  const ok=kind==='kit'||S.wounds.some(w=>w.bleed>0&&(kind==='tq'?/arm|leg/.test(w.part):true));if(!ok){say(kind==='tq'?'NO LIMB BLEEDING':'NOTHING TO BANDAGE',1.5);return;}
+  S.treat={kind,t:0,dur:kind==='tq'?3:kind==='band'?4:8};say({tq:'APPLYING A TOURNIQUET',band:'BANDAGING',kit:'USING THE MEDICAL KIT'}[kind]+'…',S.treat.dur);}
+function treatDone(kind){const K2=S.kit2;K2[kind]--;const W2=S.wounds.filter(w=>w.bleed>0).sort((a,b)=>b.bleed-a.bleed);
+  if(kind==='tq'){const w=W2.find(w=>/arm|leg/.test(w.part));if(w){for(const x of S.wounds)if(x.part===w.part){x.tq=true;x.bleed=0;}S.body[w.part]=Math.max(0,S.body[w.part]-10);say('TOURNIQUET ON · '+PARTN[w.part].toUpperCase(),2);}}
+  else if(kind==='band'){const w=W2.find(w=>w.sev!=='ARTERIAL')||W2[0];if(w){w.band=true;w.bleed=w.sev==='ARTERIAL'?w.bleed*.5:0;say('BANDAGED · '+PARTN[w.part].toUpperCase(),2);}}
+  else{for(const k in S.body)S.body[k]=Math.min(100,S.body[k]+35);for(const w of S.wounds)if(w.sev==='LIGHT')w.bleed=0;if(S.hp<1e6)S.hp=Math.min(100,S.hp+25);say('PATCHED UP',2);}}
+function bodyStep(dt){if(S.phase!=='FIGHT'||!S.body)return;const bl=S.wounds.reduce((t,w)=>t+(w.tq?0:w.bleed),0);if(bl>0&&S.hp<1e6&&!S.evacMe){S.hp-=bl*dt;if(S.hp<=0){if(S.medN<3&&!S.downed){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('BLED OUT · DOWN · MEDEVAC CALLED',4);}else if(!S.downed)end('KIA');}}
+  if(S.body.head<=0&&!S.res)end('KIA');
+  if(S.treat){S.treat.t+=dt;if(S.treat.t>=S.treat.dur){const k=S.treat.kind;S.treat=null;treatDone(k);}}
+  const lg=Math.min(S.body.legL,S.body.legR),lg2=Math.max(S.body.legL,S.body.legR);S.crawl=(S.hp<30&&S.hp<1e6)||(lg<15&&lg2<15)||S.prone;S.limp=lg<40;
+  const arm=(S.body.armL+S.body.armR)/2;S.sway=arm<60?(60-arm)/60:0;if(S.sway&&S.phase==='FIGHT'){S.yaw+=(Math.sin(S.t*2.3)*.0015+(rn()-.5)*.001)*S.sway;S.pitch+=(Math.cos(S.t*1.9)*.0012)*S.sway;}
+  // blood loss: the view darkens and blurs
+  const cvs=S.WM?document.getElementById('gl'):S.cv;if(cvs&&!(S.w==='lau'&&S.ads)){const lo=S.hp<1e6?Math.max(0,(50-S.hp)/50):0;cvs.style.filter=lo>0?'blur('+(lo*2.5).toFixed(1)+'px) brightness('+(1-lo*.45).toFixed(2)+') saturate('+(1-lo*.7).toFixed(2)+')':'';}
+  // the body diagram
+  let el=document.getElementById('iBody');if(!el){el=document.createElement('div');el.id='iBody';el.style.cssText='position:absolute;left:16px;bottom:58px;font-size:10px';S.hud.appendChild(el);}
+  const c=k=>{const v=S.body[k];return v>70?'#7fbf7f':v>35?'#e0c050':v>0?'#e06a3a':'#555';},bd=k=>S.wounds.some(w=>w.part===k&&w.bleed>0)?'<circle cx="'+({head:20,torso:20,armL:7,armR:33,legL:15,legR:25}[k])+'" cy="'+({head:6,torso:24,armL:24,armR:24,legL:50,legR:50}[k])+'" r="3" fill="#d00"/>':'';
+  el.innerHTML='<svg width="40" height="62"><circle cx="20" cy="6" r="5" fill="'+c('head')+'"/><rect x="13" y="13" width="14" height="22" fill="'+c('torso')+'"/><rect x="4" y="14" width="7" height="20" fill="'+c('armL')+'"/><rect x="29" y="14" width="7" height="20" fill="'+c('armR')+'"/><rect x="13" y="37" width="6" height="24" fill="'+c('legL')+'"/><rect x="21" y="37" width="6" height="24" fill="'+c('legR')+'"/>'+Object.keys(PARTN).map(bd).join('')+'</svg>'+
+    '<div>TQ '+S.kit2.tq+' (5) · BANDAGE '+S.kit2.band+' (6) · KIT '+S.kit2.kit+' (7)'+(S.treat?' · TREATING…':'')+(S.crawl?' · CRAWLING':S.limp?' · LIMPING':'')+'</div>';}
+// NPC wounds: part damage, bleeding, crawling back, medics
+function npcWound(u,part,dmg){if(part==='legs'){u.leg=(u.leg??100)-dmg*1.5;if(u.leg<=0)u.crawl=true;}else if(part==='arms')u.arm=(u.arm??100)-dmg*1.5;u.bleed=(u.bleed||0)+(dmg>30?.9:dmg>12?.35:.1);}
+function npcStep(dt){for(const u of[...S.us,...S.them]){if(!u.alive)continue;if(u.bleed&&!u.stab){u.hp-=u.bleed*dt;if(u.hp<=0){hitMan(u,1,false);continue;}if(u.hp<30&&!u.wounded){u.wounded=true;u.tgt=null;}}}
+  // a medic on each side goes to the worst wounded within 60 m
+  for(const side of[S.us,S.them]){const med=side.find(u=>u.alive&&u.medic&&!u.wounded&&!u.crawl);if(!med)continue;const wd=side.filter(u=>u.alive&&u.wounded&&!u.stab&&u.m.position.distanceTo(med.m.position)<60).sort((a,b)=>a.hp-b.hp)[0];med.treating=wd||null;
+    if(wd&&med.m.position.distanceTo(wd.m.position)<2.2){med.tt=(med.tt||0)+dt;if(med.tt>5){wd.stab=true;wd.bleed=0;med.tt=0;if(wd.friend)say('MEDIC: CASUALTY STABILISED',1.5);}}}}
+
+// THE INFORMATION WAR IN BATTLE (infowar.js): their jamming delays your radio calls and can cut your drones' link; it
+// can spoil the satellite-navigation bearing; if they read your radio they can answer an offensive before it lands;
+// if you read theirs you hear intercepts that show where they are for a moment; some of their armour is decoys; a
+// public missile alert during the battle shows on screen until it is called a false alarm.
+function iwInit(){const I=window.WWAR&&WWAR.infowar,c=S.cfg.camp;S.jam=I&&!c?I.jam(S.me):.15;S.gpsJam=I&&!c?I.gps(S.me):.1;S.readBy=I&&!c?I.readBy(S.me):rn()<.25;S.readThem=I&&!c?I.reads(S.me):rn()<.3;S.decoyK=I&&!c?I.decoy(S.en):.15;S.radioQ=[];S.icT=30+rn()*30;}
+function radio(name,fn){if(!S.jam||rn()>S.jam*.6)return fn();const d=5+rn()*8;S.radioQ.push({t:d,fn,name});say('RADIO JAMMED · '+name+' GOES THROUGH IN ~'+Math.round(d)+' S',2.5);}
+function iwStep(dt){if(S.phase!=='FIGHT')return;for(let i=S.radioQ.length-1;i>=0;i--){const q=S.radioQ[i];q.t-=dt;if(q.t<=0){S.radioQ.splice(i,1);q.fn();}}
+  // your drones' link
+  for(const d of S.myFpv)if(d.alive&&!d.wait&&!d.jc){d.jc=1;if(rn()<S.jam*.5){d.alive=false;fx(d.m.position.clone(),.5);say('FPV LINK JAMMED · THE DRONE IS LOST',2.5);}}
+  // their intercepted radio
+  if(S.readThem){S.icT-=dt;if(S.icT<=0){S.icT=40+rn()*40;const al=S.them.filter(u=>u.alive);if(al.length){const L=['moving to the left flank','reinforcing the second trench','pulling back from the town square','armour moving up behind the treeline','ammunition running low on the east side'];
+      say('[INTERCEPT] THEIR RADIO: "'+L[(rn()*L.length)|0].toUpperCase()+'" · POSITIONS MARKED',4);S.marks=al.slice(0,8).map(u=>u);S.markT=6;}}}
+  if(S.markT>0){S.markT-=dt;if(!S.mk){S.mk=[];}while(S.mk.length<(S.marks||[]).length){const m=new THREE.Mesh(GE('mk',()=>new THREE.ConeGeometry(.35,.7,4)),new THREE.MeshBasicMaterial({color:0xff3a2a}));m.rotation.x=Math.PI;S.sc.add(m);S.mk.push(m);}
+    S.mk.forEach((m,i)=>{const u=S.marks[i];m.visible=!!u&&u.alive&&S.markT>0;if(m.visible)m.position.copy(u.m.position).setY(u.m.position.y+2.6);});}else if(S.mk)S.mk.forEach(m=>m.visible=false);
+  // a public missile alert in the war shows here too
+  const A=window.WWAR&&WWAR.lastAlarm;if(A&&!S.cfg.camp){const t=WWAR.st.t;const on=t>=A.t&&!A.done;let el=document.getElementById('iAlert');if(!el){el=document.createElement('div');el.id='iAlert';el.style.cssText='position:absolute;top:90px;left:50%;transform:translateX(-50%);padding:6px 14px;background:rgba(160,20,10,.85);letter-spacing:.12em;display:none';S.hud.appendChild(el);}
+    if(on){el.style.display='block';el.textContent='PUBLIC ALERT · '+A.city.toUpperCase()+' · BALLISTIC MISSILE THREAT · TAKE SHELTER';S.alertSeen=A;}else if(S.alertSeen===A&&A.done){el.style.display='block';el.style.background='rgba(40,90,40,.85)';el.textContent='ALL CLEAR · '+A.city.toUpperCase()+' · FALSE ALARM';S.alertClr=(S.alertClr||8)-dt;if(S.alertClr<=0){el.style.display='none';S.alertSeen=null;}}}}
 
 /* ------------------------------------------------------------------ v391: active protection */
 // Tanks that carry an active protection system (Trophy, Arena-M, Afganit, KAPS) detect an incoming rocket or missile at
@@ -958,7 +1043,7 @@ function drawPlan(c){if(!c.plan)return;const g=c.plan.pc.getContext('2d');g.fill
 // E: the planning table at a command post, a ride in a friendly APC / IFV, or leaving from the rear
 function nearCP(){return S.STR.find(c=>c.kind==='COMMAND POST'&&c.side==='F'&&!c.down&&Math.hypot(S.pos.x-c.cx,S.pos.z-c.cz)<6);}
 function nearTaxi(){return S.veh.find(v=>v.alive&&v.side==='F'&&!v.tank&&Math.hypot(S.pos.x-v.x,S.pos.z-v.z)<7);}
-function interact(){if(S.phase!=='FIGHT'||S.downed)return;if(S.ride){say('RIDING · WAIT FOR THE STOP',1.5);return;}const c=nearCP(),v=nearTaxi();
+function interact(){if(S.phase!=='FIGHT'||S.downed)return;if(S.ride){say('RIDING · WAIT FOR THE STOP',1.5);return;}{const w=S.us.find(u=>u.alive&&u.wounded&&!u.stab&&u.m.position.distanceTo(S.pos)<3);if(w){if(S.kit2.band<=0&&S.kit2.tq<=0){say('NOTHING LEFT TO TREAT HIM WITH',1.5);return;}if(S.kit2.band>0)S.kit2.band--;else S.kit2.tq--;w.stab=true;w.bleed=0;say('YOU STABILISE HIM',2);return;}}const c=nearCP(),v=nearTaxi();
   if(c)return panel('plan',c);if(v)return panel('ride',v);if(S.pos.z>(S.mission==='FRONT'?S.lines[0].z+260:420))return panel('leave');say('NOTHING HERE · E AT A COMMAND POST OR NEXT TO ONE OF OUR APCS / IFVS',2);}
 function panel(kind,obj){if(document.pointerLockElement)document.exitPointerLock();const old=document.getElementById('iPan');if(old)old.remove();const d=document.createElement('div');d.id='iPan';d.className='u2m';d.style.zIndex=9990;
   const btn=(a,t,sub,dis)=>'<button class="opt" data-ip="'+a+'"'+(dis?' disabled':'')+'><b>'+esc(t)+'</b>'+(sub?'<span>'+esc(sub)+'</span>':'')+'</button>';let body='',title='';
@@ -976,7 +1061,7 @@ function panel(kind,obj){if(document.pointerLockElement)document.exitPointerLock
 function closePan(){const d=document.getElementById('iPan');if(d)d.remove();S.pan=null;}
 function doPan(a){const P=S.pan;closePan();if(!P||a==='x')return;
   if(a==='off')offensive();else if(a==='hold'){S.push=false;say('HOLD THIS LINE',2);}else if(a==='back')fallBack(true);
-  else if(a==='arty'){const tz=S.mission==='FRONT'?(S.lines[S.cur+1]||S.lines[S.cur]).z:S.village.z;arty(new V3(0,0,tz),10,'F');S.artyCd=60;say('ARTILLERY ON THE ENEMY LINE',2);}
+  else if(a==='arty')radio('ARTILLERY',()=>{const tz=S.mission==='FRONT'?(S.lines[S.cur+1]||S.lines[S.cur]).z:S.village.z;arty(new V3(0,0,tz),10,'F');S.artyCd=60;say('ARTILLERY ON THE ENEMY LINE',2);});
   else if(a==='veh'){const c=P.obj;const m=vehicle('APC',0x4e5a3c),x=c.cx+8,z=c.cz+420;m.position.set(x,H(x,z),z);S.sc.add(m);const v={m,hp:500,side:'F',x,z,cool:3,alive:true,goal:new V3(c.cx+8,0,c.cz+6),taxi:1};S.veh.push(v);S.taxiCall=v;say('AN APC IS ON ITS WAY TO THE COMMAND POST',2.5);}
   else if(a==='sup'){for(const w of['pri','side']){const g=S.wp[w];g.res=Math.max(g.res,g.mag*7);}if(S.wp.lau.mag)S.wp.lau.res=Math.max(S.wp.lau.res,2);S.gren=Math.max(S.gren,4);S.bags+=4;S.fpvKit+=1;S.uglN=Math.max(S.uglN,S.wp.pri.ugl||0);S.supCd=90;say('RESUPPLIED',2);}
   else if(a==='med')medevac(true);
@@ -1246,6 +1331,6 @@ function end(r){if(!S||S.res)return;S.res=r;const st=S.cfg.camp?null:W.st,p=S.cf
     (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="note">The front line in this sector moves forward a little.</div>':'')+'</div>'+
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
-function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+function stop(early,why){if(!S)return;if(early&&!S.res){end(why||'LEFT');return;}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
+window.INFANTRY={lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();
