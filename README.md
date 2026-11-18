@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" width="128" alt="Viper Sortie logo"></p>
+
 # Viper Sortie — combined-arms combat in the browser
 
 Play: https://unforgiven29.github.io/HTML-Flight-Combat/

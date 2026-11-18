@@ -99,10 +99,11 @@ h2{margin:0;font:700 12px var(--f-mono);letter-spacing:.2em;color:var(--dim);tex
 .hq-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 45%,rgba(2,8,12,.7)),linear-gradient(rgba(2,8,12,.82),transparent 120px);transition:background .3s}
 #menu:not([data-tab=plan]) .hq-shade{background:rgba(3,10,15,.9)}
 .hq-top{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;gap:18px;padding:0 max(14px,env(safe-area-inset-right,0px)) 0 max(14px,env(safe-area-inset-left,0px));z-index:3;border-bottom:1px solid var(--ln);background:linear-gradient(rgba(4,12,18,.94),rgba(4,12,18,.74))}
-.hq-brand{display:grid;line-height:1.05;min-width:0}
+.hq-brand{display:grid;line-height:1.05;flex:0 0 auto;min-width:max-content}
 .hq-brand h1{margin:0;font:700 24px var(--f2);letter-spacing:.14em;color:var(--tx);white-space:nowrap}
 .hq-sub{font-size:10px;letter-spacing:.14em;color:var(--dm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hq-sub i{font-style:normal;color:var(--am)}
-.hq-tabs{display:flex;gap:4px;margin-left:8px;height:100%;align-items:stretch}
+.hq-tabs{display:flex;gap:4px;margin-left:8px;height:100%;align-items:stretch;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+@media (max-width:1400px){.hq-tabs button{padding:0 9px;letter-spacing:.06em}.hq-brand .hq-sub{display:none}}
 .hq-tabs button{display:flex;align-items:center;gap:7px;padding:0 15px;border-bottom:2px solid transparent;color:var(--dm);letter-spacing:.12em;white-space:nowrap}
 .hq-tabs button kbd{font:700 10px var(--f1);border:1px solid var(--ln2);border-radius:3px;padding:0 4px;color:var(--dm)}
 .hq-tabs button:hover{color:var(--tx);background:rgba(91,225,255,.06)}

@@ -733,7 +733,11 @@ function coverNear(P,threat){let best=null,bd=18;for(const b of near(P.x-18,P.z-
 const VL={F:{contact:['Contact front!','Enemy, close!','Eyes left — movement!'],reload:['Reloading!','Changing mag!'],move:['Moving!','Cover me, I\'m moving!'],down:['Man down!','Medic! We\'ve got wounded!']},
   RU:{shout:['Стой! (Stop!)','Граната! (Grenade!)','Он здесь! (He\'s here!)'],beg:['Не стреляй! Сдаюсь! (Don\'t shoot! I surrender!)','Пожалуйста… у меня дети… (Please… I have children…)','Не надо! Я ранен! (Don\'t! I\'m wounded!)']},
   EN:{shout:['Contact! He\'s right there!','Frag out!','Push him!'],beg:['Don\'t shoot! I give up!','Please — I\'m hit, I\'m done!','Okay, okay! Hands up!']}};
-function voiceStep(dt){if(S.phase!=='FIGHT')return;S.vT=(S.vT||0)-dt;if(S.vT>0)return;const P=S.pos;const say2=(t,c)=>{say(t,2.2);S.vT=3+rn()*3;S.vlines=(S.vlines||0)+1;};
+// voice lines are shown like the RIO's intercom calls: small lines low on the left, a coloured tag, fading out
+function vline(who,txt){let el=document.getElementById('iVoice');if(!el){el=document.createElement('div');el.id='iVoice';el.style.cssText='position:fixed;left:14px;bottom:120px;z-index:9991;display:flex;flex-direction:column-reverse;gap:4px;pointer-events:none;font:600 14px "B612",sans-serif';document.body.appendChild(el);}
+  const d=document.createElement('div');d.style.cssText='background:rgba(11,15,13,.5);padding:3px 10px;color:#eef2ec;transition:opacity 2.5s;opacity:1;max-width:46vw';d.innerHTML='<b style="color:'+(who==='ENEMY'?'#ff8a6a':'#ffc46a')+';margin-right:10px">'+esc(who)+'</b>'+esc(txt);el.prepend(d);
+  while(el.children.length>4)el.lastChild.remove();setTimeout(()=>{d.style.opacity='0';},4500);setTimeout(()=>d.remove(),7200);}
+function voiceStep(dt){if(S.phase!=='FIGHT')return;S.vT=(S.vT||0)-dt;if(S.vT>0)return;const P=S.pos;const say2=(t,c)=>{const i=t.indexOf(': ');vline(t.slice(0,i),t.slice(i+2));S.vT=3+rn()*3;S.vlines=(S.vlines||0)+1;};
   const en=S.them.filter(u=>u.alive&&!u.pow&&u.m.position.distanceTo(P)<12).sort((a,b)=>a.m.position.distanceTo(P)-b.m.position.distanceTo(P))[0];
   const lang=S.en==='R'?VL.RU:VL.EN;
   if(en){const hurt=en.hp<45||en.wounded;if(hurt||(en.m.position.distanceTo(P)<5&&rn()<.3)){say2('ENEMY: '+lang.beg[(rn()*lang.beg.length)|0]);if(hurt&&rn()<.35){en.pow=true;en.alive=false;en.m.rotation.x=0;S.pows=(S.pows||0)+1;recordDeath(en,true,'CAPTURED');}return;}
@@ -988,18 +992,18 @@ function digMine(){if(S.phase!=='FIGHT')return;if(!(S.cfg&&S.cfg.role==='ENGINEE
   const f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw));const P=S.pos.clone().addScaledVector(f,3);const ang=S.yaw+Math.PI/2;digTrench(P,f.z<0?-1:1,true,S.yaw);say('TRENCH SECTION DUG ('+(12-S.trN)+' LEFT)',1.5);}
 /* v407: Esc pauses the battle: everything stops where it is; a map shows where you are (the battle area, and the place
    on Earth and in the war); RESUME, MAIN MENU (the battle waits, paused, behind it) or LEAVE THE BATTLE. */
-function pauseMenu(on){if(!S)return;closePan();S.paused=on;let el=document.getElementById('infPause');
-  if(!on){if(el)el.remove();const rb=document.getElementById('infBack');if(rb)rb.remove();try{if(window.WMAP)WMAP.close();}catch(e){}S.cv.style.display='';S.hud.style.display='';lockPtr(S.cv);return;}
-  if(document.pointerLockElement)document.exitPointerLock();
-  // the campaign's own world map, centred on the battle, with your position marked
-  const L=S.loc||{};try{if(window.WMAP){WMAP.open();if(L.lat!=null){WMAP.M.lat=L.lat;WMAP.M.lon=L.lon;WMAP.M.ppd=24;}setTimeout(()=>{try{WMAP.draw&&WMAP.draw();}catch(e){}},50);}}catch(e){}
-  if(!el){el=document.createElement('div');el.id='infPause';document.body.appendChild(el);}
-  el.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9998;background:rgba(8,12,10,.9);color:#cfe3d6;font:13px "B612 Mono",monospace;padding:8px 14px;border:1px solid #6a7;display:flex;gap:10px;align-items:center';
-  const st=W.st,cf=S.cfg,p=st&&cf.a3&&st.c[cf.a3];
-  el.innerHTML='<b>PAUSED</b><span>'+esc((L.name||'the battle').toUpperCase())+(p?' · '+esc(p.n):'')+(st?' · WAR DAY '+Math.floor(st.t/24):'')+' · you are at the white marker</span><button data-ip="res">RESUME (Esc)</button><button data-ip="menu">MAIN MENU</button><button data-ip="leave">LEAVE THE BATTLE</button>';
-  el.onclick=e=>{const b=e.target.closest('[data-ip]');if(!b)return;const k=b.dataset.ip;if(k==='res')pauseMenu(false);else if(k==='leave'){pauseMenu(false);end('LEFT');}
-    else if(k==='menu'){el.remove();try{WMAP.close();}catch(x){}S.cv.style.display='none';S.hud.style.display='none';try{if(typeof openMenu==='function')openMenu();const m=document.getElementById('menu');if(m){m.hidden=false;m.style.display='';}}catch(x){}
-      const rb=document.createElement('button');rb.id='infBack';rb.textContent='▶ RETURN TO THE BATTLE ('+(L.name||'')+')';rb.style.cssText='position:fixed;top:10px;right:10px;z-index:10000;padding:8px 12px;font:13px "B612 Mono",monospace';rb.onclick=()=>{try{const m=document.getElementById('menu');if(m)m.hidden=true;}catch(x){}pauseMenu(false);};document.body.appendChild(rb);}};}
+/* v411: Esc pauses the battle and opens the MAIN MENU on the CAMPAIGN tab (the world-war map, centred on the battle,
+   your position marked). RESUME in the menu, or Esc again, returns you to the fight exactly where you were. */
+function pauseMenu(on){if(!S)return;closePan();const $m=id=>document.getElementById(id);
+  if(!on){if(!S.paused)return;S.paused=false;const m=$m('menu');if(m)m.hidden=true;S.hud.style.display='';S.cv.style.display='';try{if(typeof game!=='undefined')game.paused=S.gp0??game.paused;}catch(e){}
+    const rb=$m('infBack');if(rb)rb.remove();const ip=$m('infPause');if(ip)ip.remove();say('RESUMED · CLICK TO AIM',1.5);return;}
+  if(S.paused)return;S.paused=true;if(document.pointerLockElement)document.exitPointerLock();S.hud.style.display='none';S.cv.style.display='none';
+  try{S.gp0=typeof game!=='undefined'?game.paused:false;if(typeof openMenu==='function')openMenu();}catch(e){}
+  const m=$m('menu');if(m)m.hidden=false;const r=$m('resume');if(r){r.hidden=false;r.textContent='RESUME THE BATTLE ▸';}
+  try{const t=document.querySelector('.hq-tabs [data-tab="camp"]');if(t)t.click();const w=document.querySelector('#cmMode [data-m="WAR"]');if(w&&w.getAttribute('aria-pressed')!=='true')w.click();}catch(e){}
+  const L=S.loc||{};setTimeout(()=>{try{if(window.WMAP&&L.lat!=null){WMAP.M.lat=L.lat;WMAP.M.lon=L.lon;WMAP.M.ppd=Math.max(WMAP.M.ppd||0,22);WMAP.draw&&WMAP.draw();}}catch(e){}},80);}
+// the menu's RESUME button returns to the battle while it is paused
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#resume');if(!b||!S||!S.paused)return;e.stopImmediatePropagation();e.preventDefault();b.textContent='RESUME ▸';pauseMenu(false);},true);
 // your position on the campaign map while paused
 if(window.WARMAP){const _d=WARMAP.draw;WARMAP.draw=function(c,w2s,M,phase){const r=_d.apply(this,arguments);try{if(phase==='over'&&S&&S.paused&&S.loc&&S.loc.lat!=null){const[x,y]=w2s(S.loc.lat,S.loc.lon);c.fillStyle='#fff';c.strokeStyle='#000';c.lineWidth=2;c.beginPath();c.arc(x,y,7,0,7);c.fill();c.stroke();c.fillStyle='#fff';c.font='700 12px "B612 Mono",monospace';c.fillText('YOU · '+(S.loc.name||''),x+11,y+4);}}catch(e){}return r;};}
 // the browser's own Esc releases the mouse first: losing the mouse in a fight opens the pause menu (so one Esc pauses, the next resumes)
@@ -1675,6 +1679,6 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
     (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="note">The front line in this sector moves forward a little.</div>':'')+'</div>'+
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
-function stop(early,why){if(!S)return;closePan();{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
+function stop(early,why){if(!S)return;closePan();{const v=document.getElementById('iVoice');if(v)v.remove();}{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
 window.INFANTRY={hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();

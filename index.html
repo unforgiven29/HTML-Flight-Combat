@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Viper Sortie</title>
@@ -73,7 +74,7 @@
   <canvas id="hqMap" aria-label="Tactical map of the range"></canvas>
   <div class="hq-shade"></div>
   <header class="hq-top">
-    <div class="hq-brand"><h1>VIPER SORTIE</h1><span class="hq-sub">COMBINED-ARMS COMBAT · AIR · LAND · SEA · RANGE R-4808N · <i id="dtg">—</i></span></div>
+    <div class="hq-brand"><h1><img src="assets/logo.svg" alt="" style="height:26px;vertical-align:-6px;margin-right:8px">VIPER SORTIE</h1><span class="hq-sub">COMBINED-ARMS COMBAT · AIR · LAND · SEA · RANGE R-4808N · <i id="dtg">—</i></span></div>
     <nav class="hq-tabs" role="tablist" aria-label="Menu">
       <button role="tab" data-tab="camp" aria-selected="true"><kbd>1</kbd>CAMPAIGN</button>
       <button role="tab" data-tab="quick" aria-selected="false"><kbd>2</kbd>QUICK FLIGHT</button>
@@ -417,7 +418,7 @@
 <!-- ── WORLD · the Earth: geographic frame, streamed terrain, airports, cities (world campaign stage 1). After addons-v324 (wraps start / onPaved) ── -->
 <script src="js/world/geo.js?v=333"></script>
 <script src="js/world/worldflight.js?v=407"></script>
-<script src="js/world/worldmap.js?v=327"></script>
+<script src="js/world/worldmap.js?v=411"></script>
 <script src="js/world/wtrees.js?v=333"></script>
 <script src="js/world/wnet.js?v=336"></script>
 <script src="js/world/wlod.js?v=367"></script>
@@ -425,6 +426,7 @@
 <!-- ── WAR · the world war, strategic layer (spec ch.05), and its map layer ── -->
 <script src="js/war/worldwar.js?v=332"></script>
 <script src="js/war/warmap.js?v=407"></script>
+<script src="js/war/markers.js?v=411"></script>
 <script src="js/war/warsortie.js?v=334"></script>
 <script src="js/war/diplomacy.js?v=333"></script>
 <script src="js/war/nations.js?v=331"></script>
@@ -493,7 +495,7 @@
 <script src="js/war/enviro.js?v=404"></script>
 <script src="js/war/chronicle.js?v=405"></script>
 <script src="js/war/desk.js?v=406"></script>
-<script src="js/war/infantry.js?v=410"></script>
+<script src="js/war/infantry.js?v=411"></script>
 <script src="js/war/warnet.js?v=337"></script>
 <!-- ── CAMPAIGN WORLD · event ledger, airframes, aircrew, supply, war record (spec v49 phases 0-2). Must load LAST: it wraps CAMP, the campaign layers and Jet.kill ── -->
 <script src="js/campaign/world.js?v=325"></script>

@@ -1312,7 +1312,7 @@ test('s60_inf407: trenches cut into the ground across the front, engineers dig b
     let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'FRONT',role:'ENGINEER'});I.land();S.hp=1e9;S.dT=1e9;const L=S.lines[1],t=L.slots[3];
     out.lines=I.TR.L.filter(l=>!l.k).length;out.span=I.TR.L[0].x1-I.TR.L[0].x0;out.depth=I.cut(t.x,t.z);out.ditch=I.TR.L.some(l=>l.k===1);out.gs=I.TR.G.length;
     const g0=I.TR.G.length;I.digTrench(new THREE.Vector3(180,0,-350),-1,true,0);I.digTrench(new THREE.Vector3(180,0,-900),1,false,0);out.dug=I.TR.G.length-g0;const hb=S.blds.find(x=>x.bid!=null&&x.y1-x.y0>2);out.noHouse=!hb||I.digTrench(new THREE.Vector3((hb.x0+hb.x1)/2,0,(hb.z0+hb.z1)/2),-1,true,0)===null;
-    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!!document.getElementById('infPause')&&!!document.getElementById('wmap')&&!document.getElementById('wmap').hidden;I.pauseMenu(false);out.unp=document.getElementById('wmap').hidden&&!S.paused;
+    I.pauseMenu(true);const t0=S.t;I.step(1/30,10);out.paused=S.t===t0&&!document.getElementById('menu').hidden&&/RESUME/.test(document.getElementById('resume').textContent);document.getElementById('resume').click();out.unp=document.getElementById('menu').hidden&&!S.paused;
     S.w='pri';const p0=S.pitch;S.wp.pri.cur=30;S.cool=0;S.fire=true;for(let i=0;i<6;i++){S.cool=0;S.reload=0;I.step(1/30,1);}out.climb=S.pitch>p0;S.fire=false;S.ads=true;I.step(1/30,20);out.sway=Math.abs(S.swX||0)+Math.abs(S.swY||0)>0;
     out.rus=I.canField('RUS','AK12')&&!I.canField('RUS','M4A1')&&I.canField('USA','M4A1')&&!I.canField('USA','AK12');
     const v=S.veh.find(x=>x.alive);if(v){const hp=v.hp;I.mine(v.x,v.z,'AT','E');I.step(1/30,2);out.mine=!v.alive||v.hp<hp;}
