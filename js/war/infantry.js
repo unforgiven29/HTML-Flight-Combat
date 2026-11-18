@@ -583,7 +583,21 @@ function resolveLoc(cfg,fr,cs){if(cfg.loc0){const C=locChoices(cfg).find(c=>c.id
 function placeLoc(best){const G=window.WGEO,lat0=best.lat,lon0=best.lon,cl=Math.cos(lat0*Math.PI/180),h0=G.coarse?G.coarse(lat0,lon0):0;
   return{name:best.name,pop:best.pop||5000,real:true,lat:best.lat,lon:best.lon,H:(x,z)=>(G.coarse?Math.max(-8,Math.min(80,(G.coarse(lat0-(z+260)/111200,lon0+x/(111200*cl))-h0))):0)+noise(x,z)*.35};}
 
-function man(friend,x,z){const m=soldier(friend);m.position.set(x,H(x,z),z);S.sc.add(m);return{m,friend,hp:100,alive:true,cool:1+rn()*2,tgt:null,goal:null,crouch:false,mv:0,sup:0};}
+function man(friend,x,z){const m=soldier(friend);m.position.set(x,H(x,z),z);S.sc.add(m);const u={m,friend,hp:100,alive:true,cool:1+rn()*2,tgt:null,goal:null,crouch:false,mv:0,sup:0};nameMan(u);return u;}
+/* v408: every soldier in the battle is a person with a name (fictional, from the war's regional name pools, unique in
+   the campaign) and a rank; your squad wears name tags. A death goes into the death ledger as a named record — who,
+   which side, where, how, and whether it was by your hand — so it is found in the CEMETERY like any other. */
+function nameMan(u){try{const a3=u.friend?S.cfg.a3:S.enA3;u.a3=a3;const rk=W.lead&&W.lead.rank?W.lead.rank(a3||'USA','army',rn()<.7?1:rn()<.7?2:3):'';
+  u.name=W.people&&W.people.name?W.people.name(a3||'USA',Math.random):(W.lead&&W.lead.POOL?'Soldier':'Soldier');u.rank=rk||'';u.full=(u.rank?u.rank+' ':'')+u.name;
+  if(u.friend&&!S.cfg.camp)tagMan(u);}catch(e){u.full=u.name||'a soldier';}}
+function tagMan(u){const c=document.createElement('canvas');c.width=256;c.height=48;const g=c.getContext('2d');g.font='600 22px "B612 Mono",monospace';g.textAlign='center';g.fillStyle='rgba(10,20,30,.55)';g.fillRect(0,6,256,36);g.fillStyle='#9fd0ff';g.fillText(u.full.slice(0,22),128,32);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));sp.scale.set(1.6,.3,1);sp.position.y=2.25;sp.visible=false;u.m.add(sp);u.tag=sp;}
+function tagStep(){for(const u of S.us){if(!u.tag)continue;const d=u.m.position.distanceTo(S.pos);u.tag.visible=u.alive&&d<25&&d>1.5;}}
+function recordDeath(u,own,how){if(u.rec||!W.st||S.cfg.camp||!W.cemetery||!W.cemetery.record)return;u.rec=1;const p=W.st.c[u.a3];if(!p)return;
+  const unit=(u.friend?(S.N&&S.N.unit)||(p.n+' infantry'):(S.EN&&S.EN.unit)||(p.n+' infantry'));
+  W.cemetery.record({a3:u.a3,n:1,kind:'MIL',st:how||'KILLED',role:(u.role==='MG'?'machine gunner':u.role==='SNP'?'sniper':u.eng?'combat engineer':'rifleman'),unit,place:S.loc.name,
+    cause:how==='CAPTURED'?'captured in the battle for '+S.loc.name:(own?'killed in action in the battle for '+S.loc.name+' (by the player)':'killed in action in the battle for '+S.loc.name),named:[u.full||u.name]});
+  if(u.friend)S.recF=(S.recF||0)+(how==='CAPTURED'?0:1);else S.recE=(S.recE||0)+(how==='CAPTURED'?0:1);}
 
 /* ------------------------------------------------------------------ insertion */
 function insertion(){const k=S.ins;S.ins_t=0;
@@ -664,7 +678,7 @@ function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900
   {const v=vown.get(h.object);if(v){if(v.side==='E')armorHit(v,h.point.clone().sub(S.O),d.clone(),S.wp[S.w].pen||S.cfg.pri);fx(h.point.clone().sub(S.O),.1);return null;}}
   if(!u){fx(h.point.clone().sub(S.O),.15);return null;}
   const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'||part==='arms'?.7:1;if(u.alive&&part!=='head')npcWound(u,part,dmg*k);hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
-function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;if(own){say('FRIENDLY FIRE',3);S.ff=(S.ff||0)+1;}}else if(own)S.kills++;}}
+function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;recordDeath(u,own);if(own){say('FRIENDLY FIRE · '+(u.full||'').toUpperCase(),3);S.ff=(S.ff||0)+1;}else if(u.m.position.distanceTo(S.pos)<40)say((u.full||'').toUpperCase()+' IS KILLED',2);}else{recordDeath(u,own);if(own){S.kills++;say('KILLED · '+(u.full||'ENEMY SOLDIER').toUpperCase(),1.6);}}}}
 function mark(hd){const e=document.getElementById('iHit');if(e){e.style.color=hd?'#ff5a4a':'#fff';e.style.opacity=1;clearTimeout(mark.t);mark.t=setTimeout(()=>e.style.opacity=0,120);}}
 function hurt(d,why){if(why==='bullet')SND.hit();let k=1,part='torso';if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';part='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';part=['armL','armR','legL','legR','legL','legR'][(rn()*6)|0];}}
   if(S.body&&S.hp<1e6&&!S.downed){if(why==='bullet')wound(part,d*k,why);else if(why==='blast'){for(let i=0;i<2;i++)wound(['torso','armL','armR','legL','legR'][(rn()*5)|0],d*.4,why);}}S.lastHurt={d:Math.round(d*k),why,stk:(new Error().stack||'').split('\n').slice(2,5).join('<')};if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
@@ -717,7 +731,7 @@ const VL={F:{contact:['Contact front!','Enemy, close!','Eyes left — movement!'
 function voiceStep(dt){if(S.phase!=='FIGHT')return;S.vT=(S.vT||0)-dt;if(S.vT>0)return;const P=S.pos;const say2=(t,c)=>{say(t,2.2);S.vT=3+rn()*3;S.vlines=(S.vlines||0)+1;};
   const en=S.them.filter(u=>u.alive&&!u.pow&&u.m.position.distanceTo(P)<12).sort((a,b)=>a.m.position.distanceTo(P)-b.m.position.distanceTo(P))[0];
   const lang=S.en==='R'?VL.RU:VL.EN;
-  if(en){const hurt=en.hp<45||en.wounded;if(hurt||(en.m.position.distanceTo(P)<5&&rn()<.3)){say2('ENEMY: '+lang.beg[(rn()*lang.beg.length)|0]);if(hurt&&rn()<.35){en.pow=true;en.alive=false;en.m.rotation.x=0;S.pows=(S.pows||0)+1;}return;}
+  if(en){const hurt=en.hp<45||en.wounded;if(hurt||(en.m.position.distanceTo(P)<5&&rn()<.3)){say2('ENEMY: '+lang.beg[(rn()*lang.beg.length)|0]);if(hurt&&rn()<.35){en.pow=true;en.alive=false;en.m.rotation.x=0;S.pows=(S.pows||0)+1;recordDeath(en,true,'CAPTURED');}return;}
     say2('ENEMY: '+lang.shout[(rn()*lang.shout.length)|0]);return;}
   const mate=S.us.find(u=>u.alive&&u.m.position.distanceTo(P)<15);if(!mate)return;const down=S.us.find(u=>u.down&&u.m.position.distanceTo(P)<30);
   const k=down?'down':mate.tgt?'contact':mate.bound?'move':rn()<.3?'reload':null;if(k&&rn()<.5)say2('SQUAD: '+VL.F[k][(rn()*VL.F[k].length)|0]);else S.vT=2;}
@@ -743,7 +757,7 @@ function step(dt){if(!S||S.res||S.paused||S.panP)return;S.t+=dt;S.msgT-=dt;S.sc.
     if(inZone&&!enemyNear){S.hold+=dt;if(S.hold>=30)end('WON');}else S.hold=Math.max(0,S.hold-dt*.5);
     S.waveT-=dt;if(S.waveT<=0&&S.them.filter(u=>u.alive).length<6){S.waveT=80;const n=4;for(let i=0;i<n;i++)S.them.push(man(false,S.village.x+(rn()-.5)*60,S.village.z-160-rn()*40));say('ENEMY REINFORCEMENTS FROM THE NORTH',3);}}
     S.heliT-=dt;if(S.heliT<=0&&!S.eheli){const h=helo(0x6a5a3a);h.position.set(400,80,-500);S.sc.add(h);S.eheli={m:h,hp:500,alive:true,cool:3,t:0};say('ENEMY HELICOPTER',3);S.heliT=1e9;}}
-  droneStep(dt);if(!S.WM)airStep(dt);else casOnly(dt);casStep(dt);bombStep(dt);cqbStep(dt);voiceStep(dt);vehStep(dt);mineStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);lockStep(dt);bodyStep(dt);npcStep(dt);iwStep(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
+  droneStep(dt);if(!S.WM)airStep(dt);else casOnly(dt);casStep(dt);bombStep(dt);cqbStep(dt);voiceStep(dt);tagStep();vehStep(dt);mineStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);lockStep(dt);bodyStep(dt);npcStep(dt);iwStep(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
@@ -839,7 +853,7 @@ function cqbStep(dt){if(S.phase!=='FIGHT'||!S.lines)return;const P=S.pos;let L=n
   const near=S.them.filter(u=>u.alive&&!u.pow&&u.m.position.distanceTo(P)<50);for(const u of near){u.tgt=null;u.bound=new V3(P.x+(rn()-.5)*4,0,P.z+(rn()-.5)*1.2);u.boundT=1.5;u.sup=0;}
   const mates=S.us.filter(u=>u.alive&&!u.down).sort((a,b)=>a.m.position.distanceTo(P)-b.m.position.distanceTo(P)).slice(0,2);mates.forEach((u,i)=>{u.bound=new V3(P.x+(i?3:-3),0,P.z+1.5);u.boundT=2;});
   if(near.length&&rn()<dt*.08){const u=near[(rn()*near.length)|0];const tp=P.clone().add(new V3((rn()-.5)*6,0,(rn()-.5)*2));blast(tp,5,60,false);say('GRENADE OVER THE TRAVERSE',1.2);}
-  const close=near.filter(u=>u.m.position.distanceTo(P)<25);if(close.length&&close.length<=2&&rn()<dt*.25){const u=close[0];u.pow=true;u.alive=false;u.m.rotation.x=0;S.pows=(S.pows||0)+1;say('AN ENEMY SOLDIER SURRENDERS · SENT TO THE REAR',2);}}
+  const close=near.filter(u=>u.m.position.distanceTo(P)<25);if(close.length&&close.length<=2&&rn()<dt*.25){const u=close[0];u.pow=true;u.alive=false;u.m.rotation.x=0;S.pows=(S.pows||0)+1;recordDeath(u,true,'CAPTURED');say((u.full||'AN ENEMY SOLDIER').toUpperCase()+' SURRENDERS · SENT TO THE REAR',2);}}
 /* v407: CLOSE AIR SUPPORT FROM THE CAMPAIGN. Requests go up to the campaign: how often aircraft come depends on your
    side's air superiority over this theatre, how many attack-capable aircraft your country has left, and its
    precision-munition stocks. The aircraft that come are the campaign's own (type and squadron from the order of
@@ -1641,7 +1655,7 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
   // fortification, mines cleared into the hazard clearance count
   try{if(st&&p){const e=S.enA3&&st.c[S.enA3];const ek=S.kills+(S.them.filter(u=>!u.alive&&!u.pow).length-S.kills>0?S.them.filter(u=>!u.alive&&!u.pow).length-S.kills:0);
     p.gnd=Math.max(0,(p.gnd||0)-S.lost/4000);if(e)e.gnd=Math.max(0,(e.gnd||0)-ek/4000);p.lostGnd=(p.lostGnd||0)+S.lost/4000;if(e)e.lostGnd=(e.lostGnd||0)+ek/4000;
-    if(W.cemetery&&W.cemetery.record){if(S.lost)W.cemetery.record({a3:p.a3,n:S.lost,kind:'MIL',st:'KILLED',role:'infantry',place:S.loc.name,cause:'killed in action in the battle for '+S.loc.name});if(e&&ek)W.cemetery.record({a3:e.a3,n:ek,kind:'MIL',st:'KILLED',role:'infantry',place:S.loc.name,cause:'killed in action in the battle for '+S.loc.name});}
+    if(W.cemetery&&W.cemetery.record){const fl=Math.max(0,S.lost-(S.recF||0)),el=Math.max(0,ek-(S.recE||0));if(fl)W.cemetery.record({a3:p.a3,n:fl,kind:'MIL',st:'KILLED',role:'infantry',place:S.loc.name,cause:'killed in action in the battle for '+S.loc.name});if(e&&el)W.cemetery.record({a3:e.a3,n:el,kind:'MIL',st:'KILLED',role:'infantry',place:S.loc.name,cause:'killed in action in the battle for '+S.loc.name});}
     if(S.pows&&st.csar){st.csar.pow=st.csar.pow||{B:0,R:0};st.csar.pow[p.side]=(st.csar.pow[p.side]||0)+S.pows;}
     const m=st.mil&&st.mil[p.a3];if(m){if(m.mun&&m.mun.ART!=null)m.mun.ART=Math.max(0,m.mun.ART-S.shots/200000);if(S.fr&&m.fort)m.fort[S.fr.id]=Math.min(1,(m.fort[S.fr.id]||0)+(S.dug||0)*.004);}
     const svc=st.svc&&st.svc.c[p.a3];if(svc&&S.cleared)svc.eod.clr+=S.cleared;
@@ -1662,5 +1676,5 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;closePan();{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+window.INFANTRY={hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();
