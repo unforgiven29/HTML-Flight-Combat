@@ -1,103 +1,103 @@
 line	cov	where	title	section
-22391	0		INTEGRATION REQUIREMENTS — MEDICS, REPORTERS, AND PILOT RESCUE MUST WORK TOGETHER	End-to-end campaign and cross-domain scenarios
-22406	0		Unified cross-system ownership contracts, dependency graph, data coverage, and end-to-end scenarios	Shared system contracts, ownership, and dependencies
-22459	0		One source of truth per domain	Shared system contracts, ownership, and dependencies
-22462	0		Shared event envelope	Shared system contracts, ownership, and dependencies
-22465	0		Identity and relationship continuity	Shared system contracts, ownership, and dependencies
-22468	0		Causal links	Shared system contracts, ownership, and dependencies
-22471	0		Knowledge versus reality	Shared system contracts, ownership, and dependencies
-22474	0		Consistency and conflict resolution	Shared system contracts, ownership, and dependencies
-22477	0		Save migration	Shared system contracts, ownership, and dependencies
-22502	0		Classic script architecture	Shared system contracts, ownership, and dependencies
-22513	0		Global-scope safety	Shared system contracts, ownership, and dependencies
-22525	0		Campaign module boundaries	Shared system contracts, ownership, and dependencies
-22536	0		Three.js version and rendering conventions	Shared system contracts, ownership, and dependencies
-22545	0		Existing build, assets, and test workflow	Shared system contracts, ownership, and dependencies
-22579	0		Single authoritative data sources	Shared system contracts, ownership, and dependencies
-22590	0		Cross-system scenarios	Shared system contracts, ownership, and dependencies
-22608	0		Data consistency and historical correctness	Shared system contracts, ownership, and dependencies
-22617	0		Multiplayer authority — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
-22628	0		Performance, storage, and simulation tiers	Shared system contracts, ownership, and dependencies
-22638	0		UI and accessibility integration	Shared system contracts, ownership, and dependencies
-22651	0		Final integration acceptance tests	Shared system contracts, ownership, and dependencies
-22685	0		Dependency principle	Shared system contracts, ownership, and dependencies
-22708	0		Shared data ownership rules	Shared system contracts, ownership, and dependencies
-22731	0		Required shared event types	Shared system contracts, ownership, and dependencies
-22747	0		Simulation cadence	Shared system contracts, ownership, and dependencies
-22757	0		Save migration and backward compatibility	Shared system contracts, ownership, and dependencies
-22768	0		UI and feature rollout	Shared system contracts, ownership, and dependencies
-22772	0		No-world-editor guardrail	Shared system contracts, ownership, and dependencies
-22786	0		Shared dependency graph	Shared system contracts, ownership, and dependencies
-22806	0		Common status model	Shared system contracts, ownership, and dependencies
-22810	0		Causal traceability	Shared system contracts, ownership, and dependencies
-22817	0		Cross-system ownership and permissions	Shared system contracts, ownership, and dependencies
-22826	0		Time and scheduling	Shared system contracts, ownership, and dependencies
-22839	0		Save, migration and historical archive	Shared system contracts, ownership, and dependencies
-22858	0		Water–food–energy crisis	Shared system contracts, ownership, and dependencies
-22861	0		Industrial supplier collapse	Shared system contracts, ownership, and dependencies
-22866	0		Refugee and humanitarian corridor	Shared system contracts, ownership, and dependencies
-22869	0		Financial and insurance shock	Shared system contracts, ownership, and dependencies
-22872	0		Digital identity outage	Shared system contracts, ownership, and dependencies
-22875	0		Infrastructure maintenance spiral	Shared system contracts, ownership, and dependencies
-22878	0		Ecological restoration conflict	Shared system contracts, ownership, and dependencies
-22881	0		Multi-country transport disruption	Shared system contracts, ownership, and dependencies
-22884	0		Civilian manufacturing transition	Shared system contracts, ownership, and dependencies
-22887	0		Public-health and workforce crisis	Shared system contracts, ownership, and dependencies
-22890	0		Ceasefire and reconstruction	Shared system contracts, ownership, and dependencies
-22893	0		Rare compound event	Shared system contracts, ownership, and dependencies
-22896	0		Peaceful success case	Shared system contracts, ownership, and dependencies
-22899	0		Whole-Earth flight and campaign continuity	Shared system contracts, ownership, and dependencies
-22902	0		Long-horizon recovery	Shared system contracts, ownership, and dependencies
-22906	0		Integration with existing systems — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
-22920	0		End-to-end integrated world and campaign scenarios.	Shared system contracts, ownership, and dependencies
-22924	0		Airbase disruption and recovery	Shared system contracts, ownership, and dependencies
-22928	0		Maritime supply-chain disruption	Shared system contracts, ownership, and dependencies
-22932	0		Water shortage and agricultural stress	Shared system contracts, ownership, and dependencies
-22936	0		Factory shutdown and workforce shock	Shared system contracts, ownership, and dependencies
-22940	0		Military mobilization and civilian economy	Shared system contracts, ownership, and dependencies
-22944	0		Civilian aviation disruption	Shared system contracts, ownership, and dependencies
-22948	0		Population displacement and family reunification	Shared system contracts, ownership, and dependencies
-22952	0		Injury, disability, and post-service transition	Shared system contracts, ownership, and dependencies
-22956	0		Civilian infrastructure damage and repair	Shared system contracts, ownership, and dependencies
-22960	0		Financial institution stress	Shared system contracts, ownership, and dependencies
-22964	0		Election during an emergency	Shared system contracts, ownership, and dependencies
-22968	0		Intelligence uncertainty and media correction	Shared system contracts, ownership, and dependencies
-22972	0		Coalition command and national caveats	Shared system contracts, ownership, and dependencies
-22976	0		Mine closure and industrial transition	Shared system contracts, ownership, and dependencies
-22980	0		Urban growth and infrastructure demand	Shared system contracts, ownership, and dependencies
-22984	0		Public-health emergency	Shared system contracts, ownership, and dependencies
-22988	0		Ecological restoration after conflict	Shared system contracts, ownership, and dependencies
-22992	0		Ceasefire with incomplete compliance	Shared system contracts, ownership, and dependencies
-22996	0		Negotiated peace and postwar continuation	Shared system contracts, ownership, and dependencies
-23000	0		Company merger and supply-chain integration	Shared system contracts, ownership, and dependencies
-23004	0		Digital network outage	Shared system contracts, ownership, and dependencies
-23008	0		Severe multi-hazard emergency	Shared system contracts, ownership, and dependencies
-23012	0		Satellite service degradation	Shared system contracts, ownership, and dependencies
-23016	0		Household cost-of-living shock	Shared system contracts, ownership, and dependencies
-23020	0		Civil investigation and legal outcome	Shared system contracts, ownership, and dependencies
-23024	0		Long-horizon generational continuity	Shared system contracts, ownership, and dependencies
-23028	0		End-of-war memorial and award review	Shared system contracts, ownership, and dependencies
-23032	0		Existing flight-game regression scenario	Shared system contracts, ownership, and dependencies
-23038	0		Shared subsystem contracts, dependency graph, interaction layers, and causal chains.	Shared system contracts, ownership, and dependencies
-23040	0		Mandatory interaction contract	Shared system contracts, ownership, and dependencies
-23058	0		Dependency graph — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
-23074	0		Interaction layers	Shared system contracts, ownership, and dependencies
-23085	0		Interaction matrix	Shared system contracts, ownership, and dependencies
-23107	0		Interaction rules and causality	Shared system contracts, ownership, and dependencies
-23120	0		Interaction scheduling	Shared system contracts, ownership, and dependencies
-23137	0		Example interaction chains	Shared system contracts, ownership, and dependencies
-23139	0		A. Drought and food affordability	Shared system contracts, ownership, and dependencies
-23151	0		B. Urban growth	Shared system contracts, ownership, and dependencies
-23162	0		C. Energy transition	Shared system contracts, ownership, and dependencies
-23171	0		D. Digital outage	Shared system contracts, ownership, and dependencies
-23179	0		E. Housing and public finance	Shared system contracts, ownership, and dependencies
-23188	0		F. Tourism and environmental recovery	Shared system contracts, ownership, and dependencies
-23196	0		G. Corruption and reconstruction	Shared system contracts, ownership, and dependencies
-23204	0		H. Demographic aging	Shared system contracts, ownership, and dependencies
-23212	0		Interaction completeness score	Shared system contracts, ownership, and dependencies
-23228	0		Cross-domain data and configuration coverage checklist.	Shared system contracts, ownership, and dependencies
-23249	0		World simulation governance, policy conflicts, and institutional capacity	Cross-domain dependencies and operational integration contracts
-23251	0		Institutional capability	Cross-domain dependencies and operational integration contracts
-23254	0		Policy conflicts	Cross-domain dependencies and operational integration contracts
-23257	0		Decision process	Cross-domain dependencies and operational integration contracts
-23260	0		Institutional failure and recovery	Cross-domain dependencies and operational integration contracts
+22391	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	INTEGRATION REQUIREMENTS — MEDICS, REPORTERS, AND PILOT RESCUE MUST WORK TOGETHER	End-to-end campaign and cross-domain scenarios
+22406	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Unified cross-system ownership contracts, dependency graph, data coverage, and end-to-end scenarios	Shared system contracts, ownership, and dependencies
+22459	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	One source of truth per domain	Shared system contracts, ownership, and dependencies
+22462	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Shared event envelope	Shared system contracts, ownership, and dependencies
+22465	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Identity and relationship continuity	Shared system contracts, ownership, and dependencies
+22468	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Causal links	Shared system contracts, ownership, and dependencies
+22471	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Knowledge versus reality	Shared system contracts, ownership, and dependencies
+22474	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Consistency and conflict resolution	Shared system contracts, ownership, and dependencies
+22477	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Save migration	Shared system contracts, ownership, and dependencies
+22502	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Classic script architecture	Shared system contracts, ownership, and dependencies
+22513	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Global-scope safety	Shared system contracts, ownership, and dependencies
+22525	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Campaign module boundaries	Shared system contracts, ownership, and dependencies
+22536	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Three.js version and rendering conventions	Shared system contracts, ownership, and dependencies
+22545	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Existing build, assets, and test workflow	Shared system contracts, ownership, and dependencies
+22579	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Single authoritative data sources	Shared system contracts, ownership, and dependencies
+22590	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Cross-system scenarios	Shared system contracts, ownership, and dependencies
+22608	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Data consistency and historical correctness	Shared system contracts, ownership, and dependencies
+22617	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Multiplayer authority — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
+22628	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Performance, storage, and simulation tiers	Shared system contracts, ownership, and dependencies
+22638	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	UI and accessibility integration	Shared system contracts, ownership, and dependencies
+22651	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Final integration acceptance tests	Shared system contracts, ownership, and dependencies
+22685	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Dependency principle	Shared system contracts, ownership, and dependencies
+22708	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Shared data ownership rules	Shared system contracts, ownership, and dependencies
+22731	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Required shared event types	Shared system contracts, ownership, and dependencies
+22747	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Simulation cadence	Shared system contracts, ownership, and dependencies
+22757	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Save migration and backward compatibility	Shared system contracts, ownership, and dependencies
+22768	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	UI and feature rollout	Shared system contracts, ownership, and dependencies
+22772	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	No-world-editor guardrail	Shared system contracts, ownership, and dependencies
+22786	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Shared dependency graph	Shared system contracts, ownership, and dependencies
+22806	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Common status model	Shared system contracts, ownership, and dependencies
+22810	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Causal traceability	Shared system contracts, ownership, and dependencies
+22817	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Cross-system ownership and permissions	Shared system contracts, ownership, and dependencies
+22826	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Time and scheduling	Shared system contracts, ownership, and dependencies
+22839	1	docs/campaign/DEPENDENCIES.md (scripts/deps.js), integrity.js, store.js (migrations), worldwar.js (event envelope, causes), chronicle.js	Save, migration and historical archive	Shared system contracts, ownership, and dependencies
+22858	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Water–food–energy crisis	Shared system contracts, ownership, and dependencies
+22861	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Industrial supplier collapse	Shared system contracts, ownership, and dependencies
+22866	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Refugee and humanitarian corridor	Shared system contracts, ownership, and dependencies
+22869	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Financial and insurance shock	Shared system contracts, ownership, and dependencies
+22872	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Digital identity outage	Shared system contracts, ownership, and dependencies
+22875	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Infrastructure maintenance spiral	Shared system contracts, ownership, and dependencies
+22878	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Ecological restoration conflict	Shared system contracts, ownership, and dependencies
+22881	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Multi-country transport disruption	Shared system contracts, ownership, and dependencies
+22884	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Civilian manufacturing transition	Shared system contracts, ownership, and dependencies
+22887	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Public-health and workforce crisis	Shared system contracts, ownership, and dependencies
+22890	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Ceasefire and reconstruction	Shared system contracts, ownership, and dependencies
+22893	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Rare compound event	Shared system contracts, ownership, and dependencies
+22896	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Peaceful success case	Shared system contracts, ownership, and dependencies
+22899	1	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Whole-Earth flight and campaign continuity	Shared system contracts, ownership, and dependencies
+22902	0.5	infra.js, econ2.js, people.js, polity.js, enviro.js, postwar.js; tests s51-s59	Long-horizon recovery	Shared system contracts, ownership, and dependencies
+22906	1	tests s59 (cross-system chains), modules per scenario	Integration with existing systems — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
+22920	1	tests s59 (cross-system chains), modules per scenario	End-to-end integrated world and campaign scenarios.	Shared system contracts, ownership, and dependencies
+22924	1	tests s59 (cross-system chains), modules per scenario	Airbase disruption and recovery	Shared system contracts, ownership, and dependencies
+22928	1	tests s59 (cross-system chains), modules per scenario	Maritime supply-chain disruption	Shared system contracts, ownership, and dependencies
+22932	1	tests s59 (cross-system chains), modules per scenario	Water shortage and agricultural stress	Shared system contracts, ownership, and dependencies
+22936	1	tests s59 (cross-system chains), modules per scenario	Factory shutdown and workforce shock	Shared system contracts, ownership, and dependencies
+22940	1	tests s59 (cross-system chains), modules per scenario	Military mobilization and civilian economy	Shared system contracts, ownership, and dependencies
+22944	1	tests s59 (cross-system chains), modules per scenario	Civilian aviation disruption	Shared system contracts, ownership, and dependencies
+22948	0.5	tests s59 (cross-system chains), modules per scenario	Population displacement and family reunification	Shared system contracts, ownership, and dependencies
+22952	1	tests s59 (cross-system chains), modules per scenario	Injury, disability, and post-service transition	Shared system contracts, ownership, and dependencies
+22956	1	tests s59 (cross-system chains), modules per scenario	Civilian infrastructure damage and repair	Shared system contracts, ownership, and dependencies
+22960	1	tests s59 (cross-system chains), modules per scenario	Financial institution stress	Shared system contracts, ownership, and dependencies
+22964	1	tests s59 (cross-system chains), modules per scenario	Election during an emergency	Shared system contracts, ownership, and dependencies
+22968	1	tests s59 (cross-system chains), modules per scenario	Intelligence uncertainty and media correction	Shared system contracts, ownership, and dependencies
+22972	1	tests s59 (cross-system chains), modules per scenario	Coalition command and national caveats	Shared system contracts, ownership, and dependencies
+22976	0.5	tests s59 (cross-system chains), modules per scenario	Mine closure and industrial transition	Shared system contracts, ownership, and dependencies
+22980	0.5	tests s59 (cross-system chains), modules per scenario	Urban growth and infrastructure demand	Shared system contracts, ownership, and dependencies
+22984	1	tests s59 (cross-system chains), modules per scenario	Public-health emergency	Shared system contracts, ownership, and dependencies
+22988	1	tests s59 (cross-system chains), modules per scenario	Ecological restoration after conflict	Shared system contracts, ownership, and dependencies
+22992	1	tests s59 (cross-system chains), modules per scenario	Ceasefire with incomplete compliance	Shared system contracts, ownership, and dependencies
+22996	1	tests s59 (cross-system chains), modules per scenario	Negotiated peace and postwar continuation	Shared system contracts, ownership, and dependencies
+23000	0.5	tests s59 (cross-system chains), modules per scenario	Company merger and supply-chain integration	Shared system contracts, ownership, and dependencies
+23004	1	tests s59 (cross-system chains), modules per scenario	Digital network outage	Shared system contracts, ownership, and dependencies
+23008	1	tests s59 (cross-system chains), modules per scenario	Severe multi-hazard emergency	Shared system contracts, ownership, and dependencies
+23012	1	tests s59 (cross-system chains), modules per scenario	Satellite service degradation	Shared system contracts, ownership, and dependencies
+23016	1	tests s59 (cross-system chains), modules per scenario	Household cost-of-living shock	Shared system contracts, ownership, and dependencies
+23020	1	tests s59 (cross-system chains), modules per scenario	Civil investigation and legal outcome	Shared system contracts, ownership, and dependencies
+23024	0.5	tests s59 (cross-system chains), modules per scenario	Long-horizon generational continuity	Shared system contracts, ownership, and dependencies
+23028	1	tests s59 (cross-system chains), modules per scenario	End-of-war memorial and award review	Shared system contracts, ownership, and dependencies
+23032	1	tests s59 (cross-system chains), modules per scenario	Existing flight-game regression scenario	Shared system contracts, ownership, and dependencies
+23038	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Shared subsystem contracts, dependency graph, interaction layers, and causal chains.	Shared system contracts, ownership, and dependencies
+23040	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Mandatory interaction contract	Shared system contracts, ownership, and dependencies
+23058	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Dependency graph — cross-system ownership contracts, dependency graph, data coverage, and e	Shared system contracts, ownership, and dependencies
+23074	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Interaction layers	Shared system contracts, ownership, and dependencies
+23085	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Interaction matrix	Shared system contracts, ownership, and dependencies
+23107	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Interaction rules and causality	Shared system contracts, ownership, and dependencies
+23120	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Interaction scheduling	Shared system contracts, ownership, and dependencies
+23137	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Example interaction chains	Shared system contracts, ownership, and dependencies
+23139	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	A. Drought and food affordability	Shared system contracts, ownership, and dependencies
+23151	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	B. Urban growth	Shared system contracts, ownership, and dependencies
+23162	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	C. Energy transition	Shared system contracts, ownership, and dependencies
+23171	1	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	D. Digital outage	Shared system contracts, ownership, and dependencies
+23179	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	E. Housing and public finance	Shared system contracts, ownership, and dependencies
+23188	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	F. Tourism and environmental recovery	Shared system contracts, ownership, and dependencies
+23196	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	G. Corruption and reconstruction	Shared system contracts, ownership, and dependencies
+23204	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	H. Demographic aging	Shared system contracts, ownership, and dependencies
+23212	0	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Interaction completeness score	Shared system contracts, ownership, and dependencies
+23228	0.5	DEPENDENCIES.md (interaction matrix), econ2.js (chains)	Cross-domain data and configuration coverage checklist.	Shared system contracts, ownership, and dependencies
+23249	1	aicore.js (institutions, conflicts, failure and recovery)	World simulation governance, policy conflicts, and institutional capacity	Cross-domain dependencies and operational integration contracts
+23251	1	aicore.js (institutions, conflicts, failure and recovery)	Institutional capability	Cross-domain dependencies and operational integration contracts
+23254	1	aicore.js (institutions, conflicts, failure and recovery)	Policy conflicts	Cross-domain dependencies and operational integration contracts
+23257	1	aicore.js (institutions, conflicts, failure and recovery)	Decision process	Cross-domain dependencies and operational integration contracts
+23260	1	aicore.js (institutions, conflicts, failure and recovery)	Institutional failure and recovery	Cross-domain dependencies and operational integration contracts

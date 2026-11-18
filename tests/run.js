@@ -1295,6 +1295,17 @@ test('s58_desk: tasking from the war, crew seats, briefing room, journal, bookma
     D.mark(50,20,'rally point');D.note('tankers at 0600');D.ready('me',true);D.journal('first day');D.bookmark('front',50,30,5);D.recv({k:'note',v:'from a guest'});D.recv({k:'mk',v:{lat:'x',lon:1}});
     const core=Object.values(st.c).find(q=>q.al==='CORE');return{task:X.task.length,acc:!!t,seats:D.seats('F-15E').length,mk:X.brief.mk.length,notes:X.brief.notes.length,jr:X.jr.length,bm:X.bm.length,csv:D.csv().split('\n').length,enc:D.search('S-400').length,tab:/TASKING/.test(NATPANEL.tabs.DESK(core))&&/READINESS BOARD/.test(NATPANEL.tabs.DESK(core)),audit:WWAR.audit()};});
   ok('tasking generated and accepted',r.task>0&&r.acc,r);ok('two seats in a two-seater',r.seats===2);ok('briefing room: markers, notes (invalid marker rejected)',r.mk===1&&r.notes===2,r);ok('journal and bookmarks',r.jr===1&&r.bm===1);ok('CSV export',r.csv>100,r.csv);ok('encyclopedia search',r.enc>0,r.enc);ok('DESK tab',r.tab);ok('audit clean',r.audit.length===0,r.audit);});
+test('s59_scenarios: cross-system chains — mobilization to labour and schools, displacement to migration and resilience, airbase damage to facilities and readiness, ceasefire to monitoring, natural deaths to the ledger, save and reload with every record','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*60);const core=Object.values(st.c).find(q=>q.al==='CORE');const a=core.a3;
+    WWAR.mil.order(a,'GENERAL','test');WWAR.step(24*10);out.mob=st.ppl.c[a].lab.vac>0&&st.ppl.c[a].edu.def>=0;
+    core.disp=(core.disp||0)+core.pop*.05;WWAR.step(24*5);out.mig=st.ppl.c[a].mig.IDP>0&&st.chr.res[a].fear>0;
+    const m=st.mil[a],id=Object.keys(m.bases)[0];m.bases[id].c=.3;WWAR.step(24*3);const b=st.svc.c[a].inst.find(x=>x.id===id);out.base=!!b&&Object.values(b.f).some(v=>v<1);
+    const f=st.fronts.find(x=>!x.cf);if(f){f.cf={kind:'LOCAL',t:st.t,until:st.t+24*20};WWAR.step(24*2);out.cf=st.pol2.cfm.zones>0;}
+    out.ledger=st.dl.ev.some(e=>e.nat);out.keys=['ppl','svc','pol2','ec2','inf','env2','chr','desk','civ','aic'].filter(k=>st[k]);
+    const day=Math.floor(st.t/24);await WWAR.store.autosave();localStorage.removeItem('viper.ww');WWAR.st=null;await WWAR.load();out.back=WWAR.st&&Math.floor(WWAR.st.t/24)===day&&out.keys.every(k=>WWAR.st[k]);
+    WWAR.step(24*2);out.audit=WWAR.audit();return out;});
+  ok('mobilization reaches labour and education',r.mob,r);ok('displacement reaches migration and resilience',r.mig,r);ok('airbase damage reaches its facilities',r.base,r);ok('a ceasefire is monitored',r.cf,r);
+  ok('natural deaths in the ledger',r.ledger);ok('every subsystem record present',r.keys.length===10,r.keys);ok('save and reload keep every record',r.back,r);ok('audit clean after reload',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
