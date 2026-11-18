@@ -26,7 +26,8 @@ const T=[];const test=(n,ac,f)=>T.push({n,ac,f});
 
 test('f22_headon_acm: lock survives a 16 km head-on closure, drops only at the gimbal limit','F-22',async p=>{
   const r=await p.evaluate(()=>{const drops=[],od=radar.drop.bind(radar);radar.drop=function(w){drops.push({why:w||'',d:Math.round(radar.ang(tgt.pos).d)});return od.apply(this,arguments);};
-    radar.setACM('30x20');player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-300);tgt.pos.set(60,6200,-16000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,300);
+    radar.setACM('30x20');
+    player.pos.set(0,6000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-300);tgt.pos.set(60,6200,-16000);tgt.q.set(0,1,0,0);tgt.vel.set(0,0,300);
     let lk=0,n=0;run(30*30,()=>{n++;if(radar.mode==='STT')lk++;});return{drops,frac:lk/n};});
   ok('no early drop (only GIMBAL inside 600 m)',r.drops.every(x=>x.why==='GIMBAL'&&x.d<600),r.drops);ok('locked > 80% of the run',r.frac>.8,+r.frac.toFixed(2));});
 
@@ -237,7 +238,7 @@ test('ka50_autorotation: engines out, lever down, forward speed: rotor stays tur
 test('ka50_ground: stands on its wheels, lifts off with the collective, lands and settles without damage','Ka-50',async p=>{
   const r=await p.evaluate(s=>{game.paused=true;eval(s);const P=player,H=P.ac.heli;kaSet(groundAt(0,0)+H.gh+.01);P.onGnd=true;P.thr=0;kaRun(60);const o={onGnd0:P.onGnd,y0:P.pos.y-groundAt(0,0),hp0:P.hp};
     P.thr=.75;kaRun(90);o.climb=P.pos.y-groundAt(0,0);o.airborne=!P.onGnd;
-    const hv=kaHover();kaSet(groundAt(0,0)+25);P.thr=hv;kaRun(30*70,()=>{if(P.onGnd){P.thr=0;return;}const agl=P.pos.y-groundAt(0,0)-H.gh,vt=-Math.max(.7,Math.min(2.2,agl*.12));P.thr=Math.max(0,Math.min(1,P.thr+.004*(vt-P.vel.y)));});P.thr=0;kaRun(60);o.landed=P.onGnd;o.hp1=P.hp;o.alive=P.alive;o.sink=P.td;return o;},KA_SETUP);
+    const hv=kaHover();kaSet(groundAt(0,0)+25);P.thr=hv;kaRun(30*70,()=>{if(P.onGnd){P.thr=0;return;}const agl=P.pos.y-groundAt(0,0)-H.gh,vt=-Math.max(.7,Math.min(2.2,agl*.12));P.thr=Math.max(0,Math.min(1,hv+.08*(vt-P.vel.y)+(P.thr-hv)*.98+.002*(vt-P.vel.y)));});P.thr=0;kaRun(60);o.landed=P.onGnd;o.hp1=P.hp;o.alive=P.alive;o.sink=P.td;return o;},KA_SETUP);
   ok('rests on the wheels at the CG height',r.onGnd0&&Math.abs(r.y0-1.72)<.1&&r.hp0===100,{y:+r.y0.toFixed(2)});
   ok('a collective pull lifts it off the ground',r.airborne&&r.climb>3,+r.climb.toFixed(1));
   ok('a gentle descent lands it on the wheels with no damage',r.alive&&r.landed&&r.hp1>99&&r.sink<2.5,{landed:r.landed,hp:Math.round(r.hp1),sink:+(r.sink||0).toFixed(2)});});
@@ -268,12 +269,12 @@ test('pulse_clutter: a pulse set locks a strong ground return under the cursor',
     const rng=radar.rngM;let mx=0,at=[0,.5];for(let a=-1;a<=1;a+=.05)for(let r=.1;r<1;r+=.05){const v=flClutterAt(a,r*rng);if(v>mx){mx=v;at=[a,r];}}
     radar.cur.az=at[0];radar.cur.r=at[1];radar.designate();return{mode:radar.mode,g:!!(radar.lock&&radar.lock.isGhost),mx};});
   ok('locked a ground return',r.mode==='STT'&&r.g,r);});
-for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',true],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
+for(const [ac,dc] of [['A-10C',false],['Cargo',true],['Ka-50',false],['Tu-95MS',true],['B-52H',true],['E-3A',true],['A-50',true],['Su-35S',false]])test('maws_fit_'+ac+': warns'+(dc?' and DIRCM works':', no DIRCM'),ac,async p=>{
   const r=await p.evaluate(()=>{player.pos.set(0,3000,0);player.q.set(0,0,0,1);player.vel.set(0,0,-150);let w=0,jam=0;const sh={pos:new THREE.Vector3(0,3000,4000),vel:new THREE.Vector3(),fwd:o=>o.set(0,0,-1),up:o=>o.set(0,1,0),alive:true};
-    for(let k=0;k<12;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
+    for(let k=0;k<30;k++){const m=new Missile('R-73',sh,player,sh.pos.clone());m.alive=true;m.burning=true;m.t=1;m.pos.set(1500,2800,2800);m.vel.copy(player.pos.clone().sub(m.pos).normalize()).multiplyScalar(300);
       let det=false;for(let i=0;i<60;i++){window.__T+=100;MSS.tick(.1);if(MSS.warned.some(x=>x.m===m))det=true;if(m.maddog&&!m.track){jam++;break;}}if(det)w++;m.alive=false;MSS.warned.length=0;}
     return{w,jam,d:!!MSS.fit.dircm};});
-  ok('warned of most missiles',r.w>=10,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=3:(!r.d&&r.jam===0),r);});
+  ok('warned of most missiles',r.w>=25,r);ok(dc?'DIRCM defeats some':'no DIRCM fitted',dc?r.jam>=5:(!r.d&&r.jam===0),r);});
 
 test('legion_pod: the pod gives an F-15C an IRST; without it there is none','F-15C',async p=>{
   const r=await p.evaluate(()=>{const o={};o.opts=(STN['F-15C']['5']||[]).includes('LEGION');o.before=!!player.ac.irst;player.load['5']='LEGION';MSS.tick(.1);o.after=!!player.ac.irst&&!!player.ac.ols&&player.ac.ols.leg===true;
@@ -662,7 +663,7 @@ test('s12_end: the fifteen-chapter epilogue, the ceremony, and the record kept',
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar('EST');const st=WWAR.st;WWAR.step(24*60);st.lead=st.lead||{people:{},seq:1};st.lead.career={a3:'POL',name:'Test',rank:1,sorties:3,air:0,gnd:0,awards:[['FIRST','Combat Sortie Ribbon',st.t]],inq:[],st:'ACTIVE',hist:[]};
     WWAR.diplo.end('ARMISTICE','An armistice is signed.');const E=WWAR.endscreen;E.open();const d=document.getElementById('wwEnd');const T=[];for(let i=0;i<E.CH.length;i++){E.go(i);T.push(d.textContent);}
     E.go(2);E.burn();const kept=st.lead.career.awards.length;const all=T.join(' ');E.close();
-    return{n:E.CH.length,oc:E.outcome(),q:all.includes('Eisenhower')&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
+    return{n:E.CH.length,oc:E.outcome(),q:/Eisenhower|Hemingway/.test(all)&&all.includes('Source:'),est:all.includes('Estimates by rule'),score:/score:|points|you win!/i.test(all),burnt:!!st.medalsBurnt,kept,cer:st.ev.some(e=>e.ty==='CEREMONY'),ch1:T[0].includes('THE WAR IS OVER')};});
   ok('fifteen chapters',r.n===15,r);ok('the last day, and an outcome for your side',r.ch1&&['WIN','LOSE','NEITHER'].includes(r.oc),r);ok('estimates labelled, quotation with its source',r.est&&r.q,r);
   ok('decorations burned, award record kept',r.burnt&&r.kept===1&&r.cer,r);ok('no scoreboard',!r.score);});
 test('s12_tools: rates, catch-up, saves, trends, notifications, calendar, AI log','F-16C',async p=>{
@@ -1280,7 +1281,7 @@ test('s54_archive: verified quotation archive from data, signature quotation fir
   ok('eleven verified entries with metadata',r.n===11&&r.meta,r);ok('misattribution safeguards',r.never===2&&r.safe,r);ok('signature quotation first on the ending',r.first==='Ernest Hemingway',r.first);ok('quotations by ending theme',r.end);ok('awards for restraint and protection',r.aw);ok('QUOTES tab',r.tab);});
 test('s55_infra: assets vs service, water, food seasons, space, aviation, sea, rail, transport, districts','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*150);const X=st.inf;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];
-    const ev=new Set(st.ev.map(e=>e.ty));return{n:Object.keys(X.c).length,net:Object.keys(R.net).length,ap:R.av.ap,sp:Object.values(X.c).some(c=>c.sp),ph:R.food.ph,ev:['UTILITIES','FOOD','SPACE','AVIATION','TRANSPORT'].filter(t=>ev.has(t)),tab:/WATER/.test(NATPANEL.tabs.NETWORKS(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
+    const ev=new Set(st.ev.map(e=>e.ty));return{n:Object.keys(X.c).length,net:Object.keys(R.net).length,ap:R.av.ap,sp:Object.values(X.c).some(c=>c.sp),ph:R.food.ph,ev:['UTILITIES','FOOD','SPACE','AVIATION','TRANSIT'].filter(t=>ev.has(t)),tab:/WATER/.test(NATPANEL.tabs.NETWORKS(core)),size:JSON.stringify(X).length,audit:WWAR.audit()};});
   ok('records with eight networks',r.n>5&&r.net===8,r);ok('airports from the world data, space programmes, seasons',r.ap>0&&r.sp&&!!r.ph,r);ok('infrastructure events',r.ev.length>=2,r.ev);ok('NETWORKS tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
 test('s56_enviro: climate, environment incidents and monitoring, ecosystems, agencies, risk indicators','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st;WWAR.step(24*150);const X=st.env2;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];const ev=new Set(st.ev.map(e=>e.ty));

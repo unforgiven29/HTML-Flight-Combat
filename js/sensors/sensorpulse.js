@@ -118,7 +118,8 @@ F.mod('s38',5,(r,c)=>{let n=0;for(const j of jets){if(j===c.P||!j.alive||j.side!
 /* ======================= effects: registry -> sim ======================= */
 // receiver chain losses and gains relative to what each radar started with, minimum range, drift, interference
 {const _s=radar.snr1;radar.snr1=function(j,a,loss){const s=_s.call(this,j,a,loss);if(!F.on||!F.reg||!s||this.sensor!=='RDR')return s;
-  if(a.d<Math.max(Q.pulseMinRangeFromBlankingM||0,Q.pulseMinRangeFromWidthM||0))return 0;
+  {let mr=Math.max(Q.pulseMinRangeFromBlankingM||0,Q.pulseMinRangeFromWidthM||0);if(this.mode==='STT'||this.mode==='ACM'||this.acm)mr=Math.min(mr,600);   /* v407: in a track the set changes to short pulses (medium PRF): the long search pulse's blind range does not apply */
+  if(a.d<mr)return 0;}
   let g=Q.pcCompressionGainDb-(F.pc0||0)-(Q.pcWeightingLossDb-(F.pw0||0));
   g-=(Q.cfarCaLossDb-(F.cfar0||0));g-=Math.max(0,(Q.integrationLossDb||0)-(F.il0||0));g+=Q.twtGainDriftDb||0;g-=(Q.receiverGainDriftDbPerHour||0)*(Q.calibrationLastTimeHours||0);
   g-=Q.interferenceDetectionLoss||0;g-=Q.rangeBinStraddleLossDb*.3-.3;

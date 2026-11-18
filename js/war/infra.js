@@ -51,7 +51,7 @@ function step(p,R){const st=W.st,war=bel(p)&&!st.over,e=p.ecn||{infra:1,energy:1
   if(war&&!R._av){R._av=1;W.emit('AVIATION',{e:[p.a3],txt:'Civil airspace over '+p.n+' closes near the fighting; airlines reroute, area control centres handle military and humanitarian flights only in the restricted zones.'});}
   const M=R.sea;M.thr=r3(cl(1-(p.blockade||0)*.8-(war?.1:0),.05,1.1));if(rn()<.01)M.resc++;
   const Rl=R.rail;Rl.mil=war?Math.round(Rl.mil+1+rn()*3):Rl.mil;Rl.pass=r3(cl(R.net.rail.svc*(war?.8:1),0,1));
-  const T=R.pt;T.ride=r3(cl((R.net.roads.svc+R.net.power.svc)/2*(war?.85:1),0,1.1));if(T.strike>0)T.strike--;else if(rn()<.002){T.strike=3;W.emit('TRANSPORT',{e:[p.a3],txt:'Bus and metro drivers in '+p.n+' strike for safety rules during air alerts; a minimum service runs.'});}
+  const T=R.pt;T.ride=r3(cl((R.net.roads.svc+R.net.power.svc)/2*(war?.85:1),0,1.1));if(T.strike>0)T.strike--;else if(rn()<.002){T.strike=3;W.emit('TRANSIT',{e:[p.a3],txt:'Bus and metro drivers in '+p.n+' strike for safety rules during air alerts; a minimum service runs.'});}
   for(const cn in R.dist){const c=((W.st.city&&W.st.city[p.a3])||[]).find(x=>x.n===cn);const hot=c&&(c.shel||0)>0;for(const d of R.dist[cn])d[1]=r3(cl(d[1]+(hot?-.01*rn():.003),.1,1));}
   // nexus: in a dry summer with damaged power, pumps for irrigation compete with drinking water
   if(war&&ss==='growing'&&Wt.bal<1&&R.net.power.svc<.8&&rn()<.02){R.nex++;W.emit('UTILITIES',{e:[p.a3],txt:'Trade-off in '+p.n+': with power short, pumping stations serve drinking water first and irrigation gets night hours only; harvest estimates fall a little.'});F.out=r3(F.out-.02);}}
