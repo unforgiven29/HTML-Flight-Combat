@@ -752,7 +752,7 @@ function unbind(){removeEventListener('keydown',S.onK,true);removeEventListener(
 function swap(w){if(S.w===w)return;S.w=w;S.reload=0;S.cool=.6;}
 function reload(){const g=S.wp[S.w];if(S.reload>0||!g.mag||g.cur>=g.mag||g.res<=0)return;S.reload=g.rl*(S.sway>.3?1.5:1);SND.click();}
 /* v420: threats are called on the radio (top left), not flashed in the middle of the screen */
-const THREAT=/^(ENEMY HELICOPTER|FPV DRONE|ONE-WAY ATTACK DRONE|ARMED DRONE|INCOMING|ENEMY COUNTER-ATTACK|ENEMY REINFORCEMENTS|ENEMY RADIO|THEY HEARD THE ORDER|ENEMY (JET|TANK|ARMOUR|ATTACK HELICOPTER|DRONE)|MINE!|SNIPER|MORTAR|DRONE)/;
+const THREAT=/^(ENEMY HELICOPTER|FPV DRONE|ONE-WAY ATTACK DRONE|ARMED DRONE|INCOMING|ENEMY COUNTER-ATTACK|ENEMY REINFORCEMENTS|ENEMY RADIO|THEY HEARD THE ORDER|ENEMY (JET|TANK|ARMOUR|ATTACK HELICOPTER|DRONE)|MINE!|SNIPER|MORTAR|DRONE|MISSILE LAUNCH)/;
 function say(t,s){if(THREAT.test(String(t))&&S&&S.phase!=='INSERT'){try{const tx=String(t).toLowerCase().replace(/(^|[.·!] *)([a-z])/g,(m,a,b)=>a+b.toUpperCase()).replace(/ · /g,'. ');vline(/INCOMING|BARRAGE|RADIO|REINFORCE|COUNTER/.test(t)?'HQ':'SQUAD',tx.endsWith('.')||tx.endsWith('!')?tx:tx+'.');return;}catch(e){}}S.msg=t;S.msgT=s||3;}
 
 /* ------------------------------------------------------------------ combat */
@@ -940,6 +940,7 @@ function defendStep(dt){S.waveT-=dt;if(S.waveT<=0&&S.wave<4){wave();S.waveT=75;}
    command post, or one of the town's plain blocks) is turned 30 / 60 / 90 degrees either way until it is clear, and the
    detour is kept for a few seconds so the vehicle drives around the corner instead of shaking against the wall. */
 function vblocked(x,z,r){for(const b of near(x-r-1,z-r-1,x+r+1,z+r+1,_nb)){if(b.gone||b.y1-b.y0<1.6||(b.bid==null&&!b.wb&&!b.str))continue;if(b.wb&&!b.wb[7])continue;if(x>b.x0-r&&x<b.x1+r&&z>b.z0-r&&z<b.z1+r)return true;}return false;}
+function solidAt(p){for(const b of near(p.x-.5,p.z-.5,p.x+.5,p.z+.5,_nb2)){if(b.gone)continue;if(p.x>b.x0&&p.x<b.x1&&p.z>b.z0&&p.z<b.z1&&p.y>b.y0&&p.y<b.y1)return true;}return false;}const _nb2=[];
 function vclash(v,x,z,r){for(const o of S.veh){if(o===v||!o.alive)continue;const dx=o.x-x,dz=o.z-z;if(dx*dx+dz*dz<(r+2.4)*(r+2.4)&&dx*dx+dz*dz<(o.x-v.x)**2+(o.z-v.z)**2)return true;}return false;}
 function vmove(v,ux,uz,sp){const r=v.tank?2.6:2.2;let a0=Math.atan2(ux,uz);if(v.det&&v.detT>0){v.detT-=.016;a0=v.det;}
   if(v.rev>0){v.rev-=.016;const a=a0+Math.PI+(v.revS||.6),nx=v.x+Math.sin(a)*sp*.6,nz=v.z+Math.cos(a)*sp*.6;if(!vblocked(nx,nz,r)&&!vclash(v,nx,nz,r)){v.x=nx;v.z=nz;}return{x:-Math.sin(a),z:-Math.cos(a)};}
@@ -1161,7 +1162,7 @@ function worldOn(){if(window.WF&&WF.townMesh){const m=WF.townMesh.material;S.tm0
   if(!document.getElementById('infWCss')){const st=document.createElement('style');st.id='infWCss';st.textContent='body.infWorld #hud,body.infWorld #iffbar,body.infWorld #dmg,body.infWorld .mfd,body.infWorld #rwrBox,body.infWorld #touch{display:none!important}';document.head.appendChild(st);}}
 const KEEP=new Set(['view','msg','infCv','infHud','u2m','menu']);   // v407: the cockpit radio panel is hidden on foot
 function hideFlight(){const v=document.getElementById('view');if(v)for(const el of v.children){if(el.id==='gl'||el.dataset.infhid)continue;el.dataset.infhid='1';el.style.setProperty('display','none','important');}
-  for(const el of document.body.children){if(KEEP.has(el.id)||el.tagName==='SCRIPT'||el.tagName==='STYLE'||el.dataset.infhid)continue;if(getComputedStyle(el).display==='none')continue;el.dataset.infhid='1';el.style.setProperty('display','none','important');}}
+  for(const el of document.body.children){if(KEEP.has(el.id)||/^i[A-Z]/.test(el.id)||el.tagName==='SCRIPT'||el.tagName==='STYLE'||el.dataset.infhid)continue;if(getComputedStyle(el).display==='none')continue;el.dataset.infhid='1';el.style.setProperty('display','none','important');}}
 function showFlight(){for(const el of document.querySelectorAll('[data-infhid]')){el.style.removeProperty('display');delete el.dataset.infhid;}}
 function worldOff(){showFlight();if(S.hidden&&window.WF&&WF.townMesh){for(const[b,M]of S.hidden)if(b[7])WF.townMesh.setMatrixAt(b[6],M);WF.townMesh.instanceMatrix.needsUpdate=true;}try{if(S.view0)view=S.view0;}catch(e){}if(window.WF&&WF.townMesh&&S.tm0){WF.townMesh.material.map=S.tm0.map;WF.townMesh.material.needsUpdate=true;}
   // v397: your aircraft stays hidden until the sortie has closed — it never appears at the battle site
@@ -1403,12 +1404,13 @@ function gunBody(m,id,cls,vk){const keep=m.userData.att;for(const c of[...m.chil
   if(dm){bx(.045,.09,.06,0,-.02,.18,fur);bx(.04,.06,.2,0,-.03,.3,fur);bx(.03,.04,.1,0,.03,.32,fur);}else if(id==='AK12'||id==='AK105'){cy(.014,.24,0,.0,.28,blk);bx(.04,.07,.06,0,-.02,.4,blk);}else bx(.045,.075,.26,0,-.02,.3,fur);
   bx(.03,.03,.06,0,.012,fz+.02,met);bx(.012,.014,.02,0,.06,-.12,sm);m.userData.sy=.074;}
 function equipVM(){try{const g=S.wp.pri;if(g&&g.id)gunBody(S.vms[g.vm||'rifle'],g.id,g.cls,g.vm||'rifle');if(S.wp.side)gunBody(S.vms.pistol,S.wp.side.id,'PISTOL','pistol');}catch(e){console.warn('[infantry] model',e);}
-  const pm=new THREE.MeshLambertMaterial({color:0x1d1f20}),gl=new THREE.MeshBasicMaterial({color:0x6688aa,transparent:true,opacity:.35}),FZ={rifle:-.66,carb:-.48,smg:-.33,shot:-.72,lmg:-.8,dmr:-.75,snp:-.85,pistol:-.14};
+  const pm=new THREE.MeshLambertMaterial({color:0x1d1f20}),gl=new THREE.MeshBasicMaterial({color:0x6688aa,transparent:true,opacity:.12,depthWrite:false}),FZ={rifle:-.66,carb:-.48,smg:-.33,shot:-.72,lmg:-.8,dmr:-.75,snp:-.85,pistol:-.14};
   for(const[w,vk]of[['pri',S.wp.pri.vm],['side','pistol']]){const g=S.wp[w],m=S.vms[vk];if(!m||!g.att)continue;if(m.userData.att)m.remove(m.userData.att);const A=new THREE.Group();m.add(A);m.userData.att=A;const fz=FZ[vk]||-.6,top=vk==='pistol'?.06:.09;
     const bx=(w2,h,d,x,y,z,mat)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w2,h,d),mat||pm);o.position.set(x,y,z);A.add(o);return o;},cy=(r,l,x,y,z,mat)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,10),mat||pm);o.rotation.x=Math.PI/2;o.position.set(x,y,z);A.add(o);return o;};
-    const O=g.att.optic;if(O==='MAG3'){bx(.04,.04,.05,0,top+.03,-.05);cy(.022,.09,0,top+.035,.03);m.userData.sy=top+.04;}else if(O==='PSO'){cy(.022,.2,-.02,top+.05,-.02);m.userData.sy=top+.05;}else if(O==='THERM'){bx(.05,.06,.18,0,top+.04,-.04);cy(.025,.03,0,top+.04,-.14);m.userData.sy=top+.045;}
-    else if(O==='RDS'){bx(.04,.04,.05,0,top+.03,-.05);bx(.03,.025,.004,0,top+.04,-.075,gl);m.userData.sy=top+.04;}
-    else if(O==='HOLO'){bx(.05,.05,.08,0,top+.035,-.05);bx(.04,.03,.004,0,top+.045,-.09,gl);m.userData.sy=top+.045;}
+    const O=g.att.optic;/* v421: open sights are hollow frames around the window you look through, with a clear lens */const frame=(w,h,d,y,z)=>{const t=.005;bx(w,t,d,0,y-h/2,z);bx(w,t,d,0,y+h/2,z);bx(t,h,d,-w/2,y,z);bx(t,h,d,w/2,y,z);bx(w*.8,.01,d,0,y-h/2-.008,z);};
+    if(O==='MAG3'){frame(.04,.036,.05,top+.04,-.05);for(const z of[.0,.06])frame(.03,.03,.008,top+.04,z);m.userData.sy=top+.04;}else if(O==='PSO'){cy(.022,.2,-.02,top+.05,-.02);m.userData.sy=top+.05;}else if(O==='THERM'){bx(.05,.06,.18,0,top+.04,-.04);cy(.025,.03,0,top+.04,-.14);m.userData.sy=top+.045;}
+    else if(O==='RDS'){frame(.04,.036,.05,top+.04,-.05);bx(.03,.025,.002,0,top+.04,-.075,gl);m.userData.sy=top+.04;}
+    else if(O==='HOLO'){frame(.05,.04,.08,top+.045,-.05);bx(.04,.03,.002,0,top+.045,-.09,gl);m.userData.sy=top+.045;}
     else if(O==='X4'||O==='V16'){cy(.025,.16,0,top+.05,-.05);m.userData.sy=top+.05;}else if(O==='X8'||O==='X12'){cy(.028,O==='X12'?.3:.24,0,top+.055,-.05);m.userData.sy=top+.055;}
     if(g.att.muzzle==='SUP')cy(.022,.18,0,.02,fz-.09);else if(g.att.muzzle==='BRAKE')bx(.04,.03,.07,0,.015,fz-.035);else if(g.att.muzzle==='COMP'||g.att.muzzle==='FH')cy(.02,.06,0,.02,fz-.03);
     if(g.att.under==='GRIP')bx(.03,.1,.03,0,-.09,fz*.55);else if(g.att.under==='ANGLED'){const o=bx(.03,.03,.09,0,-.055,fz*.55);o.rotation.x=.5;}else if(g.att.under==='HSTOP')bx(.03,.03,.02,0,-.045,fz*.7);else if(g.att.under==='BIPOD'){bx(.012,.14,.012,-.025,-.07,fz*.8);bx(.012,.14,.012,.025,-.07,fz*.8);}else if(g.att.under==='UGL')cy(.025,.22,0,-.05,fz*.6);
@@ -1884,7 +1886,9 @@ function droneStep(dt){if(S.phase!=='FIGHT')return;S.dT-=dt;
   for(let i=S.drones.length-1;i>=0;i--){const d=S.drones[i],P=d.m.position;d.t+=dt;if(!d.alive){S.sc.remove(d.m);S.drones.splice(i,1);continue;}
     if(d.k==='FPV'){if(d.mine&&!d.dive)continue;const mv=d.mine?S.veh.filter(v=>v.alive&&v.side==='E').sort((a,b)=>a.m.position.distanceTo(P)-b.m.position.distanceTo(P))[0]:null;const tg=mv?mv.m.position.clone().setY(mv.m.position.y+2.6):droneTarget(d);if(!tg){d.alive=false;continue;}const dir=tg.clone().add(new V3(0,tg===S.pos?-.6:1,0)).sub(P),L=dir.length();
       // weave on the approach, then dive
-      dir.normalize();if(L>30)dir.x+=Math.sin(d.t*3)*.3;P.addScaledVector(dir.normalize(),d.spd*dt);d.m.lookAt(tg);if(L<2.2){if(d.mine){const v=S.veh.find(v=>v.alive&&v.side==='E'&&v.m.position.distanceTo(P)<5);if(v)armorHit(v,P.clone(),dir.clone(),'FPV');}blast(P.clone(),7,170,d.side==='F');d.alive=false;}}
+      dir.normalize();if(L>30)dir.x+=Math.sin(d.t*3)*.3;{const p0=P.clone();P.addScaledVector(dir.normalize(),d.spd*dt);   /* v421: a drone cannot pass through walls or the ground: it climbs over what it can see ahead, and strikes what it flies into */
+        if(solidAt(P)||P.y<H(P.x,P.z)+.2){if(L<14||d.dive){P.copy(p0);blast(P.clone(),6,150,d.side==='F');d.alive=false;S.sc.remove(d.m);continue;}P.copy(p0);P.y+=d.spd*dt;}
+        else{const ah=P.clone().addScaledVector(dir,6);if(L>14&&(solidAt(ah)||ah.y<H(ah.x,ah.z)+1))P.y+=d.spd*.6*dt;}}d.m.lookAt(tg);if(L<2.2){if(d.mine){const v=S.veh.find(v=>v.alive&&v.side==='E'&&v.m.position.distanceTo(P)<5);if(v)armorHit(v,P.clone(),dir.clone(),'FPV');}blast(P.clone(),7,170,d.side==='F');d.alive=false;}}
     else if(d.k==='OWA'){const tz=d.side==='E'?700:-900;P.z+=(tz>P.z?1:-1)*d.spd*dt;P.y=Math.max(P.y-dt*4,H(P.x,P.z)+60);d.m.rotation.y=tz>P.z?Math.PI:0;
       if(Math.abs(P.z-tz)<20||d.t>40){blast(new V3(P.x,H(P.x,P.z),P.z),12,250,false);fx(new V3(P.x,H(P.x,P.z)+3,P.z),5);d.alive=false;}}
     else{const c=S.village;P.set(c.x+Math.cos(d.t*.05)*900,H(c.x,c.z)+1500,c.z+Math.sin(d.t*.05)*900);d.m.rotation.y=-d.t*.05;d.cool-=dt;
