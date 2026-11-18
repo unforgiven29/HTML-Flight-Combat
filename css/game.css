@@ -318,3 +318,42 @@ h2{margin:0;font:700 12px var(--f-mono);letter-spacing:.2em;color:var(--dim);tex
 
 #strp{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(14% + env(safe-area-inset-bottom,0px));padding:6px 10px;background:rgba(6,10,12,.78);border:1px solid #2c4a52;border-radius:5px;font:700 11px var(--f-mono);color:#cfe;display:grid;gap:2px;pointer-events:none;z-index:4;max-width:min(720px,92vw);white-space:nowrap}
 #strp .h{color:var(--amber);letter-spacing:.16em;font-size:10px}#strp .a{color:var(--amber)}#strp .r{color:var(--warn)}#strp b{color:var(--hud)}#strp .a b,#strp .r b{color:inherit}
+
+/* v426: INDEX (codex.js) — categories on the left, groups and entries as drop-downs, specs tables */
+#menu #pIndex{padding:0;overflow:hidden}
+#pIndex .cx{display:flex;gap:12px;flex:1;min-height:0;padding:12px 16px 12px}
+#pIndex .cx-nav{display:flex;flex-direction:column;gap:3px;width:230px;flex:none;overflow:auto}
+#pIndex .cx-nav button{display:flex;justify-content:space-between;align-items:baseline;gap:8px;text-align:left;padding:8px 10px 8px 11px;background:var(--pn);border:1px solid var(--ln);border-left:2px solid var(--ln2);color:var(--dm);cursor:pointer;font:inherit}
+#pIndex .cx-nav button b{font:700 11px var(--f1);letter-spacing:.14em;color:var(--tx)}
+#pIndex .cx-nav button em{font-style:normal;font-size:10.5px;color:var(--dm)}
+#pIndex .cx-nav button:hover{border-color:var(--ln2);border-left-color:var(--cy)}
+#pIndex .cx-nav button[aria-pressed=true]{background:var(--pn2);border-left-color:var(--cy)}
+#pIndex .cx-nav button[aria-pressed=true] b{color:var(--cy)}
+#pIndex .cx-main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--pn);border:1px solid var(--ln);border-top:2px solid var(--ln2)}
+#pIndex .cx-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:12px 14px 10px;border-bottom:1px solid var(--ln)}
+#pIndex .cx-mk{font:700 9.5px var(--f1);letter-spacing:.28em;color:var(--cy)}
+#pIndex .cx-h h2{margin:2px 0 3px;font:400 22px var(--f2);letter-spacing:.06em;color:var(--tx)}
+#pIndex .cx-ds{font-size:11px;color:var(--dm)}
+#pIndex #cxQ{width:260px;max-width:40%;background:rgba(0,0,0,.35);color:var(--tx);border:1px solid var(--ln2);padding:7px 9px;font:11px var(--f1);letter-spacing:.08em;-webkit-user-select:text;user-select:text}
+#pIndex .cx-list{flex:1;overflow:auto;padding:8px 14px 14px}
+#pIndex details summary{cursor:pointer;list-style:none}
+#pIndex details summary::-webkit-details-marker{display:none}
+#pIndex .cx-g{margin-top:8px;border:1px solid var(--ln)}
+#pIndex .cx-g>summary{display:flex;justify-content:space-between;padding:7px 10px;background:var(--pn2);font:700 10.5px var(--f1);letter-spacing:.22em;text-transform:uppercase;color:var(--dm)}
+#pIndex .cx-g>summary::before{content:'▸';margin-right:8px;color:var(--cy)}
+#pIndex .cx-g[open]>summary::before{content:'▾'}
+#pIndex .cx-g>summary span{flex:1}
+#pIndex .cx-g>summary em{font-style:normal;color:var(--cy)}
+#pIndex .cx-e{border-top:1px solid var(--ln)}
+#pIndex .cx-e>summary{display:flex;gap:12px;align-items:baseline;padding:7px 12px 7px 26px}
+#pIndex .cx-e>summary:hover{background:rgba(91,225,255,.05)}
+#pIndex .cx-e>summary b{font:700 12px var(--f1);letter-spacing:.08em;color:var(--tx);min-width:180px}
+#pIndex .cx-e>summary span{font-size:11px;color:var(--dm)}
+#pIndex .cx-e[open]>summary b{color:var(--cy)}
+#pIndex .cx-e p{margin:2px 26px 8px;font:12px/1.55 var(--f1);color:#c3d6dd;-webkit-user-select:text;user-select:text}
+#pIndex .cx-e table{margin:0 26px 12px;border-collapse:collapse;font-size:11px;min-width:min(520px,80%)}
+#pIndex .cx-e th{text-align:left;font-weight:400;color:var(--dm);padding:3px 14px 3px 0;white-space:nowrap;vertical-align:top;letter-spacing:.06em}
+#pIndex .cx-e td{color:var(--tx);padding:3px 0;border-bottom:1px dotted var(--ln);-webkit-user-select:text;user-select:text}
+#pIndex .cx-more{padding:10px 12px;color:var(--dm);font-size:11px}
+#pIndex .cx-fine{padding:6px 14px 8px;border-top:1px solid var(--ln);font-size:10px;color:var(--dm)}
+@media (max-width:800px){#pIndex .cx{flex-direction:column}#pIndex .cx-nav{width:auto;flex-direction:row;flex-wrap:wrap}#pIndex .cx-e>summary b{min-width:0}}

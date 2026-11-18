@@ -81,7 +81,7 @@ function indexTab(){const tabs=document.querySelector('#menu .hq-tabs');if(!tabs
   const b=document.createElement('button');b.setAttribute('role','tab');b.dataset.tab='index';b.setAttribute('aria-selected','false');b.innerHTML='<kbd>7</kbd>INDEX';tabs.insertBefore(b,ops?ops.nextSibling:null);b.onclick=()=>{if(typeof setTab==='function')setTab('index');renderIndex();};
   const pane=document.createElement('section');pane.className='hq-pane';pane.id='pIndex';(document.getElementById('pOps')||document.querySelector('#menu .hq-pane')).after(pane);}
 const IX={q:'',k:'AIRCRAFT'};
-function renderIndex(){const el=document.getElementById('pIndex');if(!el)return;const q=IX.q.toLowerCase();let L=[];
+function renderIndex(){if(window.CODEX)return CODEX.render();const el=document.getElementById('pIndex');if(!el)return;const q=IX.q.toLowerCase();let L=[];
   if(IX.k==='AIRCRAFT')for(const[t,a]of Object.entries(AC)){if(!a.model||a.gnd||a.sam)continue;const w=typeof STN!=='undefined'&&STN[t]?[...new Set(Object.values(STN[t]).flat())]:[];
     L.push({n:a.name||t,h:[a.gun&&a.gun.name?'Gun: '+a.gun.name:'',a.radar&&a.radar.name?'Radar: '+a.radar.name:'',a.gLim?'Limit: '+a.gLim+' g':'',w.length?'Weapons: '+w.slice(0,18).join(', ')+(w.length>18?' …':''):''].filter(Boolean).join(' · '),s:t});}
   if(IX.k==='WEAPONS'){if(typeof MSL!=='undefined')for(const[k,m]of Object.entries(MSL))L.push({n:k,h:'Air-to-air · '+(m.seek||'')+(m.range?' · range '+Math.round(m.range/1000)+' km':''),s:k});

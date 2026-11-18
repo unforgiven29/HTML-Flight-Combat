@@ -25,8 +25,8 @@ async function get(k){const d=await db();return new Promise((res,rej)=>{const tx
 async function gz(str){if(typeof CompressionStream==='undefined')return new Blob([str]);return await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();}
 async function gunz(b){if(!(b instanceof Blob))return String(b);if(typeof DecompressionStream==='undefined')return await b.text();try{return await new Response(b.stream().pipeThrough(new DecompressionStream('gzip'))).text();}catch(e){return await b.text();}}
 let chain=Promise.resolve();
-function autosave(kind){const p=chain.then(()=>save1(kind));chain=p.catch(()=>{});return p;}
-async function save1(kind){if(!W.st||!T.ok)return false;try{W.st.schema=SCHEMA;const s=JSON.stringify(W.st);const b=await gz(s);await put('current',{at:Date.now(),day:Math.floor(W.st.t/24),size:s.length,b});
+function autosave(kind,str){const p=chain.then(()=>save1(kind,str));chain=p.catch(()=>{});return p;}
+async function save1(kind,str){if(!W.st||!T.ok)return false;try{W.st.schema=SCHEMA;const s=str||JSON.stringify(W.st);const b=await gz(s);await put('current',{at:Date.now(),day:Math.floor(W.st.t/24),size:s.length,b});
     if(kind==='ckpt'){const i=T.ckpt=(T.ckpt+1)%3;await put('ckpt'+i,{at:Date.now(),day:Math.floor(W.st.t/24),b});}T.last=Date.now();T.size=s.length;T.gz=b.size;return true;}
   catch(e){T.ok=false;console.warn('[store] IndexedDB unavailable; localStorage only',e);return false;}}
 async function loadIDB(k){try{const o=await get(k||'current');if(!o)return null;return JSON.parse(await gunz(o.b));}catch(e){return null;}}

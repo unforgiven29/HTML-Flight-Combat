@@ -1,7 +1,7 @@
 /* =====================================================================================================================
    v349 — national names and politics (spec v49 ch.05 national identity, governments, regional cooperation, regional
    profiles; ch.06 national rosters and equipment; ch.11 civil aircraft by manufacturer).
-   DATA (js/war/natdata.js, generated from data/nat/*.txt): equipment type names in service or on order for 69
+   DATA (js/war/core/natdata.js, generated from data/nat/*.txt): equipment type names in service or on order for 69
    countries, and for 121 countries the system of government, the titles of the head of state and head of government,
    the legislature, its seats, the term and whether elections are competitive. Public-knowledge approximations,
    labelled in the panels; countries not in the tables keep generic classes and a generic government.

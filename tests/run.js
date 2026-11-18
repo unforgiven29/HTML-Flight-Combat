@@ -971,7 +971,7 @@ test('s31_infantry2: roles, every weapon fires, walls block, floors carry you, d
 test('s32_campinf: infantry from the campaign HQ, the battle is in the hot sector and a win moves the campaign front','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.camp');CAMP.st=null;CAMP.newState(game.era,1);const st=CAMP.st;
     {const bt=document.createElement('button');bt.dataset.a='inf';document.body.appendChild(bt);CMPUI.act({target:bt});bt.remove();}const menu=!!document.querySelector('[data-igo]');
-    document.querySelector('[data-igo]').click();const S=INFANTRY.S;const ok=!!S&&S.cfg.camp&&S.cs!=null;const i=S.cs,f0=st.front[i];
+    document.getElementById('u2m').remove();INFANTRY.start({...INFANTRY.K,camp:true,mis:'ATTACK'});const S=INFANTRY.S;const ok=!!S&&S.cfg.camp&&S.cs!=null;const i=S.cs,f0=st.front[i];
     INFANTRY.land();S.hp=1e9;for(const u of S.them)u.alive=false;S.dT=1e9;S.pos.set(S.village.x,S.pos.y,S.village.z);for(let k=0;k<40*30&&!S.res;k++)INFANTRY.step(1/30);
     const res=S.res;document.querySelector('[data-iend]').click();return{menu,ok,res,moved:st.front[i]<f0,log:st.log[0]&&st.log[0].txt};});
   ok('kit menu from the HQ',r.menu);ok('battle in a campaign sector',r.ok,r);ok('won, front moved, logged',r.res==='WON'&&r.moved&&/Infantry, sector/.test(r.log),r);});

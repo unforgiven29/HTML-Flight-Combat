@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /* Cross-system dependency map (spec v49 ch.18 ownership contracts, dependency graph; ch.20 repository audit).
-   Scans js/war/*.js: which state keys each module OWNS (creates st.<key>), which it READS from others, which shared
+   Scans every .js file under js/war (all subfolders): which state keys each module OWNS (creates st.<key>), which it READS from others, which shared
    hooks it wraps (W.mod, W.prodK, W.rdy, W.atkK, W.emit, W.step, W.load, W.compact, WSORTIE.*), which daily / weekly
    hooks it adds and which panel tabs it registers. Writes docs/campaign/DEPENDENCIES.md. Usage: node scripts/deps.js */
 const fs=require('fs'),path=require('path');const root=path.join(__dirname,'..'),dir=path.join(root,'js/war');
-const files=fs.readdirSync(dir).filter(f=>f.endsWith('.js')).sort();const own={},reads={},wraps={},tabs={},hooks={};
+const files=fs.readdirSync(dir,{recursive:true}).filter(f=>f.endsWith('.js')).sort();const own={},reads={},wraps={},tabs={},hooks={};
 for(const f of files){const s=fs.readFileSync(path.join(dir,f),'utf8');const m=f.replace('.js','');
   own[m]=[...new Set([...s.matchAll(/st\.([a-z][a-zA-Z0-9]*)\s*=\s*\{|W\.st\.([a-z][a-zA-Z0-9]*)\|\|\(W\.st\.\2=|st\.([a-z][a-zA-Z0-9]*)\|\|\(st\.\3=|if\(!st\.([a-z][a-zA-Z0-9]*)\)st\.\4=/g)].map(x=>x[1]||x[2]||x[3]||x[4]))];
   reads[m]=[...new Set([...s.matchAll(/(?:W\.st|st)\.([a-z][a-zA-Z0-9]*)/g)].map(x=>x[1]))];

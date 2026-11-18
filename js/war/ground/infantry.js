@@ -534,6 +534,45 @@ function townDetail(sc,D,village,GR,WM){const M4=new THREE.Matrix4(),Q=new THREE
    houses already shot up or fallen, burnt-out vehicles in no-man's land, shattered tree stumps, churned mud, more nets
    over the trenches and, as the months pass, extra trench lines dug behind the old ones. */
 if(W.daily)W.daily.push(()=>{const st=W.st;if(!st)return;const Wr=st.wear||(st.wear={});for(const f of st.fronts){const v=Wr[f.id]||0;Wr[f.id]=Math.round(Math.max(0,Math.min(1,v+(f.cf?-.002:1/90)))*1000)/1000;}});
+/* v425: STATIC BATCHING. Once the battlefield is built, every loose static mesh nothing in the game keeps a
+   reference to (trees, revetment boards, posts, nets, sandbag walls, wrecks' pieces...) is merged with the others of the
+   same look into one mesh: a few dozen draw calls instead of a few thousand. Anything the game holds (buildings that
+   collapse, solids, craters, vehicles, soldiers, mines, smoke) stays as it is. */
+function batchStatic(){const sc=S.sc,held=new Set(),seen=new Set();
+  const scan=(o,d)=>{if(!o||typeof o!=='object'||seen.has(o)||d>5)return;seen.add(o);if(o.isObject3D){held.add(o);return;}if(o.isMaterial||o.isBufferGeometry||o.isTexture||ArrayBuffer.isView(o))return;
+    if(o instanceof Map){for(const[k,v]of o){scan(k,d+1);scan(v,d+1);}return;}if(o instanceof Set){for(const v of o)scan(v,d+1);return;}
+    for(const k in o){let v;try{v=o[k];}catch(e){continue;}if(v&&typeof v==='object')scan(v,d+1);}};
+  scan(S,0);scan(TR,0);
+  const groups=new Map();let n0=0;
+  // loose meshes, and the meshes of static groups nothing holds (trench sections, gun nests, wrecks)
+  const cand=[],grp=[];for(const o of sc.children){if(held.has(o)||!o.visible||o.userData.keep)continue;if(o.isMesh&&!o.children.length)cand.push(o);
+    else if(o.isGroup||(o.type==='Object3D')){let ok=true;o.traverse(c=>{if(c!==o&&(held.has(c)||c.isLight||c.isSprite||c.isPoints||c.isLine||c.userData.J||c.isInstancedMesh))ok=false;});if(o.userData.J||o.userData.tu||o.userData.rotor)ok=false;if(!ok)continue;const ms=[];o.traverse(c=>{if(c.isMesh&&c.visible)ms.push(c);});if(ms.length){grp.push(o);cand.push(...ms);}}}
+  sc.updateMatrixWorld(true);
+  for(const m of cand){if(!m.isMesh||m.isInstancedMesh||m.isSkinnedMesh||(m.parent===sc&&m.children.length)||m.userData.keep)continue;const mt=m.material;if(Array.isArray(mt)||!mt||mt.isShaderMaterial||mt.onBeforeCompile&&mt.onBeforeCompile.toString().length>40)continue;
+    const g=m.geometry;if(!g||!g.attributes.position||g.morphAttributes&&Object.keys(g.morphAttributes).length)continue;
+    const key=[mt.type,mt.color?mt.color.getHexString():'',mt.emissive?mt.emissive.getHexString():'',mt.map?mt.map.uuid:'',mt.transparent?1:0,mt.opacity,mt.side,mt.vertexColors?1:0,mt.depthWrite?1:0,mt.polygonOffset?mt.polygonOffsetFactor:'',!!g.attributes.uv,!!g.attributes.color].join('|');
+    let G=groups.get(key);if(!G)groups.set(key,G={mt,list:[]});G.list.push(m);}
+  let calls=0;
+  for(const G of groups.values()){if(G.list.length<4)continue;const L=G.list;let nv=0;const geos=[];
+    for(const m of L){const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone());g.applyMatrix4(m.matrixWorld);if(!g.attributes.normal)g.computeVertexNormals();geos.push(g);nv+=g.attributes.position.count;}
+    if(nv>2e6)continue;const hasUV=geos.every(g=>g.attributes.uv),hasC=geos.every(g=>g.attributes.color);
+    const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=hasUV?new Float32Array(nv*2):null,C=hasC?new Float32Array(nv*3):null;let o=0;
+    for(const g of geos){const c=g.attributes.position.count;P.set(g.attributes.position.array.subarray(0,c*3),o*3);N.set(g.attributes.normal.array.subarray(0,c*3),o*3);if(U)U.set(g.attributes.uv.array.subarray(0,c*2),o*2);if(C)C.set(g.attributes.color.array.subarray(0,c*3),o*3);o+=c;g.dispose();}
+    const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(P,3));bg.setAttribute('normal',new THREE.BufferAttribute(N,3));if(U)bg.setAttribute('uv',new THREE.BufferAttribute(U,2));if(C)bg.setAttribute('color',new THREE.BufferAttribute(C,3));bg.computeBoundingSphere();
+    const M=new THREE.Mesh(bg,G.mt);M.matrixAutoUpdate=false;M.userData.batch=L.length;sc.add(M);for(const m of L){if(m.parent)m.parent.remove(m);if(m.material!==G.mt&&m.material.dispose)m.material.dispose();}n0+=L.length;calls++;}
+  for(const o of grp)if(!o.children.some(c=>c.isMesh||c.children.length))sc.remove(o);
+  return{merged:n0,into:calls};}
+/* v425: SOLDIER LOD. Beyond 150 m a soldier is a few pixels tall: he is drawn as one block in his uniform's colour
+   (lying down if he is down), not twenty parts. Checked a few times a second. */
+const LODG=new THREE.BoxGeometry(.5,1.7,.32);LODG.translate(0,.85,0);
+function lodStep(dt){S.lodT=(S.lodT||0)-dt;if(S.lodT>0)return;S.lodT=.35;const P=S.tk?S.tk.v.m.position:S.pos,R2=150*150;
+  for(const L of[S.us,S.them,S.civ||[]])for(const u of L){const m=u.m;if(!m||!m.visible&&!u.lod)continue;const dx=m.position.x-P.x,dz=m.position.z-P.z,far=dx*dx+dz*dz>R2;if(far===!!u.lod)continue;
+    if(far&&!u.px){let col=0x556b45;m.traverse(o=>{if(o.isMesh&&o.userData.part==='body'&&o.material&&o.material.color&&col===0x556b45)col=o.material.color.getHex();});u.px=new THREE.Mesh(LODG,new THREE.MeshLambertMaterial({color:col}));u.px.userData.lodP=1;m.add(u.px);}
+    for(const c of m.children)c.visible=c===u.px?far:!far;u.lod=far;}
+  // vehicles beyond 400 m: their small parts (wheels, hatches, antennas, track links) are not drawn
+  const V2=400*400;for(const v of S.veh){if(!v.alive||v.me||!v.m)continue;const dx=v.m.position.x-P.x,dz=v.m.position.z-P.z,far=dx*dx+dz*dz>V2;if(far===!!v.lod)continue;
+    if(!v.small){v.small=[];v.m.traverse(o=>{if(!o.isMesh||!o.geometry)return;if(!o.geometry.boundingSphere)o.geometry.computeBoundingSphere();const sc=o.getWorldScale(new V3());if(o.geometry.boundingSphere.radius*Math.max(sc.x,sc.y,sc.z)<.45)v.small.push(o);});}
+    for(const o of v.small)o.visible=!far;v.lod=far;}}
 function warScars(w){if(!(w>0.01))return;S.wear=w;S.quiet=true;try{warScars0(w);}finally{S.quiet=false;}}
 function warScars0(w){const sc=S.sc,M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new V3(0,1,0),Sc=new V3();const inField=(x,z)=>!(TR.n&&cut(x,z)>0);
   // craters: dark bowls with a lighter rim of thrown earth
@@ -656,6 +695,7 @@ function start(cfg){if(S)stop(false);const st=cfg.camp?null:W.st;if(!st&&!cfg.ca
   gridBuild();layGreen();try{mineInit();if(S.mission==='FRONT')manSpots();}catch(e){console.warn(e);}for(const v of S.veh)if(v.side==='E'&&rn()<(S.decoyK||0)*.6+.05&&!v.decoy){v.decoy=true;v.nofire=true;v.immob=true;}S.atgm=atgmMode(S.N.ATGM,S.me);S.uglN=pri.ugl;equipVM();S.body={head:100,torso:100,armL:100,armR:100,legL:100,legR:100};S.wounds=[];S.kit2={tq:2,band:3,kit:cfg.role==='MEDIC'?3:1};if(S.us[2])S.us[2].medic=true;if(S.them[3])S.them[3].medic=true;iwInit();S.us.slice(0,2).forEach(u=>u.eng=true);S.them.slice(0,2).forEach(u=>u.eng=true);
   if(S.WM)worldOn();
   {const eb=S.STR.filter(c=>c.side==='E'&&c.kind!=='COMMAND POST');const al=S.them.filter(u=>u.alive);eb.forEach((c,i)=>{const u=al[i];if(!u)return;u.m.position.set(c.cx,c.y0,c.cz);u.ox=c.cx-S.village.x;u.oz=c.cz-S.village.z;u.bunk=c;});}
+  try{S.batched=batchStatic();}catch(e){console.warn('[infantry] batch',e);}
   for(const u of S.us)u.m.visible=false;insertion();bind();loop.last=performance.now();if(!loop.on){loop.on=true;requestAnimationFrame(loop);}
   const dtx='You deploy as infantry with '+p.n+' ('+(cfg.pri==='RIFLE'&&N.RIFLE?N.RIFLE:PRI[cfg.pri].n)+', '+ARM[cfg.arm].n.toLowerCase()+') by '+INS[cfg.ins].toLowerCase()+(S.mission==='DEFEND'?' to hold the trenches before '+LOC.name:' to take '+LOC.name)+(fr?' on the front with '+st.c[enA3].n:cs!=null?' (sector '+(cs+1)+')':'')+'.';
   if(cfg.camp){if(typeof CAMP!=='undefined'&&CAMP.st)CAMP.log(dtx,'b');}else W.emit('INFANTRY',{e:[cfg.a3],txt:dtx});return S;}
@@ -892,7 +932,7 @@ function step(dt){if(!S||S.res||S.paused||S.panP)return;S.t+=dt;try{if(window.IN
     if(inZone&&!enemyNear){S.hold+=dt;if(S.hold>=30)end('WON');}else S.hold=Math.max(0,S.hold-dt*.5);
     S.waveT-=dt;if(S.waveT<=0&&S.them.filter(u=>u.alive).length<6){S.waveT=80;const n=4;for(let i=0;i<n;i++)S.them.push(man(false,S.village.x+(rn()-.5)*60,S.village.z-160-rn()*40));say('ENEMY REINFORCEMENTS FROM THE NORTH',3);}}
     S.heliT-=dt;if(S.heliT<=0&&!S.eheli){const h=helo(0x6a5a3a);h.position.set(400,80,-500);S.sc.add(h);S.eheli={m:h,hp:500,alive:true,cool:3,t:0};say('ENEMY HELICOPTER',3);S.heliT=1e9;}}
-  droneStep(dt);if(!S.WM)airStep(dt);else casOnly(dt);casStep(dt);bombStep(dt);cqbStep(dt);voiceStep(dt);tagStep();civStep(dt);if(TR.G.length>48&&Math.hypot(S.pos.x-(TR.sx||0),S.pos.z-(TR.sz||0))>30)trSync();vehStep(dt);mineStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);lockStep(dt);bodyStep(dt);npcStep(dt);iwStep(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
+  droneStep(dt);if(!S.WM)airStep(dt);else casOnly(dt);casStep(dt);bombStep(dt);cqbStep(dt);voiceStep(dt);tagStep();civStep(dt);lodStep(dt);if(TR.G.length>48&&Math.hypot(S.pos.x-(TR.sx||0),S.pos.z-(TR.sz||0))>30)trSync();vehStep(dt);mineStep(dt);battleStep(dt);v381Step(dt);v390Step(dt);lockStep(dt);bodyStep(dt);npcStep(dt);iwStep(dt);v385Step(dt);audioStep(dt);tracerStep(dt);ambient(dt);precipStep(dt);if(S.dirtyB&&S.dirtyB.size){for(const c of S.dirtyB)mergeB(c);S.dirtyB.clear();}
   // AI
   const all=[...S.us,...S.them];for(const u of S.us)ai(u,dt,S.them);for(const u of S.them)ai(u,dt,S.us);
   for(const v of S.veh){if(!v.alive)continue;v.cool-=dt;const foes=v.side==='F'?S.them:S.us;let b=null,bd=500;for(const f of foes){if(!f.alive)continue;const d=f.m.position.distanceTo(v.m.position);if(d<bd){bd=d;b=f.m.position;}}
@@ -1940,5 +1980,5 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
 function stop(early,why){if(!S)return;closePan();try{if(window._infPin&&window.WGEO&&WGEO.pin){WGEO.pin(window._infPin[0],window._infPin[1],2600,false);window._infPin=null;}}catch(e){}{const el=document.getElementById('iRideSub');if(el)el.remove();}try{if(window.INFNET&&!(early&&!S.res))INFNET.leave();}catch(e){}{const t=document.getElementById('iTank');if(t)t.remove();}{const v=document.getElementById('iVoice');if(v)v.remove();}{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={TR,trSync,Hf:(x,z)=>H(x,z),solidAt,nearB:(x,z)=>near(x-2,z-2,x+2,z+2,[]).map(b=>({x0:+b.x0.toFixed(1),x1:+b.x1.toFixed(1),z0:+b.z0.toFixed(1),z1:+b.z1.toFixed(1),y0:+b.y0.toFixed(1),y1:+b.y1.toFixed(1),bid:b.bid,wb:!!b.wb,str:!!b.str,kind:b.bid!=null&&S.BLD[b.bid]?S.BLD[b.bid].kind:null})),aiTank,vmove,sitPose,civSpawn,civHit,soldier,tankModel,hurt,say,tracer,rayWorld,los,tankStart,tankStep,fireMain,tankHit,tankMG,clock,rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+window.INFANTRY={batchStatic,TR,trSync,Hf:(x,z)=>H(x,z),solidAt,nearB:(x,z)=>near(x-2,z-2,x+2,z+2,[]).map(b=>({x0:+b.x0.toFixed(1),x1:+b.x1.toFixed(1),z0:+b.z0.toFixed(1),z1:+b.z1.toFixed(1),y0:+b.y0.toFixed(1),y1:+b.y1.toFixed(1),bid:b.bid,wb:!!b.wb,str:!!b.str,kind:b.bid!=null&&S.BLD[b.bid]?S.BLD[b.bid].kind:null})),aiTank,vmove,sitPose,civSpawn,civHit,soldier,tankModel,hurt,say,tracer,rayWorld,los,tankStart,tankStep,fireMain,tankHit,tankMG,clock,rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();

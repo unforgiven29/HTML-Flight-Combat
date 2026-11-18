@@ -1,7 +1,7 @@
 /* =====================================================================================================================
    v384 — sortie setup, infantry kit and debriefing dialogs in the menu theme (css/theme.css): matte, flat, brass for
    selection, signal red for the one action that commits, hairline rules, 2 px corners, a heavy rule on top of every plate.
-   Used by js/war/ui2.js (SORTIE, DEBRIEFING) and js/war/infantry.js (INFANTRY kit, INFANTRY DEBRIEF).
+   Used by js/war/ui/ui2.js (SORTIE, DEBRIEFING) and js/war/ground/infantry.js (INFANTRY kit, INFANTRY DEBRIEF).
    Dialog anatomy:  .bx > header.mh (kicker, h2, .ms meta)  +  .mb (scrolling body of .sec plates)  +  footer.mf (actions).
    ===================================================================================================================== */
 .u2m{--bg:#0a0c08;--pn:rgba(19,22,15,.97);--pn2:#12150e;--ln:rgba(171,163,120,.2);--ln2:rgba(171,163,120,.4);
