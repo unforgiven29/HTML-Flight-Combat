@@ -45,7 +45,7 @@ const ROLE={ASSAULT:{n:'Assault',pri:'RIFLE',lau:'NONE',arm:'PLATE',gren:4},SNIP
 const LAU={NONE:{n:'None'},RPG:{n:'Anti-tank rocket',mag:1,res:2,spd:120,dmg:400,rl:3.5},ATGM:{n:'Anti-tank guided missile',mag:1,res:1,spd:90,dmg:700,rl:5,guided:1},
            MANPADS:{n:'Portable air-defence missile',mag:1,res:0,spd:400,dmg:600,rl:6,air:1}};
 const ARM={NONE:{n:'None',k:1,spd:1},SOFT:{n:'Soft armour vest',k:.8,spd:.97},PLATE:{n:'Armour plates',k:.55,spd:.9},HEAVY:{n:'Heavy plates and helmet',k:.4,spd:.8}};
-const INS={APC:'Armoured personnel carrier',IFV:'Infantry fighting vehicle',HELO:'Helicopter',AIR:'Airdrop'};
+const INS={APC:'Armoured personnel carrier',IFV:'Infantry fighting vehicle',HELO:'Helicopter',AIR:'Airdrop',TANKD:'Tank crew · driver',TANKG:'Tank crew · gunner'};
 const SIDE={n:'Sidearm',rpm:400,dmg:24,mag:15,res:45,spr:.02,ads:1.2,rl:1.6,auto:0,vm:'pistol'};
 // v385: weapon models by class (names of real, widely known service weapons; handling is abstract game values, not data)
 const GUNS={
@@ -128,7 +128,7 @@ function names(a3){const E=EQ(a3);return{MBT:first(E.MBT),FTR:first(E.FTR4),ATK:
 // in the campaign's hottest sector and its result moves that sector of the campaign front.
 const campCtx=()=>{const red=typeof game!=='undefined'&&game.team==='RED';return{camp:true,a3:red?'RUS':'USA',en:red?'USA':'RUS',side:red?'R':'B',n:red?'Russia':'United States',enN:red?'United States':'Russia'};};
 const country=(cfg)=>cfg.camp?{n:campCtx().n,side:campCtx().side,gnd:1}:W.st.c[cfg.a3];
-const INSB={APC:'Drops you and leaves.',IFV:'Stays and supports you with its cannon.',HELO:'Drops you and leaves.',AIR:'Parachute: steer it down.'};
+const INSB={APC:'Drops you and leaves.',IFV:'Stays and supports you with its cannon.',HELO:'Drops you and leaves.',AIR:'Parachute: steer it down.',TANKD:'You drive; your gunner, loader and commander fight the tank.',TANKG:'You aim and fire; the commander finds targets, the driver moves.'};
 const MISD={ATTACK:['ATTACK','Take the town.'],DEFEND:['DEFEND','Hold the trenches.'],FRONT:['FRONT','Push from trench to trench; hold, fall back.']};
 function kitMenu(a3,ap,camp){if(!camp&&!W.st)return;K.camp=!!camp;if(camp)a3=campCtx().a3;K.a3=a3;K.ap=ap;if(K.gun&&!canField(a3,K.gun))K.gun=null;if(!canField(a3,K.side))K.side=STDFAM[famOf3(a3)].SIDE;const p=country(K),N=names(a3);if(!GUNS[K.gun]||GUNS[K.gun].cls!==K.pri)K.gun=gunDef(K.pri,a3);K.att=fixAtt(K.att,K.pri);K.satt=fixAtt(K.satt,'PISTOL');const G0=makeGun(K.pri,K.gun,K.att),AR=armOf(K),iss=issued(a3);const sn=window.UI2&&UI2.snap?UI2.snap():null;if(window.UI2)UI2.close();
   // one choice button: group g, key k; the data-ik attribute is what the click handler below reads
@@ -663,7 +663,7 @@ function recordDeath(u,own,how){if(u.rec||!W.st||S.cfg.camp||!W.cemetery||!W.cem
   if(u.friend)S.recF=(S.recF||0)+(how==='CAPTURED'?0:1);else S.recE=(S.recE||0)+(how==='CAPTURED'?0:1);}
 
 /* ------------------------------------------------------------------ insertion */
-function insertion(){const k=S.ins;S.ins_t=0;
+function insertion(){const k=S.ins;S.ins_t=0;if(k==='TANKD'||k==='TANKG'){tankStart();return;}
   if(k==='APC'||k==='IFV'){const v=vehicle(k,0x4e5a3c);S.sc.add(v);S.carrier={m:v,from:new V3(0,0,700),to:new V3(0,0,170),dur:16};if(!S.cfg.noRide&&!S.cfg.camp&&W.st)rideSetup(v);}
   else if(k==='HELO'){const h=helo(0x46503f);S.sc.add(h);S.carrier={m:h,from:new V3(-500,90,700),to:new V3(0,0,170),dur:18};}
   else{const a=plane();S.sc.add(a);S.carrier={m:a,from:new V3(-900,600,250),to:new V3(900,600,250),dur:20,jump:.5};S.chute=null;}
@@ -699,9 +699,9 @@ function land(){if(S.res)return;if(S.trip)rideEnd();S.phase='FIGHT';const C=S.ca
 function lockPtr(c){try{const p=c&&c.requestPointerLock&&c.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
 function bind(){const c=S.cv;c.addEventListener('click',()=>{if(AU.C&&AU.C.state==='suspended')AU.C.resume();if(document.pointerLockElement!==c&&c.requestPointerLock)lockPtr(c);});
   S.onK=e=>{if(!S)return;S.keys[e.code]=e.type==='keydown';if(e.type!=='keydown')return;e.stopPropagation();
-    if(e.code==='Escape'){if(S.pan){closePan();return;}if(S.res){stop(true,'LEFT');}else pauseMenu(!S.paused);return;}if(S.paused)return;if(e.code==='KeyR')reload();if(e.code==='KeyJ')digMine();if(e.code==='KeyN')mineKey();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='Digit5')treat('tq');if(e.code==='Digit6')treat('band');if(e.code==='Digit7')treat('kit');if(e.code==='KeyX')S.prone=!S.prone;if(e.code==='KeyO')radio('OFFENSIVE',()=>{offensive();if(S.readBy&&rn()<.6&&S.mission!=='ATTACK'){say('THEY HEARD THE ORDER · ENEMY BARRAGE ON OUR LINE',3);const L=S.mission==='FRONT'?S.lines[S.cur]:{z:S.trZ||S.pos.z};arty(new V3(0,0,L.z),6,'E');}});if(e.code==='KeyE')interact();if(e.code==='KeyK')buildCP();if(e.code==='KeyT')fallBack(true);if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
-  S.onM=e=>{if(!S||document.pointerLockElement!==S.cv)return;const k=S.ads?1/(S.wp[S.w].ads||1):1;S.yaw-=e.movementX*.0022*k;S.pitch=Math.max(-1.45,Math.min(1.45,S.pitch-e.movementY*.0022*k));};
-  S.onD=e=>{if(!S)return;if(e.button===0){S.fire=e.type==='mousedown';if(!S.fire)S.bc=0;}if(e.button===2)S.ads=e.type==='mousedown';};S.onC=e=>{if(S)e.preventDefault();};S.onR=()=>{if(!S)return;S.cam.aspect=innerWidth/innerHeight;S.cam.updateProjectionMatrix();S.R&&S.R.setSize(innerWidth,innerHeight,false);};
+    if(e.code==='Escape'){if(S.pan){closePan();return;}if(S.res){stop(true,'LEFT');}else pauseMenu(!S.paused);return;}if(S.paused)return;if(e.code==='KeyR')reload();if(S.tk){const T=S.tk;if(e.code==='Digit1'||e.code==='Digit2'||e.code==='Digit3'){const k=['APFSDS','HEAT','HE'][+e.code.slice(-1)-1];T.load=k;T.want=k;if(T.ready&&T.sel!==k){T.ready=false;T.rt=T.rel*.8;tsay('C','Load '+TKA[k]+'!');}}if(e.code==='KeyQ')T.zoom=!T.zoom;if(e.code==='KeyV')T.ext=!T.ext;return;}if(e.code==='KeyJ')digMine();if(e.code==='KeyN')mineKey();if(e.code==='KeyC')S.crouch=!S.crouch;if(e.code==='Digit1')swap('pri');if(e.code==='Digit2'&&S.wp.lau.mag)swap('lau');if(e.code==='Digit3')swap('side');if(e.code==='KeyG')grenade();if(e.code==='KeyQ')S.ads=!S.ads;if(e.code==='KeyB')dig(true);if(e.code==='Digit5')treat('tq');if(e.code==='Digit6')treat('band');if(e.code==='Digit7')treat('kit');if(e.code==='KeyX')S.prone=!S.prone;if(e.code==='KeyO')radio('OFFENSIVE',()=>{offensive();if(S.readBy&&rn()<.6&&S.mission!=='ATTACK'){say('THEY HEARD THE ORDER · ENEMY BARRAGE ON OUR LINE',3);const L=S.mission==='FRONT'?S.lines[S.cur]:{z:S.trZ||S.pos.z};arty(new V3(0,0,L.z),6,'E');}});if(e.code==='KeyE')interact();if(e.code==='KeyK')buildCP();if(e.code==='KeyT')fallBack(true);if(e.code==='Digit4')ugl();if(e.code==='KeyZ')S.vlow=!S.vlow;if(e.code==='KeyL')S.laserOn=!S.laserOn;if(e.code==='KeyF')placeFpv();if(e.code==='KeyV')feedView();if(e.code==='KeyH')medevac();};
+  S.onM=e=>{if(!S||document.pointerLockElement!==S.cv)return;if(S.tk){if(S.tk.seat==='G'&&!S.tk.ext){S.mdx=(S.mdx||0)-e.movementX;S.mdy=(S.mdy||0)+e.movementY;}else S.lookY=Math.max(-2.6,Math.min(2.6,(S.lookY||0)-e.movementX*.0022));return;}const k=S.ads?1/(S.wp[S.w].ads||1):1;S.yaw-=e.movementX*.0022*k;S.pitch=Math.max(-1.45,Math.min(1.45,S.pitch-e.movementY*.0022*k));};
+  S.onD=e=>{if(!S)return;if(S.tk){if(e.button===0&&e.type==='mousedown'&&S.tk.seat==='G')fireMain();if(e.button===2)S.mb2=e.type==='mousedown';return;}if(e.button===0){S.fire=e.type==='mousedown';if(!S.fire)S.bc=0;}if(e.button===2)S.ads=e.type==='mousedown';};S.onC=e=>{if(S)e.preventDefault();};S.onR=()=>{if(!S)return;S.cam.aspect=innerWidth/innerHeight;S.cam.updateProjectionMatrix();S.R&&S.R.setSize(innerWidth,innerHeight,false);};
   addEventListener('keydown',S.onK,true);addEventListener('keyup',S.onK,true);addEventListener('mousemove',S.onM);S.cv.addEventListener('mousedown',S.onD);addEventListener('mouseup',S.onD);S.cv.addEventListener('contextmenu',S.onC);addEventListener('resize',S.onR);}
 function unbind(){removeEventListener('keydown',S.onK,true);removeEventListener('keyup',S.onK,true);removeEventListener('mousemove',S.onM);removeEventListener('mouseup',S.onD);removeEventListener('resize',S.onR);if(document.pointerLockElement)document.exitPointerLock();}
 function swap(w){if(S.w===w)return;S.w=w;S.reload=0;S.cool=.6;}
@@ -746,13 +746,14 @@ function hitscan(o,d,dmg,own){S.sc.updateMatrixWorld();const tS=rayWorld(o,d,900
   const part=h.object.userData.part,k=part==='head'?2.6:part==='legs'||part==='arms'?.7:1;if(u.alive&&part!=='head')npcWound(u,part,dmg*k);hitMan(u,dmg*k,own);if(own){S.hits++;mark(part==='head');}return u;}
 function hitMan(u,dmg,own){if(!u.alive)return;u.hp-=dmg;u.sup=2;if(u.hp<=0){u.alive=false;u.m.rotation.x=-Math.PI/2;u.m.position.y+=.3;if(u.friend&&rn()<.6&&dmg<200){u.down=true;S.wia++;}else if(u.friend){S.lost++;recordDeath(u,own);if(own){say('FRIENDLY FIRE · '+(u.full||'').toUpperCase(),3);S.ff=(S.ff||0)+1;}else if(u.m.position.distanceTo(S.pos)<40)say((u.full||'').toUpperCase()+' IS KILLED',2);}else{recordDeath(u,own);if(own){S.kills++;say('KILLED · '+(u.full||'ENEMY SOLDIER').toUpperCase(),1.6);}}}}
 function mark(hd){const e=document.getElementById('iHit');if(e){e.style.color=hd?'#ff5a4a':'#fff';e.style.opacity=1;clearTimeout(mark.t);mark.t=setTimeout(()=>e.style.opacity=0,120);}}
-function hurt(d,why){if(why==='bullet')SND.hit();let k=1,part='torso';if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';part='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';part=['armL','armR','legL','legR','legL','legR'][(rn()*6)|0];}}
+function hurt(d,why){if(S&&S.tk&&why==='bullet')return;   // v414: rifle fire rings off the armour
+if(why==='bullet')SND.hit();let k=1,part='torso';if(why==='bullet'){const z=rn();if(z<.12){d*=1.8;k=S.arm.head;S.lastZone='head';part='head';}else if(z<.62){k=S.arm.k;S.lastZone='torso';}else{d*=.7;k=S.arm.limb;S.lastZone='limb';part=['armL','armR','legL','legR','legL','legR'][(rn()*6)|0];}}
   if(S.body&&S.hp<1e6&&!S.downed){if(why==='bullet')wound(part,d*k,why);else if(why==='blast'){for(let i=0;i<2;i++)wound(['torso','armL','armR','legL','legR'][(rn()*5)|0],d*.4,why);}}S.lastHurt={d:Math.round(d*k),why,stk:(new Error().stack||'').split('\n').slice(2,5).join('<')};if(S.downed){if(d*k>25)end('KIA');return;}S.hp-=d*k;const e=document.getElementById('iDmg');if(e){e.style.opacity=.8;setTimeout(()=>e.style.opacity=0,250);}if(S.hp<=0){if(d*k<160&&S.medN<3&&S.phase==='FIGHT'){S.hp=1;S.downed=true;S.downT=40;S.med=null;medevac(true);say('YOU ARE DOWN · MEDEVAC CALLED · HOLD ON',4);}else end('KIA');}}
 function grenade(){if(S.gren<=0||S.phase!=='FIGHT')return;S.gren--;const d=aimDir(0);S.gnades.push({p:S.pos.clone(),v:d.multiplyScalar(18).add(new V3(0,4,0)),t:0,own:true});}
 function blast(p,r,dmg,own){fx(p,1.4);SND.boom(p,r);if(r>=5)scar(p,r);for(const u of[...S.us,...S.them]){if(!u.alive)continue;const d=u.m.position.distanceTo(p);if(d<r)hitMan(u,dmg*(1-d/r),own);}
   for(const v of S.veh){if(!v.alive)continue;const d=Math.hypot(v.x-p.x,v.z-p.z);if(d<4)hitVeh(v,dmg,own);}
   const d=S.pos.distanceTo(p);if(d<r)hurt(dmg*(1-d/r)*.8,'blast');}
-function hitVeh(v,dmg,own){if(v.decoy&&v.alive){v.alive=false;v.m.scale.y=.25;v.m.position.y-=.3;if(own){S.decoys=(S.decoys||0)+1;say('A DECOY · INFLATABLE MOCK-UP · DEFLATED',2.5);}return;}v.hp-=dmg;if(v.hp<=0&&v.alive){v.alive=false;S.fires.push({p:v.m.position.clone().setY(v.m.position.y+2.5),t:0});fx(v.m.position.clone().setY(v.m.position.y+2),3);v.m.traverse(x=>{if(x.isMesh)x.material=new THREE.MeshLambertMaterial({color:0x222018});});if(own&&v.side==='E'){S.kills++;S.vk=(S.vk||0)+1;say('VEHICLE DESTROYED',2);}}}
+function hitVeh(v,dmg,own){if(v.me&&S.tk){tankHit(dmg);return;}if(v.decoy&&v.alive){v.alive=false;v.m.scale.y=.25;v.m.position.y-=.3;if(own){S.decoys=(S.decoys||0)+1;say('A DECOY · INFLATABLE MOCK-UP · DEFLATED',2.5);}return;}v.hp-=dmg;if(v.hp<=0&&v.alive){v.alive=false;S.fires.push({p:v.m.position.clone().setY(v.m.position.y+2.5),t:0});fx(v.m.position.clone().setY(v.m.position.y+2),3);v.m.traverse(x=>{if(x.isMesh)x.material=new THREE.MeshLambertMaterial({color:0x222018});});if(own&&v.side==='E'){S.kills++;S.vk=(S.vk||0)+1;say('VEHICLE DESTROYED',2);}}}
 const fxL=[];function fx(p,s){const m=new THREE.Mesh(new THREE.SphereGeometry(s,8,6),new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,opacity:.9}));m.position.copy(p);S.sc.add(m);fxL.push({m,t:0});}
 
 function ai(u,dt,foes){if(!u.alive)return;u.cool-=dt;
@@ -813,6 +814,7 @@ function los(a,b){const d=b.clone().sub(a),L=d.length();if(L<.5)return true;d.di
 
 function step(dt){if(!S||S.res||S.paused||S.panP)return;S.t+=dt;S.msgT-=dt;S.sc.updateMatrixWorld();
   if(S.phase==='INSERT'){insertStep(dt);}
+  else if(S.tk){tankStep(dt);}
   else{// player movement
     const g=S.wp[S.w],f=new V3(-Math.sin(S.yaw),0,-Math.cos(S.yaw)),r=new V3(-f.z,0,f.x);let sp=(S.keys.ShiftLeft&&!S.ads&&!S.limp&&!S.crawl?6.2:3.4)*(S.crawl?.28:S.limp?.6:1)*(S.crouch?.5:1)*S.arm.spd*(g.slow||1)*(S.ads?.6:1);
     const w=new V3();if(S.keys.KeyW)w.add(f);if(S.keys.KeyS)w.sub(f);if(S.keys.KeyD)w.add(r);if(S.keys.KeyA)w.sub(r);if(w.lengthSq())w.normalize().multiplyScalar(sp);
@@ -852,12 +854,12 @@ function step(dt){if(!S||S.res||S.paused||S.panP)return;S.t+=dt;S.msgT-=dt;S.sc.
   for(let i=fxL.length-1;i>=0;i--){const e=fxL[i];e.t+=dt;if(!e.m.parent){fxL.splice(i,1);continue;}e.m.scale.setScalar(1+e.t*3);e.m.material.opacity=Math.max(0,.9-e.t*2);if(e.t>.5){S.sc.remove(e.m);fxL.splice(i,1);}}
   if(S.us.every(u=>!u.alive)&&S.phase==='FIGHT'&&S.t>5&&rn()<dt*.05)say('YOUR SQUAD IS DOWN · YOU ARE ALONE',3);}
 
-function pose(){const c=S.cam;if(S.feed&&S.feed.alive){c.position.copy(S.feed.m.position).add(S.O);c.up.set(0,1,0);c.quaternion.copy(S.feed.m.quaternion);c.rotateY(Math.PI);c.fov=90;c.updateProjectionMatrix();c.updateMatrixWorld();S.vmRoot.visible=false;return;}S.vmRoot.visible=true;c.position.copy(S.pos).add(S.O);c.up.set(0,1,0);c.rotation.set(S.pitch+(S.rec||0)+(S.swY||0),S.yaw+(S.recH||0)+(S.swX||0),0,'YXZ');const g=S.wp[S.w];const fov=S.ads&&S.phase==='FIGHT'?70/((g.vari&&S.vlow?g.vari:g.ads)||1):70;
+function pose(){const c=S.cam;if(S.feed&&S.feed.alive){c.position.copy(S.feed.m.position).add(S.O);c.up.set(0,1,0);c.quaternion.copy(S.feed.m.quaternion);c.rotateY(Math.PI);c.fov=90;c.updateProjectionMatrix();c.updateMatrixWorld();S.vmRoot.visible=false;return;}S.vmRoot.visible=!S.tk;c.position.copy(S.pos).add(S.O);c.up.set(0,1,0);c.rotation.set(S.pitch+(S.rec||0)+(S.swY||0),S.yaw+(S.recH||0)+(S.swX||0),0,'YXZ');const g=S.wp[S.w];const fov=S.tk&&!S.tk.ext?(S.tk.seat==='G'?(S.tk.zoom?8:24)*(S.tk.mod.optics>.5?1:1.4):60):S.ads&&S.phase==='FIGHT'?70/((g.vari&&S.vlow?g.vari:g.ads)||1):70;
   S.fov=(S.fov||70)+(fov-(S.fov||70))*.3;if(S.WM){c.near=.05;}c.fov=S.fov;c.updateProjectionMatrix();c.updateMatrixWorld();S.vmRoot.position.copy(c.position);S.vmRoot.quaternion.copy(c.quaternion);}
 // in the live world the game draws the frame: the camera is put where you are just before it does
 if(typeof renderer!=='undefined'&&renderer.render&&!renderer._inf){const _r=renderer.render.bind(renderer);renderer.render=function(sc0,c0){if(S&&S.WM&&sc0===scene&&c0===camera){try{pose();}catch(e){}}return _r(sc0,c0);};renderer._inf=1;}
 function draw(){if(!S)return;if(!S.WM&&!S.R)return;if(!S.WM)pose();const g=S.wp[S.w];
-  const vk=S.w==='lau'?'tube':g.vm||'rifle',scoped=g.scope&&S.ads&&S.phase==='FIGHT'&&!(g.vari&&S.vlow);reticle(S.ads&&S.phase==='FIGHT'&&S.w!=='lau'?(scoped?g.ret:(g.ret==='dot'||g.ret==='holo'||(g.vari&&S.vlow))?(g.ret==='holo'?'holo':'dot'):null):null);for(const k in S.vms){const m=S.vms[k];m.visible=k===vk&&S.phase==='FIGHT'&&!scoped;}const cur=S.vms[vk];if(cur){const sy=(cur.userData.sy||.085)*.7;cur.position.set(S.ads?0:.2,S.ads?-sy:-.2,(S.ads?-.32:-.45)+(S.vk||0)+(S.reload>0?.15:0));}if(cur)cur.rotation.x=S.reload>0?-.6:0;
+  const vk=S.w==='lau'?'tube':g.vm||'rifle',scoped=g.scope&&S.ads&&S.phase==='FIGHT'&&!(g.vari&&S.vlow);if(S.tk){reticle(S.tk.seat==='G'&&!S.tk.ext?'mil':null);}else reticle(S.ads&&S.phase==='FIGHT'&&S.w!=='lau'?(scoped?g.ret:(g.ret==='dot'||g.ret==='holo'||(g.vari&&S.vlow))?(g.ret==='holo'?'holo':'dot'):null):null);for(const k in S.vms){const m=S.vms[k];m.visible=k===vk&&S.phase==='FIGHT'&&!scoped;}const cur=S.vms[vk];if(cur){const sy=(cur.userData.sy||.085)*.7;cur.position.set(S.ads?0:.2,S.ads?-sy:-.2,(S.ads?-.32:-.45)+(S.vk||0)+(S.reload>0?.15:0));}if(cur)cur.rotation.x=S.reload>0?-.6:0;
   {const sc2=document.getElementById('iScope');if(sc2)sc2.style.display=scoped?'block':'none';}S.flag.material.color.set(S.hold>0?0x5be1ff:0xffe14a);if(!S.WM)S.R.render(S.sc,S.cam);else if((S.hf=(S.hf||0)+1)%30===1)hideFlight();
   const $=id=>document.getElementById(id);const live=S.us.filter(u=>u.alive).length,elive=S.them.filter(u=>u.alive).length,dv=Math.round(Math.hypot(S.pos.x-S.village.x,S.pos.z-S.village.z));
   const nm=S.w==='pri'?g.n+(g.vari?(S.vlow?' · 1.6×':' · 6×'):'')+(S.uglN?' · GL '+S.uglN:''):S.w==='lau'?((S.N[S.cfg.lau]||'')+' '+g.n):g.n;
@@ -951,10 +953,101 @@ function casFly(a,dt){const R=a.run,P=a.m.position;a.t+=dt;const T=14,u=Math.min
 function bombStep(dt){if(!S.bombs)return;for(let i=S.bombs.length-1;i>=0;i--){const b=S.bombs[i];b.v.y-=9.8*dt;b.p.addScaledVector(b.v,dt);const toT=b.tp.clone().sub(b.p).setY(0);if(toT.length()>2)b.v.add(toT.normalize().multiplyScalar(25*dt));
   if(b.p.y<=H(b.p.x,b.p.z)+.5){S.bombs.splice(i,1);const p=new V3(b.p.x,H(b.p.x,b.p.z),b.p.z);blast(p,16,220,b.own);scar(p,6);if(b.tg&&b.tg.hp!=null&&b.tg.alive&&b.tg.m.position.distanceTo(p)<12){hitVeh(b.tg,900,b.own);}
     const q=W.st&&W.st.c[b.own?S.enA3:S.cfg.a3];if(q&&q.gnd!=null)q.gnd=Math.max(0,q.gnd-.002);}}}
+/* v414: TANK MACHINE GUNS. Every tank carries a coaxial machine gun and a commander's heavy machine gun (Kord or NSVT
+   12.7 mm on Russian-pattern tanks, M2 .50 on Western ones, MG3 on Leopards, PKT coax); against infantry inside about
+   500 m they fire bursts with tracers. */
+const MGN=v=>{const f=v.fam||vfam(v);const n=(v.name||'');return f==='SOV'?{hmg:'12.7 mm Kord',cx:'7.62 mm PKT'}:/Leopard/.test(n)?{hmg:'7.62 mm MG3',cx:'7.62 mm MG3'}:{hmg:'12.7 mm M2',cx:'7.62 mm M240'};};
+function tankMG(v,dt){v.mgc=(v.mgc||0)-dt;if(v.mgc>0||v.nofire)return;const foes=(v.side==='E'?S.us.concat(S.tk?[]:[{alive:S.phase==='FIGHT',m:{position:S.pos.clone().setY(S.pos.y-1.6)},player:1}]):S.them).filter(u=>u.alive);
+  const P=v.m.position;let t=null,bd=500;for(const u of foes){const d=u.m.position.distanceTo(P);if(d<bd){bd=d;t=u;}}if(!t){v.mgc=1.5;return;}
+  const o=P.clone().setY(P.y+2.6),tp=t.m.position.clone().setY(t.m.position.y+1.1);if(!los(o,tp)){v.mgc=1;return;}v.mgc=.12;v.mgb=(v.mgb||0)+1;if(v.mgb>8){v.mgb=0;v.mgc=1.6+rn();}
+  const dv=tp.clone().sub(o),dl=dv.length();dv.divideScalar(dl);if(v.mgb%2===0)tracer(o,o.clone().addScaledVector(dv,Math.min(dl,rayWorld(o,dv,dl))),v.side==='E'?S.en:S.me,true);if(rn()<.5)SND.far(o,true);
+  if(rn()<Math.max(.03,.22-bd/3000)){if(t.player)hurt(30,'bullet');else hitMan(t,45,false);}}
+/* v414: PLAYABLE TANKS. You join a four-man crew as DRIVER or GUNNER; the other three are the crew AI and they talk:
+   the COMMANDER scans for threats (tanks, infantry fighting vehicles, anti-tank teams first), calls them with a clock
+   bearing and range and the round to use, orders the driver (move up, halt, back up, turn to face) and fires the
+   heavy machine gun at infantry; the GUNNER (AI when you drive) lays on the commander's target and fires when on;
+   the LOADER loads the round called and reports it up (an autoloader on Russian-pattern tanks); the DRIVER (AI when
+   you aim) follows the commander's orders, keeps the frontal armour toward the threat and stops for the shot.
+   Driver: W/S throttle, A/D steer, mouse to look through the periscope, V outside view. Gunner: mouse traverses the
+   turret and elevates the gun (at the turret's real rates), left button fires the main gun, right button the coax,
+   1/2/3 select sabot / HEAT / HE, Q zooms the sight. X fights a fire. Hits on your tank are resolved by part:
+   engine, tracks, turret drive, gun, optics, ammunition and fuel, and each crewman; damage changes what the crew can
+   do (no loader: slower loading; no driver: immobile; gunner hit: the commander takes the gun). */
+const TKA={APFSDS:'sabot',HEAT:'HEAT',HE:'HE'};
+function tankStart(){const seat=S.ins==='TANKD'?'D':'G';const m=tankModel(S.me);const x=0,z=260;m.position.set(x,H(x,z),z);S.sc.add(m);
+  const vc=VC[m.userData.name]||{};const fam=famOf(m.userData.name||'')||'NATO',auto=fam==='SOV';
+  const v={m,hp:1400,side:'F',tank:true,me:true,x,z,cool:0,alive:true,name:m.userData.name||'tank',fam};S.veh.push(v);
+  const crew={C:{n:'Commander',hp:100},G:{n:'Gunner',hp:100},L:{n:auto?'Autoloader':'Loader',hp:auto?999:100},D:{n:'Driver',hp:100}};
+  S.tk={v,seat,crew,auto,spd:0,hd:Math.PI,ty:0,gp:0,ammo:{APFSDS:22,HEAT:12,HE:16},sel:'APFSDS',load:'APFSDS',rt:0,rel:auto?7.1:5.2,ready:true,tgt:null,ct:0,ord:'ADVANCE',zoom:false,ext:false,
+    mod:{engine:1,tracks:1,turret:1,gun:1,optics:1,fire:0,ammo:1},mgT:0,coax:1500,hmg:300,lt:0,said:{}};
+  m.rotation.y=S.tk.hd;S.phase='FIGHT';S.vmRoot.visible=false;
+  tsay('C',(seat==='D'?'Driver, ':'Gunner, ')+'this is the commander. '+m.userData.name+', loaded with sabot. Move out on my order.');tsay('L',auto?'Autoloader: carousel full.':'Sabot up!');}
+function tsay(k,t){const n={C:'COMMANDER',G:'GUNNER',L:'LOADER',D:'DRIVER'}[k];vline(n,t);}
+function clock(from,hd,to){let a=Math.atan2(-(to.x-from.x),-(to.z-from.z))-hd;a=((a%(Math.PI*2))+Math.PI*3)%(Math.PI*2)-Math.PI;const h=Math.round(-a/(Math.PI/6));return((h+12)%12||12)+' o\'clock';}
+function tankStep(dt){const T=S.tk,v=T.v,m=v.m,P=m.position;if(!v.alive){if(!S.res)end('KIA');return;}
+  const tu=m.userData.tu,gun=m.userData.tgun||m.userData.gun;const crew=T.crew,alive=k=>crew[k].hp>0;
+  // ---- commander: scan, pick, call
+  T.ct-=dt;if(T.ct<=0&&alive('C')){T.ct=1.2;let best=null,bs=-1;const me=P.clone().setY(P.y+2.6);
+    for(const o of S.veh){if(!o.alive||o.side===v.side||o.decoy&&rn()<.5)continue;const d=o.m.position.distanceTo(P);if(d>2600)continue;if(!los(me,o.m.position.clone().setY(o.m.position.y+1.5)))continue;const sc=(o.tank?3:2)/(1+d/800);if(sc>bs){bs=sc;best={o,veh:1,d};}}
+    if(!best)for(const u of S.them){if(!u.alive)continue;const d=u.m.position.distanceTo(P);if(d>900)continue;if(!los(me,u.m.position.clone().setY(u.m.position.y+1.2)))continue;const sc=(u.role==='MG'?1.4:1)/(1+d/300);if(sc>bs){bs=sc;best={o:u,veh:0,d};}}
+    if(best&&(!T.tgt||T.tgt.o!==best.o)){T.tgt=best;const rnd=best.veh?(best.o.tank?'APFSDS':'HEAT'):'HE';T.want=rnd;
+      tsay('C',(best.veh?(best.o.tank?'Tank':'BMP'):(best.o.role==='MG'?'Machine gun':'Infantry'))+', '+clock(P,T.hd+T.ty,best.o.m.position)+', '+Math.round(best.d/50)*50+' metres — '+TKA[rnd]+'!');
+      if(T.seat==='G'&&T.sel!==rnd){T.load=rnd;}else if(T.seat==='D'){T.load=rnd;T.sel=rnd;}}
+    if(T.tgt&&!T.tgt.o.alive){tsay('G',rn()<.5?'Target destroyed.':'Target. Cease fire.');T.tgt=null;}
+    // orders to the AI driver (when you are the gunner)
+    if(T.seat==='G'){const n=T.tgt?T.tgt.d:9999;T.ord=n<500?'BACK':n<1600?'HALT':'ADVANCE';if(T.ord!==T.lastOrd){T.lastOrd=T.ord;tsay('C',T.ord==='ADVANCE'?'Driver, move up.':T.ord==='HALT'?'Driver, halt. Gunner, take the shot.':'Driver, back up, back up!');}}}
+  // ---- loader / autoloader
+  if(!T.ready){T.rt-=dt*(alive('L')?1:.45);if(T.rt<=0){T.ready=true;T.sel=T.load;tsay('L',T.auto?'Loaded: '+TKA[T.sel]+'.':TKA[T.sel].replace(/^./,c=>c.toUpperCase())+' up!');}}
+  // ---- driving (you, or the AI driver on the commander's orders)
+  const canMove=T.mod.engine>.15&&T.mod.tracks>.15&&alive('D')||T.seat==='D'&&T.mod.engine>.15&&T.mod.tracks>.15;let thr=0,str=0;
+  if(T.seat==='D'){thr=(S.keys.KeyW?1:0)-(S.keys.KeyS?1:0);str=(S.keys.KeyA?1:0)-(S.keys.KeyD?1:0);}
+  else{thr=T.ord==='ADVANCE'?1:T.ord==='BACK'?-.6:0;if(T.tgt){let a=Math.atan2(-(T.tgt.o.m.position.x-P.x),-(T.tgt.o.m.position.z-P.z))-T.hd;a=Math.atan2(Math.sin(a),Math.cos(a));str=Math.max(-1,Math.min(1,a*2));}}
+  if(!canMove){thr=0;str=0;}const vmax=(T.mod.engine*.6+.4)*(T.mod.tracks>.5?1:.4)*(thr<0?5:15);T.spd+=(thr*vmax-T.spd)*Math.min(1,dt*.8);T.hd+=str*dt*.55*(T.mod.tracks>.5?1:.4);
+  const ux=-Math.sin(T.hd),uz=-Math.cos(T.hd);if(Math.abs(T.spd)>.05){const nx=v.x+ux*T.spd*dt,nz=v.z+uz*T.spd*dt;if(!vblocked(nx,nz,2.6)){v.x=nx;v.z=nz;}else T.spd*=.2;}
+  P.set(v.x,H(v.x,v.z),v.z);m.rotation.y=T.hd;
+  // ---- turret and gun: you (gunner) or the AI gunner laying on the commander's target
+  const trav=.42*(T.mod.turret>.5?1:.25),elev=.07;
+  if(T.seat==='G'){T.ty+=(S.mdx||0)*.0022;T.gp=Math.max(-.1,Math.min(.26,T.gp-(S.mdy||0)*.0016));S.mdx=0;S.mdy=0;}
+  else if(T.tgt&&alive('G')){const tp=T.tgt.o.m.position;let a=Math.atan2(-(tp.x-P.x),-(tp.z-P.z))-T.hd-T.ty;a=Math.atan2(Math.sin(a),Math.cos(a));T.ty+=Math.max(-trav*dt,Math.min(trav*dt,a));const d=tp.distanceTo(P);T.gp+=(Math.atan2(tp.y+1.2-(P.y+2.4),d)-T.gp)*Math.min(1,dt*elev*30);
+    if(Math.abs(a)<.01&&T.ready&&T.mod.gun>.2&&T.sel===T.load){fireMain();}}
+  if(tu)tu.rotation.y=T.ty;if(gun)gun.rotation.x=T.gp;
+  // ---- the commander's heavy machine gun on infantry (AI), and your coax
+  if(alive('C')&&T.hmg>0){T.mgT-=dt;const inf=S.them.filter(u=>u.alive&&u.m.position.distanceTo(P)<500);if(inf.length&&T.mgT<=0){T.mgT=.15;T.hmgB=(T.hmgB||0)+1;if(T.hmgB>10){T.hmgB=0;T.mgT=1.5;}const u=inf[0],o=P.clone().setY(P.y+3.1),tp=u.m.position.clone().setY(u.m.position.y+1);if(los(o,tp)){T.hmg--;if(T.hmgB%2===0)tracer(o,tp,S.me,true);if(rn()<.18)hitMan(u,55,true);}}}
+  if(T.seat==='G'&&S.mb2&&T.coax>0){T.cxT=(T.cxT||0)-dt;if(T.cxT<=0){T.cxT=.09;T.coax--;const d=gunDir();const o=P.clone().setY(P.y+2.4);const far=Math.min(800,rayWorld(o,d,800));tracer(o,o.clone().addScaledVector(d,far),S.me);hitscan(o,d,30,true);}}
+  // ---- enemy anti-tank teams: an RPG or ATGM from infantry inside about 400 m who can see you
+  T.atT=(T.atT??12)-dt;if(T.atT<=0){T.atT=10+rn()*14;const at=S.them.find(u=>u.alive&&u.m.position.distanceTo(P)<400&&los(u.m.position.clone().setY(u.m.position.y+1.4),P.clone().setY(P.y+1.5)));
+    if(at){const o=at.m.position.clone().setY(at.m.position.y+1.4);tracer(o,P.clone().setY(P.y+1.5),S.en,true);fx(P.clone().setY(P.y+1.5),1.4);tsay('C',rn()<.5?'RPG! '+clock(P,T.hd,at.m.position)+'!':'Missile launch — '+clock(P,T.hd,at.m.position)+'!');if(rn()<.65)tankHit(rn()<.6?320:520,'AT');T.tgt={o:at,veh:0,d:at.m.position.distanceTo(P)};T.load='HE';T.want='HE';}}
+  // ---- fire on board
+  if(T.mod.fire>0){T.mod.fire+=dt*.02;if(S.keys.KeyX&&!T.ext){T.ext=true;T.mod.fire=0;tsay('C','Fire! Extinguishers — fire\'s out.');}if(T.mod.fire>1){tsay('C','We\'re burning — bail out, bail out!');tankLost('BAILED');}}
+  // ---- view: driver's periscope low in the hull, or the gunner's sight on the gun; V for the outside view
+  const hy=P.y+(T.seat==='D'?1.35:2.35);if(T.ext){S.pos.set(P.x-Math.sin(T.hd+T.ty)*-12,P.y+6,P.z-Math.cos(T.hd+T.ty)*-12);}else if(T.seat==='D'){S.pos.set(P.x+ux*2.2,hy,P.z+uz*2.2);}else{S.pos.set(P.x,hy,P.z);S.yaw=T.hd+T.ty;S.pitch=T.gp;}
+  if(T.seat==='D'&&!T.ext){S.yaw=T.hd+(S.lookY||0);}
+  tankHud();}
+function gunDir(){const T=S.tk;return new V3(0,0,-1).applyEuler(new THREE.Euler(T.gp,T.hd+T.ty,0,'YXZ'));}
+function fireMain(){const T=S.tk;if(!T||!T.ready||T.mod.gun<=.2)return;const k=T.sel;if(T.ammo[k]<=0){tsay('L','No more '+TKA[k]+'!');return;}T.ammo[k]--;T.ready=false;T.rt=T.rel*(T.mod.turret>.5?1:1.3);
+  const P=T.v.m.position,o=P.clone().setY(P.y+2.4),d=gunDir();o.addScaledVector(d,4.5);fx(o.clone(),2.2);SND.boom&&SND.boom(o,9);S.shots++;
+  const far=Math.min(3000,rayWorld(o,d,3000));let hitV=null,ht=1e9;for(const x of S.veh){if(!x.alive||x===T.v)continue;const c=x.m.position.clone().setY(x.m.position.y+1.3),tt=c.clone().sub(o).dot(d);if(tt<0||tt>far)continue;const cp=o.clone().addScaledVector(d,tt);if(cp.distanceTo(c)<2.6&&tt<ht){ht=tt;hitV=x;}}
+  const end0=o.clone().addScaledVector(d,hitV?ht:far);tracer(o,end0,S.me,true);
+  if(hitV){if(k==='HE'){blast(end0,8,120,true);hitVeh(hitV,60,true);}else{const r=armorHit2(hitV,end0,d.clone(),k==='APFSDS'?'TANK':'TANKHEAT');if(r&&r.res)tsay('G',/PENETRAT/.test(r.res)?'Hit! Penetration.':/RICOCHET|BOUNCED|NO PEN/i.test(r.res)?'Bounced!':'Hit.');}}
+  else{blast(end0,k==='HE'?9:3,k==='HE'?150:40,true);if(k==='HE')scar(end0,3);}
+  T.load=T.want||T.load;tsay('G','On the way!');}
+function tankLost(why){const T=S.tk;if(!T)return;T.v.alive=false;fx(T.v.m.position.clone().setY(T.v.m.position.y+2),3);end(why==='BAILED'?'EVACUATED':'KIA');}
+// a hit on your tank, by part, with crew injuries and what they do to the tank
+const TKPART=[['engine','ENGINE HIT · we\'re losing power'],['tracks','TRACK\'S GONE · we\'re immobile'],['turret','TURRET DRIVE HIT · manual traverse'],['gun','GUN DAMAGED'],['optics','SIGHT\'S CRACKED'],['ammo','AMMUNITION HIT'],['fire','FIRE IN THE ENGINE BAY']];
+function tankHit(dmg,src){const T=S.tk;if(!T)return;const P=T.v;P.hp-=dmg*.25;const pen=dmg>250?rn()<.55:dmg>120?rn()<.25:false;
+  if(!pen){tsay('C',rn()<.5?'Bounced! Keep going.':'Hit on the front plate — no penetration.');return;}
+  const[k,t]=TKPART[(rn()*TKPART.length)|0];if(k==='fire')T.mod.fire=.05;else if(k==='ammo'){if(rn()<.25){tsay('C','Ammo\'s cooking off!');tankLost('KIA');return;}T.mod.ammo=.5;T.ammo.HE=Math.max(0,T.ammo.HE-6);}else T.mod[k]=Math.max(0,T.mod[k]-.6);tsay('C','We\'re hit! '+t.toLowerCase().replace(/^./,c=>c.toUpperCase())+'.');
+  const ck=['C','G','L','D'][(rn()*4)|0],cm=T.crew[ck];if(cm.hp<500&&rn()<.6){cm.hp-=40+rn()*80;if(cm.hp<=0){cm.hp=0;tsay(ck==='C'?'G':'C',cm.n+' is down!');if(ck===T.seat){end('KIA');return;}if(ck==='G'&&T.seat==='D')tsay('C','I have the gun.');}else tsay(ck,'I\'m hit — I\'m okay, keep fighting.');}
+  if(P.hp<=0)tankLost('KIA');}
+function tankHud(){let el=document.getElementById('iTank');const T=S.tk;if(!el){el=document.createElement('div');el.id='iTank';el.style.cssText='position:fixed;right:16px;bottom:70px;z-index:9991;font:12px "B612 Mono",monospace;color:#cfe3d6;background:rgba(8,12,10,.6);padding:6px 10px;pointer-events:none;line-height:1.5';document.body.appendChild(el);}
+  const pc=x=>Math.round(x*100)+'%',c=T.crew;el.innerHTML='<b>'+esc((T.v.name||'TANK').toUpperCase())+'</b> · '+(T.seat==='D'?'DRIVER':'GUNNER')+' · '+Math.round(Math.abs(T.spd)*3.6)+' km/h<br>'+
+    'GUN '+(T.ready?'<b style="color:#9fe0b8">'+TKA[T.sel].toUpperCase()+' UP</b>':'loading '+TKA[T.load])+' · S '+T.ammo.APFSDS+' / H '+T.ammo.HEAT+' / E '+T.ammo.HE+'<br>COAX '+T.coax+' · HMG '+T.hmg+'<br>'+
+    'ENG '+pc(T.mod.engine)+' TRK '+pc(T.mod.tracks)+' TUR '+pc(T.mod.turret)+' GUN '+pc(T.mod.gun)+(T.mod.fire>0?' <b style="color:#ff6a4a">FIRE · X</b>':'')+'<br>'+['C','G','L','D'].map(k=>(c[k].hp<=0?'<s>':'')+c[k].n.slice(0,4)+(c[k].hp<=0?'</s>':c[k].hp<60?'+':'')).join(' ');}
 function vehStep(dt){for(const v of S.veh){if(!v.alive)continue;if(v.goal&&!v.immob){const dx=v.goal.x-v.x,dz=v.goal.z-v.z,L2=Math.hypot(dx,dz);if(L2>2){const sp2=(v.tank?3.4:4)*dt;const mvd=vmove(v,dx/L2,dz/L2,sp2);v.m.position.set(v.x,H(v.x,v.z),v.z);const hd=Math.atan2(-mvd.x,-mvd.z);v.m.rotation.y+=Math.atan2(Math.sin(hd-v.m.rotation.y),Math.cos(hd-v.m.rotation.y))*Math.min(1,dt*1.5);}else v.goal=null;}
     if(v.mv&&!v.immob&&Math.abs(v.stop-v.z)>2){const mvd=vmove(v,0,Math.sign(v.stop-v.z),3.2*dt);v.m.position.set(v.x,H(v.x,v.z),v.z);v.m.rotation.y=Math.atan2(-mvd.x,-mvd.z);}
     if(v.tank&&v.m.userData.tu){const tg=v.side==='E'?S.pos:(pickVeh()||{m:{position:new V3(0,0,S.trZ-400)}}).m.position;v.m.userData.tu.rotation.y=Math.atan2(-(tg.x-v.x),-(tg.z-v.z))-v.m.rotation.y;}
     // tank guns: anti-armour against vehicles, high explosive against men and trenches
+    if(v.tank&&!v.me)tankMG(v,dt);
     if(v.tank&&v.cool<=.05){const foes=S.veh.filter(o=>o.alive&&o.side!==v.side);if(foes.length&&rn()<.6){const o=foes[(rn()*foes.length)|0];if(los(v.m.position.clone().setY(v.m.position.y+2.5),o.m.position.clone().setY(o.m.position.y+1.5))){if(rn()<.45)hitVeh(o,380,false);else fx(o.m.position.clone().add(new V3((rn()-.5)*8,1,(rn()-.5)*8)),1);v.cool=6;}}}}}
 // fighters and attack aircraft of both sides over the battle: pairs that turn and fight, shootdowns, close air support
 function jet(side){const g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:side==='F'?0x7b8790:0x8f8a78});const f=new THREE.Mesh(new THREE.ConeGeometry(.9,16,8),m);f.rotation.x=-Math.PI/2;g.add(f);
@@ -1545,7 +1638,7 @@ function collapse(c,why){if(c.down)return;c.down=true;try{if(c.x!=null&&c.w)deta
 // the plate there and the angle it met, against the weapon's penetration (game values by class, not data for any real
 // vehicle or round). It bounces (ricochet), stops in the armour, or penetrates and damages what is behind: crew,
 // engine, transmission, tracks, gun, optics, fuel, ammunition. The overview shows it on a diagram.
-const PEN={AMR:45,PISTOL:3,RPG:420,ATGM:780,FPV:300,TANK:650,RIFLE:8,CARB:7,SMG:4,SHOT:3,LMG:8,DMR:12,SNP:22,PISTOL:3};
+const PEN={TANKHEAT:520,AMR:45,PISTOL:3,RPG:420,ATGM:780,FPV:300,TANK:650,RIFLE:8,CARB:7,SMG:4,SHOT:3,LMG:8,DMR:12,SNP:22,PISTOL:3};
 const ARMT={MBT:{hull:{front:550,side:90,rear:45,top:30},turret:{front:680,side:230,rear:70,top:40},dim:[3.6,2.6,7.6],tz:2.0},IFV:{hull:{front:45,side:28,rear:20,top:16},turret:{front:40,side:25,rear:20,top:15},dim:[3.1,2.9,6.6],tz:2.3},APC:{hull:{front:16,side:11,rear:9,top:8},turret:{front:10,side:10,rear:10,top:8},dim:[3.1,2.4,6.6],tz:9}};
 const COMP={front:['driver','transmission','gun breech','gunner sight'],side:['ammunition','fuel tank','crew','road wheels'],rear:['engine','fuel tank','transmission'],top:['commander','gunner','ammunition','optics'],tracks:['track']};
 function vkind(v){return v.tank?'MBT':v.m.userData.gun?'IFV':'APC';}
@@ -1564,7 +1657,7 @@ const PL={SOV:{MBT:{hull:{front:[220,68],side:[80,0],rear:[40,0],top:[30,85]},tu
           WEST:{MBT:{hull:{front:[300,60],side:[70,0],rear:[40,0],top:[30,85]},turret:{front:[620,12],side:[190,10],rear:[60,0],top:[40,80]},era:[],comp:1.45,liner:.8,bustle:1},
               IFV:{hull:{front:[45,60],side:[30,0],rear:[25,0],top:[15,85]},turret:{front:[35,30],side:[25,15],rear:[18,0],top:[12,80]},era:[],comp:1.1,liner:.5},
               APC:{hull:{front:[20,55],side:[14,10],rear:[12,0],top:[10,85]},turret:{front:[10,30],side:[10,20],rear:[10,0],top:[8,80]},era:[],comp:1,liner:.3}}};
-const WH={RPG:'HEAT',ATGM:'HEAT2',FPV:'HEAT',TANK:'KE'};
+const WH={RPG:'HEAT',ATGM:'HEAT2',FPV:'HEAT',TANK:'KE',TANKHEAT:'HEAT'};
 function armorHit(v,pt,dir,wpn){return armorHit2(v,pt,dir,wpn);}
 function armorHitOld(v,pt,dir,wpn){const k=vkind(v),A=ARMT[k],P=v.m.position,ry=v.m.rotation.y,c=Math.cos(-ry),s2=Math.sin(-ry);
   const dx=pt.x-P.x,dz=pt.z-P.z,lx=dx*c-dz*s2,lz=dx*s2+dz*c,ly=pt.y-P.y,ldx=dir.x*c-dir.z*s2,ldz=dir.x*s2+dir.z*c;
@@ -1741,6 +1834,6 @@ function end(r){if(!S||S.res)return;closePan();S.res=r;const st=S.cfg.camp?null:
     (r==='WON'&&(S.fr||S.cfg.camp)?'<div class="note">The front line in this sector moves forward a little.</div>':'')+'</div>'+
     '<footer class="mf"><span></span><div class="r"><button class="go" data-iend="1">CONTINUE</button></div></footer></div>';document.body.appendChild(d);
   d.querySelector('[data-iend]').onclick=()=>{d.remove();stop(false);};if(document.pointerLockElement)document.exitPointerLock();}
-function stop(early,why){if(!S)return;closePan();{const v=document.getElementById('iVoice');if(v)v.remove();}{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
-window.INFANTRY={rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
+function stop(early,why){if(!S)return;closePan();{const t=document.getElementById('iTank');if(t)t.remove();}{const v=document.getElementById('iVoice');if(v)v.remove();}{const p=document.getElementById('infPause');if(p)p.remove();const b=document.getElementById('infBack');if(b)b.remove();}if(early&&!S.res){end(why||'LEFT');return;}TR.n=0;TR.L=[];TR.G=[];try{trSync();}catch(e){}unbind();{const g0=document.getElementById('gl');if(g0)g0.style.filter='';}if(AU.st)AU.st.g.gain.value=0;auStop();TRC.live.length=0;if(S.WM)worldOff();S.cv.remove();S.hud.remove();try{S.R&&S.R.dispose();}catch(e){}if(typeof game!=='undefined')game.paused=S0.paused;S=null;}
+window.INFANTRY={los,tankStart,tankStep,fireMain,tankHit,tankMG,clock,rideSetup,rideStep,rideEnd,warScars,hitMan,recordDeath,nameMan,voiceStep,coverNear,cqbStep,casStep,casSide,bombStep,mine,mineInit,mineKey,vmove,vblocked,canField,famOf3,armsMarket,famOfGun,recoil,aimStep,pauseMenu,digTrench,cut,TR,collide,atgmMode,plosPoint,lockState,lockStep,wound,treat,treatDone,bodyStep,npcWound,npcStep,iwInit,radio,iwStep,VC,BLOC,pickModel,apsCheck,APSD,conditions,frontStep,counter,fallBack,buildCP,interact,doPan,panel,slotOf,bandCount,envFor,A3,arm3D,compLayout,locChoices,armorHit2,PL,tankModel,soldier,animMan,ENVS,tracer,AU,SND,GUNS,SIDES,ATT,ALLOW,HELM,VEST,EXTRA,makeGun,makeSide,armOf,kitSave,kitApply,kitsLoad,ugl,hurt,issued,armorHit,placeFpv,feedView,medevac,structHit,collapse,PEN,ARMT,startWorld,dig,offensive,arty,battleStep,ROLE,spawnDrone,K,PRI,LAU,ARM,INS,kitMenu,start,step:(dt,n)=>{for(let i=0;i<(n||1);i++)step(dt);},get S(){return S;},stop,end,shoot,grenade,land,v:377};
 })();

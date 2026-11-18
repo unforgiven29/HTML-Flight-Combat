@@ -1211,3 +1211,9 @@ From T.O. 1A-7D-1 pages 1-215 to 1-235, figures 1-105 (radar displays), 1-106 sh
 ## v413 — your squad
 - Your squad (squad.js): eight fictional soldiers per country you fight for, with roles, home towns, traits, habits, morale and history; trust between each pair and toward you. Battles change them: survivors grow closer, the dead are remembered by name and replaced by green men, the wounded come back from hospital. Your first six men in a battle are the squad. SQUAD tab.
 - The ride to the front: an APC / IFV insertion begins in the motor-pool garage and drives the road past checkpoints, a field hospital, wrecks and shell holes; you sit inside on the bench while the squad talks about home, the war, the news, the dead and each other. Space or Enter skips.
+
+## v414 — playable tanks
+- Join a tank crew as DRIVER or GUNNER (INSERTION in the kit menu). The rest of the crew is AI and talks: the commander scans for tanks, IFVs, anti-tank teams and machine guns, calls them by clock bearing and range with the round to load, orders the driver and fires the heavy machine gun at infantry; the gunner lays and fires when on target; the loader (or autoloader on Russian-pattern tanks) loads the called round and reports it up; the driver follows orders.
+- Driver: W/S, A/D, mouse looks through the periscope, V outside. Gunner: mouse traverses (at the turret rate) and elevates, left button main gun, right button coax, 1/2/3 sabot/HEAT/HE, Q zoom, X fights a fire.
+- Your tank is hit by part (engine, tracks, turret drive, gun, optics, ammunition, fire) and crew; damage changes what the crew can do; ammunition can cook off; you can bail out of a fire. Anti-tank teams engage you.
+- Every tank fires its machine guns at infantry: coax and the commander's heavy MG (Kord / NSVT on Russian-pattern, M2 on Western, MG3 on Leopards).

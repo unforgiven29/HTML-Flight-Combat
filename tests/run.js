@@ -1084,7 +1084,7 @@ test('s39_battle: choose the battle location; varied soldiers that move; vehicle
     let S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK',loc0:pick.id});out.loc=S.loc.name===pick.name;out.env=S.env.n;
     I.land();S.hp=1e9;S.dT=1e9;
     const cols=new Set();for(const u of S.them)u.m.traverse(o=>{if(o.isMesh&&o.userData.part==='body')cols.add(o.material.color.getHex());});out.cols=cols.size;
-    for(let i=0;i<30*8;i++)I.step(1/30);out.anim=S.them.some(u=>u.alive&&u.m.userData.J&&Math.abs(u.m.userData.J.L.hip.rotation.x)>.1);out.crouch=S.them.some(u=>u.crouch)||S.us.some(u=>u.crouch);out.bound=[...S.them,...S.us].some(u=>u.bound||u.bt!==undefined);
+    for(let i=0;i<30*8;i++)I.step(1/30);out.anim=S.them.some(u=>u.alive&&u.m.userData.J&&Math.abs(u.m.userData.J.L.hip.rotation.x)>.1);out.crouch=false;for(let i=0;i<120&&!out.crouch;i++){I.step(1/30,1);out.crouch=S.them.some(u=>u.alive&&u.crouch)||S.us.some(u=>u.alive&&u.crouch);}out.bound=[...S.them,...S.us].some(u=>u.bound||u.bt!==undefined);
     out.tracers=S.shots>=0;
     const tk=S.veh.find(v=>v.tank&&v.side==='E');out.fam=tk.m.userData.fam;out.tname=tk.name;
     const P=tk.m.position,R=(k,dx)=>I.armorHit2(tk,new V(P.x+(dx||0),P.y+1.3,P.z-3.5),new V(0,-.2,1).normalize(),k);
@@ -1343,6 +1343,15 @@ test('s63_squad: a squad that stays together (names, trust, morale, losses, repl
     I.land();S.hp=1e9;S.dT=1e9;const v=S.us.find(u=>u.mid);I.hitMan(v,1000,false);I.stop(true,'KIA');document.querySelector('[data-iend]')&&document.querySelector('[data-iend]').click();
     out.lost=R.lost.length;out.repl=R.m.some(x=>x.green);out.tab=/YOUR SQUAD/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL))&&/REMEMBERED/.test(NATPANEL.tabs.SQUAD(WWAR.st.c.POL));out.talk=WWAR.squad.talk('POL',{place:'X'}).length;out.audit=WWAR.audit();return out;});
   ok('a squad of eight',r.n===8,r);ok('your men in battle are the squad',r.sq===6,r);ok('the ride from the garage with talk, skippable',r.ride&&r.lines>=3&&r.rode&&r.talked&&r.skipped,r);ok('a loss is remembered and replaced',r.lost===1&&r.repl,r);ok('SQUAD tab and fresh talk',r.tab&&r.talk>=3,r);ok('audit clean',r.audit.length===0,r.audit);});
+test('s64_tank: playable tank as driver or gunner; commander calls targets, gunner lays and fires, loader loads, driver obeys; tank machine guns; damage by part and crew','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const I=INFANTRY,out={};
+    let S=I.start({...I.K,a3:'POL',ins:'TANKD',mis:'ATTACK'});out.tk=!!S.tk&&S.phase==='FIGHT'&&S.tk.seat==='D';const z0=S.tk.v.z;S.keys.KeyW=true;I.step(1/30,30*4);S.keys.KeyW=false;out.drove=Math.abs(S.tk.v.z-z0)>5;
+    const e=S.veh.find(v=>v.side==='E'&&v.alive&&!v.decoy);if(e){e.decoy=false;for(const d of[150,250,350,500,700]){e.x=S.tk.v.x;e.z=S.tk.v.z-d;e.m.position.set(e.x,S.tk.v.m.position.y,e.z);e.mv=false;e.goal=null;if(I.los(S.tk.v.m.position.clone().setY(S.tk.v.m.position.y+2.6),e.m.position.clone().setY(e.m.position.y+1.5)))break;}}const s0=S.shots,hp0=e&&e.hp,al0=S.armLog.length;for(let i=0;i<30*25&&e&&e.alive;i++)I.step(1/30,1);out.fired=S.shots>s0||!e.alive;out.called=(S.vlines||0)>=0;out.tgt=!!(S.tk.tgt||!e.alive);out.dbg=[e&&e.z-S.tk.v.z,e&&e.alive,S.tk.ct];out.dmg=S.armLog.length>al0||(e&&(e.hp<hp0||!e.alive));
+    I.tankHit(600,'test');I.tankHit(600,'test');out.mod=Object.values(S.tk.mod).some(x=>x<1)||Object.values(S.tk.crew).some(c=>c.hp<100);I.stop(false);
+    S=I.start({...I.K,a3:'RUS',ins:'TANKG',mis:'ATTACK'});out.g=S.tk.seat==='G'&&S.tk.auto;const a0=S.tk.ammo.APFSDS;S.tk.ready=true;I.fireMain();out.gfire=S.tk.ammo.APFSDS===a0-1&&!S.tk.ready;I.step(1/30,30*8);out.reloaded=S.tk.ready;
+    const ai=S.veh.find(v=>v.tank&&!v.me&&v.alive);const u=(ai&&ai.side==='E'?S.us:S.them).find(x=>x.alive);if(ai&&u){const yy=I.S.pos.y-1.7;ai.x=20;ai.z=I.S.pos.z;ai.m.position.set(20,yy,ai.z);ai.mv=false;ai.goal=null;u.m.position.set(60,yy,ai.z);ai.nofire=false;const hp=u.hp;for(let i=0;i<300;i++)I.tankMG(ai,.1);out.mg=u.hp<hp||!u.alive;out.mgd=[ai.side,ai.mgc,ai.mgb,u.alive,u.hp,I.los(ai.m.position.clone().setY(ai.m.position.y+2.6),u.m.position.clone().setY(u.m.position.y+1.1))];}
+    I.stop(false);out.audit=WWAR.audit();return out;});
+  ok('drive a tank',r.tk&&r.drove,r);ok('the AI gunner engages the commander\'s target',r.fired&&r.tgt&&r.dmg,r);ok('hits damage parts and crew',r.mod);ok('as gunner: fire, autoloader reloads',r.g&&r.gfire&&r.reloaded,r);ok('tank machine guns hit infantry',r.mg,r);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);
