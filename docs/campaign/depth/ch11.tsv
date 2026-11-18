@@ -1,0 +1,119 @@
+line	cov	where	title	section
+16374	0		Built environment, utilities, energy, water, food, transport, and connectivity	Cities, housing, property, and built environment
+16376	0		One infrastructure asset and service model	Cities, housing, property, and built environment
+16380	0		Asset, network, and service are distinct	Cities, housing, property, and built environment
+16384	0		Capacity, condition, and maintenance	Cities, housing, property, and built environment
+16388	0		Energy and water	Cities, housing, property, and built environment
+16392	0		Agriculture and food systems	Cities, housing, property, and built environment
+16396	0		Transport and mobility	Cities, housing, property, and built environment
+16400	0		Civilian and military aviation	Cities, housing, property, and built environment
+16404	0		Maritime and subsea systems	Cities, housing, property, and built environment
+16408	0		Digital and space connectivity	Cities, housing, property, and built environment
+16412	0		Construction and project delivery	Cities, housing, property, and built environment
+16426	0		Cities, urban development, buildings, housing, and property	Cities, housing, property, and built environment
+16441	0		City and settlement registry	Cities, housing, property, and built environment
+16457	0		Urban districts and land use	Cities, housing, property, and built environment
+16476	0		Housing stock and household access	Cities, housing, property, and built environment
+16489	0		Property and construction economy	Cities, housing, property, and built environment
+16506	0		Urban growth and decline	Cities, housing, property, and built environment
+16512	0		Urban infrastructure and resilience	Cities, housing, property, and built environment
+16540	0		Food-water-energy-land nexus	Water, food, agriculture, and essential utilities
+16542	0		Integrated resource dependencies	Water, food, agriculture, and essential utilities
+16545	0		Trade-offs	Water, food, agriculture, and essential utilities
+16548	0		Policy evaluation	Water, food, agriculture, and essential utilities
+16556	0		Freshwater resources, watersheds, water utilities, security, and transboundary governance	Water, food, agriculture, and essential utilities
+16560	0		Water asset registry	Water, food, agriculture, and essential utilities
+16563	0		Water balance	Water, food, agriculture, and essential utilities
+16566	0		Utility operations	Water, food, agriculture, and essential utilities
+16569	0		Allocation and governance	Water, food, agriculture, and essential utilities
+16572	0		Quality and contamination	Water, food, agriculture, and essential utilities
+16575	0		Household and ecosystem access	Water, food, agriculture, and essential utilities
+16581	0		Water geography, resource balance, rights, transboundary governance, and basin-level allocation.	Water, food, agriculture, and essential utilities
+16585	0		Water geography and resource model	Water, food, agriculture, and essential utilities
+16594	0		Water service providers and infrastructure	Water, food, agriculture, and essential utilities
+16597	0		Allocation, demand, and shortage	Water, food, agriculture, and essential utilities
+16600	0		Water quality and wastewater	Water, food, agriculture, and essential utilities
+16603	0		Transboundary governance	Water, food, agriculture, and essential utilities
+16613	0		AGRICULTURE, FOOD SYSTEMS, FISHERIES AND FOOD SECURITY	Water, food, agriculture, and essential utilities
+16619	0		Producers and assets	Water, food, agriculture, and essential utilities
+16634	0		Agricultural production cycle	Water, food, agriculture, and essential utilities
+16650	0		Livestock, fisheries and aquaculture	Water, food, agriculture, and essential utilities
+16654	0		Food processing and cold chain	Water, food, agriculture, and essential utilities
+16669	0		Food distribution and retail	Water, food, agriculture, and essential utilities
+16688	0		Food security and household access	Water, food, agriculture, and essential utilities
+16702	0		Food safety and public health	Water, food, agriculture, and essential utilities
+16706	0		Agriculture, trade and environmental interaction	Water, food, agriculture, and essential utilities
+16721	0		Agriculture and food production	Water, food, agriculture, and essential utilities
+16725	0		Food distribution and household access	Water, food, agriculture, and essential utilities
+16730	0		Critical infrastructure networks, lifecycle, maintenance, and reliability	Critical infrastructure, networks, and orbital services
+16745	0		Asset lifecycle	Critical infrastructure, networks, and orbital services
+16748	0		Maintenance debt	Critical infrastructure, networks, and orbital services
+16751	0		Reliability	Critical infrastructure, networks, and orbital services
+16754	0		Capital planning	Critical infrastructure, networks, and orbital services
+16762	0		SPACE INFRASTRUCTURE AND ORBITAL SERVICE OPERATIONS	Critical infrastructure, networks, and orbital services
+16764	0		Purpose and relationship to existing satellite coverage	Critical infrastructure, networks, and orbital services
+16768	0		Space actor registry	Critical infrastructure, networks, and orbital services
+16786	0		Satellite registry and lifecycle	Critical infrastructure, networks, and orbital services
+16804	0		Space services	Critical infrastructure, networks, and orbital services
+16819	0		Ground segment and terrestrial dependencies	Critical infrastructure, networks, and orbital services
+16833	0		Launch and replacement economy	Critical infrastructure, networks, and orbital services
+16848	0		Degradation, outage, and orbital environment	Critical infrastructure, networks, and orbital services
+16863	0		International coordination and resilience	Critical infrastructure, networks, and orbital services
+16888	0		Civil aviation, airports, airspace management, air traffic control, and flight safety	Civil aviation, airports, and airspace services
+16900	0		ATC service entities	Civil aviation, airports, and airspace services
+16913	0		Flight-plan and clearance lifecycle	Civil aviation, airports, and airspace services
+16931	0		AI aircraft and airspace deconfliction	Civil aviation, airports, and airspace services
+16940	0		Civilian and neutral traffic	Civil aviation, airports, and airspace services
+16948	0		Carrier and austere-field integration	Civil aviation, airports, and airspace services
+16952	0		Radio and audio presentation	Civil aviation, airports, and airspace services
+16956	0		Failure and degraded operation	Civil aviation, airports, and airspace services
+16986	0		Civil aviation entities	Civil aviation, airports, and airspace services
+16990	0		Airports and flight schedules	Civil aviation, airports, and airspace services
+16996	0		Air traffic control and airspace	Civil aviation, airports, and airspace services
+17000	0		Identification and emergency handling	Civil aviation, airports, and airspace services
+17004	0		War impact and neutrality	Civil aviation, airports, and airspace services
+17008	0		Gameplay and mission generation	Civil aviation, airports, and airspace services
+17012	0		Airline, airport economics, airspace management, and humanitarian aviation.	Civil aviation, airports, and airspace services
+17016	0		Aviation actors	Civil aviation, airports, and airspace services
+17034	0		Airspace structure and services	Civil aviation, airports, and airspace services
+17049	0		Airlines, routes and schedules	Civil aviation, airports, and airspace services
+17064	0		Airports and airport economics	Civil aviation, airports, and airspace services
+17079	0		Disruption and resilience	Civil aviation, airports, and airspace services
+17093	0		Humanitarian and emergency aviation	Civil aviation, airports, and airspace services
+17116	0		DEDICATED AVIATION SAFETY INVESTIGATIONS AND ACCIDENT REPORTS	Civil aviation, airports, and airspace services
+17120	0		Events eligible for aviation investigation	Civil aviation, airports, and airspace services
+17133	0		Investigation process	Civil aviation, airports, and airspace services
+17148	0		Findings and uncertainty	Civil aviation, airports, and airspace services
+17156	0		Corrective actions	Civil aviation, airports, and airspace services
+17170	0		Global maritime war, trade routes, and undersea operations	Ports, shipping, maritime operations, and subsea infrastructure
+17190	0		UNDERWATER WARFARE AND SUBSEA INFRASTRUCTURE	Ports, shipping, maritime operations, and subsea infrastructure
+17194	0		Subsea assets	Ports, shipping, maritime operations, and subsea infrastructure
+17198	0		Underwater environment	Ports, shipping, maritime operations, and subsea infrastructure
+17202	0		Underwater vehicles and support	Ports, shipping, maritime operations, and subsea infrastructure
+17206	0		Infrastructure incidents	Ports, shipping, maritime operations, and subsea infrastructure
+17210	0		Repair, protection and investigation	Ports, shipping, maritime operations, and subsea infrastructure
+17215	0		Maritime transport, ports, merchant shipping, and ocean economy	Ports, shipping, maritime operations, and subsea infrastructure
+17235	0		Purpose and scope — Maritime world, merchant shipping, and underwater infrastructure	Ports, shipping, maritime operations, and subsea infrastructure
+17241	0		Maritime entity registry	Ports, shipping, maritime operations, and subsea infrastructure
+17257	0		Shipping lanes and trade flows	Ports, shipping, maritime operations, and subsea infrastructure
+17263	0		Port and harbor operations	Ports, shipping, maritime operations, and subsea infrastructure
+17269	0		Merchant shipping and commercial operators	Ports, shipping, maritime operations, and subsea infrastructure
+17275	0		Fishing and coastal livelihoods	Ports, shipping, maritime operations, and subsea infrastructure
+17281	0		Maritime rescue and accidents	Ports, shipping, maritime operations, and subsea infrastructure
+17287	0		Submarines and underwater infrastructure — abstract model	Ports, shipping, maritime operations, and subsea infrastructure
+17300	0		Maritime weather and environment	Ports, shipping, maritime operations, and subsea infrastructure
+17304	0		Maritime law, flags, and jurisdiction	Ports, shipping, maritime operations, and subsea infrastructure
+17308	0		UI and map layers	Ports, shipping, maritime operations, and subsea infrastructure
+17333	0		RAILWAYS AND STRATEGIC RAIL TRANSPORT	Transport, freight, rail, and public mobility
+17344	0		CIVILIAN PASSENGER TRANSPORT AND PUBLIC MOBILITY	Transport, freight, rail, and public mobility
+17350	0		Transport providers and authorities	Transport, freight, rail, and public mobility
+17364	0		Network and service model	Transport, freight, rail, and public mobility
+17380	0		Household access and economic impact	Transport, freight, rail, and public mobility
+17393	0		Vehicle ownership and road use	Transport, freight, rail, and public mobility
+17397	0		Strikes, funding and long-term planning	Transport, freight, rail, and public mobility
+17422	0		Public passenger transport services	Transport, freight, rail, and public mobility
+17427	0		Multimodal transport and freight mobility	Transport, freight, rail, and public mobility
+17429	0		Network coverage	Transport, freight, rail, and public mobility
+17432	0		Capacity and service	Transport, freight, rail, and public mobility
+17435	0		Routing and disruption	Transport, freight, rail, and public mobility
+17438	0		Public and humanitarian priority	Transport, freight, rail, and public mobility

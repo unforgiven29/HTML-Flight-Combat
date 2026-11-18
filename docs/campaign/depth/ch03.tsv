@@ -1,0 +1,75 @@
+line	cov	where	title	section
+1248	0		One Earth-scale geographic, terrain, map, and streamed rendering system	Global geography, map data, terrain, and rendering
+1250	0		Single geographic authority	Global geography, map data, terrain, and rendering
+1256	0		Geographic entities and political geography	Global geography, map data, terrain, and rendering
+1269	0		One map, multiple fidelity layers	Global geography, map data, terrain, and rendering
+1279	0		Data pipeline and provenance	Global geography, map data, terrain, and rendering
+1283	0		Tile streaming and persistent entities	Global geography, map data, terrain, and rendering
+1287	0		Routes and networks	Global geography, map data, terrain, and rendering
+1291	0		Rendering constraints	Global geography, map data, terrain, and rendering
+1304	0		Persistent and varied global campaign map requirements.	Global geography, map data, terrain, and rendering
+1332	0		Complete Earth-scale campaign map and world model.	Global geography, map data, terrain, and rendering
+1336	0		Global geographic coverage	Global geography, map data, terrain, and rendering
+1349	0		Three connected map scales	Global geography, map data, terrain, and rendering
+1353	0		Global strategic view	Global geography, map data, terrain, and rendering
+1362	0		Regional operational view	Global geography, map data, terrain, and rendering
+1370	0		Local tactical view	Global geography, map data, terrain, and rendering
+1379	0		Map layers and display modes	Global geography, map data, terrain, and rendering
+1399	0		Geographic data, terrain, and procedural detail	Global geography, map data, terrain, and rendering
+1412	0		Fog of war and intelligence presentation	Global geography, map data, terrain, and rendering
+1423	0		Map interaction and campaign command tools	Global geography, map data, terrain, and rendering
+1429	0		Whole-Earth terrain, cities, and streamed Three.js rendering.	Global geography, map data, terrain, and rendering
+1431	0		Product requirement	Global geography, map data, terrain, and rendering
+1434	0		Preserve the existing technology	Global geography, map data, terrain, and rendering
+1437	0		Geographic coordinate authority	Global geography, map data, terrain, and rendering
+1448	0		Global geographic layer	Global geography, map data, terrain, and rendering
+1451	0		Regional layer	Global geography, map data, terrain, and rendering
+1454	0		Local layer	Global geography, map data, terrain, and rendering
+1457	0		Tactical layer	Global geography, map data, terrain, and rendering
+1460	0		Geographic tile system	Global geography, map data, terrain, and rendering
+1463	0		Streaming lifecycle — One Earth-scale geographic, terrain, map, and streamed rendering system	Global geography, map data, terrain, and rendering
+1466	0		Terrain generation and stitching	Global geography, map data, terrain, and rendering
+1469	0		City and building representation	Global geography, map data, terrain, and rendering
+1478	0		Data-source pipeline	Global geography, map data, terrain, and rendering
+1481	0		Runtime performance architecture	Global geography, map data, terrain, and rendering
+1495	0		Floating origin and flight stability	Global geography, map data, terrain, and rendering
+1498	0		Persistent world entities independent of tiles	Global geography, map data, terrain, and rendering
+1501	0		Global simulation and local rendering are separate	Global geography, map data, terrain, and rendering
+1504	0		Offline progression	Global geography, map data, terrain, and rendering
+1512	0		Loading, fallback, and failure	Global geography, map data, terrain, and rendering
+1526	0		PERSISTENT ENTITY MIGRATION ACROSS GEOGRAPHIC STREAMING	Global geography, map data, terrain, and rendering
+1531	0		Canonical identity and location	Global geography, map data, terrain, and rendering
+1534	0		Tile boundaries	Global geography, map data, terrain, and rendering
+1537	0		Stream lifecycle	Global geography, map data, terrain, and rendering
+1540	0		Long-distance movement	Global geography, map data, terrain, and rendering
+1543	0		Multiplayer — ENTITY MIGRATION ACROSS GEOGRAPHIC STREAMING	Global geography, map data, terrain, and rendering
+1550	0		TERRAIN, MAP ECOLOGY, AND ENVIRONMENTAL CHANGE	Global geography, map data, terrain, and rendering
+1566	0		Geographic data pipeline, coordinate systems, and world-data governance	Global geography, map data, terrain, and rendering
+1568	0		One canonical geographic model	Global geography, map data, terrain, and rendering
+1585	0		Source ingestion and data build pipeline	Global geography, map data, terrain, and rendering
+1599	0		Geographic truth versus campaign state	Global geography, map data, terrain, and rendering
+1609	0		Data quality and uncertainty — Geographic data pipeline, coordinate systems, and world-data governance	Global geography, map data, terrain, and rendering
+1628	0		World content coverage, country depth, and regional differentiation	Global geography, map data, terrain, and rendering
+1630	0		Coverage tiers	Global geography, map data, terrain, and rendering
+1638	0		Honest coverage	Global geography, map data, terrain, and rendering
+1641	0		Country packs	Global geography, map data, terrain, and rendering
+1644	0		Regional differentiation	Global geography, map data, terrain, and rendering
+1651	0		NAVIGATION, POSITIONING, TIMING, AND RESILIENT OPERATIONS	Navigation, routing, movement, and positioning
+1653	0		Navigation source model	Navigation, routing, movement, and positioning
+1656	0		Degraded navigation state	Navigation, routing, movement, and positioning
+1659	0		Platform differences	Navigation, routing, movement, and positioning
+1662	0		Time synchronization and data freshness	Navigation, routing, movement, and positioning
+1665	0		Navigation databases and map updates	Navigation, routing, movement, and positioning
+1668	0		Civilian consequences — NAVIGATION, POSITIONING, TIMING, AND RESILIENT OPERATIONS	Navigation, routing, movement, and positioning
+1679	0		MISSION ROUTE PLANNER, WAYPOINTS, AND FLIGHT PLAN MANAGEMENT	Navigation, routing, movement, and positioning
+1683	0		Route elements	Navigation, routing, movement, and positioning
+1698	0		Route editing	Navigation, routing, movement, and positioning
+1708	0		Navigation integration	Navigation, routing, movement, and positioning
+1715	0		Fuel and timing estimates	Navigation, routing, movement, and positioning
+1719	0		Multiplayer planning	Navigation, routing, movement, and positioning
+1723	0		Persistence and reuse	Navigation, routing, movement, and positioning
+1737	0		Shared navigation, routing, and movement foundations	Navigation, routing, movement, and positioning
+1739	0		Shared navigation service	Navigation, routing, movement, and positioning
+1754	0		Tactical movement versus strategic movement	Navigation, routing, movement, and positioning
+1762	0		Collision and congestion	Navigation, routing, movement, and positioning
+1771	0		Accessibility and fallback behavior	Navigation, routing, movement, and positioning

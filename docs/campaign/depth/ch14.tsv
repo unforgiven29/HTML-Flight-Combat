@@ -1,0 +1,118 @@
+line	cov	where	title	section
+19173	0		End-of-war outcomes and campaign scoring	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19183	0		ENEMY-DRIVEN CIVILIAN INTIMIDATION, TERROR CAMPAIGNS, AND CIVILIAN PROTECTION	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19189	0		Civilian settlements as protected campaign entities	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19197	0		Abstract intimidation campaign decisions	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19206	0		Distinguish incident categories	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19218	0		Civilian consequences — ENEMY-DRIVEN CIVILIAN INTIMIDATION, TERROR CAMPAIGNS, AND CIVILIAN PROTE	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19233	0		Air-raid warnings, shelters, and civil defense	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19242	0		Player response and mission generation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19258	0		Strategic and political consequences	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19267	0		Evidence, investigation, and accountability	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19276	0		AI consistency and player restrictions	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19297	0		RECONSTRUCTION, RESTORATION AND LONG-TERM RECOVERY	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19301	0		Essential services	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19305	0		Infrastructure repair	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19309	0		Housing and displacement	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19313	0		Reconstruction finance	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19317	0		Long-term outcomes	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19322	0		Unified Anti-War Experience and Campaign Consequence Framework	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19324	0		Core purpose	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19342	0		One authoritative consequence record	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19365	0		Human consequences ledger	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19384	0		People, families, and ordinary lives	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19409	0		Disability, injury, veterans, and life after service	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19431	0		Civilian systems and essential workers	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19451	0		Environmental, cultural, and economic consequences	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19465	0		Destruction and expenditure ledger	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19483	0		Purpose and presentation rule	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19491	0		Ground objects destroyed	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19518	0		Air objects destroyed	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19538	0		Maritime objects destroyed	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19556	0		Infrastructure and fixed objects destroyed	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19573	0		Shells fired — exact accounting definition	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19589	0		Separate ammunition and ordnance counters	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19614	0		Fired, launched, expended, hit, and destroyed are different	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19631	0		Object destruction event schema	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19652	0		Counting and anti-duplication rules	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19665	0		Additional war-cost counters	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19694	0		Human consequences must be adjacent to the ledger	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19709	0		Filters, definitions, and data coverage	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19734	0		Additional quotations and attribution safeguards:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19736	0		Accountability, responsibility, and historical truth	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19755	0		Player decisions and moral responsibility	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19794	0		Anti-war presentation throughout the campaign	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19825	0		Awards during the war: recognition without glorification	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19846	0		End-of-war medal burning ceremony	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19863	0		Physical object and historical record are separate:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19875	0		Unified end-of-war epilogue	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19881	0		Chapter 1 — The last day	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19888	0		Chapter 2 — The war in time	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19893	0		Chapter 3 — The medals and the record	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19899	0		Chapter 4 — The scale of destruction	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19906	0		Chapter 5 — The people	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19912	0		Chapter 6 — Families and interrupted lives	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19917	0		Chapter 7 — Places that endured	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19922	0		Chapter 8 — What was spent	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19927	0		Chapter 9 — Accountability	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19932	0		Chapter 10 — The work of peace	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19936	0		Chapter 11 — Names and places	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19941	0		Chapter 12 — The environment and future	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19945	0		Chapter 13 — The unfinished world	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19950	0		Chapter 14 — A final quotation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19955	0		Chapter 15 — After the ending	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19962	0		Victory, defeat, and other endings	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19964	0		If the player's faction wins:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19971	0		If the player's faction loses:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19977	0		If the campaign ends in ceasefire, negotiated settlement, frozen conflict, withdrawal, collapse, or unresolved status:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+19985	0		Peace and reconstruction as playable continuation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20005	0		Quotations, personal archives, and public memory	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20018	0		Privacy, dignity, uncertainty, and representation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20031	0		Technical integration, persistence, and performance	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20057	0		Required end-to-end acceptance scenarios	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20085	0		Implementation order and definition of done	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20089	0		Slice A — Audit and source-of-truth map	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20095	0		Slice B — Unified consequence projection	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20100	0		Slice C — In-campaign consequences	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20104	0		Slice D — Player awards	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20109	0		Slice E — Responsibility review	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20114	0		Slice F — Unified epilogue and medal burning	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20120	0		Slice G — Postwar continuation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20124	0		Slice H — Regression, accessibility, and release	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20135	0		Cemetery and memorial archive detail:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20139	0		Unified death records, cemetery, memorial presentation, identity, and persistence	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20151	0		Required memorial entry fields and identity confidence.	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20168	0		Death ledger reconciliation with authoritative person records.	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20179	0		Aggregated population deaths where named individual records do not exist.	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20195	0		Main presentation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20204	0		Search and filters — Scrollable cemetery interface	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20215	0		Scale and accessibility	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20308	0		Verified quotation archive and original source records:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20312	0		Verified anti-war quotation archive and attribution safeguards	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20316	0		Ernest Hemingway — *A Farewell to Arms* (1929)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20325	0		Dwight D. Eisenhower — Canadian Club address (1946)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20334	0		Dwight D. Eisenhower — Guildhall address (1945)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20342	0		John F. Kennedy — Address to the United Nations General Assembly (1961)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20351	0		Wilfred Owen — “Dulce et Decorum Est” (published 1920)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20360	0		Dag Hammarskjöld — University of California convocation address (1954)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20369	0		Martin Luther King Jr. — *Where Do We Go from Here: Chaos or Community?* (1967)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20378	0		Albert Einstein — “Militant Pacifism” / *Cosmic Religion* (1931)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20387	0		Quote archive implementation record	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20404	0		Additional verified quotation entries and attribution safeguards.	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20408	0		Bertrand Russell — *Fact and Fiction* (1961)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20419	0		Mohandas K. Gandhi — “Non-Violence,” *Young India* (February 9, 1922)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20428	0		Martin Luther King Jr. — *Stride Toward Freedom: The Montgomery Story* (1958)	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20439	0		Misattribution safeguards	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20447	0		Detailed award categories, eligibility, citations, and service-record rules:	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20450	0		Player Awards, Medals, Decorations, and Commendations	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20467	0		Award categories	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20471	0		Combat and operational service	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20479	0		Rescue and protection	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20487	0		Support and technical service	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20495	0		Personal and institutional recognition	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20505	0		Award eligibility and evidence	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20523	0		Awards for restraint and protection	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20538	0		No kill-count medal economy	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20544	0		Award presentation and service record	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20558	0		Awards do not erase consequences	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity
+20575	0		War conclusion and postwar continuation	Unified anti-war experience, human consequences, memorials, awards, and postwar continuity

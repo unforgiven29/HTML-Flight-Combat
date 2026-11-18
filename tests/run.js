@@ -1259,6 +1259,16 @@ test('s50_service: installations, spare parts, personnel, HQ, engineering, EOD, 
     out.tab=/SPARE PARTS/.test(NATPANEL.tabs.SERVICE(core))&&/INFANTRY PACKAGE/.test(NATPANEL.tabs.SERVICE(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
   ok('records with installations and facilities',r.n>3&&r.inst>0&&r.fac===9,r);ok('components with repair queues',r.comp===9&&r.q,r);ok('headquarters and schools',r.hq>=3&&r.sch>=4);ok('engineering, EOD, procurement',r.eod>0&&r.eng>0&&r.prog>0,r);
   ok('your squadron: crew, certificates, notice board',r.sq);ok('service events',r.ev.length>=2,r.ev);ok('SERVICE tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s51_polity: cabinet, legislature, continuity, protests, coalition terms, regional bodies, arms control, QRA, occupation dimensions, ceasefire monitoring','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*120);const X=st.pol2;const core=Object.values(st.c).find(q=>q.al==='CORE');
+    out.c=Object.keys(X.c).length;out.cab=X.c[core.a3].cab.length;out.coal=Object.keys(X.coal).length;out.reg=X.reg.length;out.arms=X.arms.length;out.qra=X.qra.n;out.occ=Object.keys(X.occ).length;
+    const ev=new Set(st.ev.map(e=>e.ty));out.ev=['POLITICS','COALITION','REGIONAL','ARMS CONTROL','QRA','SOCIETY'].filter(t=>ev.has(t));out.tab=/CABINET/.test(NATPANEL.tabs.STATE(core))&&/OCCUPIED/.test(NATPANEL.tabs.STATE(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
+  ok('governments with cabinets',r.c>3&&r.cab===6,r);ok('coalitions, regional bodies, arms control',r.coal===2&&r.reg===5&&r.arms===4,r);ok('quick reaction alert',r.qra>0,r.qra);ok('state events',r.ev.length>=2,r.ev);ok('STATE tab',r.tab);ok('state stays small',r.size<120000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
+test('s52_econ2: sectors, enterprises, central bank, banks, insurance, public finance, aid, resources, power, oil, construction, research, shocks','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();const st=WWAR.st,out={};WWAR.step(24*120);const X=st.ec2;const core=Object.values(st.c).find(q=>q.al==='CORE');const R=X.c[core.a3];
+    out.n=Object.keys(X.c).length;out.ent=R.ent.length;out.dep=Object.values(X.c).some(c=>c.dep.length);out.px=X.oil.px;out.stat=R.fis.stat;const ev=new Set(st.ev.map(e=>e.ty));out.ev=['FINANCE','BUSINESS','ENERGY','AID','RESEARCH','ECONOMY'].filter(t=>ev.has(t));
+    out.tab=/MONEY AND PUBLIC FINANCE/.test(NATPANEL.tabs.MARKETS(core));out.size=JSON.stringify(X).length;out.audit=WWAR.audit();return out;});
+  ok('records with enterprises and deposits',r.n>5&&r.ent>=4&&r.dep,r);ok('oil market and statistics',r.px>0&&r.stat>0,r);ok('economic events',r.ev.length>=2,r.ev);ok('MARKETS tab',r.tab);ok('state stays small',r.size<150000,r.size);ok('audit clean',r.audit.length===0,r.audit);});
 (async()=>{await new Promise(r=>srv.listen(0,r));port=srv.address().port;
   const byAc=new Map();for(const t of T)if(t.n.includes(filter)){(byAc.get(t.ac)||byAc.set(t.ac,[]).get(t.ac)).push(t);}
   for(const [ac,list] of byAc){console.log('== '+ac);for(const t of list){const p=await boot(ac);console.log(t.n);

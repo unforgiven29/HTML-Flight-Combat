@@ -1,0 +1,96 @@
+line	cov	where	title	section
+506	0		Canonical entities, identities, relationships, shared state, and data contracts	Canonical entities, state, events, causality, and campaign history
+508	0		Canonical registries — Canonical entities, identities, relationships, shared state, and data co	Canonical entities, state, events, causality, and campaign history
+522	0		Identity is not location, allegiance, or status	Canonical entities, state, events, causality, and campaign history
+530	0		Relationships are first-class records	Canonical entities, state, events, causality, and campaign history
+536	0		Lifecycle states	Canonical entities, state, events, causality, and campaign history
+549	0		Authoritative state and read models	Canonical entities, state, events, causality, and campaign history
+553	0		Aggregate versus individual records	Canonical entities, state, events, causality, and campaign history
+566	0		Shared infrastructure, shipment, personnel, event, mission, and network entity schemas.	Canonical entities, state, events, causality, and campaign history
+570	0		Infrastructure entity	Canonical entities, state, events, causality, and campaign history
+574	0		Shipment entity	Canonical entities, state, events, causality, and campaign history
+578	0		Personnel entity	Canonical entities, state, events, causality, and campaign history
+582	0		Event entity	Canonical entities, state, events, causality, and campaign history
+586	0		Mission entity	Canonical entities, state, events, causality, and campaign history
+590	0		Network entity	Canonical entities, state, events, causality, and campaign history
+595	0		ONE COHERENT WORLD SIMULATION — SHARED STATE AND CAUSE AND EFFECT	Canonical entities, state, events, causality, and campaign history
+610	0		SINGLE AUTHORITATIVE CAMPAIGN DATA MODEL	Canonical entities, state, events, causality, and campaign history
+612	0		One source of truth	Canonical entities, state, events, causality, and campaign history
+616	0		Entity identity	Canonical entities, state, events, causality, and campaign history
+620	0		Suggested entity categories	Canonical entities, state, events, causality, and campaign history
+630	0		Derived values versus stored values	Canonical entities, state, events, causality, and campaign history
+634	0		Entity lifecycle	Canonical entities, state, events, causality, and campaign history
+638	0		Event-driven state changes	Canonical entities, state, events, causality, and campaign history
+642	0		Idempotency and reconciliation	Canonical entities, state, events, causality, and campaign history
+650	0		Shared events, causality, accounting, history, and consistency	Canonical entities, state, events, causality, and campaign history
+652	0		One event contract	Canonical entities, state, events, causality, and campaign history
+668	0		Commands versus events	Canonical entities, state, events, causality, and campaign history
+672	0		Causal graph	Canonical entities, state, events, causality, and campaign history
+678	0		Event schema and provenance	Canonical entities, state, events, causality, and campaign history
+681	0		Dependency graph — Shared events, causality, accounting, history, and consistency	Canonical entities, state, events, causality, and campaign history
+684	0		Causal propagation	Canonical entities, state, events, causality, and campaign history
+687	0		Cycles and feedback	Canonical entities, state, events, causality, and campaign history
+690	0		Explainability — Shared events, causality, accounting, history, and consistency	Canonical entities, state, events, causality, and campaign history
+693	0		Player-facing reporting	Canonical entities, state, events, causality, and campaign history
+699	0		Shared ledger principles	Canonical entities, state, events, causality, and campaign history
+703	0		Historical record and derived summaries	Canonical entities, state, events, causality, and campaign history
+707	0		Corrections and reversals	Canonical entities, state, events, causality, and campaign history
+711	0		Integrity auditing	Canonical entities, state, events, causality, and campaign history
+725	0		CONTEXTUAL EVENTS AND STORY GENERATION	Canonical entities, state, events, causality, and campaign history
+738	0		PERMANENT WORLD HISTORY, EVENT MEMORY AND CHRONOLOGY	Canonical entities, state, events, causality, and campaign history
+742	0		Event record	Canonical entities, state, events, causality, and campaign history
+746	0		Event categories	Canonical entities, state, events, causality, and campaign history
+750	0		Knowledge and uncertainty	Canonical entities, state, events, causality, and campaign history
+754	0		Character and unit memory	Canonical entities, state, events, causality, and campaign history
+758	0		Campaign timeline and reports	Canonical entities, state, events, causality, and campaign history
+762	0		Persistent consequences	Canonical entities, state, events, causality, and campaign history
+766	0		Player-facing narrative	Canonical entities, state, events, causality, and campaign history
+771	0		LIVE CAMPAIGN EVENT FEED	Canonical entities, state, events, causality, and campaign history
+808	0		GENERATIONAL MEMORY, PUBLIC HISTORY, AND REMEMBRANCE	Canonical entities, state, events, causality, and campaign history
+813	0		Memory sources	Canonical entities, state, events, causality, and campaign history
+816	0		Memory evolution	Canonical entities, state, events, causality, and campaign history
+819	0		Disagreement and plural memory	Canonical entities, state, events, causality, and campaign history
+822	0		Player and campaign presentation	Canonical entities, state, events, causality, and campaign history
+829	0		CAMPAIGN GENERATION, SCENARIO RULES, AND WORLD CONSISTENCY	Canonical entities, state, events, causality, and campaign history
+845	0		Campaign chronology, permanent historical archive, and institutional memory	Canonical entities, state, events, causality, and campaign history
+847	0		Permanent campaign chronology	Canonical entities, state, events, causality, and campaign history
+851	0		Event provenance and confidence	Canonical entities, state, events, causality, and campaign history
+855	0		Multi-perspective histories	Canonical entities, state, events, causality, and campaign history
+859	0		Campaign maps over time	Canonical entities, state, events, causality, and campaign history
+863	0		Squadron and unit histories	Canonical entities, state, events, causality, and campaign history
+867	0		Character biographies	Canonical entities, state, events, causality, and campaign history
+871	0		City and infrastructure histories	Canonical entities, state, events, causality, and campaign history
+875	0		Campaign yearbooks and after-action summaries	Canonical entities, state, events, causality, and campaign history
+879	0		Search, filtering, and replay	Canonical entities, state, events, causality, and campaign history
+883	0		World memory and character memory	Canonical entities, state, events, causality, and campaign history
+887	0		Historical consistency	Canonical entities, state, events, causality, and campaign history
+891	0		Timeline acceptance tests	Canonical entities, state, events, causality, and campaign history
+897	0		Persistent archive, institutional memory, and long-term history.	Canonical entities, state, events, causality, and campaign history
+903	0		Canonical event archive	Canonical entities, state, events, causality, and campaign history
+921	0		Entity timelines	Canonical entities, state, events, causality, and campaign history
+937	0		Historical maps and territorial changes	Canonical entities, state, events, causality, and campaign history
+951	0		News, documents, and public records	Canonical entities, state, events, causality, and campaign history
+964	0		Search and filters — Campaign chronology, permanent historical archive, and institutional mem	Canonical entities, state, events, causality, and campaign history
+980	0		Institutional memory and lessons	Canonical entities, state, events, causality, and campaign history
+986	0		Corrections and disputed history	Canonical entities, state, events, causality, and campaign history
+998	0		Privacy and sensitive information	Canonical entities, state, events, causality, and campaign history
+1002	0		Long-campaign storage and performance	Canonical entities, state, events, causality, and campaign history
+1006	0		Integration with existing	Canonical entities, state, events, causality, and campaign history
+1032	0		AFTER-ACTION REPORTS, BATTLE STATISTICS, AND CAMPAIGN HISTORY	Canonical entities, state, events, causality, and campaign history
+1057	0		Campaign events and strategic effects	Canonical entities, state, events, causality, and campaign history
+1071	0		Separate war status from victory status	Canonical entities, state, events, causality, and campaign history
+1080	0		WORLD-STATE CONSISTENCY, ACCOUNTING, AND INTEGRITY AUDITING	Accounting, counters, losses, and ledgers
+1085	0		Audit domains	Accounting, counters, losses, and ledgers
+1088	0		Invariants	Accounting, counters, losses, and ledgers
+1098	0		Severity and repair	Accounting, counters, losses, and ledgers
+1101	0		Diagnostics — WORLD-STATE CONSISTENCY, ACCOUNTING, AND INTEGRITY AUDITING	Accounting, counters, losses, and ledgers
+1104	0		Continuous and scheduled audits	Accounting, counters, losses, and ledgers
+1111	0		GLOBAL FORCE ACCOUNTING AND LIVE STRENGTH COUNTERS	Accounting, counters, losses, and ledgers
+1128	0		PERSONNEL STRENGTH AND HUMAN STATUS COUNTERS	Accounting, counters, losses, and ledgers
+1156	0		Human strength calculations	Accounting, counters, losses, and ledgers
+1167	0		CASUALTY, LOSS, DAMAGE, AND ATTRITION ACCOUNTING	Accounting, counters, losses, and ledgers
+1200	0		EXPANDED LIVE OPERATIONAL COUNTERS	Accounting, counters, losses, and ledgers
+1204	0		Air operations	Accounting, counters, losses, and ledgers
+1215	0		Ground operations — EXPANDED LIVE OPERATIONAL COUNTERS	Accounting, counters, losses, and ledgers
+1223	0		Naval operations	Accounting, counters, losses, and ledgers
+1230	0		Campaign support and intelligence	Accounting, counters, losses, and ledgers

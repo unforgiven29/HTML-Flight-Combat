@@ -1,0 +1,73 @@
+line	cov	where	title	section
+21557	0		Player interface and understandable feedback	Player interfaces, reporting, permissions, and information presentation
+21567	0		SQUADRON READINESS BOARD AND DAILY DUTY VIEW	Player interfaces, reporting, permissions, and information presentation
+21571	0		Board overview	Player interfaces, reporting, permissions, and information presentation
+21583	0		Daily roster and assignment workflow	Player interfaces, reporting, permissions, and information presentation
+21592	0		Explanation and reporting	Player interfaces, reporting, permissions, and information presentation
+21611	0		NEWS, RADIO, AND WORLD AUDIO — MAKE THE WORLD FEEL OCCUPIED	Player interfaces, reporting, permissions, and information presentation
+21625	0		Unified player interface, campaign maps, information tools, and quality-of-life features	Player interfaces, reporting, permissions, and information presentation
+21627	0		One presentation system over shared data	Player interfaces, reporting, permissions, and information presentation
+21631	0		Progressive disclosure	Player interfaces, reporting, permissions, and information presentation
+21635	0		Explainability — player interface, campaign maps, overlays, dashboards, information cards	Player interfaces, reporting, permissions, and information presentation
+21639	0		Historical time controls	Player interfaces, reporting, permissions, and information presentation
+21643	0		Accessibility and performance	Player interfaces, reporting, permissions, and information presentation
+21655	0		Briefings, feedback, and information presentation.	Player interfaces, reporting, permissions, and information presentation
+21672	0		Map layers, filters, and accessibility.	Player interfaces, reporting, permissions, and information presentation
+21687	0		New campaign-system information and player-facing views.	Player interfaces, reporting, permissions, and information presentation
+21697	0		Live force dashboards.	Player interfaces, reporting, permissions, and information presentation
+21731	0		Global campaign status bar and overview.	Player interfaces, reporting, permissions, and information presentation
+21757	0		Unit, personnel, platform, and facility information cards.	Player interfaces, reporting, permissions, and information presentation
+21761	0		Formation cards	Player interfaces, reporting, permissions, and information presentation
+21774	0		Aircraft and ship cards	Player interfaces, reporting, permissions, and information presentation
+21777	0		Personnel cards	Player interfaces, reporting, permissions, and information presentation
+21780	0		Infrastructure and facility cards	Player interfaces, reporting, permissions, and information presentation
+21785	0		Strategic map display, overlays, and navigation tools.	Player interfaces, reporting, permissions, and information presentation
+21817	0		Dashboard information hierarchy, separate from the flight HUD.	Player interfaces, reporting, permissions, and information presentation
+21831	0		Large-scale strategic map rendering.	Player interfaces, reporting, permissions, and information presentation
+21833	0		Keep strategic UI separate from the 3D flight scene	Player interfaces, reporting, permissions, and information presentation
+21837	0		Canvas or batched map layers	Player interfaces, reporting, permissions, and information presentation
+21841	0		Zoom-dependent presentation	Player interfaces, reporting, permissions, and information presentation
+21845	0		Map selection and entity details	Player interfaces, reporting, permissions, and information presentation
+21849	0		Overlay costs	Player interfaces, reporting, permissions, and information presentation
+21853	0		Mobile and resize behavior	Player interfaces, reporting, permissions, and information presentation
+21859	0		Integration with the existing campaign interface.	Player interfaces, reporting, permissions, and information presentation
+21874	0		Existing UI should be improved, not duplicated	Player interfaces, reporting, permissions, and information presentation
+21878	0		Responsive and accessible browser controls	Player interfaces, reporting, permissions, and information presentation
+21888	0		Search and lookup utilities	Player interfaces, reporting, permissions, and information presentation
+21896	0		Sorting and advanced filters	Player interfaces, reporting, permissions, and information presentation
+21903	0		Personal convenience tools	Player interfaces, reporting, permissions, and information presentation
+21922	0		Data export	Player interfaces, reporting, permissions, and information presentation
+21926	0		Accessibility and responsive behavior	Player interfaces, reporting, permissions, and information presentation
+21934	0		Scope boundary	Player interfaces, reporting, permissions, and information presentation
+21946	0		FUEL AND ENERGY MAP OVERLAYS, INTERFACE, AND REPORTING	Player interfaces, reporting, permissions, and information presentation
+21966	0		DATA FRESHNESS, PERMISSIONS, AND INTERFACE PERFORMANCE	Player interfaces, reporting, permissions, and information presentation
+21988	0		VISUAL PRESENTATION AND ENVIRONMENTAL STORYTELLING	Player interfaces, reporting, permissions, and information presentation
+22001	0		ACCESSIBILITY, LOCALIZATION, AND PRESENTATION SETTINGS	Player interfaces, reporting, permissions, and information presentation
+22027	0		NOTIFICATION, WARNING, AND REQUEST CENTER	Player interfaces, reporting, permissions, and information presentation
+22058	0		STATISTICS, GRAPHS, TRENDS, AND COMPARISON TOOLS	Player interfaces, reporting, permissions, and information presentation
+22089	0		CAMPAIGN QUALITY-OF-LIFE TOOLS AND PERSONAL ARCHIVE	Player interfaces, reporting, permissions, and information presentation
+22093	0		Personal campaign journal	Player interfaces, reporting, permissions, and information presentation
+22099	0		Radio and communications history	Player interfaces, reporting, permissions, and information presentation
+22106	0		Mission and operation archive	Player interfaces, reporting, permissions, and information presentation
+22111	0		Equipment encyclopedia	Player interfaces, reporting, permissions, and information presentation
+22117	0		Personnel and squadron records	Player interfaces, reporting, permissions, and information presentation
+22123	0		Awards and memorial archive	Player interfaces, reporting, permissions, and information presentation
+22129	0		News and image archive	Player interfaces, reporting, permissions, and information presentation
+22135	0		Saved map views and campaign bookmarks	Player interfaces, reporting, permissions, and information presentation
+22141	0		Reports and exports	Player interfaces, reporting, permissions, and information presentation
+22151	0		GLOBAL SEARCH, ADVANCED FILTERS, BOOKMARKS, AND WATCHLISTS	Player interfaces, reporting, permissions, and information presentation
+22181	0		CAMPAIGN CALENDAR, SCHEDULING, AND UPCOMING EVENTS	Player interfaces, reporting, permissions, and information presentation
+22203	0		Developer-only campaign inspection, diagnostics, debug views, observability, and explainability	Developer diagnostics, observability, and explainability
+22228	0		Campaign/entity/event inspection toolkit.	Developer diagnostics, observability, and explainability
+22232	0		Campaign state inspector	Developer diagnostics, observability, and explainability
+22242	0		Entity and relationship inspector	Developer diagnostics, observability, and explainability
+22251	0		Event, AI decision, and dependency inspector	Developer diagnostics, observability, and explainability
+22259	0		Mission and sensor diagnostics	Developer diagnostics, observability, and explainability
+22267	0		Persistence and reconciliation tools	Developer diagnostics, observability, and explainability
+22277	0		Performance diagnostics — Developer-only campaign inspection, diagnostics, debug views, observabil	Developer diagnostics, observability, and explainability
+22294	0		Automated test helpers	Developer diagnostics, observability, and explainability
+22315	0		Simulation observability and explainability.	Developer diagnostics, observability, and explainability
+22332	0		Causal explanation	Developer diagnostics, observability, and explainability
+22339	0		Health checks	Developer diagnostics, observability, and explainability
+22355	0		Developer tools versus player information	Developer diagnostics, observability, and explainability
+22368	0		Developer tools and debug views.	Developer diagnostics, observability, and explainability
