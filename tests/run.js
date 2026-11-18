@@ -1368,6 +1368,11 @@ test('s65_infmp: two pages in one room fight the same infantry battle: the invit
   await g.evaluate(()=>{const S=INFANTRY.S;const q=[...INFNET.N.peers.values()][0];if(!q||!q.m)return;const o=q.m.position.clone().add(new THREE.Vector3(0,1.2,6));S.pos.copy(o);const d=q.m.position.clone().setY(q.m.position.y+1.2).sub(o).normalize();INFNET.shot(o,d,30,'gun');});
   await p.waitForTimeout(600);const hp1=await p.evaluate(()=>INFANTRY.S.hp);await g.close();
   ok('the invitation reaches the other page',inv);ok('both in the same battle, each drawing the other',seen.n>0&&seen.m&&hk.n>0&&seen.same===hk.key,{seen,hk});ok('a hit between players is delivered',hp1<hp0,{hp0,hp1});});
+test('s68_seated: the squad sits on the bench in the APC on the ride','F-16C',async p=>{
+  const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const I=INFANTRY;const S=I.start({...I.K,a3:'POL',ins:'APC',mis:'ATTACK'});const R=S.trip;if(!R)return{no:1};
+    const out=R.men.map(m=>{const J=m.userData.J;m.updateMatrixWorld(true);const hp=new THREE.Vector3();J.L.hip.getWorldPosition(hp);const cp=R.cab.worldToLocal(hp.clone());return{sit:J.sit,hip:+J.L.hip.rotation.x.toFixed(2),hy:+cp.y.toFixed(2)};});return{out};});
+  await p.waitForTimeout(300);if(process.env.SHOT)await p.screenshot({path:process.env.SHOT});
+  ok('three men seated, hips at bench height',r.out&&r.out.length===3&&r.out.every(x=>x.sit&&x.hip>1.4&&Math.abs(x.hy-1.25)<.15),r);});
 test('s67_battlelink: civilians shelter, AI ignores them, player harm is an inquiry; BATTLE feeds media, families, record','F-16C',async p=>{
   const r=await p.evaluate(async()=>{localStorage.removeItem('viper.ww');await WWAR.newWar();WWAR.step(24*2);const W=WWAR,st=W.st;const a3=Object.keys(st.c).find(k=>st.c[k].side==='B'&&st.c[k].pop);const n0=st.ev.length;
     W.battlelink.onBattle({battle:{a3,en:null,place:'Testville',res:'BREAK',lost:9,wia:3,kills:4,civ:1,dead:[],names:['Ana Test'],hp:50}});
